@@ -1,0 +1,50 @@
+POST http://localhost:8000/api/employees
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 1|xbQgHXwgWkcul3ien8gx6dfVaO8teyhDnIM7zhDD
+
+{
+    "user": {
+        "email": "rafaelhenriquemelos@hotmail.com",
+        "password": "123456",
+        "confirm_password": "123456",
+        "type": "web",
+        "roles": {
+            "role_id": 4,
+            "role_type": "patient",
+            "abilities": [
+                {
+                    "id": "1",
+                    "name": "create-appointment"
+                },
+                {
+                    "id": "2",
+                    "name": "list-appointment"
+                }
+            ]
+        }
+    },
+    "employee": {
+        "first_name": "Rafael",
+        "last_name": "Souza",
+        "gender": "male",
+        "birth_date": "29/12/1986",
+        "cpf": "06545218409",
+        "rg": "7449629",
+        "cell_phone": "81999002918"
+    }
+
+}
+
+###
+POST http://localhost:8000/api/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "email": "admin@odonto.solutions",
+  "password": "123456",
+  "app_name": "web"
+}
+
+

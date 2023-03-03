@@ -1,0 +1,61 @@
+FROM php:8.1-fpm
+
+WORKDIR /var/www
+
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json /var/www/
+
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    zip \
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    unzip \
+    git \
+    curl
+
+# Xdebug
+RUN pecl install xdebug-3.1.2
+ADD docker/local/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install extensions
+RUN docker-php-ext-install pdo_mysql exif pcntl
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+RUN docker-php-ext-install gd
+
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Add user for laravel application
+RUN groupadd -g 1000 www
+RUN useradd -u 1000 -ms /bin/bash -g www www
+
+# Copy existing application directory contents
+RUN mkdir -p "/var/www/sh-local-api/html/"
+COPY . /var/www/sh-local-api/html
+
+# Change current user to www
+USER www
+
+# Copy existing application directory permissions
+COPY --chown=www:www . /var/www/sh-local-api/html
+RUN chmod -R 777 /var/www/sh-local-api/html/storage
+RUN composer dump-autoload --working-dir=/var/www/sh-local-api/html
+
+# Execute migrations and seeders
+#WORKDIR /var/www/sh-local-api/html
+#RUN php artisan migrate:install
+#RUN php artisan migrate:fresh --seed
+#WORKDIR /var/www
+
+# Expose port 9000 and start php-fpm server
+EXPOSE 9000
+CMD ["php-fpm"]

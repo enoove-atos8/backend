@@ -1,0 +1,55 @@
+version: '3'
+services:
+    backend:
+        build:
+            context: .
+            dockerfile: DockerfileLocal
+        container_name: backend
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        volumes:
+            - .:/var/www/sh-local-api/html
+            - ./docker/local/php-local.ini:/usr/local/etc/php/conf.d/php-local.ini
+        working_dir: /var/www/sh-local-api/html
+        networks:
+            - sh-backend-network
+        depends_on:
+            - mysql
+
+    webserver:
+        image: nginx:alpine
+        container_name: webserver
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "8000:8000"
+        volumes:
+            - .:/var/www/sh-local-api/html
+            - ./docker/local/nginx.conf:/etc/nginx/nginx.conf
+            - ./docker/local/app.conf:/etc/nginx/conf.d/default.conf
+
+        networks:
+            - sh-backend-network
+
+    mysql:
+        image: 'mysql/mysql-server:8.0'
+        container_name: mysql8.0
+        ports:
+            - '${DB_PORT:-3306}:3306'
+        environment:
+            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_HOST: "%"
+            MYSQL_DATABASE: '${DB_DATABASE}'
+            MYSQL_USER: '${DB_USERNAME}'
+            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        volumes:
+            - 'mysql:/var/lib/mysql'
+        networks:
+            - sh-backend-network
+networks:
+    sh-backend-network:
+        driver: bridge
+volumes:
+    mysql:
+        driver: local
