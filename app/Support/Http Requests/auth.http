@@ -1,7 +1,7 @@
 POST http://localhost:8000/api/employees
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer 1|xbQgHXwgWkcul3ien8gx6dfVaO8teyhDnIM7zhDD
+Authorization: Bearer 4|9hnbQvOgtUHxOf9RJMGG5xOmJPjVDek7SUulZ6vX
 
 {
     "user": {

@@ -8,28 +8,14 @@ services:
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         volumes:
-            - .:/var/www/sh-local-api/html
-            - ./docker/local/php-local.ini:/usr/local/etc/php/conf.d/php-local.ini
-        working_dir: /var/www/sh-local-api/html
+            - .:/var/www/backend/html
+            - ./docker/local/app.conf:/etc/nginx/sites-enabled/default
         networks:
-            - sh-backend-network
+            - atos242-backend-network
+        ports:
+            - 8000:8000
         depends_on:
             - mysql
-
-    webserver:
-        image: nginx:alpine
-        container_name: webserver
-        restart: unless-stopped
-        tty: true
-        ports:
-            - "8000:8000"
-        volumes:
-            - .:/var/www/sh-local-api/html
-            - ./docker/local/nginx.conf:/etc/nginx/nginx.conf
-            - ./docker/local/app.conf:/etc/nginx/conf.d/default.conf
-
-        networks:
-            - sh-backend-network
 
     mysql:
         image: 'mysql/mysql-server:8.0'
@@ -46,9 +32,9 @@ services:
         volumes:
             - 'mysql:/var/lib/mysql'
         networks:
-            - sh-backend-network
+            - atos242-backend-network
 networks:
-    sh-backend-network:
+    atos242-backend-network:
         driver: bridge
 volumes:
     mysql:

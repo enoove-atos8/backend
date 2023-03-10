@@ -1,75 +1,56 @@
-FROM alpine:latest
+FROM php:8.1-fpm
 
 WORKDIR /var/www
-# Essentials
-RUN echo "UTC" > /etc/timezone
-RUN apk add --no-cache zip unzip curl nginx supervisor
+RUN mkdir -p backend/html
+WORKDIR /var/www/backend/html
 
-# Installing bash
-RUN apk add bash
-RUN sed -i 's/bin\/ash/bin\/bash/g' /etc/passwd
+# Copy composer.lock and composer.json
+COPY composer.lock composer.json ./
 
-# Installing PHP
-RUN apk add --no-cache php8 \
-    php8-common \
-    php8-fpm \
-    php8-pdo \
-    php8-opcache \
-    php8-zip \
-    php8-phar \
-    php8-iconv \
-    php8-cli \
-    php8-curl \
-    php8-openssl \
-    php8-mbstring \
-    php8-tokenizer \
-    php8-fileinfo \
-    php8-json \
-    php8-xml \
-    php8-xmlwriter \
-    php8-simplexml \
-    php8-dom \
-    php8-pdo_mysql \
-    php8-tokenizer \
-    php8-pecl-redis \
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    locales \
+    zip \
+    jpegoptim optipng pngquant gifsicle \
+    vim \
+    unzip \
+    git \
+    curl \
+    nginx \
     nano
 
-RUN ln -s /usr/bin/php8 /usr/bin/php
-
-#Installing XDebug
-RUN apk add php8-xdebug --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
-
-# Installing composer
-RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
-RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
-RUN rm -rf composer-setup.php
-
-# Configure supervisor
-RUN mkdir -p /etc/supervisor.d/
-COPY docker/local/supervisord.ini /etc/supervisor.d/supervisord.ini
-
-# Configure PHP
-RUN mkdir -p /run/php/
-RUN touch /run/php/php8.0-fpm.pid
-
-COPY docker/dev/php-fpm.conf /etc/php8/php-fpm.conf
-COPY docker/dev/php-dev.ini /etc/php8/php.ini
+# Xdebug
+RUN pecl install xdebug-3.1.2
+ADD docker/local/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Configure nginx
-COPY docker/dev/nginx.conf /etc/nginx/
-COPY docker/dev/app.conf /etc/nginx/modules/
+COPY docker/local/app.conf /etc/nginx/sites-enabled/default
 
-RUN mkdir -p /run/nginx/
-RUN touch /run/nginx/nginx.pid
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-RUN ln -sf /dev/stdout /var/log/nginx/access.log
-RUN ln -sf /dev/stderr /var/log/nginx/error.log
+# Install extensions
+RUN docker-php-ext-install pdo_mysql exif pcntl
+RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
+RUN docker-php-ext-install gd
 
-# Building process
-RUN mkdir -p /var/www/sh-dev-api/html
-COPY . ./sh-dev-api/html
-RUN composer install --working-dir=/var/www/sh-dev-api/html --no-dev
-RUN chown -R nobody:nobody /var/www/sh-dev-api/html/storage
+# Install composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
+# Copy existing application directory contents
+COPY . .
+
+# Copy existing application directory permissions
+RUN chmod -R 777 storage
+RUN composer dump-autoload
+RUN php artisan cache:clear
+RUN php artisan config:clear
+RUN php artisan config:cache
+
+# Expose port 8000 and start php-fpm server
 EXPOSE 8000
-CMD ["supervisord", "-c", "/etc/supervisor.d/supervisord.ini"]
+CMD ["php-fpm"]
