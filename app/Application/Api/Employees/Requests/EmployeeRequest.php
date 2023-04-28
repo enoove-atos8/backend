@@ -32,7 +32,6 @@ class EmployeeRequest extends FormRequest
             'user.password'             =>  'required|string|min:6',
             'user.confirm_password'     =>  'required|same:user.password',
             'user.type'                 =>  'required',
-            'user.roles'                =>  'array|required',
             'employee.first_name'       =>  'required',
             'employee.last_name'        =>  'required',
             'employee.gender'           =>  'required',
@@ -79,6 +78,7 @@ class EmployeeRequest extends FormRequest
     public function employeeData(): array
     {
         $userData = new UserData(
+            name:      $this->input('user.name'),
             email:      $this->input('user.email'),
             password:   $this->input('user.password'),
             type:       $this->input('user.type'),

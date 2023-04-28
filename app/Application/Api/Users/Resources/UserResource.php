@@ -40,7 +40,8 @@ class UserResource extends JsonResource
             'id' => $this->id,
             'name'  => $this->name,
             'email' => $this->email,
-            'date'  =>  Carbon::create($this->created_at)->format('Y-m-d'),
+            'avatar' => $this->avatar,
+            'register_date'  =>  Carbon::create($this->created_at)->format('d/m/Y'),
             'roles'  =>  [
                 'values'    => $valuesRole,
                 'abilities' => $abilities
@@ -51,7 +52,7 @@ class UserResource extends JsonResource
     public function with($request)
     {
         return [
-            'status' => true
+            'status' => false
         ];
     }
 }

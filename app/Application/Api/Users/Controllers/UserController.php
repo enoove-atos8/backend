@@ -21,7 +21,7 @@ class UserController extends Controller
      * @param ListUserAction $listUserAction
      * @return UserResourceCollection|JsonResponse
      */
-    public function index(ListUserAction $listUserAction): UserResourceCollection|JsonResponse
+    public function getUsers(ListUserAction $listUserAction): UserResourceCollection|JsonResponse
     {
         $response = $listUserAction();
 
@@ -38,7 +38,7 @@ class UserController extends Controller
      * @param ListUserAction $listUserAction
      * @return UserResource
      */
-    public function show(int $id, ListUserAction $listUserAction): UserResource
+    public function getUserByID(int $id, ListUserAction $listUserAction): UserResource
     {
         $response = $listUserAction($id);
         return new UserResource($response);

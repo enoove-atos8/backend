@@ -16,10 +16,36 @@ class RoleSeeder extends Seeder
     public function run()
     {
         DB::table('roles')->insert([
-            ['name' => 'admin', 'type' => 'admin','description' => 'This role grants the user all the abilities of system', 'activated' => 1],
-            ['name' => 'doctor', 'type' => 'employee','description' => 'This role grants the user all the abilities of a doctor', 'activated' => 1],
-            ['name' => 'receptionist', 'type' => 'employee','description' => 'This role grants the user all the abilities of a receptionist', 'activated' => 1],
-            ['name' => 'patient', 'type' => 'patient','description' => 'This role grants the user all the abilities of a patient', 'activated' => 1],
+            [
+                'name' => 'admin',
+                'type' => 'admin',
+                'description' => 'This role grants the user all the abilities of system',
+                'activated' => 1
+            ],
+            [
+                'name' => 'shepherd',
+                'type' => 'shepherd',
+                'description' => 'This role grants the user all skills related to the Shepherd profile',
+                'activated' => 1
+            ],
+            [
+                'name' => 'patrimony_minister',
+                'type' => 'minister',
+                'description' => 'This role grants the user all skills related to the minister profile',
+                'activated' => 1
+            ],
+            [
+                'name' => 'secretary',
+                'type' => 'secretary',
+                'description' => 'This role grants the user all skills related to the secretary profile',
+                'activated' => 1
+            ],
+            [
+                'name' => 'accountant',
+                'type' => 'accountant',
+                'description' => 'This role grants the user all skills related to the accountant profile',
+                'activated' => 1
+            ],
         ]);
     }
 }

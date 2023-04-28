@@ -26,8 +26,8 @@ class EmployeeResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $roles = $this['user']->roles()->first();
-        $abilities = $roles->abilities()->get();
+        $roles = $this['user']->roles()->first() ? $this['user']['roles'] : null;
+        //$abilities = $roles->abilities()->get();
 
         return [
             'user'  => [
@@ -38,8 +38,8 @@ class EmployeeResource extends JsonResource
                     'id'    =>  $roles->id,
                     'name'  =>  $roles->name,
                     'type'  =>  $roles->type,
-                    'abilities' =>  $abilities
-                ],
+                    //'abilities' =>  $abilities
+                ] ? $roles != null : [],
             ],
             'employee'  =>  [
                 'first_name'    =>  $this['employee']['first_name'],

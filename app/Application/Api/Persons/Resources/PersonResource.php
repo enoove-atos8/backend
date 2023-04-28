@@ -1,0 +1,25 @@
+<?php
+
+namespace Application\Api\Persons\Resources;
+
+use Carbon\Carbon;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class PersonResource extends JsonResource
+{
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     */
+    public function toArray($request)
+    {
+        return [];
+    }
+
+    public function with($request)
+    {
+
+    }
+}

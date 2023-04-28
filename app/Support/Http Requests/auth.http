@@ -1,32 +1,26 @@
+GET http://localhost:8000/api/users/10
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 51|WDLnX7OsIyrOz2bfeoX7hS2KzWEr0yHdJSHPBtpI
+
+###
 POST http://localhost:8000/api/employees
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer 4|9hnbQvOgtUHxOf9RJMGG5xOmJPjVDek7SUulZ6vX
+Authorization: Bearer 48|u3cWECP8s4nvl25Tj6vnAZl3KdYAlZBZ6MQ3Oswb
 
 {
     "user": {
-        "email": "rafaelhenriquemelos@hotmail.com",
+        "name": "Elaine Richelline",
+        "email": "elainerichell@gmail.com",
         "password": "123456",
         "confirm_password": "123456",
         "type": "web",
-        "roles": {
-            "role_id": 4,
-            "role_type": "patient",
-            "abilities": [
-                {
-                    "id": "1",
-                    "name": "create-appointment"
-                },
-                {
-                    "id": "2",
-                    "name": "list-appointment"
-                }
-            ]
-        }
+        "roles": []
     },
     "employee": {
-        "first_name": "Rafael",
-        "last_name": "Souza",
+        "first_name": "Elaine",
+        "last_name": "Richelline",
         "gender": "male",
         "birth_date": "29/12/1986",
         "cpf": "06545218409",
@@ -42,9 +36,6 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "email": "admin@odonto.solutions",
-  "password": "123456",
-  "app_name": "web"
+  "email": "admin@atos242.com",
+  "password": "123456"
 }
-
-

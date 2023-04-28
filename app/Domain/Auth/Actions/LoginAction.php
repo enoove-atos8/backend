@@ -13,7 +13,7 @@ class LoginAction
 {
     use HasAuthorization;
 
-    public function __invoke(AuthData $authData, $app_name)
+    public function __invoke(AuthData $authData)
     {
         if(Auth::attempt($authData->toArray()))
         {
@@ -23,7 +23,7 @@ class LoginAction
 
             if ($user->activated)
             {
-                $token = $user->createToken($app_name, $userAbilities)->plainTextToken;
+                $token = $user->createToken('web', $userAbilities)->plainTextToken;
                 $user->token = $token;
 
                 return $user;
