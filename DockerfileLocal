@@ -44,7 +44,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 
 # Copy existing application directory permissions
-RUN chmod -R 777 storage
+RUN chmod -R 775 storage
 RUN composer dump-autoload
 RUN php artisan cache:clear
 RUN php artisan config:clear

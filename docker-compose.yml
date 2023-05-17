@@ -3,7 +3,7 @@ services:
     backend:
         build:
             context: .
-            dockerfile: DockerfileLocal
+            dockerfile: enoove/atos242-backend:0.1.0
         container_name: backend
         extra_hosts:
             - 'host.docker.internal:host-gateway'
@@ -18,16 +18,16 @@ services:
             - mysql
 
     mysql:
-        image: 'mysql/mysql-server:8.0'
-        container_name: mysql8.0
+        image: 'mysql/mysql-server:8.0.1'
+        container_name: mysql8.0.1
         ports:
             - '${DB_PORT:-3306}:3306'
         environment:
-            MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+            MYSQL_ROOT_PASSWORD: '${DB_ROOT_PASSWORD}'
             MYSQL_ROOT_HOST: "%"
             MYSQL_DATABASE: '${DB_DATABASE}'
-            MYSQL_USER: '${DB_USERNAME}'
-            MYSQL_PASSWORD: '${DB_PASSWORD}'
+            #MYSQL_USER: '${DB_USERNAME}'
+            #MYSQL_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ALLOW_EMPTY_PASSWORD: 1
         volumes:
             - 'mysql:/var/lib/mysql'

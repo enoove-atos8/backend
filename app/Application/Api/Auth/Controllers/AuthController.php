@@ -10,6 +10,7 @@ use Domain\Auth\Actions\LogoutAction;
 use Application\Core\Http\Controllers\Controller;
 use Illuminate\Http\JsonResponse;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
+use Illuminate\Support\Facades\Crypt;
 
 class AuthController extends Controller
 {
@@ -18,7 +19,10 @@ class AuthController extends Controller
      */
     public function login(AuthRequest $authRequest, LoginAction $loginAction): JsonResponse|LoginResource
     {
-        $response = $loginAction($authRequest->authData(), $authRequest['app_name']);
+        $response = $loginAction($authRequest->authData());
+
+        //$test = Crypt::encryptString('Jesus100');
+        //$test2 = Crypt::decryptString($test);
 
         if (is_array($response) && array_key_exists('error',$response))
             return (new ErrorLoginResource($response))->response()->setStatusCode($response["status"]);
@@ -30,4 +34,8 @@ class AuthController extends Controller
     {
         return $logoutAction();
     }
+
+    /**
+     * Verify if current token is valid
+     */
 }

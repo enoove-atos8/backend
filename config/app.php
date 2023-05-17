@@ -178,6 +178,7 @@ return [
         // Application\Core\Providers\BroadcastServiceProvider::class,
         Application\Core\Providers\EventServiceProvider::class,
         Application\Core\Providers\RouteServiceProvider::class,
+        Application\Core\Providers\TenancyServiceProvider::class,
 
     ],
 
