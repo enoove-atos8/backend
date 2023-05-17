@@ -13,11 +13,16 @@ trait HasAuthorization
     {
         $userRole = $authUser->roles()->first();
 
-        foreach ($roles as $role)
-            if($userRole->name == $role)
-                return true;
-
-        return false;
+        if($userRole != null)
+        {
+            foreach ($roles as $role)
+                if($userRole->name == $role)
+                    return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 

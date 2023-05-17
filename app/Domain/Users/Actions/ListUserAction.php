@@ -19,20 +19,9 @@ class ListUserAction
 
     public function __invoke($id = null)
     {
-        if($this->hasRole(auth()->user(), ['admin']))
-        {
-            if ($id)
-                return $this->user->find($id);
-            else
-                return $this->user->all();
-            //return User::paginate();
-        }
+        if ($id)
+            return $this->user->find($id);
         else
-        {
-            return [
-                "data"  =>  false,
-                "status"  =>  403
-            ];
-        }
+            return $this->user->all();
     }
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Application\Api\Auth\Controllers\AuthController;
+use Application\Api\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
@@ -21,7 +22,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::prefix('api')->middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
+Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
 
 /*
 |--------------------------------------------------------------------------
@@ -30,11 +31,19 @@ Route::prefix('api')->middleware(['api', InitializeTenancyByDomain::class, Preve
 */
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
+    /*
+    |--------------------------------------------------------------------------
+    | Authentication Routes
+    |--------------------------------------------------------------------------
+    */
+        Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
+            Route::post('logout', 'logout');
+        });
 
-    Route::get('/users', function () {
+        Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
 
-        //dd(\Domain\Users\Models\User::all());
-        return 'This is your multi-tenant application. The id of the current tenant is ' . tenant('id');
-    });
+            Route::get('/users', 'getUsers')->name('users.all');
+
+        });
 
 });
