@@ -28,8 +28,7 @@ class AuthRequest extends FormRequest
     {
         return [
             'email'             =>  'required|email',
-            'password'          =>  'required',
-            'app_name'          =>  'required',
+            'password'          =>  'required'
         ];
     }
 
@@ -44,8 +43,7 @@ class AuthRequest extends FormRequest
         return [
             'email.required'      => 'Informe o email do usuário!',
             'email.email'         => 'Email inválido!',
-            'password.required'   => 'Informe a senha do usuário!',
-            'app_name.required'   => 'Informe o nome do app',
+            'password.required'   => 'Informe a senha do usuário!'
         ];
     }
 

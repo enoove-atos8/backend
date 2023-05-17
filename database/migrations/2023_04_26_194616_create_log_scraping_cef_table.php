@@ -13,9 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('patient_responsible', function (Blueprint $table) {
+        Schema::create('log_scraping_cef', function (Blueprint $table) {
+
             $table->integer('id', true);
-            $table->timestamps();
+            $table->dateTime('date_execution')->nullable(false);
+            $table->string('status', 255)->nullable(false);
+            $table->string('description', 255)->nullable(false);
+
         });
     }
 
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('patient_responsible');
+        Schema::dropIfExists('log_integration_transactions');
     }
 };

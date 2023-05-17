@@ -30,6 +30,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function createUser(UserData $userData): User
     {
         return $this->model->create([
+            'name'     =>  $userData->name,
             'email'     =>  $userData->email,
             'password'  =>  bcrypt($userData->password),
             'type'      =>  $userData->type,

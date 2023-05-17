@@ -2,9 +2,8 @@
 
 namespace Domain\Users\Models;
 
-use Domain\Users\SubDomains\Abilities\Models\Ability;
+use App\Domain\Persons\Models\Person;
 use Domain\Users\SubDomains\Roles\Models\Role;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -20,6 +19,7 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'name',
         'email',
         'password',
         'type',
@@ -45,5 +45,17 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+
+
+    /**
+     * Function that return the person of user
+     *
+     * @var array<int, string>
+     */
+
+    public function person()
+    {
+        return $this->belongsTo(Person::class);
     }
 }

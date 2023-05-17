@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     locales \
     zip \
     jpegoptim optipng pngquant gifsicle \
-    vim \
     unzip \
     git \
     curl \
@@ -54,3 +53,4 @@ RUN php artisan config:cache
 # Expose port 8000 and start php-fpm server
 EXPOSE 8000
 CMD ["php-fpm"]
+CMD ["nginx"]

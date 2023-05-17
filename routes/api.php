@@ -23,35 +23,60 @@ Route::get('/version', function () {
     ];
 });
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//    return $request->user();
-//});
 
-//Route::namespace('App\Application\Api\Users\Controllers')->group(function (){
-//    Route::get('/', 'UserController@index');
-//    Route::post('/', 'UserController@store');
-//});
-
-
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+|
+| Routes to authenticate in system and logout
+|
+*/
 
 Route::post('login', [AuthController::class, 'login'])->name('login');
-
 Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
-
     Route::post('logout', 'logout');
-
 });
 
+
+
+/*
+|--------------------------------------------------------------------------
+| User routes
+|--------------------------------------------------------------------------
+|
+| Routes to get a user by different ways and register a user, update user data
+| and delete user data
+*/
 Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
-    Route::get('/users', 'index')->name('users.all');
 
-    Route::get('/users/{id}', 'show')->name('users.byID')->where('id', '[0-9]+');
+    Route::get('/users', 'getUsers')->name('users.all');
+    Route::get('/users/{id}', 'getUserByID')->name('users.byID')->where('id', '[0-9]+');
     Route::post('/users', [UserController::class, 'store']);
+
 });
 
-Route::middleware('auth:sanctum')->controller(EmployeeController::class)->group(function () {
-    Route::get('/employees', 'index')->name('employees.all');
+/*
+|--------------------------------------------------------------------------
+| Finance routes
+|--------------------------------------------------------------------------
+|
+|
+*/
+Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
 
-    Route::get('/employees/{id}', 'show')->name('employees.byID')->where('id', '[0-9]+');
-    Route::post('/employees', 'store')->name('employees.store');
+    Route::get('/finance/monthlyBudget', function () {
+        return [
+            'titleCard'     =>  'Orçamento mensal',
+            'totalValue'    =>  '101,12%',
+            'variation'     =>  4,
+            'chart'         =>  [
+                'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
+                'dataSeries' => [
+                    'name'  => 'R$',
+                    'data'  => [15521.12, 15519, 15522, 15521]
+                ]
+            ]
+        ];
+    });
 });

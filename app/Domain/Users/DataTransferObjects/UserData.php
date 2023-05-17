@@ -10,6 +10,9 @@ class UserData extends DataTransferObject
     public int $id = 0;
 
     /** @var string  */
+    public string $name;
+
+    /** @var string  */
     public string $email;
 
     /** @var string  */

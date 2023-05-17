@@ -29,7 +29,10 @@ class ListUserAction
         }
         else
         {
-            return ["data"  =>  false,"status"  =>  403];
+            return [
+                "data"  =>  false,
+                "status"  =>  403
+            ];
         }
     }
 }
