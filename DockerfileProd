@@ -46,9 +46,9 @@ COPY . .
 # Copy existing application directory permissions
 RUN chmod -R 777 storage
 #RUN composer dump-autoload
-RUN php artisan cache:clear
-RUN php artisan config:clear
-RUN php artisan config:cache
+#RUN php artisan cache:clear
+#RUN php artisan config:clear
+#RUN php artisan config:cache
 
 # Expose port 8000 and start php-fpm server
 EXPOSE 8000
