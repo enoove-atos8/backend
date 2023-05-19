@@ -4,7 +4,7 @@ services:
         image: enoove/atos242-backend:00.00.001
         ports:
             - "8000:8000"
-        container_name: web
+        container_name: backend
         networks:
             - atos242-backend-network
 
