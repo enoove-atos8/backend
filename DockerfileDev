@@ -24,10 +24,10 @@ RUN apt-get update && apt-get install -y \
 
 # Xdebug
 RUN pecl install xdebug-3.1.2
-ADD docker/local/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+ADD docker/prod/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Configure nginx
-COPY docker/local/app.conf /etc/nginx/sites-enabled/default
+COPY docker/prod/app.conf /etc/nginx/sites-enabled/default
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -45,12 +45,9 @@ COPY . .
 
 # Copy existing application directory permissions
 RUN chmod -R 777 storage
-RUN composer dump-autoload
-RUN php artisan cache:clear
-RUN php artisan config:clear
-RUN php artisan config:cache
+RUN composer update --no-interaction --no-ansi
+RUN php artisan optimize
 
 # Expose port 8000 and start php-fpm server
 EXPOSE 8000
 CMD ["php-fpm"]
-CMD ["nginx"]
