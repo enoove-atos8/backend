@@ -24,26 +24,67 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
 Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
 
-/*
-|--------------------------------------------------------------------------
-| Authentication Routes
-|--------------------------------------------------------------------------
-*/
-    Route::post('login', [AuthController::class, 'login'])->name('login');
+    /*
+    |--------------------------------------------------------------------------
+    | API infos Routes
+    |--------------------------------------------------------------------------
+    */
+
+    Route::get('/version', function () {
+        return [
+            'API Version'   =>  '0.1.2',
+            'Branch'   =>  'local',
+        ];
+    });
 
     /*
     |--------------------------------------------------------------------------
     | Authentication Routes
     |--------------------------------------------------------------------------
     */
-        Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
-            Route::post('logout', 'logout');
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
+        Route::post('logout', 'logout');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | Finance routes
+    |--------------------------------------------------------------------------
+    |
+    */
+
+    Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
+
+        Route::get('/finance/monthlyBudget', function () {
+            return [
+                'titleCard'     =>  'Orçamento mensal',
+                'totalValue'    =>  '101,12%',
+                'variation'     =>  4,
+                'chart'         =>  [
+                    'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
+                    'dataSeries' => [
+                        'name'  => 'R$',
+                        'data'  => [15521.12, 15519, 15522, 15521]
+                    ]
+                ]
+            ];
         });
+    });
 
-        Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | Users routes
+    |--------------------------------------------------------------------------
+    |
+    */
 
-            Route::get('/users', 'getUsers')->name('users.all');
+    Route::middleware('auth:sanctum')->controller(UserController::class)->group(function () {
 
-        });
+        Route::get('/users', 'getUsers')->name('users.all');
+        Route::get('/users/{id}', 'getUserByID')->name('users.byID')->where('id', '[0-9]+');
+        Route::post('/users', [UserController::class, 'store']);
+
+    });
 
 });
