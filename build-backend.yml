@@ -3,7 +3,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: DockerfileLocal
+      dockerfile: DockerfileDev
     container_name: backend
     extra_hosts:
       - 'host.docker.internal:host-gateway'
