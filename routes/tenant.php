@@ -23,7 +23,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::prefix('api')->middleware(['api', InitializeTenancyByDomainOrSubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
+Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
