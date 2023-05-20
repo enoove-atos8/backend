@@ -1,7 +1,7 @@
 version: '3'
 services:
     backend:
-        image: enoove/atos242-backend:00.00.007
+        image: enoove/atos242-backend:00.00.008
         ports:
             - "8000:8000"
         container_name: backend
