@@ -35,6 +35,7 @@ Route::prefix('api')->middleware(['api', InitializeTenancyByDomainOrSubdomain::c
         return [
             'API Version'   =>  '0.1.2',
             'Branch'   =>  'local',
+            'Tenant'=>tenant('id')
         ];
     });
 
