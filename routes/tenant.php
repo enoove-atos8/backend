@@ -6,6 +6,7 @@ use Application\Api\Auth\Controllers\AuthController;
 use Application\Api\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
+use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
 use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
 use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -22,7 +23,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
+Route::prefix('api')->middleware(['api', InitializeTenancyByDomainOrSubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
