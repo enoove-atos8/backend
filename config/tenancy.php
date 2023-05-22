@@ -18,8 +18,7 @@ return [
      */
     'central_domains' => [
         'atos242.com',
-        'test.atos242.com',
-        'dev.atos242.com',
+        'app.test.atos242.com',
     ],
 
     /**
@@ -52,7 +51,7 @@ return [
          * Tenant database names are created like this:
          * prefix + tenant_id + suffix.
          */
-        'prefix' => 'tenant_',
+        'prefix' => 'db_',
         'suffix' => '',
 
         /**
