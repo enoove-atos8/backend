@@ -19,6 +19,7 @@ return [
     'central_domains' => [
         'atos242.com',
         'test.atos242.com',
+        'dev.atos242.com',
     ],
 
     /**
