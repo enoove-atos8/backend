@@ -33,9 +33,9 @@ Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, Pr
 
     Route::get('/version', function () {
         return [
-            'API Version'   =>  '0.1.2',
-            'Branch'   =>  'develop',
-            'Tenant'=>tenant('id')
+            'api_version'   =>  '0.1.2',
+            'branch'        =>  'develop',
+            'tenant'        =>  tenant('id')
         ];
     });
 
