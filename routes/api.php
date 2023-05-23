@@ -14,3 +14,17 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+/*
+    |--------------------------------------------------------------------------
+    | API infos Routes
+    |--------------------------------------------------------------------------
+    */
+
+
+Route::get('/version', function () {
+    return [
+        'api_version'   =>  env('API_VERSION'),
+        'branch'        =>  'develop',
+        'tenant'        =>  'central domain'
+    ];
+});
