@@ -23,7 +23,7 @@ use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 |
 */
 
-Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
+Route::prefix('api')->middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -33,7 +33,7 @@ Route::prefix('api')->middleware(['api', InitializeTenancyBySubdomain::class, Pr
 
     Route::get('/version', function () {
         return [
-            'api_version'   =>  '00.00.026',
+            'api_version'   =>  env('API_VERSION'),
             'branch'        =>  'develop',
             'tenant'        =>  tenant('id')
         ];
