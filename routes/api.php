@@ -23,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/version', function () {
     return [
-        'api_version'   =>  '00.00.023',
+        'api_version'   =>  '00.00.026',
         'branch'        =>  'develop',
         'tenant'        =>  'central domain'
     ];
