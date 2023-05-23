@@ -17,9 +17,7 @@ return [
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
     'central_domains' => [
-        'atos242.com',
-        'localhost',
-        '127.0.0.1',
+        'www.atos242.com',
     ],
 
     /**
