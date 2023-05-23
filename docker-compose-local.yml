@@ -1,0 +1,41 @@
+version: '3'
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: DockerfileLocal
+    container_name: backend
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - .:/var/www/backend/html
+      - ./docker/local/app.conf:/etc/nginx/sites-enabled/default
+    networks:
+      - atos242-backend-network
+    ports:
+      - 8000:8000
+    depends_on:
+      - mysql
+
+  mysql:
+    image: 'mysql/mysql-server:8.0'
+    container_name: mysql8.0
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'dev_central_atos242'
+      MYSQL_USER: 'rhms'
+      MYSQL_PASSWORD: 'rhms'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes:
+      - 'mysql:/var/lib/mysql'
+    networks:
+      - atos242-backend-network
+networks:
+  atos242-backend-network:
+    driver: bridge
+volumes:
+  mysql:
+    driver: local
