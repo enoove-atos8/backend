@@ -1,0 +1,282 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Atos242 API Documentation",
+        "description": "API documentation for multi-tenant backend application of ecclesiastical management platform Atos242",
+        "contact": {
+            "email": "developer@atos242.com"
+        },
+        "version": "00.00.031"
+    },
+    "servers": [
+        {
+            "url": "http://www.atos242.local:8000/api",
+            "description": "Atos242 API Server"
+        }
+    ],
+    "paths": {
+        "/v1/login": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "User Login",
+                "description": "User Login here",
+                "operationId": "ab495ad63e7ef0f05ddf8d6208d665fd",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
+                                        "example": "test@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/v1/church": {
+            "post": {
+                "tags": [
+                    "Church"
+                ],
+                "summary": "Register a new church to access the platform",
+                "operationId": "9adf9452ae836670bc867e33f6bd07a1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "tenant_id": {
+                                        "type": "integer",
+                                        "example": "ibrr"
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Igreja Batista Reformada do Recife"
+                                    },
+                                    "activated": {
+                                        "type": "boolean",
+                                        "example": false
+                                    },
+                                    "doc_type": {
+                                        "type": "string",
+                                        "example": "cnpj/cpf"
+                                    },
+                                    "doc_number": {
+                                        "type": "string",
+                                        "example": "53575672000191/90441944027"
+                                    },
+                                    "admin_email_tenant": {
+                                        "type": "string",
+                                        "example": "admin_email_tenant@ibrr.com.br"
+                                    },
+                                    "pass_admin_email_tenant": {
+                                        "type": "string",
+                                        "example": "123456"
+                                    },
+                                    "confirm_pass_admin_email_tenant": {
+                                        "type": "string",
+                                        "example": "same password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "New church registred successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "tenant_id": {
+                                            "type": "integer",
+                                            "example": "ibrr"
+                                        },
+                                        "name": {
+                                            "type": "string",
+                                            "example": "Igreja Batista Reformada do Recife"
+                                        },
+                                        "activated": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "doc_type": {
+                                            "type": "string",
+                                            "example": "cnpj/cpf"
+                                        },
+                                        "doc_number": {
+                                            "type": "string",
+                                            "example": "53575672000191/90441944027"
+                                        },
+                                        "admin_email_tenant": {
+                                            "type": "string",
+                                            "example": "admin_email_tenant@ibrr.com.br"
+                                        },
+                                        "pass_admin_email_tenant": {
+                                            "type": "string",
+                                            "example": "123456"
+                                        },
+                                        "confirm_pass_admin_email_tenant": {
+                                            "type": "string",
+                                            "example": "123456"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/v1/user": {
+            "post": {
+                "tags": [
+                    "Login"
+                ],
+                "summary": "User Login",
+                "description": "User Login here",
+                "operationId": "b0eebf73c130871ec67d783b254d2aae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "type": "string",
+                                        "format": "email",
+                                        "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).+$",
+                                        "example": "test@gmail.com"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "format": "password"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}

@@ -2,28 +2,13 @@
 
 declare(strict_types=1);
 
-use Application\Api\Auth\Controllers\AuthController;
-use Application\Api\Users\Controllers\UserController;
+use App\Application\Api\v1\Auth\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
-use Stancl\Tenancy\Middleware\InitializeTenancyByDomainOrSubdomain;
-use Stancl\Tenancy\Middleware\InitializeTenancyByPath;
-use Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-/*
-|--------------------------------------------------------------------------
-| Tenant Routes
-|--------------------------------------------------------------------------
-|
-| Here you can register the tenant routes for your application.
-| These routes are loaded by the TenantRouteServiceProvider.
-|
-| Feel free to customize them however you want. Good luck!
-|
-*/
 
-Route::prefix('api')->middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
+Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -44,23 +29,18 @@ Route::prefix('api')->middleware(['api', InitializeTenancyByDomain::class, Preve
 //==================================================================================================================================
 
     /*
-    |--------------------------------------------------------------------------
-    | New Church Routes
-    |--------------------------------------------------------------------------
+    |------------------------------------------------------------------------------------------
+    | Resource: Login
+    | EndPoints:
     |
+    |   1   - GET    - /users/{id}/is-active - OK - TST
+    |------------------------------------------------------------------------------------------
     */
 
-    Route::post('', [AuthController::class, ''])->name('');
-
-    /*
-    |--------------------------------------------------------------------------
-    | Authentication Routes
-    |--------------------------------------------------------------------------
-    */
-    Route::post('login', [AuthController::class, 'login'])->name('login');
-    Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
-        Route::post('logout', 'logout');
-    });
+        Route::post('login', [AuthController::class, 'login'])->name('login');
+        Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
+            Route::post('logout', 'logout');
+        });
 
 
 
@@ -112,7 +92,6 @@ Route::prefix('api')->middleware(['api', InitializeTenancyByDomain::class, Preve
 
         Route::get('/users', 'getUsers')->name('users.all');
         Route::get('/users/{id}', 'getUserByID')->name('users.byID')->where('id', '[0-9]+');
-        Route::post('/users', [UserController::class, 'store']);
 
     });
 });

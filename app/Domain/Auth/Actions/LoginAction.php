@@ -5,8 +5,6 @@ namespace Domain\Auth\Actions;
 use Domain\Auth\DataTransferObjects\AuthData;
 use Illuminate\Support\Facades\Auth;
 use Infrastructure\Traits\Roles\HasAuthorization;
-use Domain\Users\SubDomains\Roles\Models\Role;
-use Domain\Users\SubDomains\Abilities\Models\Ability;
 
 
 class LoginAction
@@ -19,11 +17,9 @@ class LoginAction
         {
             $user = auth()->user();
 
-            $userAbilities = $this->getAbilities($user);
-
             if ($user->activated)
             {
-                $token = $user->createToken('web', $userAbilities)->plainTextToken;
+                $token = $user->createToken('web')->plainTextToken;
                 $user->token = $token;
 
                 return $user;

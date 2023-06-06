@@ -2,9 +2,9 @@
 
 namespace Application\Core\Providers;
 
-use Domain\Employees\Interfaces\EmployeeRepositoryInterface;
+use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Users\Interfaces\UserRepositoryInterface;
-use Infrastructure\Repositories\Employee\EmployeeRepository;
+use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\User\UserRepository;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
@@ -21,7 +21,7 @@ class RepositoryServiceProvider extends ServiceProvider
     {
         $this->app->bind(BaseRepositoryInterface::class, BaseRepository::class);
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
-        $this->app->bind(EmployeeRepositoryInterface::class, EmployeeRepository::class);
+        $this->app->bind(ChurchRepositoryInterface::class, ChurchRepository::class);
     }
 
     /**
