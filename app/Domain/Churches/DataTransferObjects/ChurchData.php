@@ -24,10 +24,4 @@ class ChurchData extends DataTransferObject
     /** @var string  */
     public string $docNumber;
 
-    /** @var string  */
-    public string $adminEmailTenant;
-
-    /** @var string  */
-    public string $passAdminEmailTenant;
-
 }
