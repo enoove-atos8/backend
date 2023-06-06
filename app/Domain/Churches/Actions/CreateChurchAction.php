@@ -6,10 +6,8 @@ use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Churches\Models\Church;
 use Domain\Churches\Models\Tenant;
-use Domain\Users\Models\User;
-use GuzzleHttp\Promise\Create;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Storage;
+use Domain\Users\Actions\CreateUserAction;
+use Domain\Users\DataTransferObjects\UserData;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
@@ -19,18 +17,24 @@ class CreateChurchAction
     const DOMAIN = '.atos242.local';
     private ChurchRepository $churchRepository;
     private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
+    private CreateUserAction $createUserAction;
 
-    public function __construct(ChurchRepositoryInterface $churchRepositoryInterface, CreateDomainGoDaddyAction $createDomainGoDaddyAction)
+    public function __construct(
+        ChurchRepositoryInterface $churchRepositoryInterface,
+        CreateDomainGoDaddyAction $createDomainGoDaddyAction,
+        CreateUserAction $createUserAction
+    )
     {
         $this->churchRepository = $churchRepositoryInterface;
         $this->createDomainGoDaddyAction = $createDomainGoDaddyAction;
+        $this->createUserAction = $createUserAction;
     }
 
     /**
      * @throws TenantCouldNotBeIdentifiedById
      * @throws \Throwable
      */
-    public function __invoke(ChurchData $churchData): Church
+    public function __invoke(ChurchData $churchData, UserData $userData): Church
     {
         // TODO: 2 - Implementar Transactions em todos as actions
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
@@ -47,14 +51,7 @@ class CreateChurchAction
 
                 if($tenantCreated)
                 {
-                    // TODO: Colocar código de criar um usuário na action CreateUserAction
-
-                    $user = User::create([
-                        'email' => $churchData->adminEmailTenant,
-                        'password' => bcrypt($churchData->passAdminEmailTenant),
-                        'activated' => bcrypt($churchData->passAdminEmailTenant),
-                        'type' => $churchData->activated,
-                    ]);
+                    $user = $this->createUserAction->__invoke($userData);
 
                     if($user)
                     {

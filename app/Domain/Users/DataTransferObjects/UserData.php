@@ -15,8 +15,8 @@ class UserData extends DataTransferObject
     /** @var string  */
     public string $password;
 
-    /** @var string  */
-    public string $activated;
+    /** @var boolean  */
+    public bool $activated;
 
     /** @var string  */
     public string $type;

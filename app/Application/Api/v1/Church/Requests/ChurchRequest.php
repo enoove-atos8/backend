@@ -3,6 +3,7 @@
 namespace Application\Api\v1\Church\Requests;
 
 use Domain\Churches\DataTransferObjects\ChurchData;
+use Domain\Users\DataTransferObjects\UserData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -26,14 +27,16 @@ class ChurchRequest extends FormRequest
     public function rules()
     {
         return [
-            'tenant_id'                         =>  'required|unique:tenants,id',
-            'name'                              =>  'required|string',
-            'activated'                         =>  'required|boolean',
-            'doc_type'                          =>  'required|string',
-            'doc_number'                        =>  'required|string',
-            'admin_email_tenant'                =>  'required|string',
-            'pass_admin_email_tenant'           =>  'required|string',
-            'confirm_pass_admin_email_tenant'   =>  'required|string|same:pass_admin_email_tenant',
+            'church.tenant_id'                       =>  'required|unique:tenants,id',
+            'church.name'                            =>  'required|string',
+            'church.activated'                       =>  'required|boolean',
+            'church.doc_type'                        =>  'required|string',
+            'church.doc_number'                      =>  'required|string|unique:churches,doc_number',
+            'user.admin_email_tenant'                =>  'required|string',
+            'user.pass_admin_email_tenant'           =>  'required|string',
+            'user.confirm_pass_admin_email_tenant'   =>  'required|string|same:user.pass_admin_email_tenant',
+            'user.user_activated_tenant'             =>  'required|boolean',
+            'user.user_type_tenant'                  =>  'required|string',
         ];
     }
 
@@ -46,23 +49,28 @@ class ChurchRequest extends FormRequest
     public function messages()
     {
         return [
-            'tenant_id.required'                         => 'O Preenchimento do campo tenant_id é obrigatório',
-            'tenant_id.unique'                           => 'Já existe um usuário cadastrado com estas iniciais',
-            'name.required'                              => 'O Preenchimento do campo name é obrigatório',
-            'name.string'                                => 'O tipo do campo name é inválido',
-            'activated.required'                         => 'O Preenchimento do campo activated é obrigatório',
-            'activated.boolean'                          => 'O tipo do campo activated é inválido',
-            'doc_type.required'                          => 'O Preenchimento do campo doc_type é obrigatório',
-            'doc_type.string'                            => 'O tipo do campo doc_type é inválido',
-            'doc_number.required'                        => 'O Preenchimento do campo doc_number é obrigatório',
-            'doc_number.string'                          => 'O tipo do campo doc_number é inválido',
-            'admin_email_tenant.required'                => 'O Preenchimento do campo admin_email_tenant é obrigatório',
-            'admin_email_tenant.string'                  => 'O tipo do campo admin_email_tenant é inválido',
-            'pass_admin_email_tenant.required'           => 'O Preenchimento do campo pass_admin_email_tenant é obrigatório',
-            'pass_admin_email_tenant.string'             => 'O tipo do campo pass_admin_email_tenant é inválido',
-            'confirm_pass_admin_email_tenant.required'   => 'O Preenchimento do campo confirm_pass_admin_email_tenant é obrigatório',
-            'confirm_pass_admin_email_tenant.string'     => 'O tipo do campo confirm_pass_admin_email_tenant é inválido',
-            'confirm_pass_admin_email_tenant.same'       => 'A senha de confirmação deve ser o mesmo do campo senha',
+            'church.tenant_id.required'                       => 'O Preenchimento do campo tenant_id é obrigatório.',
+            'church.tenant_id.unique'                         => 'Já existe um usuário cadastrado com estas iniciais.',
+            'church.name.required'                            => 'O Preenchimento do campo name é obrigatório.',
+            'church.name.string'                              => 'O tipo do campo name é inválido.',
+            'church.activated.required'                       => 'O Preenchimento do campo activated é obrigatório.',
+            'church.activated.boolean'                        => 'O tipo do campo activated é inválido.',
+            'church.doc_type.required'                        => 'O Preenchimento do campo doc_type é obrigatório.',
+            'church.doc_type.string'                          => 'O tipo do campo doc_type é inválido.',
+            'church.doc_number.required'                      => 'O Preenchimento do campo doc_number é obrigatório.',
+            'church.doc_number.string'                        => 'O tipo do campo doc_number é inválido.',
+            'church.doc_number.unique'                        => 'Já existe um cliente cadastrado com este documento.',
+            'user.admin_email_tenant.required'                => 'O Preenchimento do campo admin_email_tenant é obrigatório.',
+            'user.admin_email_tenant.string'                  => 'O tipo do campo admin_email_tenant é inválido.',
+            'user.pass_admin_email_tenant.required'           => 'O Preenchimento do campo pass_admin_email_tenant é obrigatório.',
+            'user.pass_admin_email_tenant.string'             => 'O tipo do campo pass_admin_email_tenant é inválido.',
+            'user.confirm_pass_admin_email_tenant.required'   => 'O Preenchimento do campo confirm_pass_admin_email_tenant é obrigatório.',
+            'user.confirm_pass_admin_email_tenant.string'     => 'O tipo do campo confirm_pass_admin_email_tenant é inválido.',
+            'user.confirm_pass_admin_email_tenant.same'       => 'A senha de confirmação deve ser o mesmo do campo senha.',
+            'user.user_activated_tenant.required'             => 'O Preenchimento do campo user_activated_tenant é obrigatório.',
+            'user.user_activated_tenant.boolean'              => 'O tipo do campo user_activated_tenant é inválido.',
+            'user.user_type_tenant.required'                  => 'O Preenchimento do campo user_type_tenant é obrigatório.',
+            'user.user_type_tenant.boolean'                   => 'O tipo do campo user_type_tenant é inválido.',
         ];
     }
 
@@ -75,13 +83,25 @@ class ChurchRequest extends FormRequest
     public function churchData(): ChurchData
     {
         return new ChurchData(
-            tenantId:             $this->input('tenant_id'),
-            name:                 $this->input('name'),
-            activated:            $this->input('activated'),
-            docType:              $this->input('doc_type'),
-            docNumber:            $this->input('doc_number'),
-            adminEmailTenant:     $this->input('admin_email_tenant'),
-            passAdminEmailTenant: $this->input('pass_admin_email_tenant'),
+            tenantId:             $this->input('church.tenant_id'),
+            name:                 $this->input('church.name'),
+            activated:            $this->input('church.activated'),
+            docType:              $this->input('church.doc_type'),
+            docNumber:            $this->input('church.doc_number'),
+        );
+    }
+
+    /**
+     * @return UserData
+     * @throws UnknownProperties
+     */
+    public function userData(): UserData
+    {
+        return new UserData(
+            email:          $this->input('user.admin_email_tenant'),
+            password:       $this->input('user.pass_admin_email_tenant'),
+            activated:      $this->input('user.user_activated_tenant'),
+            type:           $this->input('user.user_type_tenant'),
         );
     }
 }

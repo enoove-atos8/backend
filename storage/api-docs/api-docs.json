@@ -100,37 +100,55 @@
                         "application/json": {
                             "schema": {
                                 "properties": {
-                                    "tenant_id": {
-                                        "type": "integer",
-                                        "example": "ibrr"
+                                    "church": {
+                                        "properties": {
+                                            "tenant_id": {
+                                                "type": "integer",
+                                                "example": "ibrr"
+                                            },
+                                            "name": {
+                                                "type": "string",
+                                                "example": "Igreja Batista Reformada do Recife"
+                                            },
+                                            "activated": {
+                                                "type": "boolean",
+                                                "example": false
+                                            },
+                                            "doc_type": {
+                                                "type": "string",
+                                                "example": "cnpj/cpf"
+                                            },
+                                            "doc_number": {
+                                                "type": "string",
+                                                "example": "53575672000191/90441944027"
+                                            }
+                                        },
+                                        "type": "object"
                                     },
-                                    "name": {
-                                        "type": "string",
-                                        "example": "Igreja Batista Reformada do Recife"
-                                    },
-                                    "activated": {
-                                        "type": "boolean",
-                                        "example": false
-                                    },
-                                    "doc_type": {
-                                        "type": "string",
-                                        "example": "cnpj/cpf"
-                                    },
-                                    "doc_number": {
-                                        "type": "string",
-                                        "example": "53575672000191/90441944027"
-                                    },
-                                    "admin_email_tenant": {
-                                        "type": "string",
-                                        "example": "admin_email_tenant@ibrr.com.br"
-                                    },
-                                    "pass_admin_email_tenant": {
-                                        "type": "string",
-                                        "example": "123456"
-                                    },
-                                    "confirm_pass_admin_email_tenant": {
-                                        "type": "string",
-                                        "example": "same password"
+                                    "user": {
+                                        "properties": {
+                                            "admin_email_tenant": {
+                                                "type": "string",
+                                                "example": "admin_email_tenant@ibrr.com.br"
+                                            },
+                                            "pass_admin_email_tenant": {
+                                                "type": "string",
+                                                "example": "123456"
+                                            },
+                                            "confirm_pass_admin_email_tenant": {
+                                                "type": "string",
+                                                "example": "same password"
+                                            },
+                                            "user_activated_tenant": {
+                                                "type": "boolean",
+                                                "example": false
+                                            },
+                                            "user_type_tenant": {
+                                                "type": "string",
+                                                "example": "web"
+                                            }
+                                        },
+                                        "type": "object"
                                     }
                                 },
                                 "type": "object"
@@ -145,37 +163,55 @@
                             "application/json": {
                                 "schema": {
                                     "properties": {
-                                        "tenant_id": {
-                                            "type": "integer",
-                                            "example": "ibrr"
+                                        "church": {
+                                            "properties": {
+                                                "tenant_id": {
+                                                    "type": "integer",
+                                                    "example": "ibrr"
+                                                },
+                                                "name": {
+                                                    "type": "string",
+                                                    "example": "Igreja Batista Reformada do Recife"
+                                                },
+                                                "activated": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "doc_type": {
+                                                    "type": "string",
+                                                    "example": "cnpj/cpf"
+                                                },
+                                                "doc_number": {
+                                                    "type": "string",
+                                                    "example": "53575672000191/90441944027"
+                                                }
+                                            },
+                                            "type": "object"
                                         },
-                                        "name": {
-                                            "type": "string",
-                                            "example": "Igreja Batista Reformada do Recife"
-                                        },
-                                        "activated": {
-                                            "type": "boolean",
-                                            "example": false
-                                        },
-                                        "doc_type": {
-                                            "type": "string",
-                                            "example": "cnpj/cpf"
-                                        },
-                                        "doc_number": {
-                                            "type": "string",
-                                            "example": "53575672000191/90441944027"
-                                        },
-                                        "admin_email_tenant": {
-                                            "type": "string",
-                                            "example": "admin_email_tenant@ibrr.com.br"
-                                        },
-                                        "pass_admin_email_tenant": {
-                                            "type": "string",
-                                            "example": "123456"
-                                        },
-                                        "confirm_pass_admin_email_tenant": {
-                                            "type": "string",
-                                            "example": "123456"
+                                        "user": {
+                                            "properties": {
+                                                "admin_email_tenant": {
+                                                    "type": "string",
+                                                    "example": "admin_email_tenant@ibrr.com.br"
+                                                },
+                                                "pass_admin_email_tenant": {
+                                                    "type": "string",
+                                                    "example": "123456"
+                                                },
+                                                "confirm_pass_admin_email_tenant": {
+                                                    "type": "string",
+                                                    "example": "same password"
+                                                },
+                                                "user_activated_tenant": {
+                                                    "type": "boolean",
+                                                    "example": false
+                                                },
+                                                "user_type_tenant": {
+                                                    "type": "string",
+                                                    "example": "web"
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"

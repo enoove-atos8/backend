@@ -27,29 +27,37 @@ class ChurchController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *          @OA\Property(property="tenant_id", type="integer", example="ibrr"),
-     *          @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
-     *          @OA\Property(property="activated", type="boolean", example=false),
-     *          @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
-     *          @OA\Property(property="doc_number", type="string", example="53575672000191/90441944027"),
-     *          @OA\Property(property="admin_email_tenant", type="string", example="admin_email_tenant@ibrr.com.br"),
-     *          @OA\Property(property="pass_admin_email_tenant", type="string", example="123456"),
-     *          @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
+     *          @OA\Property(property="church",
+     *              @OA\Property (property="tenant_id", type="integer", example="ibrr"),
+     *              @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
+     *              @OA\Property(property="activated", type="boolean", example=false),
+     *              @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
+     *              @OA\Property(property="doc_number", type="string", example="53575672000191/90441944027")),
+     *          @OA\Property(property="user",
+     *              @OA\Property(property="admin_email_tenant", type="string", example="admin_email_tenant@ibrr.com.br"),
+     *              @OA\Property(property="pass_admin_email_tenant", type="string", example="123456"),
+     *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
+     *              @OA\Property(property="user_activated_tenant", type="boolean", example=false),
+     *              @OA\Property(property="user_type_tenant", type="string", example="web")),
      *          )
      *      ),
      *      @OA\Response(
      *          response=201,
      *          description="New church registred successfully",
-     *          @OA\JsonContent(
-     *              @OA\Property(property="tenant_id", type="integer", example="ibrr"),
+     *         @OA\JsonContent(
+     *          @OA\Property(property="church",
+     *              @OA\Property (property="tenant_id", type="integer", example="ibrr"),
      *              @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
      *              @OA\Property(property="activated", type="boolean", example=false),
      *              @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
-     *              @OA\Property(property="doc_number", type="string", example="53575672000191/90441944027"),
+     *              @OA\Property(property="doc_number", type="string", example="53575672000191/90441944027")),
+     *          @OA\Property(property="user",
      *              @OA\Property(property="admin_email_tenant", type="string", example="admin_email_tenant@ibrr.com.br"),
      *              @OA\Property(property="pass_admin_email_tenant", type="string", example="123456"),
-     *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="123456"),
-     *              )
+     *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
+     *              @OA\Property(property="user_activated_tenant", type="boolean", example=false),
+     *              @OA\Property(property="user_type_tenant", type="string", example="web")),
+     *          )
      *       ),
      *      @OA\Response(response=422,description="Unprocessable Entity"),
      *      @OA\Response(response=400, description="Bad request"),
@@ -69,8 +77,8 @@ class ChurchController extends Controller
     public function createChurch(ChurchRequest $churchRequest, CreateChurchAction $createChurchAction): ChurchResource
     {
         try {
-            $response = $createChurchAction($churchRequest->churchData());
-            return new ChurchResource($response); // TODO: implementar retorno para as clases de resources
+            $response = $createChurchAction($churchRequest->churchData(), $churchRequest->userData());
+            return new ChurchResource($response); // TODO: implementar a classe de resource de user
 
         }catch(\Exception $e){
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);

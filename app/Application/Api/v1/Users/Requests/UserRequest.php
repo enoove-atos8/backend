@@ -62,10 +62,10 @@ class UserRequest extends FormRequest
     public function userData(): UserData
     {
         return new UserData(
-            email:      $this->input('email'),
-            password:   $this->input('password'),
-            activated:  $this->input('activated'),
-            type:       $this->input('type'),
+            email:          $this->input('email'),
+            password:       $this->input('password'),
+            activated:      $this->input('activated'),
+            type:           $this->input('type'),
         );
     }
 }
