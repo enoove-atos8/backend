@@ -11,24 +11,19 @@ class CreateUserAction
 {
     private UserRepository $userRepository;
 
-    public function __construct(UserRepositoryInterface $userRepository)
+    public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {
-        $this->userRepository = $userRepository;
+        $this->userRepository = $userRepositoryInterface;
     }
 
     public function __invoke(UserData $userData): User
     {
         $user = $this->userRepository->createUser($userData);
 
-        if (count($userData->roles) > 0){
 
-            $userData->id = $user->id;
-            //$this->user->roles()->attach($userData->roles["role_id"]);
-            //$role = $this->user->roles()->first();
-            //$role->abilities()->attach($userData->roles["abilities"]);
-        }
 
 
         return $user;
     }
+
 }

@@ -5,6 +5,8 @@
 /vendor
 .env
 .env.dev
+.env.local
+.env.prod
 .env.backup
 .phpunit.result.cache
 docker-compose.override.yml
@@ -16,3 +18,4 @@ yarn-error.log
 /.vscode
 supervisord.pid
 supervisord.log
+/config/tenancy.php

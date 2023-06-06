@@ -18,17 +18,16 @@ services:
       - mysql
 
   mysql:
-    image: 'mysql/mysql-server:8.0'
+    image: 'mysql/mysql-server:latest'
     container_name: mysql8.0
     ports:
       - '3306:3306'
     environment:
-      MYSQL_ROOT_PASSWORD: 'root'
-      MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: 'dev_central_atos242'
-      MYSQL_USER: 'rhms'
-      MYSQL_PASSWORD: 'rhms'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+        MYSQL_ROOT_PASSWORD: 'root'
+        MYSQL_ROOT_HOST: "%"
+        MYSQL_DATABASE: 'central_atos242'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
     volumes:
       - 'mysql:/var/lib/mysql'
     networks:

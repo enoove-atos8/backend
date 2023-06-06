@@ -2,9 +2,8 @@
 
 namespace Domain\Users\Models;
 
-use App\Domain\Persons\Models\Person;
-use Domain\Users\SubDomains\Roles\Models\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -19,11 +18,9 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
         'type',
-        'roles',
     ];
 
     /**
@@ -34,28 +31,4 @@ class User extends Authenticatable
     protected $hidden = [
         'password'
     ];
-
-
-    /**
-     * Function that return the abilities of user
-     *
-     * @var array<int, string>
-     */
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
-    }
-
-
-    /**
-     * Function that return the person of user
-     *
-     * @var array<int, string>
-     */
-
-    public function person()
-    {
-        return $this->belongsTo(Person::class);
-    }
 }

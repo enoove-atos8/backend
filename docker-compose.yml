@@ -1,7 +1,7 @@
 version: '3'
 services:
     backend:
-        image: enoove/atos242-backend:00.00.029
+        image: ${'USER_DOCKER_HUB'}/${'REPO_BACK_DOCKER_HUB'}:${'VERSION'}
         ports:
             - "8000:8000"
         container_name: backend

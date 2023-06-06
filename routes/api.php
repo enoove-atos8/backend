@@ -1,30 +1,43 @@
 <?php
 
+use Application\Api\v1\Church\Controllers\ChurchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-/*
-|--------------------------------------------------------------------------
-| API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
-|
-*/
+Route::prefix('v1')->group(function () {
 
-/*
+    /*
     |--------------------------------------------------------------------------
     | API infos Routes
     |--------------------------------------------------------------------------
     */
 
+    Route::get('/version', function () {
+        return [
+            'api_version'   =>  env('API_VERSION'),
+            'branch'        =>  'develop',
+            'tenant'        =>  'central'
+        ];
+    });
 
-Route::get('/version', function () {
-    return [
-        'api_version'   =>  env('API_VERSION'),
-        'branch'        =>  'develop',
-        'tenant'        =>  'central domain'
-    ];
+    /*
+    |------------------------------------------------------------------------------------------
+    | Resource: New Church
+    | EndPoints:
+    |
+    |   1   - POST    - /church/new -
+    |------------------------------------------------------------------------------------------
+    */
+
+    /*
+    * EndPoint: /church/new
+    * Description: Create a new church
+    */
+
+
+    Route::prefix('/church')->group(function (){
+
+        Route::post('/', [ChurchController::class, 'createChurch']);
+
+    });
 });

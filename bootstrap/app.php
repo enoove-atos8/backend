@@ -15,6 +15,29 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
+$server = null;
+
+if (array_key_exists('HTTP_HOST', $_SERVER)){
+    $server = $_SERVER['HTTP_HOST'];
+
+    if(str_contains($server, '.local')) {
+        $app->loadEnvironmentFrom('.env.local');
+    }
+    elseif(str_contains($server, '.dev.')) {
+        $app->loadEnvironmentFrom('.env.dev');
+    }
+    /*elseif(str_contains($server, '.test.')) {
+        $app->loadEnvironmentFrom('.env.test');
+    }
+    elseif(str_contains($server, '.hml.')) {
+        $app->loadEnvironmentFrom('.env.hml');
+    }*/
+    else{
+        $app->loadEnvironmentFrom('.env.prod');
+    }
+}
+
+
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

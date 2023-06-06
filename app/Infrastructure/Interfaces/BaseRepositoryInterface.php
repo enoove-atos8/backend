@@ -7,15 +7,94 @@ use Illuminate\Database\Eloquent\Model;
 interface BaseRepositoryInterface
 {
     /**
-     * @param array $attributes
-     * @return Model
+     * Get all items
+     *
+     * @param string|null $columns specific columns to select
+     * @param string $orderBy column to sort by
+     * @param string $sort sort direction
      */
-    public function create(array $attributes): Model;
+    public function getAll(string $columns = null, string $orderBy = 'created_at', string $sort = 'desc');
+
 
     /**
-     * @param $id
-     * @return Model|null
+     * Get paged items
+     *
+     * @param integer $paged Items per page
+     * @param string $orderBy Column to sort by
+     * @param string $sort Sort direction
      */
-    public function find($id): ?Model;
+    public function getPaginated(int $paged = 15, string $orderBy = 'created_at', string $sort = 'desc');
 
+
+    /**
+     * Items for select options
+     *
+     * @param string $data column to display in the option
+     * @param string $key column to be used as the value in option
+     * @param string $orderBy column to sort by
+     * @param string $sort sort direction
+     * @return array           array with key value pairs
+     */
+    public function getForSelect(string $data, string $key = 'id', string $orderBy = 'created_at', string $sort = 'desc'): array;
+
+
+    /**
+     * Get item by its id
+     *
+     * @param  mixed $id
+     */
+    public function getById(mixed $id);
+
+
+    /**
+     * Get instance of model by column
+     *
+     * @param  mixed $term search term
+     * @param string $column column to search
+     */
+    public function getItemByColumn(mixed $term, string $column = 'slug');
+
+
+    /**
+     * Get instance of model by column
+     *
+     * @param  mixed $term search term
+     * @param string $column column to search
+     */
+    public function getCollectionByColumn(mixed $term, string $column = 'slug');
+
+
+    /**
+     * Get item by id or column
+     *
+     * @param  mixed $term id or term
+     * @param string $column column to search
+     */
+    public function getActively(mixed $term, string $column = 'slug');
+
+
+    /**
+     * Create new using mass assignment
+     *
+     * @param array $data
+     */
+    public function create(array $data);
+
+
+    /**
+     * Update or crate a record and return the entity
+     *
+     * @param array $identifiers columns to search for
+     * @param array $data
+     */
+    public function updateOrCreate(array $identifiers, array $data);
+
+
+    /**
+     * Delete a record by it's ID.
+     *
+     * @param $id
+     * @return bool
+     */
+    public function delete($id): bool;
 }
