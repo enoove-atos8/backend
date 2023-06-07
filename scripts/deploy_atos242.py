@@ -100,13 +100,13 @@ class DeployAtos242:
         print('Start docker containers...')        
 
         if (finalParams['env'] == 'dev'):
-            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.dev .env'
+            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.dev .env && sudo docker exec backend php artisan config:cache && sudo docker exec backend php artisan route:clear'
         elif (finalParams['env'] == 'test'):
-            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.test .env'
+            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.test .env && sudo docker exec backend php artisan config:cache && sudo docker exec backend php artisan route:clear'
         elif (finalParams['env'] == 'hml'):
-            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.hml .env'
+            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.hml .env && sudo docker exec backend php artisan config:cache && sudo docker exec backend php artisan route:clear'
         elif (finalParams['env'] == 'prod'):
-            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.prod .env'
+            cmd = 'sudo docker compose up -d && sudo docker exec backend nginx && sudo docker exec backend cp .env.prod .env && sudo docker exec backend php artisan config:cache && sudo docker exec backend php artisan route:clear'
 
         ssh = self.connect_ssh()
 
