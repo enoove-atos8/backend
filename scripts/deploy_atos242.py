@@ -1,4 +1,4 @@
-from dotenv import load_dotenv
+import fileinput
 import getopt
 import os
 from time import sleep
@@ -72,12 +72,19 @@ class DeployAtos242:
         ssh = self.connect_ssh()
 
         sftp = ssh.open_sftp()
-        sftp.put('scripts/docker-compose.yml', 'docker-compose.yml')
+        self.update_docker_image_compose('scripts/docker-compose-template.yml', '00.00.039')
+        sftp.put('scripts/docker-compose-template.yml', 'docker-compose.yml')        
+        os.remove('scripts/docker-compose-template.yml')        
+        os.rename('scripts/docker-compose-template.yml.yml', 'scripts/docker-compose-template.yml')
         print('docker-compose file updated!')
         sftp.close()
 
-    def update_version_env(self, version):
-        ...
+    def update_docker_image_compose(self, file, tag):
+        
+        with fileinput.FileInput(file, inplace=True, backup='.yml') as file:
+            for line in file:
+                print(line.replace('#TAG#', tag), end='')
+
 
     def clean_docker_images(self, finalParams):
 

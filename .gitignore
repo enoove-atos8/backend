@@ -19,3 +19,6 @@ yarn-error.log
 supervisord.pid
 supervisord.log
 /config/tenancy.php
+/scripts
+/scripts/*.py
+/scripts/*.yml
