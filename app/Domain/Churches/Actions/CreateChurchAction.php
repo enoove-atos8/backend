@@ -14,7 +14,7 @@ use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 
 class CreateChurchAction
 {
-    const DOMAIN = '.atos242.local';
+    const DOMAIN = '.atos242.com';
     private ChurchRepository $churchRepository;
     private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
     private CreateUserAction $createUserAction;
