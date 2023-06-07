@@ -72,7 +72,7 @@ class DeployAtos242:
         ssh = self.connect_ssh()
 
         sftp = ssh.open_sftp()
-        self.update_docker_image_compose('scripts/docker-compose-template.yml', '00.00.039')
+        self.update_docker_image_compose('scripts/docker-compose-template.yml', finalParams['image_tag'])
         sftp.put('scripts/docker-compose-template.yml', 'docker-compose.yml')        
         os.remove('scripts/docker-compose-template.yml')        
         os.rename('scripts/docker-compose-template.yml.yml', 'scripts/docker-compose-template.yml')
