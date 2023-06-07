@@ -15,17 +15,6 @@ $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
 
-$server = null;
-
-if (array_key_exists('HTTP_HOST', $_SERVER)){
-    $server = $_SERVER['HTTP_HOST'];
-
-    if(str_contains($server, '.local')) {
-        $app->loadEnvironmentFrom('.env.local');
-    }
-}
-
-
 /*
 |--------------------------------------------------------------------------
 | Bind Important Interfaces

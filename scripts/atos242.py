@@ -8,8 +8,9 @@ obj = DeployAtos242()
 args = sys.argv
 params = []
 finalParams = None
+returnFunction = True
 
-if len(args) >= 5:
+if len(args) >= 6:
 
     if args[1] == 'deploy':
 
@@ -40,24 +41,28 @@ if len(args) >= 5:
                         continue
 
                     else:
+                        returnFunction = False
                         print(
                             'Invalid command, do not was informed the tag or repository parameter (-r=user/image or -t=00.00.000)')
 
         finalParams = obj.run_docker_commands(params)
 
 else:
+    returnFunction = False
     print('Invalid command, there are some parameters that do not was informed')
 
 
 
-# ======= Upload docker-compose.yml =========
 
-obj.upload_docker_compose(finalParams)
+if (returnFunction):
 
-# ======= Clean docker environment and start containers =========
+    # ======= Upload docker-compose.yml =========
+    obj.upload_docker_compose(finalParams)
 
-obj.clean_docker_images(finalParams)
+    # ======= Clean docker environment and start containers =========
 
-# ======= Clean docker environment and start containers =========
+    obj.clean_docker_images(finalParams)
 
-obj.start_docker_containers(finalParams)
+    # ======= Clean docker environment and start containers =========
+
+    obj.start_docker_containers(finalParams)
