@@ -34,7 +34,7 @@ class CreateChurchAction
      * @throws TenantCouldNotBeIdentifiedById
      * @throws \Throwable
      */
-    public function __invoke(ChurchData $churchData, UserData $userData): Church
+    public function __invoke(ChurchData $churchData, UserData $userData): array
     {
         // TODO: 2 - Implementar Transactions em todos as actions
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
@@ -59,7 +59,7 @@ class CreateChurchAction
 
                         if($goDaddyDomainCreated)
                         {
-                            return $church;
+                            return [$church, $user];
                         }
                     }
                     throw_if(!$user, GeneralExceptions::class, 'Não foi possível criar o usuário adminsitrador na base de dados: ' . $churchData->tenantId, 500);

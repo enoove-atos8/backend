@@ -2,24 +2,31 @@
 
 namespace Application\Api\v1\Church\Resources;
 
-use Carbon\Carbon;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use JsonSerializable;
 
 class ChurchResource extends JsonResource
 {
+    public static $wrap = 'church';
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param  Request  $request
+     * @return array|Arrayable|JsonSerializable
      */
-    public function toArray($request)
+    public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return [];
-    }
+        $church = $this->resource[0];
+        $user = $this->resource[1];
 
-    public function with($request)
-    {
-
+        return [
+            'tenant_id'     =>  $church->tenant_id,
+            'name'          =>  $church->name,
+            'user'  =>  [
+                'email'    => $user->email,
+            ]
+        ];
     }
 }
