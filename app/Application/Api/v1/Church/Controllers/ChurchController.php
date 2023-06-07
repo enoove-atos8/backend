@@ -4,14 +4,8 @@ namespace Application\Api\v1\Church\Controllers;
 
 use Application\Api\v1\Church\Requests\ChurchRequest;
 use Application\Api\v1\Church\Resources\ChurchResource;
-use Application\Api\v1\Church\Resources\ErrorChurchResource;
-use Application\Api\v1\Church\Resources\ChurchResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Churches\Actions\CreateChurchAction;
-use Domain\Churches\Models\Church;
-use Domain\Users\Actions\CreateUserAction;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
@@ -78,7 +72,7 @@ class ChurchController extends Controller
     {
         try {
             $response = $createChurchAction($churchRequest->churchData(), $churchRequest->userData());
-            return new ChurchResource($response); // TODO: implementar a classe de resource de user
+            return new ChurchResource($response);
 
         }catch(\Exception $e){
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
