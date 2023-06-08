@@ -11,7 +11,15 @@
     "servers": [
         {
             "url": "http://www.atos242.local:8000/api",
-            "description": "Atos242 API Server"
+            "description": "Central Atos242 App - Local API Server"
+        },
+        {
+            "url": "http://www.atos242.com:8000/api",
+            "description": "Central Atos242 App - Development API Server"
+        },
+        {
+            "url": "http://app.dev.atos242.com:8000/api",
+            "description": "APP Tenant Atos242 App - Development API Server"
         }
     ],
     "paths": {

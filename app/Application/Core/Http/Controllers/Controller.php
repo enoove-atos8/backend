@@ -16,11 +16,6 @@ use Illuminate\Routing\Controller as BaseController;
  *          email="developer@atos242.com"
  *      )
  * )
- *
- * @OA\Server(
- *      url=L5_SWAGGER_CONST_DYNAMIC_SERVER_NAME,
- *      description="Atos242 API Server"
- * )
  * @OA\SecurityScheme(
  *     type="http",
  *     scheme="bearer",

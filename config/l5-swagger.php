@@ -1,9 +1,5 @@
 <?php
 
-$server = null;
-if (array_key_exists('HTTP_HOST', $_SERVER)){
-    $server = $_SERVER['HTTP_HOST'];
-}
 return [
     'default' => 'default',
     'documentations' => [
@@ -16,7 +12,7 @@ return [
                 /*
                  * Route for accessing api documentation interface
                 */
-                'api' => 'api/documentation',
+                'api' => 'api/docs',
             ],
             'paths' => [
                 /*
@@ -299,7 +295,7 @@ return [
          */
         'constants' => [
             //'L5_SWAGGER_CONST_HOST' => env('L5_SWAGGER_CONST_HOST', 'http://my-default-host.com'),
-            'L5_SWAGGER_CONST_DYNAMIC_SERVER_NAME'   =>  'http://' . $server . '/api'
+            //'L5_SWAGGER_CONST_DYNAMIC_SERVER_NAME'   =>  'http://' . $server . '/api'
         ],
     ],
 ];
