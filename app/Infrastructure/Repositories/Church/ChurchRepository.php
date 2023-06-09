@@ -21,6 +21,18 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
      */
     public function newChurch(ChurchData $churchData): Church
     {
+        /*$relationshipTable = 'tenants';
+        $relationshipsConditions = [
+            ['leftColumn' => 'churches.tenant_id', 'op' => $this::EQUALS, 'rightColumn' => 'tenants.id'],
+        ];
+        $conditions = [
+            ['tenants.id', $this::EQUALS, 'ibop']
+        ];
+        $columns = ['churches.id', 'churches.name', 'tenants.id'];
+
+        $test = $this->getItemWithRelationships($relationshipTable, $relationshipsConditions, $columns, $conditions);*/
+
+
         $church = $this->create([
             'tenant_id'                 =>  $churchData->tenantId,
             'name'                      =>  $churchData->name,
@@ -28,6 +40,8 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
             'doc_type'                  =>  $churchData->docType,
             'doc_number'                =>  $churchData->docNumber,
         ]);
+
+
 
         throw_if(!$church, GeneralExceptions::class, 'Houve um erro ao procesar o cadastro de uma nova igreja', 500);
 

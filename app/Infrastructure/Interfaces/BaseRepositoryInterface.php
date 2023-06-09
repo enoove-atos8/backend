@@ -3,6 +3,7 @@
 namespace Infrastructure\Interfaces;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 interface BaseRepositoryInterface
 {
@@ -16,6 +17,7 @@ interface BaseRepositoryInterface
     public function getAll(string $columns = null, string $orderBy = 'created_at', string $sort = 'desc');
 
 
+
     /**
      * Get paged items
      *
@@ -24,6 +26,7 @@ interface BaseRepositoryInterface
      * @param string $sort Sort direction
      */
     public function getPaginated(int $paged = 15, string $orderBy = 'created_at', string $sort = 'desc');
+
 
 
     /**
@@ -38,12 +41,14 @@ interface BaseRepositoryInterface
     public function getForSelect(string $data, string $key = 'id', string $orderBy = 'created_at', string $sort = 'desc'): array;
 
 
+
     /**
      * Get item by its id
      *
      * @param  mixed $id
      */
     public function getById(mixed $id);
+
 
 
     /**
@@ -55,6 +60,55 @@ interface BaseRepositoryInterface
     public function getItemByColumn(mixed $term, string $column = 'slug');
 
 
+
+    /**
+     * Get a collection of items with conditions
+     *
+     * @param array $columns
+     * @param array $conditions
+     * @return Collection
+     */
+    public function getItemsByWhere(array $columns = ['*'], array $conditions = []): Collection;
+
+
+
+    /**
+     * Get an item with conditions
+     *
+     * @param array $columns
+     * @param array $conditions
+     * @return Model
+     */
+    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model;
+
+
+
+    /**
+     * * Get a collection of items with relationships
+     *
+     * @param string $relationshipTable
+     * @param array $relationshipsConditions
+     * @param array $columns
+     * @param array $conditions
+     * @return Collection
+     */
+    public function getListWithRelationships(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Collection;
+
+
+
+    /**
+     * Get only item with relationship
+     *
+     * @param string $relationshipTable
+     * @param array $relationshipsConditions
+     * @param array $columns
+     * @param array $conditions
+     * @return Model
+     */
+    public function getItemWithRelationship(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Model;
+
+
+
     /**
      * Get instance of model by column
      *
@@ -62,6 +116,7 @@ interface BaseRepositoryInterface
      * @param string $column column to search
      */
     public function getCollectionByColumn(mixed $term, string $column = 'slug');
+
 
 
     /**
@@ -73,12 +128,14 @@ interface BaseRepositoryInterface
     public function getActively(mixed $term, string $column = 'slug');
 
 
+
     /**
      * Create new using mass assignment
      *
      * @param array $data
      */
     public function create(array $data);
+
 
 
     /**
@@ -88,6 +145,7 @@ interface BaseRepositoryInterface
      * @param array $data
      */
     public function updateOrCreate(array $identifiers, array $data);
+
 
 
     /**

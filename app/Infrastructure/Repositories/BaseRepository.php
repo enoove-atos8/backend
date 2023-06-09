@@ -3,17 +3,30 @@
 namespace Infrastructure\Repositories;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Collection;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Traits\Repositories\CacheResults;
 use Infrastructure\Traits\Repositories\ThrowsHttpExceptions;
+use PhpParser\Node\Expr\AssignOp\Mod;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
     use ThrowsHttpExceptions, CacheResults;
+
+
+    const EQUALS = '=';
+    const NOT_EQUALS = '<>';
+    const MINOR = '<';
+    const MAJOR = '>';
+    const NOT_IN = 'NOT IN';
+    const IN = 'IN';
+    const NOT_NULL = 'IS NOT NULL';
+
+
     /**
      * Name of model associated with this repository
      * @var Model
@@ -151,6 +164,104 @@ abstract class BaseRepository implements BaseRepositoryInterface
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where($column, '=', $term)
+                ->first();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * Get a collection of items with conditions
+     *
+     * @param array $columns
+     * @param array $conditions
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getItemsByWhere(array $columns = ['*'], array $conditions = []): Collection
+    {
+        $query = function () use ($columns, $conditions) {
+            return DB::table($this->model->getTable())
+                ->select($columns)
+                ->where($conditions)
+                ->get();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * Get an item with conditions
+     *
+     * @param array $columns
+     * @param array $conditions
+     * @return Model
+     * @throws BindingResolutionException
+     */
+    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model
+    {
+        $query = function () use ($columns, $conditions) {
+            return DB::table($this->model->getTable())
+                ->select($columns)
+                ->where($conditions)
+                ->first();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * * Get a collection of items with relationships
+     *
+     * @param string $relationshipTable
+     * @param array $relationshipsConditions
+     * @param array $columns
+     * @param array $conditions
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getListWithRelationships(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Collection
+    {
+        $query = function () use ($relationshipTable, $relationshipsConditions, $columns, $conditions) {
+            return DB::table($this->model->getTable())
+                ->join($relationshipTable, function (JoinClause $join) use ($relationshipTable, $relationshipsConditions) {
+                    foreach ($relationshipsConditions as $condition) {
+                        $join->on($condition['leftColumn'], $condition['operator'], $condition['rightColumn']);
+                    }
+                })
+                ->select($columns)
+                ->where($conditions)
+                ->get();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * Get only item with relationship
+     *
+     * @param string $relationshipTable
+     * @param array $relationshipsConditions
+     * @param array $columns
+     * @param array $conditions
+     * @return Model
+     * @throws BindingResolutionException
+     */
+    public function getItemWithRelationship(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Model
+    {
+        $query = function () use ($relationshipTable, $relationshipsConditions, $columns, $conditions) {
+            return DB::table($this->model->getTable())
+                ->join($relationshipTable, function (JoinClause $join) use ($relationshipTable, $relationshipsConditions) {
+                    foreach ($relationshipsConditions as $condition) {
+                        $join->on($condition['leftColumn'], $condition['operator'], $condition['rightColumn']);
+                    }
+                })
+                ->select($columns)
+                ->where($conditions)
                 ->first();
         };
 
