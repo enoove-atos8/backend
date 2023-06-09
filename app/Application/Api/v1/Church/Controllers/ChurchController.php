@@ -36,7 +36,7 @@ class ChurchController extends Controller
      *          )
      *      ),
      *      @OA\Response(
-     *          response=201,
+     *          response=200,
      *          description="New church registred successfully",
      *         @OA\JsonContent(
      *          @OA\Property(property="church",

@@ -165,7 +165,7 @@
                     }
                 },
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "New church registred successfully",
                         "content": {
                             "application/json": {
