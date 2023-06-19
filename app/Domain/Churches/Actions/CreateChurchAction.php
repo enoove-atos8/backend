@@ -36,7 +36,7 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData): array
     {
-        $domain = env('DOMAIN');
+        $domain = env('APP_DOMAIN');
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
 
