@@ -36,9 +36,9 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData): array
     {
-        $domain = str_replace('www.', '', $_SERVER['HTTP_HOST']);
+        $domain = env('DOMAIN');
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
-        $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' .str_replace(':8000', '', $domain)]);
+        $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
 
         if (is_object($newTenant))
         {

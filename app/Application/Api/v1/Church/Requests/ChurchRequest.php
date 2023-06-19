@@ -28,6 +28,7 @@ class ChurchRequest extends FormRequest
     {
         return [
             'church.tenant_id'                       =>  'required|unique:tenants,id',
+            'church.plan_id'                         =>  'required|integer',
             'church.name'                            =>  'required|string',
             'church.activated'                       =>  'required|boolean',
             'church.doc_type'                        =>  'required|string',
@@ -51,6 +52,8 @@ class ChurchRequest extends FormRequest
         return [
             'church.tenant_id.required'                       => 'O Preenchimento do campo tenant_id é obrigatório.',
             'church.tenant_id.unique'                         => 'Já existe um usuário cadastrado com estas iniciais.',
+            'church.plan_id.required'                         => 'O Preenchimento do campo plan_id é obrigatório.',
+            'church.plan_id.integer'                          => 'O tipo do campo plan_id é inválido.',
             'church.name.required'                            => 'O Preenchimento do campo name é obrigatório.',
             'church.name.string'                              => 'O tipo do campo name é inválido.',
             'church.activated.required'                       => 'O Preenchimento do campo activated é obrigatório.',
@@ -84,6 +87,7 @@ class ChurchRequest extends FormRequest
     {
         return new ChurchData(
             tenantId:             $this->input('church.tenant_id'),
+            planId:               $this->input('church.plan_id'),
             name:                 $this->input('church.name'),
             activated:            $this->input('church.activated'),
             docType:              $this->input('church.doc_type'),

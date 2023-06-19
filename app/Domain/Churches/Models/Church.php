@@ -14,6 +14,7 @@ class Church extends Model
      */
     protected $fillable = [
         'tenant_id',
+        'plan_id',
         'name',
         'activated',
         'doc_type',

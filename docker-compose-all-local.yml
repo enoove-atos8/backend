@@ -1,0 +1,131 @@
+version: '3.5'
+services:
+
+  ###########################################
+  # Base Proxy ##############################
+  ###########################################
+
+  rp_atos242_base:
+    image: nginx:alpine
+    container_name: rp_atos242_base
+    depends_on:
+      - rp_atos242_app
+      - rp_atos242_site
+    volumes:
+      - ./rp_atos242_base.conf:/etc/nginx/conf.d/rp_atos242_base.conf
+    networks:
+      network_atos242:
+        - aliases:
+            - alias_rp_atos242_base
+    ports:
+      - "80:80"
+
+
+  ##########################################
+  # Backend APP and RP Containers ##########
+  ##########################################
+
+
+  rp_atos242_app:
+    image: nginx:alpine
+    container_name: rp_atos242_app
+    depends_on:
+      - atos242_backend_app
+      #- atos242_frontend_app
+    volumes:
+      - ./rp_atos242_app.conf:/etc/nginx/conf.d/rp_atos242_app.conf
+    networks:
+      network_atos242:
+        - aliases:
+            - alias_rp_atos242_app
+    ports:
+      - "81:81"
+
+
+  atos242_backend_app:
+    build:
+      context: ../../backend
+      dockerfile: DockerfileLocal
+    ports:
+      - "8000:8000"
+    container_name: atos242_backend_app
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - .:/var/www/backend/html
+      - ./docker/local/app.conf:/etc/nginx/sites-enabled/default
+    depends_on:
+      - mysql
+    networks:
+      network_atos242:
+        - aliases:
+            - alias_atos242_backend_app
+
+
+  mysql:
+    image: 'mysql/mysql-server:latest'
+    container_name: mysql8.0
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: 'central_atos242'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+
+    volumes:
+      - 'mysql:/var/lib/mysql'
+    networks:
+      - network_atos242
+
+  ##########################################
+  # Frontend APP and RP Containers #########
+  ##########################################
+
+
+  #atos242_frontend_app:
+  #  image: 'enoove/atos242-frontend:00.00.000'
+  #  ports:
+  #    - "83:83"
+  #  container_name: atos242_frontend_app
+  #  networks:
+  #    network_atos242:
+  #      - aliases:
+  #          - alias_atos242_frontend_app
+
+
+  ###########################################
+  # Site Containers #########################
+  ###########################################
+
+
+  rp_atos242_site:
+    image: nginx:alpine
+    container_name: rp_atos242_site
+    depends_on:
+      - atos242_backend_app
+      - atos242_frontend_app
+    volumes:
+      - ./rp_atos242_site.conf:/etc/nginx/conf.d/rp_atos242_site.conf
+    networks:
+      network_atos242:
+        - aliases:
+            - alias_rp_atos242_site
+    ports:
+      - "82:82"
+
+
+  atos242_frontend_site:
+    build:
+      context: ../../site
+      dockerfile: Dockerfile
+    ports:
+      - "84:84"
+    container_name: atos242_frontend_site
+    networks:
+      network_atos242:
+        - aliases:
+            - alias_atos242_frontend_site
+
+networks:
+  network_atos242:

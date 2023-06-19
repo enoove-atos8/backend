@@ -17,7 +17,8 @@ class CreateChurchesTable extends Migration
     {
         Schema::create('churches', function (Blueprint $table) {
             $table->integer('id', true);
-            $table->string('tenant_id')->unique()->nullable(false);
+            $table->string('tenant_id')->nullable(false);
+            $table->integer('plan_id')->nullable(false);
             $table->string('name')->nullable(false);
             $table->boolean('activated')->nullable(false);
             $table->string('doc_type')->nullable(false);
@@ -29,6 +30,10 @@ class CreateChurchesTable extends Migration
             $table->foreign('tenant_id')
                 ->references('id')
                 ->on('tenants');
+
+            $table->foreign('plan_id')
+                ->references('id')
+                ->on('plans');
         });
     }
 
