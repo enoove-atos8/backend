@@ -12,6 +12,9 @@ class ChurchData extends DataTransferObject
     /** @var string  */
     public string $tenantId;
 
+    /** @var integer  */
+    public int $planId;
+
     /** @var string  */
     public string $name;
 

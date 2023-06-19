@@ -72,18 +72,18 @@ class DeployAtos242:
         ssh = self.connect_ssh()
 
         sftp = ssh.open_sftp()
-        self.update_docker_image_compose('scripts/docker-compose-template.yml', finalParams['image_tag'])
-        sftp.put('scripts/docker-compose-template.yml', 'docker-compose.yml')        
-        os.remove('scripts/docker-compose-template.yml')        
-        os.rename('scripts/docker-compose-template.yml.yml', 'scripts/docker-compose-template.yml')
+        self.update_image_tag_docker_compose('scripts/docker-compose-ec2-template.yml', finalParams['image_tag'])
+        sftp.put('scripts/docker-compose-ec2-template.yml', 'docker-compose-ec2.yml')        
+        os.remove('scripts/docker-compose-ec2-template.yml')        
+        os.rename('scripts/docker-compose-ec2-template.yml.yml', 'scripts/docker-compose-ec2-template.yml')
         print('docker-compose file updated!')
         sftp.close()
 
-    def update_docker_image_compose(self, file, tag):
+    def update_image_tag_docker_compose(self, file, tag):
         
         with fileinput.FileInput(file, inplace=True, backup='.yml') as file:
             for line in file:
-                print(line.replace('#TAG#', tag), end='')
+                print(line.replace('#BACKEND_IMAGE_TAG#', tag), end='')
 
 
     def clean_docker_images(self, finalParams):
@@ -104,16 +104,16 @@ class DeployAtos242:
 
         sleep(1)
 
-        cmdComposeUp = 'sudo docker compose up -d'
+        cmdComposeUp = 'sudo docker compose -f docker-compose-ec2.yml up -d'
         cmdStartNginx = 'sudo docker exec backend nginx'
         cmdCPEnv = 'sudo docker exec backend cp .env.dev .env' if finalParams['env'] == 'dev' else 'sudo docker exec backend cp .env.prod .env'
         cmdConfigCache = 'sudo docker exec backend php artisan config:cache'
-        cmdRouteClear = 'sudo docker exec backend php artisan route:clear'
+        cmdOptimizeClear = 'sudo docker exec backend php artisan optimize:clear'
 
         print(' ')
         print('Start docker containers...')        
         
-        cmd = cmdComposeUp + ' && ' + cmdStartNginx + ' && ' + cmdCPEnv + ' && ' + cmdConfigCache + ' && ' + cmdRouteClear        
+        cmd = cmdComposeUp + ' && ' + cmdStartNginx + ' && ' + cmdCPEnv + ' && ' + cmdOptimizeClear + ' && ' + cmdConfigCache
         ssh = self.connect_ssh()
 
         stdin, stdout, stderr = ssh.exec_command(cmd)

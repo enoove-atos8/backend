@@ -34,11 +34,12 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
 
 
         $church = $this->create([
-            'tenant_id'                 =>  $churchData->tenantId,
-            'name'                      =>  $churchData->name,
-            'activated'                 =>  $churchData->activated,
-            'doc_type'                  =>  $churchData->docType,
-            'doc_number'                =>  $churchData->docNumber,
+            'tenant_id'           =>  $churchData->tenantId,
+            'plan_id'             =>  $churchData->planId,
+            'name'                =>  $churchData->name,
+            'activated'           =>  $churchData->activated,
+            'doc_type'            =>  $churchData->docType,
+            'doc_number'          =>  $churchData->docNumber,
         ]);
 
 

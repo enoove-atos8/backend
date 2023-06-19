@@ -23,6 +23,7 @@ class ChurchController extends Controller
      *         @OA\JsonContent(
      *          @OA\Property(property="church",
      *              @OA\Property (property="tenant_id", type="integer", example="ibrr"),
+     *              @OA\Property (property="plan_id", type="integer", example=1),
      *              @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
      *              @OA\Property(property="activated", type="boolean", example=false),
      *              @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
@@ -33,6 +34,7 @@ class ChurchController extends Controller
      *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
      *              @OA\Property(property="user_activated_tenant", type="boolean", example=false),
      *              @OA\Property(property="user_type_tenant", type="string", example="web")),
+     *              @OA\Property(property="new_field", type="string", example="web")),
      *          )
      *      ),
      *      @OA\Response(
@@ -41,6 +43,7 @@ class ChurchController extends Controller
      *         @OA\JsonContent(
      *          @OA\Property(property="church",
      *              @OA\Property (property="tenant_id", type="integer", example="ibrr"),
+     *              @OA\Property (property="plan_id", type="integer", example="ibrr"),
      *              @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
      *              @OA\Property(property="activated", type="boolean", example=false),
      *              @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
@@ -51,6 +54,7 @@ class ChurchController extends Controller
      *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
      *              @OA\Property(property="user_activated_tenant", type="boolean", example=false),
      *              @OA\Property(property="user_type_tenant", type="string", example="web")),
+     *              @OA\Property(property="new_field", type="string", example="web")),
      *          )
      *       ),
      *      @OA\Response(response=422,description="Unprocessable Entity"),
