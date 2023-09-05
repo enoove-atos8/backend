@@ -13,56 +13,6 @@ use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 class ChurchController extends Controller
 {
     /**
-     * @OA\Post(
-     * path="/v1/church",
-     * security={{"Bearer": {}}},
-     * tags={"Church"},
-     * summary="Register a new church to access the platform",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *          @OA\Property(property="church",
-     *              @OA\Property (property="tenant_id", type="integer", example="ibrr"),
-     *              @OA\Property (property="plan_id", type="integer", example=1),
-     *              @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
-     *              @OA\Property(property="activated", type="boolean", example=false),
-     *              @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
-     *              @OA\Property(property="doc_number", type="string", example="53575672000191/90441944027")),
-     *          @OA\Property(property="user",
-     *              @OA\Property(property="admin_email_tenant", type="string", example="admin_email_tenant@ibrr.com.br"),
-     *              @OA\Property(property="pass_admin_email_tenant", type="string", example="123456"),
-     *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
-     *              @OA\Property(property="user_activated_tenant", type="boolean", example=false),
-     *              @OA\Property(property="user_type_tenant", type="string", example="web")),
-     *              @OA\Property(property="new_field", type="string", example="web")),
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="New church registred successfully",
-     *         @OA\JsonContent(
-     *          @OA\Property(property="church",
-     *              @OA\Property (property="tenant_id", type="integer", example="ibrr"),
-     *              @OA\Property (property="plan_id", type="integer", example="ibrr"),
-     *              @OA\Property(property="name", type="string", example="Igreja Batista Reformada do Recife"),
-     *              @OA\Property(property="activated", type="boolean", example=false),
-     *              @OA\Property(property="doc_type", type="string", example="cnpj/cpf"),
-     *              @OA\Property(property="doc_number", type="string", example="53575672000191/90441944027")),
-     *          @OA\Property(property="user",
-     *              @OA\Property(property="admin_email_tenant", type="string", example="admin_email_tenant@ibrr.com.br"),
-     *              @OA\Property(property="pass_admin_email_tenant", type="string", example="123456"),
-     *              @OA\Property(property="confirm_pass_admin_email_tenant", type="string", example="same password"),
-     *              @OA\Property(property="user_activated_tenant", type="boolean", example=false),
-     *              @OA\Property(property="user_type_tenant", type="string", example="web")),
-     *              @OA\Property(property="new_field", type="string", example="web")),
-     *          )
-     *       ),
-     *      @OA\Response(response=422,description="Unprocessable Entity"),
-     *      @OA\Response(response=400, description="Bad request"),
-     *      @OA\Response(response=401, description="Unauthenticated"),
-     *      @OA\Response(response=404, description="Resource Not Found"),
-     * )
-     *
      * Store a newly created resource in storage.
      *
      * @param ChurchRequest $churchRequest
