@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
+use Application\Api\v1\Entry\Controllers\EntryController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -62,25 +63,126 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         /*
         |--------------------------------------------------------------------------
-        | Finance routes
+        | Financial routes
         |--------------------------------------------------------------------------
         |
         */
 
-        Route::get('/finance/monthlyBudget', function () {
-            return [
-                'titleCard'     =>  'Orçamento mensal',
-                'totalValue'    =>  '101,12%',
-                'variation'     =>  4,
-                'chart'         =>  [
-                    'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
-                    'dataSeries' => [
-                        'name'  => 'R$',
-                        'data'  => [15521.12, 15519, 15522, 15521]
+        Route::prefix('financial')->group(function () {
+
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource: Entries
+            | EndPoints: /v1/financial/entries
+            |
+            |   1   - GET    - /entries -
+            |   2   - GET    - /entries/getAmountByEntryTypes - OK - TST
+            |   3   - POST   - /entries - OK - TST
+            |   4   - POST   - /entries/{id} - OK - TST
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('entries')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All Entries by Date Range
+                 */
+
+                Route::get('/', function () {
+                    return [
+                        [
+                            'id'                            =>  1,
+                            'entryType'                     =>  'tithe',
+                            'transactionType'               =>  'cash',
+                            'transactionCompensation'       =>  'compensated',
+                            'dateTransactionCompensation'   =>  '2023-09-01',
+                            'dateEntryRegister'             =>  '2023-09-01',
+                            'amount'                        =>  123.5,
+                            'recipient'                     =>  null,
+                            'member'    =>  [
+                                'memberId'      =>  1,
+                                'memberName'    =>  'Rafael Henrique Melo de Souza',
+                                'memberAvatar'  =>  'assets/images/avatars/female-01.jpg',
+                            ],
+                            'reviewer'    =>  [
+                                'reviewerId'      =>  3,
+                                'reviewerName'    =>  'Jaime Lopes Junior',
+                                'reviewerAvatar'  =>  'assets/images/avatars/female-02.jpg',
+                            ]
+                        ],
+                        [
+                            'id'                            =>  2,
+                            'entryType'                     =>  'offers',
+                            'transactionType'               =>  'pix',
+                            'transactionCompensation'       =>  'compensated',
+                            'dateTransactionCompensation'   =>  '2023-09-01',
+                            'dateEntryRegister'             =>  '2023-09-01',
+                            'amount'                        =>  1752.5,
+                            'recipient'                     =>  null,
+                            'member'    =>  [
+                                'memberId'      =>  2,
+                                'memberName'    =>  'Cláudio de Souza Lins',
+                                'memberAvatar'  =>  'assets/images/avatars/male-01.jpg',
+                            ],
+                            'reviewer'    =>  [
+                                'reviewerId'      =>  3,
+                                'reviewerName'    =>  'Jaime Lopes Junior',
+                                'reviewerAvatar'  =>  'assets/images/avatars/female-02.jpg',
+                            ]
+                        ]
+                    ];
+                });
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /getAmountByEntryType/
+                 * Description: Get All Entries by Date Range
+                */
+                Route::get('/getAmountByEntryType/', function (string $type) {
+                    return [
+                        'type'            =>  'tithe',
+                        'amount'          =>  '1366.25',
+                        'monthlyRange'    =>  [
+                            'startDate' =>  '2023-09-04',
+                            'endDate'   =>  '2023-09-04'
+                        ]
+                    ];
+                });
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Get All Entries by Date Range
+                 */
+                Route::post('/', [EntryController::class, 'createEntry']);
+            });
+
+
+
+            Route::get('/monthlyBudget', function () {
+                return [
+                    'titleCard'     =>  'Orçamento mensal',
+                    'totalValue'    =>  '101,12%',
+                    'variation'     =>  4,
+                    'chart'         =>  [
+                        'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
+                        'dataSeries' => [
+                            'name'  => 'R$',
+                            'data'  => [15521.12, 15519, 15522, 15521]
+                        ]
                     ]
-                ]
-            ];
+                ];
+            });
+
+
+
         });
+
+
 
 
         /*

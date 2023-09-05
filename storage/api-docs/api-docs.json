@@ -14,16 +14,24 @@
             "description": "Central Atos242 App - Local API Server"
         },
         {
+            "url": "http://dev.atos242.local:8000/api",
+            "description": "APP Tenant Atos242 App - Local API Server"
+        },
+        {
             "url": "http://www.atos242.com:8000/api",
             "description": "Central Atos242 App - Development API Server"
         },
         {
-            "url": "http://app.dev.atos242.com:8000/api",
+            "url": "http://dev.atos242.com:8000/api",
             "description": "APP Tenant Atos242 App - Development API Server"
         },
         {
             "url": "http://www.atos242.local:8080/api",
             "description": "Central Atos242 App - Local API Server - With RP"
+        },
+        {
+            "url": "http://www.atos242.com/api",
+            "description": "Central Atos242 App - Development API Server - With RP"
         }
     ],
     "paths": {
@@ -203,31 +211,6 @@
                                                 }
                                             },
                                             "type": "object"
-                                        },
-                                        "user": {
-                                            "properties": {
-                                                "admin_email_tenant": {
-                                                    "type": "string",
-                                                    "example": "admin_email_tenant@ibrr.com.br"
-                                                },
-                                                "pass_admin_email_tenant": {
-                                                    "type": "string",
-                                                    "example": "123456"
-                                                },
-                                                "confirm_pass_admin_email_tenant": {
-                                                    "type": "string",
-                                                    "example": "same password"
-                                                },
-                                                "user_activated_tenant": {
-                                                    "type": "boolean",
-                                                    "example": false
-                                                },
-                                                "user_type_tenant": {
-                                                    "type": "string",
-                                                    "example": "web"
-                                                }
-                                            },
-                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -291,6 +274,136 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "Login Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity"
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                },
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ]
+            }
+        },
+        "/v1/entries": {
+            "post": {
+                "tags": [
+                    "Entries"
+                ],
+                "summary": "Register a New Entry",
+                "description": "Register a New Entry of kind tithe, offers or designated",
+                "operationId": "b0eebf73c130854ec67d783b254d2aae",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "entryType": {
+                                        "type": "string",
+                                        "example": "tithe|offers|designated"
+                                    },
+                                    "transactionType": {
+                                        "type": "string",
+                                        "example": "cash|pix|doc_ted_tev"
+                                    },
+                                    "transactionCompensation": {
+                                        "type": "string",
+                                        "example": "to_compensate|compensated"
+                                    },
+                                    "dateTransactionCompensation": {
+                                        "type": "string",
+                                        "example": "2023-09-05"
+                                    },
+                                    "dateEntryRegister": {
+                                        "type": "string",
+                                        "example": "2023-09-05"
+                                    },
+                                    "amount": {
+                                        "type": "integer",
+                                        "example": 123.45
+                                    },
+                                    "recipient": {
+                                        "type": "string",
+                                        "example": "SMHB"
+                                    },
+                                    "member": {
+                                        "properties": {
+                                            "memberId": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "memberName": {
+                                                "type": "string",
+                                                "example": "Rafael Souza"
+                                            },
+                                            "memberAvatar": {
+                                                "type": "string",
+                                                "example": "photo.jpg"
+                                            }
+                                        }
+                                    },
+                                    "reviewer": {
+                                        "properties": {
+                                            "reviewerId": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "reviewerName": {
+                                                "type": "string",
+                                                "example": "Rafael Souza"
+                                            },
+                                            "reviewerAvatar": {
+                                                "type": "string",
+                                                "example": "photo.jpg"
+                                            }
+                                        }
+                                    }
+
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Entry registered successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": "1"
+                                            },
+                                            "message": {
+                                                "type": "string",
+                                                "example": "Entry registered successfully"
+                                            }
+                                        },
+                                        "type": "object"
+                                }
                             }
                         }
                     },

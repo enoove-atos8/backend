@@ -20,9 +20,9 @@ class CreateChurchAction
     private CreateUserAction $createUserAction;
 
     public function __construct(
-        ChurchRepositoryInterface $churchRepositoryInterface,
+        ChurchRepositoryInterface  $churchRepositoryInterface,
         CreateDomainGoDaddyAction $createDomainGoDaddyAction,
-        CreateUserAction $createUserAction
+        CreateUserAction          $createUserAction
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
@@ -36,7 +36,7 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData): array
     {
-        $domain = env('APP_DOMAIN');
+        $domain = config('api-resources.app.domain.local');
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
 
