@@ -45,24 +45,43 @@ class EntryRequest extends FormRequest
     public function validatorField($field)
     {
         $entryType = $this->input('entryType');
-        $dateTransactionCompensation = $this->input('dateTransactionCompensation');
-        $recipient = $this->input('recipient');
+        $statusCompensation = $this->input('transactionCompensation');
 
-        //Recipient field mount validator
-        if($entryType === self::TITHE and $field === 'recipient'){return '';}
-        if($entryType === self::OFFERS and $field === 'recipient'){return '';}
-        if($entryType === self::DESIGNATED and $field === 'recipient'){return 'required';}
-        if($recipient === null){return '';}
+        //Validate required to compensation date field
+        if($field === 'dateTransactionCompensation')
+        {
+            if($statusCompensation === 'to_compensate')
+            {
+                return '';
+            }
+            else
+            {
+                return 'required';
+            }
+        }
+        if($field === 'recipient')
+        {
+            if($entryType === self::DESIGNATED)
+            {
+                return 'required';
+            }
+            else
+            {
+                return '';
+            }
+        }
 
-        //memberName, memberId and memberAvatar field mount validator
-        if($entryType === self::TITHE and ($field === 'memberId' or $field === 'memberName' or $field === 'memberAvatar')){return 'required';}
-        if($entryType === self::OFFERS and ($field === 'memberId' or $field === 'memberName' or $field === 'memberAvatar')){return '';}
-        if($entryType === self::DESIGNATED and ($field === 'memberId' or $field === 'memberName' or $field === 'memberAvatar')){return '';}
-
-        // dateTransactionCompensation field mount validator
-        if($dateTransactionCompensation === null){return '';}
-        if($dateTransactionCompensation === 'to_compensate'){return '';}
-        if($dateTransactionCompensation === 'compensated'){return 'required';}
+        if($field === 'memberId')
+        {
+            if($entryType === self::TITHE)
+            {
+                return 'required';
+            }
+            else
+            {
+                return '';
+            }
+        }
     }
     /**
      * Custom message for validation
@@ -88,10 +107,10 @@ class EntryRequest extends FormRequest
             entryType:                      $this->input('entryType'),
             transactionType:                $this->input('transactionType'),
             transactionCompensation:        $this->input('transactionCompensation'),
-            dateTransactionCompensation:    $this->input('dateTransactionCompensation') ? $this->input('dateTransactionCompensation') !== null : '',
+            dateTransactionCompensation:    $this->input('dateTransactionCompensation'),
             dateEntryRegister:              $this->input('dateEntryRegister'),
             amount:                         $this->input('amount'),
-            recipient:                      $this->input('recipient') ? $this->input('recipient') !== null : '',
+            recipient:                      $this->input('recipient'),
             memberId:                       $this->input('member.memberId'),
             reviewerId:                     $this->input('reviewer.reviewerId'),
         );

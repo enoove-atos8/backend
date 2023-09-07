@@ -6,8 +6,8 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class EntryData extends DataTransferObject
 {
-    /** @var integer  */
-    public int $id = 0;
+    /** @var integer|null  */
+    public int | null$id;
 
     /** @var string  */
     public string $entryType;
@@ -18,8 +18,8 @@ class EntryData extends DataTransferObject
     /** @var string  */
     public string $transactionCompensation;
 
-    /** @var string  */
-    public string $dateTransactionCompensation;
+    /** @var string|null  */
+    public string | null $dateTransactionCompensation;
 
     /** @var string  */
     public string $dateEntryRegister;
@@ -27,11 +27,11 @@ class EntryData extends DataTransferObject
     /** @var string  */
     public string $amount;
 
-    /** @var string  */
-    public string $recipient;
+    /** @var string|null  */
+    public string | null $recipient;
 
-    /** @var integer  */
-    public int $memberId;
+    /** @var integer|null  */
+    public int | null $memberId;
 
     /** @var integer  */
     public int $reviewerId;

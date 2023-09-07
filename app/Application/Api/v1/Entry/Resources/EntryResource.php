@@ -9,7 +9,7 @@ use JsonSerializable;
 
 class EntryResource extends JsonResource
 {
-    public static $wrap = 'data';
+    public static $wrap = false;
     /**
      * Transform the resource into an array.
      *
@@ -18,6 +18,10 @@ class EntryResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return [];
+        $entry = $this->resource;
+        return [
+            'id'        =>  $entry->id,
+            'message'   =>  'Entrada cadastrada com sucesso!!!',
+        ];
     }
 }

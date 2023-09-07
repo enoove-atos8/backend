@@ -22,8 +22,14 @@ class CreateEntryAction
     /**
      * @throws \Throwable
      */
-    public function __invoke(EntryData $entryData): array
+    public function __invoke(EntryData $entryData): Entry
     {
+        $entry = $this->entryRepository->newEntry($entryData);
 
+        if(is_object($entry))
+        {
+            return $entry;
+        }
+        throw_if(!is_object($entry), GeneralExceptions::class, 'Erro ao criar uma entrada', 500);
     }
 }

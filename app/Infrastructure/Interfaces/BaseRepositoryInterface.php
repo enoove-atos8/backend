@@ -108,14 +108,14 @@ interface BaseRepositoryInterface
     public function getItemWithRelationship(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Model;
 
 
-
     /**
      * Get instance of model by column
      *
-     * @param  mixed $term search term
-     * @param string $column column to search
+     * @param array $whereConditions
+     * @param string $betweenColumn
+     * @param array $betweenRangeValues
      */
-    public function getCollectionByColumn(mixed $term, string $column = 'slug');
+    public function getItemsWithRelationshipsAndWhere(array $whereConditions = [], string $betweenColumn = '', array $betweenConditions = [], string $orderBy = 'id', string $sort = 'desc'): Collection;
 
 
 
