@@ -90,50 +90,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * Description: Get All Entries by Date Range
                  */
 
-                Route::get('/', function () {
-                    return [
-                        [
-                            'id'                            =>  1,
-                            'entryType'                     =>  'tithe',
-                            'transactionType'               =>  'cash',
-                            'transactionCompensation'       =>  'compensated',
-                            'dateTransactionCompensation'   =>  '2023-09-01',
-                            'dateEntryRegister'             =>  '2023-09-01',
-                            'amount'                        =>  123.5,
-                            'recipient'                     =>  null,
-                            'member'    =>  [
-                                'memberId'      =>  1,
-                                'memberName'    =>  'Rafael Henrique Melo de Souza',
-                                'memberAvatar'  =>  'assets/images/avatars/female-01.jpg',
-                            ],
-                            'reviewer'    =>  [
-                                'reviewerId'      =>  3,
-                                'reviewerName'    =>  'Jaime Lopes Junior',
-                                'reviewerAvatar'  =>  'assets/images/avatars/female-02.jpg',
-                            ]
-                        ],
-                        [
-                            'id'                            =>  2,
-                            'entryType'                     =>  'offers',
-                            'transactionType'               =>  'pix',
-                            'transactionCompensation'       =>  'compensated',
-                            'dateTransactionCompensation'   =>  '2023-09-01',
-                            'dateEntryRegister'             =>  '2023-09-01',
-                            'amount'                        =>  1752.5,
-                            'recipient'                     =>  null,
-                            'member'    =>  [
-                                'memberId'      =>  2,
-                                'memberName'    =>  'Cláudio de Souza Lins',
-                                'memberAvatar'  =>  'assets/images/avatars/male-01.jpg',
-                            ],
-                            'reviewer'    =>  [
-                                'reviewerId'      =>  3,
-                                'reviewerName'    =>  'Jaime Lopes Junior',
-                                'reviewerAvatar'  =>  'assets/images/avatars/female-02.jpg',
-                            ]
-                        ]
-                    ];
-                });
+                Route::get('/', [EntryController::class, 'getEntriesByMonthlyRange']);
 
 
                 /*

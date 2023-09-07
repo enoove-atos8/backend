@@ -25,6 +25,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
     const NOT_IN = 'NOT IN';
     const IN = 'IN';
     const NOT_NULL = 'IS NOT NULL';
+    const BETWEEN = 'IS NOT NULL';
 
 
     /**
@@ -193,6 +194,29 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
 
     /**
+     * Get a collection of items that fall within a range of two values or dates
+     *
+     * @param string $column
+     * @param array $columns
+     * @param array $valuesRange
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getItemsByBetween(string $column, array $valuesRange = [], array $columns = ['*'], $orderBy = 'id', $sort = 'desc'): Collection
+    {
+        $query = function () use ($columns, $column, $valuesRange, $orderBy, $sort) {
+            return DB::table($this->model->getTable())
+                ->select($columns)
+                ->whereBetween($column, $valuesRange)
+                ->orderBy($orderBy, $sort)
+                ->get();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
      * Get an item with conditions
      *
      * @param array $columns
@@ -271,17 +295,20 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Get instance of model by column
      *
-     * @param mixed $term search term
-     * @param string $column column to search
+     * @param array $whereConditions
+     * @param string $betweenColumn
+     * @param array $betweenRangeValues
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getCollectionByColumn(mixed $term, string $column = 'slug'): Collection
+    public function getItemsWithRelationshipsAndWhere(array $whereConditions = [], string $betweenColumn = '', array $betweenConditions = [], string $orderBy = 'id', string $sort = 'desc'): Collection
     {
-        $query = function () use ($term, $column) {
+        $query = function () use ($whereConditions, $betweenColumn, $betweenConditions, $orderBy, $sort) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where($column, '=', $term)
+                ->where($whereConditions)
+                ->whereBetween($betweenColumn, $betweenConditions)
+                ->orderBy($orderBy, $sort)
                 ->get();
         };
 

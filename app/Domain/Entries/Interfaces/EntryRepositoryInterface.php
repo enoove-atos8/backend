@@ -11,4 +11,6 @@ use Infrastructure\Repositories\Entries\EntryRepository;
 interface EntryRepositoryInterface
 {
     public function newEntry(EntryData $entryData): Entry;
+
+    public function getAllEntries(string $startDate, string $endDate): Collection;
 }

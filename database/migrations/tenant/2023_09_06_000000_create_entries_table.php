@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('transaction_compensation')->nullable(false);
             $table->string('date_transaction_compensation')->nullable();
             $table->string('date_entry_register')->nullable(false);
-            $table->integer('amount')->nullable(false);
+            $table->decimal('amount')->nullable(false);
             $table->string('recipient')->nullable();
             $table->integer('member_id')->nullable();
             $table->integer('reviewer_id')->nullable(false);
