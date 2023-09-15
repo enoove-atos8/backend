@@ -37,8 +37,8 @@ class EntryRequest extends FormRequest
             'dateEntryRegister'              =>  'required',
             'amount'                         =>  'required',
             'recipient'                      =>  $this->validatorField('recipient'),
-            'member.memberId'                =>  $this->validatorField('memberId'),
-            'reviewer.reviewerId'            =>  'required',
+            'memberId'                       =>  $this->validatorField('memberId'),
+            'reviewerId'                     =>  'required',
         ];
     }
 
@@ -48,39 +48,18 @@ class EntryRequest extends FormRequest
         $statusCompensation = $this->input('transactionCompensation');
 
         //Validate required to compensation date field
-        if($field === 'dateTransactionCompensation')
-        {
-            if($statusCompensation === 'to_compensate')
-            {
-                return '';
-            }
-            else
-            {
-                return 'required';
-            }
+        if($field === 'dateTransactionCompensation') {
+            if($statusCompensation === 'to_compensate') {return '';}
+            else {return 'required';}
         }
-        if($field === 'recipient')
-        {
-            if($entryType === self::DESIGNATED)
-            {
-                return 'required';
-            }
-            else
-            {
-                return '';
-            }
+        if($field === 'recipient') {
+            if($entryType === self::DESIGNATED) {return 'required';}
+            else {return '';}
         }
 
-        if($field === 'memberId')
-        {
-            if($entryType === self::TITHE)
-            {
-                return 'required';
-            }
-            else
-            {
-                return '';
-            }
+        if($field === 'memberId') {
+            if($entryType === self::TITHE) {return 'required';}
+            else {return '';}
         }
     }
     /**
@@ -111,8 +90,8 @@ class EntryRequest extends FormRequest
             dateEntryRegister:              $this->input('dateEntryRegister'),
             amount:                         $this->input('amount'),
             recipient:                      $this->input('recipient'),
-            memberId:                       $this->input('member.memberId'),
-            reviewerId:                     $this->input('reviewer.reviewerId'),
+            memberId:                       $this->input('memberId'),
+            reviewerId:                     $this->input('reviewerId'),
         );
     }
 }

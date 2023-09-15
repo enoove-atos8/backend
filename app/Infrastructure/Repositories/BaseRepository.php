@@ -3,6 +3,7 @@
 namespace Infrastructure\Repositories;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\Paginator;
@@ -17,15 +18,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
 {
     use ThrowsHttpExceptions, CacheResults;
 
+    const OPERATORS = [
+      'LIKE' => 'LIKE',
+      'BETWEEN' => 'BETWEEN',
+      'EQUALS' => '=',
+      'NOT_EQUALS' => '<>',
+      'MINOR' => '<',
+      'MAJOR' => '>',
+      'NOT_IN' => 'NOT IN',
+      'IN' => 'IN',
+      'NOT_NULL' => 'NOT NULL',
+    ];
 
-    const EQUALS = '=';
-    const NOT_EQUALS = '<>';
-    const MINOR = '<';
-    const MAJOR = '>';
-    const NOT_IN = 'NOT IN';
-    const IN = 'IN';
-    const NOT_NULL = 'IS NOT NULL';
-    const BETWEEN = 'IS NOT NULL';
 
 
     /**
@@ -66,6 +70,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->setUses();
     }
 
+
+
     /**
      * Get all items
      *
@@ -87,6 +93,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+
 
     /**
      * Get paged items
@@ -110,6 +118,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
+
+
     /**
      * Items for select options
      *
@@ -132,6 +142,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+
 
     /**
      * Get item by its id
@@ -194,29 +206,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
 
     /**
-     * Get a collection of items that fall within a range of two values or dates
-     *
-     * @param string $column
-     * @param array $columns
-     * @param array $valuesRange
-     * @return Collection
-     * @throws BindingResolutionException
-     */
-    public function getItemsByBetween(string $column, array $valuesRange = [], array $columns = ['*'], $orderBy = 'id', $sort = 'desc'): Collection
-    {
-        $query = function () use ($columns, $column, $valuesRange, $orderBy, $sort) {
-            return DB::table($this->model->getTable())
-                ->select($columns)
-                ->whereBetween($column, $valuesRange)
-                ->orderBy($orderBy, $sort)
-                ->get();
-        };
-
-        return $this->doQuery($query);
-    }
-
-
-    /**
      * Get an item with conditions
      *
      * @param array $columns
@@ -236,28 +225,46 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
     /**
-     * * Get a collection of items with relationships
+     * Get instance of model by column
      *
-     * @param string $relationshipTable
-     * @param array $relationshipsConditions
-     * @param array $columns
-     * @param array $conditions
+     * @param array $whereConditions
+     * @param array $orWhereConditions
+     * @param array $whereInConditions
+     * @param string $orderBy
+     * @param string $sort
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getListWithRelationships(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Collection
+    public function getItemsWithRelationshipsAndWheres(
+        array $whereConditions,
+        array $orWhereConditions = [],
+        array $whereInConditions = [],
+        string $orderBy = 'id',
+        string $sort = 'desc'): Collection
     {
-        $query = function () use ($relationshipTable, $relationshipsConditions, $columns, $conditions) {
-            return DB::table($this->model->getTable())
-                ->join($relationshipTable, function (JoinClause $join) use ($relationshipTable, $relationshipsConditions) {
-                    foreach ($relationshipsConditions as $condition) {
-                        $join->on($condition['leftColumn'], $condition['operator'], $condition['rightColumn']);
+        $query = function () use ($whereConditions, $orWhereConditions, $whereInConditions, $orderBy, $sort) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where(function ($q) use($whereConditions, $orWhereConditions, $whereInConditions){
+                    if(count($whereConditions) > 0){
+                        foreach ($whereConditions as $key => $condition) {
+                            $q->where($condition[0], $condition[1], $condition[2]);
+                        }
                     }
+                    if(count($orWhereConditions) > 0){
+                        foreach ($orWhereConditions as $key => $condition) {
+                            $q->orWhere($condition[0], $condition[1], $condition[2]);
+                        }
+                    }
+                    if(count($whereInConditions) > 0){
+                        foreach ($whereInConditions as $key => $condition) {
+                            $q->whereIn($condition[0], $condition[1], $condition[2]);
+                        }
+                    }
+
                 })
-                ->select($columns)
-                ->where($conditions)
+                ->orderBy($orderBy, $sort)
                 ->get();
         };
 
@@ -266,51 +273,71 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
 
     /**
-     * Get only item with relationship
+     * Get instance of model by column
      *
-     * @param string $relationshipTable
-     * @param array $relationshipsConditions
-     * @param array $columns
-     * @param array $conditions
-     * @return Model
+     * @param array $queryClausesAndConditions
+     * @param string $orderBy
+     * @param string $sort
+     * @return Collection
      * @throws BindingResolutionException
      */
-    public function getItemWithRelationship(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Model
+    public function getItemsWithRelationshipsAndWheresV2(
+        array $queryClausesAndConditions,
+        string $orderBy = 'id',
+        string $sort = 'desc'): Collection
     {
-        $query = function () use ($relationshipTable, $relationshipsConditions, $columns, $conditions) {
-            return DB::table($this->model->getTable())
-                ->join($relationshipTable, function (JoinClause $join) use ($relationshipTable, $relationshipsConditions) {
-                    foreach ($relationshipsConditions as $condition) {
-                        $join->on($condition['leftColumn'], $condition['operator'], $condition['rightColumn']);
+        $query = function () use ($queryClausesAndConditions, $orderBy, $sort) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where(function ($q) use($queryClausesAndConditions){
+                    if($queryClausesAndConditions['where_clause']['exists'] and
+                        count($queryClausesAndConditions['where_clause']['clause']) > 0){
+                        foreach ($queryClausesAndConditions['where_clause']['clause'] as $key => $clause) {
+                            if($clause['type'] == 'and'){
+                                $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                            if($clause['type'] == 'andWithOrInside'){
+                                $q->where(function($query) use($clause){
+                                    if(count($clause['condition']) > 0){
+                                        foreach ($clause['condition']['value'] as $value){
+                                            $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                                        }
+                                    }
+                                });
+                            }
+                            if($clause['type'] == 'or'){
+                                $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                            if($clause['type'] == 'in'){
+                                $q->whereIn($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                        }
                     }
                 })
-                ->select($columns)
-                ->where($conditions)
-                ->first();
+                ->orderBy($orderBy, $sort)
+                ->get();
         };
 
         return $this->doQuery($query);
     }
+
+
 
     /**
      * Get instance of model by column
      *
      * @param array $whereConditions
-     * @param string $betweenColumn
-     * @param array $betweenRangeValues
+     * @param string $orderBy
+     * @param string $sort
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getItemsWithRelationshipsAndWhere(array $whereConditions = [], string $betweenColumn = '', array $betweenConditions = [], string $orderBy = 'id', string $sort = 'desc'): Collection
+    public function getItemsbyQueryBuilder(array $whereConditions = [], array $orWhereConditions = [], string $orderBy = 'id', string $sort = 'desc'): Collection
     {
-        $query = function () use ($whereConditions, $betweenColumn, $betweenConditions, $orderBy, $sort) {
-            return $this->model
-                ->with($this->requiredRelationships)
-                ->where($whereConditions)
-                ->whereBetween($betweenColumn, $betweenConditions)
-                ->orderBy($orderBy, $sort)
-                ->get();
-        };
+        $query = DB::table($this->model->getTable())
+            ->where($whereConditions)
+            ->orWhere($orWhereConditions)
+            ->get();
 
         return $this->doQuery($query);
     }

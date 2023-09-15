@@ -3,11 +3,11 @@
 namespace Domain\Entries\Actions;
 
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Repositories\Entries\EntryRepository;
 use Throwable;
 
-class GetEntriesAction
+class GetEntryByIdAction
 {
     private EntryRepository $entryRepository;
 
@@ -21,9 +21,8 @@ class GetEntriesAction
     /**
      * @throws Throwable
      */
-    public function __invoke($request): Collection
+    public function __invoke($id): Model
     {
-        $range = $request->input('dates');
-        return $this->entryRepository->getAllEntries($range);
+        return $this->entryRepository->getEntryById($id);
     }
 }
