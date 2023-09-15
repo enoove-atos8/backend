@@ -19,9 +19,29 @@ class EntryResource extends JsonResource
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         $entry = $this->resource;
+
+        if(count($entry->member()->get()) > 0) $member = $entry->member()->first(); else $member = null;
+
+        $dataMember = null;
+
+        if(!is_null($member)){
+            $dataMember = ['id'=> $member->id, 'name'=> $member->full_name, 'avatar'=> $member->avatar];
+        }
         return [
-            'id'        =>  $entry->id,
-            'message'   =>  'Entrada cadastrada com sucesso!!!',
+            'id'                            =>  $entry->id,
+            'entryType'                     =>  $entry->entry_type,
+            'transactionType'               =>  $entry->transaction_type,
+            'transactionCompensation'       =>  $entry->transaction_compensation,
+            'dateTransactionCompensation'   =>  $entry->date_transaction_compensation,
+            'dateEntryRegister'             =>  $entry->date_entry_register,
+            'amount'                        =>  $entry->amount,
+            'recipient'                     =>  $entry->recipient,
+            'member'                        =>  $dataMember,
+            'reviewer'                        =>  [
+                'reviewerId'      =>  1,
+                'reviewerName'    =>  'Jaime Junior da Silva Lopes',
+                'reviewerAvatar'  =>  'female-01.jpg',
+            ],
         ];
     }
 }

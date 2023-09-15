@@ -75,10 +75,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             | Resource: Entries
             | EndPoints: /v1/financial/entries
             |
-            |   1   - GET    - /entries -
-            |   2   - GET    - /entries/getAmountByEntryTypes - OK - TST
-            |   3   - POST   - /entries - OK - TST
-            |   4   - POST   - /entries/{id} - OK - TST
+            |   1 - GET - /entries - OK
+            |   2 - GET - /entries/getAmountByEntryType -
+            |   3 - GET - /entries/{id} - OK
+            |   4 - POST - /entries - OK
+            |   5 - PUT - /entries/{id} - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -98,16 +99,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * EndPoint: /getAmountByEntryType/
                  * Description: Get All Entries by Date Range
                 */
-                Route::get('/getAmountByEntryType/', function (string $type) {
-                    return [
-                        'type'            =>  'tithe',
-                        'amount'          =>  '1366.25',
-                        'monthlyRange'    =>  [
-                            'startDate' =>  '2023-09-04',
-                            'endDate'   =>  '2023-09-04'
-                        ]
-                    ];
-                });
+                Route::get('/getAmountByEntryType/', [EntryController::class, 'getAmountByEntryType']);
+
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get an entry by id
+                 */
+
+                Route::get('/{id}', [EntryController::class, 'getEntryById']);
 
 
                 /*
@@ -116,6 +118,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * Description: Get All Entries by Date Range
                  */
                 Route::post('/', [EntryController::class, 'createEntry']);
+
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Update an entry
+                 */
+
+                Route::put('/{id}', [EntryController::class, 'updateEntry']);
+
+
             });
 
 

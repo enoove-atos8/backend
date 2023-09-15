@@ -26,10 +26,7 @@ class EntryResourceCollection extends ResourceCollection
     public function toArray($request): array|JsonSerializable|Arrayable
     {
         return $this->collection->map(function ($item){
-            if(count($item->member()->get()) > 0)
-                $member = $item->member()->first();
-            else
-                $member = null;
+            if(count($item->member()->get()) > 0) $member = $item->member()->first(); else$member = null;
 
             $dataMember = [];
 

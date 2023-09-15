@@ -6,9 +6,6 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class EntryData extends DataTransferObject
 {
-    /** @var integer|null  */
-    public int | null$id;
-
     /** @var string  */
     public string $entryType;
 
