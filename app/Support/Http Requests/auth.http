@@ -20,6 +20,26 @@ Accept: application/json
 Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
 
 
+
+
+###
+PUT http://dev.atos242.local:8080/api/v1/financial/entries/48
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
+
+{
+    "entryType":"offers",
+    "transactionType":"doc_ted_tev",
+    "transactionCompensation":"compensated",
+    "dateTransactionCompensation": "2023-10-14T03:00:00.000Z",
+    "dateEntryRegister": "2023-07-01",
+    "amount":500,
+    "recipient":null,
+    "memberId":null,
+    "reviewerId":1
+}
+
 ###
 GET http://dev.atos242.local:8080/api/v1/financial/entries/48
 Content-Type: application/json

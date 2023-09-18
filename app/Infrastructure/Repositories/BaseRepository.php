@@ -56,9 +56,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     protected array $uses = [];
 
-    protected int $cacheTtl = 60;
+    protected int $cacheTtl = 1;
 
-    protected bool $caching = true;
+    protected bool $caching = false;
 
     /**
      * Get the model from the IoC container
