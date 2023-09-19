@@ -85,14 +85,12 @@ interface BaseRepositoryInterface
     /**
      * Get instance of model by column
      *
-     * @param array $whereConditions
-     * @param array $orWhereConditions
-     * @param array $whereInConditions
+     * @param array $queryClausesAndConditions
      * @param string $orderBy
      * @param string $sort
      * @return Collection
      */
-    public function getItemsWithRelationshipsAndWheres(array $whereConditions, array $orWhereConditions = [], array $whereInConditions, string $orderBy = 'id', string $sort = 'desc'): Collection;
+    public function getItemsWithRelationshipsAndWheres(array $queryClausesAndConditions, string $orderBy = 'id', string $sort = 'desc'): Collection;
 
 
 

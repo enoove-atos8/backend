@@ -26,22 +26,11 @@ class GetAmountByEntryTypeAction
      */
     public function __invoke($rangeMonthlyDate, $amountType, $entryType)
     {
-        $entryTypeName = '';
-
-        if($entryType == 'tithe')
-            $entryTypeName = 'Dízimos';
-        if($entryType == 'offers')
-            $entryTypeName = 'Ofertas';
-        if($entryType == 'designated')
-            $entryTypeName = 'Designadas';
-
-
-
-        $entries = $this->entryRepository->getAmountByEntryTypeV2($rangeMonthlyDate, $amountType, $entryType);
+        $entries = $this->entryRepository->getAmountByEntryType($rangeMonthlyDate, $amountType, $entryType);
         $total = $entries->sum(EntryRepository::AMOUNT_COLUMN);
 
         if(count($entries) !== 0 and $total !== 0)
             return $total;
-        throw_if(count($entries) == 0 and $total == 0, GeneralExceptions::class, "Não existem entradas {$entryTypeName}", 404);
+        throw_if(count($entries) == 0 and $total == 0, GeneralExceptions::class, "Nenhum resultado encontrado!", 404);
     }
 }

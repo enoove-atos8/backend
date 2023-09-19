@@ -225,51 +225,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-    /**
-     * Get instance of model by column
-     *
-     * @param array $whereConditions
-     * @param array $orWhereConditions
-     * @param array $whereInConditions
-     * @param string $orderBy
-     * @param string $sort
-     * @return Collection
-     * @throws BindingResolutionException
-     */
-    public function getItemsWithRelationshipsAndWheres(
-        array $whereConditions,
-        array $orWhereConditions = [],
-        array $whereInConditions = [],
-        string $orderBy = 'id',
-        string $sort = 'desc'): Collection
-    {
-        $query = function () use ($whereConditions, $orWhereConditions, $whereInConditions, $orderBy, $sort) {
-            return $this->model
-                ->with($this->requiredRelationships)
-                ->where(function ($q) use($whereConditions, $orWhereConditions, $whereInConditions){
-                    if(count($whereConditions) > 0){
-                        foreach ($whereConditions as $key => $condition) {
-                            $q->where($condition[0], $condition[1], $condition[2]);
-                        }
-                    }
-                    if(count($orWhereConditions) > 0){
-                        foreach ($orWhereConditions as $key => $condition) {
-                            $q->orWhere($condition[0], $condition[1], $condition[2]);
-                        }
-                    }
-                    if(count($whereInConditions) > 0){
-                        foreach ($whereInConditions as $key => $condition) {
-                            $q->whereIn($condition[0], $condition[1], $condition[2]);
-                        }
-                    }
-
-                })
-                ->orderBy($orderBy, $sort)
-                ->get();
-        };
-
-        return $this->doQuery($query);
-    }
 
 
     /**
@@ -281,7 +236,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getItemsWithRelationshipsAndWheresV2(
+    public function getItemsWithRelationshipsAndWheres(
         array $queryClausesAndConditions,
         string $orderBy = 'id',
         string $sort = 'desc'): Collection
@@ -322,25 +277,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
-    /**
-     * Get instance of model by column
-     *
-     * @param array $whereConditions
-     * @param string $orderBy
-     * @param string $sort
-     * @return Collection
-     * @throws BindingResolutionException
-     */
-    public function getItemsbyQueryBuilder(array $whereConditions = [], array $orWhereConditions = [], string $orderBy = 'id', string $sort = 'desc'): Collection
-    {
-        $query = DB::table($this->model->getTable())
-            ->where($whereConditions)
-            ->orWhere($orWhereConditions)
-            ->get();
-
-        return $this->doQuery($query);
-    }
 
     /**
      * Get item by id or column
