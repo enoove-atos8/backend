@@ -35,7 +35,9 @@ class EntryResource extends JsonResource
             'dateTransactionCompensation'   =>  $entry->date_transaction_compensation,
             'dateEntryRegister'             =>  $entry->date_entry_register,
             'amount'                        =>  $entry->amount,
+            'devolution'                    =>  $entry->devolution,
             'recipient'                     =>  $entry->recipient,
+            'deleted'                       =>  $entry->deleted,
             'member'                        =>  $dataMember,
             'reviewer'                        =>  [
                 'reviewerId'      =>  1,

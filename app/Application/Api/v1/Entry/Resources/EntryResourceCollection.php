@@ -41,7 +41,9 @@ class EntryResourceCollection extends ResourceCollection
                 'dateTransactionCompensation'   =>  $item->date_transaction_compensation,
                 'dateEntryRegister'             =>  $item->date_entry_register,
                 'amount'                        =>  $item->amount,
+                'devolution'                    =>  $item->devolution,
                 'recipient'                     =>  $item->recipient,
+                'deleted'                       =>  $item->deleted,
                 'member'                        =>  $dataMember,
                 'reviewer'                        =>  [
                     'reviewerId'      =>  1,
