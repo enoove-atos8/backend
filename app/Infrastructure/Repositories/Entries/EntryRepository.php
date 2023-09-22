@@ -21,6 +21,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const DELETED_COLUMN = 'deleted';
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const AMOUNT_COLUMN = 'amount';
+    const DEVOLUTION_COLUMN = 'devolution';
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
@@ -41,7 +42,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      */
     public function newEntry(EntryData $entryData): Entry
     {
-        $entry = $this->create([
+        return $this->create([
             'entry_type'                     =>   $entryData->entryType,
             'transaction_type'               =>   $entryData->transactionType,
             'transaction_compensation'       =>   $entryData->transactionCompensation,
@@ -51,12 +52,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'recipient'                      =>   $entryData->recipient,
             'member_id'                      =>   $entryData->memberId,
             'reviewer_id'                    =>   $entryData->reviewerId,
+            'devolution'                     =>   $entryData->devolution,
+            'deleted'                        =>   $entryData->deleted,
         ]);
-
-
-        throw_if(!$entry, GeneralExceptions::class, 'Houve um erro ao procesar o cadastro de uma nova igreja', 500);
-
-        return $entry;
     }
 
 
@@ -112,7 +110,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      */
     public function updateEntry(int $id, EntryData $entryData): bool
     {
-        $entry = $this->update($id, [
+        return $this->update($id, [
             'entry_type'                     =>   $entryData->entryType,
             'transaction_type'               =>   $entryData->transactionType,
             'transaction_compensation'       =>   $entryData->transactionCompensation,
@@ -122,12 +120,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'recipient'                      =>   $entryData->recipient,
             'member_id'                      =>   $entryData->memberId,
             'reviewer_id'                    =>   $entryData->reviewerId,
+            'devolution'                     =>   $entryData->devolution,
+            'deleted'                        =>   $entryData->deleted,
         ]);
-
-
-        throw_if(!$entry, GeneralExceptions::class, 'Houve um erro ao procesar o cadastro de uma nova igreja', 500);
-
-        return $entry;
     }
 
 
@@ -140,25 +135,23 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAmountByEntryType(string $rangeMonthlyDate, string $amountType, string $entryType = null, string $exitType = null): Collection
+    public function getAmountByEntryType(
+        string $rangeMonthlyDate,
+        string $amountType,
+        string $entryType = null,
+        string $exitType = null): Collection
     {
         $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
         $this->queryClausesAndConditions['where_clause']['exists'] = true;
 
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => self::DELETED_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]
-        ];
-
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => self::ENTRY_TYPE_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $entryType,]
-        ];
-
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type'    =>  'andWithOrInside',
-            'condition'   =>  ['field'   =>  self::DATE_ENTRY_REGISTER_COLUMN, 'operator'   =>  BaseRepository::OPERATORS['LIKE'], 'value'   =>  $arrRangeMonthlyDate,]
-        ];
+        $this->queryClausesAndConditions['where_clause']['clause'][] =
+            ['type' => 'and', 'condition' => ['field' => self::DELETED_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]];
+        $this->queryClausesAndConditions['where_clause']['clause'][] =
+            ['type' => 'and', 'condition' => ['field' => self::ENTRY_TYPE_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $entryType,]];
+        $this->queryClausesAndConditions['where_clause']['clause'][] =
+            ['type' => 'and', 'condition' => ['field' => self::DEVOLUTION_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]];
+        $this->queryClausesAndConditions['where_clause']['clause'][] =
+            ['type' => 'andWithOrInside', 'condition' =>  ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]];
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
     }

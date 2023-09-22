@@ -59,13 +59,13 @@ class GeneralExceptions extends Exception
         {
 
             $itemsResponse = [
-                'shortMessage' => 'Houve um erro interno na aplicação, em alguns instantes este problama será resolvido!',
+                'message' => 'Houve um erro interno na aplicação, em alguns instantes este problama será resolvido!',
                 'code'         => 500,
                 'file'         => $this->getFile(),
                 'line'         => $this->getLine(),
             ];
 
-            $finalResponse = array_merge($defaultResponse['error'], $itemsResponse);
+            $finalResponse = array_merge($defaultResponse, $itemsResponse);
 
             return new JsonResponse($finalResponse, 500);
         }

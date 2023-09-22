@@ -26,10 +26,9 @@ class CreateEntryAction
     {
         $entry = $this->entryRepository->newEntry($entryData);
 
-        if(is_object($entry))
-        {
+        if($entry instanceof Entry)
             return $entry;
-        }
-        throw_if(!is_object($entry), GeneralExceptions::class, 'Erro ao criar uma entrada', 500);
+        else
+            throw new GeneralExceptions('Ocorreu um erro ao criar uma nova entrada', 500);
     }
 }

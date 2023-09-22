@@ -39,6 +39,8 @@ class EntryRequest extends FormRequest
             'recipient'                      =>  $this->validatorField('recipient'),
             'memberId'                       =>  $this->validatorField('memberId'),
             'reviewerId'                     =>  'required',
+            'devolution'                     =>  'integer',
+            'deleted'                        =>  'required|integer',
         ];
     }
 
@@ -70,7 +72,15 @@ class EntryRequest extends FormRequest
     public function messages(): array
     {
         return [
-
+            'entryType.required'                =>  "O preenchimento do campo 'Tipo de Entrada' é obrigatório!",
+            'transactionType.required'          =>  "O preenchimento do campo 'Tipo de Transação' é obrigatório!",
+            'transactionCompensation.required'  =>  "O preenchimento do campo 'Status Compensação' é obrigatório!",
+            'dateEntryRegister.required'        =>  "A informação de 'Data de registro' é obrigatória!",
+            'amount.required'                   =>  "O preenchimento do campo 'Valor' é obrigatório!",
+            'reviewerId.required'               =>  "O preenchimento do campo 'Revisor' é obrigatório!",
+            'devolution.integer'                =>  "O valor do campo 'Devolução' deve ser um valor inteiro, 0 ou 1",
+            'deleted.required'                  =>  "A informação de 'deleted' é obrigatória para a entrada!",
+            'deleted.integer'                   =>  "O valor da informação 'deleted' deve ser um valor inteiro, 0 ou 1",
         ];
     }
 
@@ -92,6 +102,8 @@ class EntryRequest extends FormRequest
             recipient:                      $this->input('recipient'),
             memberId:                       $this->input('memberId'),
             reviewerId:                     $this->input('reviewerId'),
+            devolution:                     $this->input('devolution'),
+            deleted:                        $this->input('deleted'),
         );
     }
 }
