@@ -44,7 +44,7 @@ class EntryController extends Controller
             ], 201);
 
         }catch(Exception $e){
-            throw new GeneralExceptions('Houve um erro ao processar os dados', 500, $e);
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 
@@ -106,15 +106,13 @@ class EntryController extends Controller
             return $result;
 
         }catch(Exception $e){
-            throw new GeneralExceptions('Houve um erro ao processar os dados', 500, $e);
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
     }
 
 
     /**
-     * @param $rangeMonthlyDate
-     * @param $amountType
-     * @param $entryType
+     * @param Request $request
      * @param GetAmountByEntryTypeAction $getAmountByEntryTypeAction
      * @return array
      * @throws GeneralExceptions

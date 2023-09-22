@@ -28,9 +28,8 @@ class UpdateEntryAction
         $entry = $this->entryRepository->updateEntry($id, $entryData);
 
         if($entry)
-        {
-            return $entry;
-        }
-        throw_if(!$entry, GeneralExceptions::class, 'Erro ao criar uma entrada', 500);
+            return true;
+        else
+            throw new GeneralExceptions('Encontramos um problema ao atualizar esta entrada, tente mais tarde!', 500);
     }
 }

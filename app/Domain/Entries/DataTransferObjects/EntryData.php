@@ -32,4 +32,10 @@ class EntryData extends DataTransferObject
 
     /** @var integer  */
     public int $reviewerId;
+
+    /** @var integer  */
+    public int $devolution;
+
+    /** @var integer  */
+    public int $deleted;
 }

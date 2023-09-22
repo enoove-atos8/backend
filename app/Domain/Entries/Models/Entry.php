@@ -25,6 +25,8 @@ class Entry extends Model
         'recipient',
         'member_id',
         'reviewer_id',
+        'deleted',
+        'devolution',
     ];
 
     public function member(): BelongsTo
