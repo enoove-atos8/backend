@@ -48,6 +48,7 @@ COPY . .
 RUN chmod -R 777 storage
 RUN composer install --no-interaction --no-ansi
 RUN php artisan optimize:clear
+RUN cp .env.dev .env
 RUN php artisan config:cache
 
 # Expose port 8000 and start php-fpm server
