@@ -52,4 +52,14 @@ $app->singleton(
 |
 */
 
+$env = '';
+
+if(str_contains($_SERVER['HTTP_HOST'], 'atos242.local'))
+    $env = '.env.local';
+if(str_contains($_SERVER['HTTP_HOST'], 'atos242.com'))
+    $env = '.env.dev';
+
+
+$app->loadEnvironmentFrom($env);
+
 return $app;
