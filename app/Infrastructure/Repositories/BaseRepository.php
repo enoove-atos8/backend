@@ -3,6 +3,7 @@
 namespace Infrastructure\Repositories;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Pagination\Paginator;
@@ -17,14 +18,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
 {
     use ThrowsHttpExceptions, CacheResults;
 
+    const OPERATORS = [
+      'LIKE' => 'LIKE',
+      'BETWEEN' => 'BETWEEN',
+      'EQUALS' => '=',
+      'NOT_EQUALS' => '<>',
+      'MINOR' => '<',
+      'MAJOR' => '>',
+      'NOT_IN' => 'NOT IN',
+      'IN' => 'IN',
+      'NOT_NULL' => 'NOT NULL',
+    ];
 
-    const EQUALS = '=';
-    const NOT_EQUALS = '<>';
-    const MINOR = '<';
-    const MAJOR = '>';
-    const NOT_IN = 'NOT IN';
-    const IN = 'IN';
-    const NOT_NULL = 'IS NOT NULL';
 
 
     /**
@@ -51,9 +56,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     protected array $uses = [];
 
-    protected int $cacheTtl = 60;
+    protected int $cacheTtl = 1;
 
-    protected bool $caching = true;
+    protected bool $caching = false;
 
     /**
      * Get the model from the IoC container
@@ -64,6 +69,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->model = app()->make($this->model);
         $this->setUses();
     }
+
+
 
     /**
      * Get all items
@@ -87,6 +94,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
+
+
     /**
      * Get paged items
      *
@@ -108,6 +117,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+
 
     /**
      * Items for select options
@@ -131,6 +142,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+
 
     /**
      * Get item by its id
@@ -213,80 +226,57 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-    /**
-     * * Get a collection of items with relationships
-     *
-     * @param string $relationshipTable
-     * @param array $relationshipsConditions
-     * @param array $columns
-     * @param array $conditions
-     * @return Collection
-     * @throws BindingResolutionException
-     */
-    public function getListWithRelationships(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Collection
-    {
-        $query = function () use ($relationshipTable, $relationshipsConditions, $columns, $conditions) {
-            return DB::table($this->model->getTable())
-                ->join($relationshipTable, function (JoinClause $join) use ($relationshipTable, $relationshipsConditions) {
-                    foreach ($relationshipsConditions as $condition) {
-                        $join->on($condition['leftColumn'], $condition['operator'], $condition['rightColumn']);
-                    }
-                })
-                ->select($columns)
-                ->where($conditions)
-                ->get();
-        };
-
-        return $this->doQuery($query);
-    }
-
-
-    /**
-     * Get only item with relationship
-     *
-     * @param string $relationshipTable
-     * @param array $relationshipsConditions
-     * @param array $columns
-     * @param array $conditions
-     * @return Model
-     * @throws BindingResolutionException
-     */
-    public function getItemWithRelationship(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Model
-    {
-        $query = function () use ($relationshipTable, $relationshipsConditions, $columns, $conditions) {
-            return DB::table($this->model->getTable())
-                ->join($relationshipTable, function (JoinClause $join) use ($relationshipTable, $relationshipsConditions) {
-                    foreach ($relationshipsConditions as $condition) {
-                        $join->on($condition['leftColumn'], $condition['operator'], $condition['rightColumn']);
-                    }
-                })
-                ->select($columns)
-                ->where($conditions)
-                ->first();
-        };
-
-        return $this->doQuery($query);
-    }
 
     /**
      * Get instance of model by column
      *
-     * @param mixed $term search term
-     * @param string $column column to search
+     * @param array $queryClausesAndConditions
+     * @param string $orderBy
+     * @param string $sort
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getCollectionByColumn(mixed $term, string $column = 'slug'): Collection
+    public function getItemsWithRelationshipsAndWheres(
+        array $queryClausesAndConditions,
+        string $orderBy = 'id',
+        string $sort = 'desc'): Collection
     {
-        $query = function () use ($term, $column) {
+        $query = function () use ($queryClausesAndConditions, $orderBy, $sort) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where($column, '=', $term)
+                ->where(function ($q) use($queryClausesAndConditions){
+                    if($queryClausesAndConditions['where_clause']['exists'] and
+                        count($queryClausesAndConditions['where_clause']['clause']) > 0){
+                        foreach ($queryClausesAndConditions['where_clause']['clause'] as $key => $clause) {
+                            if($clause['type'] == 'and'){
+                                $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                            if($clause['type'] == 'andWithOrInside'){
+                                $q->where(function($query) use($clause){
+                                    if(count($clause['condition']) > 0){
+                                        foreach ($clause['condition']['value'] as $value){
+                                            $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                                        }
+                                    }
+                                });
+                            }
+                            if($clause['type'] == 'or'){
+                                $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                            if($clause['type'] == 'in'){
+                                $q->whereIn($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                        }
+                    }
+                })
+                ->orderBy($orderBy, $sort)
                 ->get();
         };
 
         return $this->doQuery($query);
     }
+
+
 
     /**
      * Get item by id or column

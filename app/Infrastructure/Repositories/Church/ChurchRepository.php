@@ -23,7 +23,7 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
     {
         /*$relationshipTable = 'tenants';
         $relationshipsConditions = [
-            ['leftColumn' => 'churches.tenant_id', 'op' => $this::EQUALS, 'rightColumn' => 'tenants.id'],
+            ['leftColumn' => 'churches.tenant_id', 'operator' => $this::EQUALS, 'rightColumn' => 'tenants.id'],
         ];
         $conditions = [
             ['tenants.id', $this::EQUALS, 'ibop']
