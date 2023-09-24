@@ -75,10 +75,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             | Resource: Entries
             | EndPoints: /v1/financial/entries
             |
-            |   1   - GET    - /entries -
-            |   2   - GET    - /entries/getAmountByEntryTypes - OK - TST
-            |   3   - POST   - /entries - OK - TST
-            |   4   - POST   - /entries/{id} - OK - TST
+            |   1 - GET - /entries - OK
+            |   2 - GET - /entries/getAmountByEntryType -
+            |   3 - GET - /entries/{id} - OK
+            |   4 - POST - /entries - OK
+            |   5 - PUT - /entries/{id} - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -90,50 +91,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * Description: Get All Entries by Date Range
                  */
 
-                Route::get('/', function () {
-                    return [
-                        [
-                            'id'                            =>  1,
-                            'entryType'                     =>  'tithe',
-                            'transactionType'               =>  'cash',
-                            'transactionCompensation'       =>  'compensated',
-                            'dateTransactionCompensation'   =>  '2023-09-01',
-                            'dateEntryRegister'             =>  '2023-09-01',
-                            'amount'                        =>  123.5,
-                            'recipient'                     =>  null,
-                            'member'    =>  [
-                                'memberId'      =>  1,
-                                'memberName'    =>  'Rafael Henrique Melo de Souza',
-                                'memberAvatar'  =>  'assets/images/avatars/female-01.jpg',
-                            ],
-                            'reviewer'    =>  [
-                                'reviewerId'      =>  3,
-                                'reviewerName'    =>  'Jaime Lopes Junior',
-                                'reviewerAvatar'  =>  'assets/images/avatars/female-02.jpg',
-                            ]
-                        ],
-                        [
-                            'id'                            =>  2,
-                            'entryType'                     =>  'offers',
-                            'transactionType'               =>  'pix',
-                            'transactionCompensation'       =>  'compensated',
-                            'dateTransactionCompensation'   =>  '2023-09-01',
-                            'dateEntryRegister'             =>  '2023-09-01',
-                            'amount'                        =>  1752.5,
-                            'recipient'                     =>  null,
-                            'member'    =>  [
-                                'memberId'      =>  2,
-                                'memberName'    =>  'Cláudio de Souza Lins',
-                                'memberAvatar'  =>  'assets/images/avatars/male-01.jpg',
-                            ],
-                            'reviewer'    =>  [
-                                'reviewerId'      =>  3,
-                                'reviewerName'    =>  'Jaime Lopes Junior',
-                                'reviewerAvatar'  =>  'assets/images/avatars/female-02.jpg',
-                            ]
-                        ]
-                    ];
-                });
+                Route::get('/', [EntryController::class, 'getEntriesByMonthlyRange']);
 
 
                 /*
@@ -141,16 +99,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * EndPoint: /getAmountByEntryType/
                  * Description: Get All Entries by Date Range
                 */
-                Route::get('/getAmountByEntryType/', function (string $type) {
-                    return [
-                        'type'            =>  'tithe',
-                        'amount'          =>  '1366.25',
-                        'monthlyRange'    =>  [
-                            'startDate' =>  '2023-09-04',
-                            'endDate'   =>  '2023-09-04'
-                        ]
-                    ];
-                });
+                Route::get('/getAmountByEntryType/', [EntryController::class, 'getAmountByEntryType']);
+
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get an entry by id
+                 */
+
+                Route::get('/{id}', [EntryController::class, 'getEntryById']);
 
 
                 /*
@@ -159,6 +118,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * Description: Get All Entries by Date Range
                  */
                 Route::post('/', [EntryController::class, 'createEntry']);
+
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Update an entry
+                 */
+
+                Route::put('/{id}', [EntryController::class, 'updateEntry']);
+
+
             });
 
 

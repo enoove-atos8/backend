@@ -51,23 +51,21 @@ class GeneralExceptions extends Exception
         $this->code = $this->getCode();
 
         $defaultResponse = [
-            'error' =>  [
-                'message'   => $this->message,
-                'code'      => $this->code,
-            ]
+            'message'   => $this->message,
+            'code'      => $this->code,
         ];
 
         if($this->e instanceof QueryException)
         {
 
             $itemsResponse = [
-                'shortMessage' => 'Houve um erro interno na aplicação, em alguns instantes este problama será resolvido!',
+                'message' => 'Houve um erro interno na aplicação, em alguns instantes este problama será resolvido!',
                 'code'         => 500,
                 'file'         => $this->getFile(),
                 'line'         => $this->getLine(),
             ];
 
-            $finalResponse = array_merge($defaultResponse['error'], $itemsResponse);
+            $finalResponse = array_merge($defaultResponse, $itemsResponse);
 
             return new JsonResponse($finalResponse, 500);
         }

@@ -1,41 +1,48 @@
-GET http://localhost:8000/api/users/10
+POST http://dev.atos242.local:8080/api/v1/login
 Content-Type: application/json
-Accept: application/json
-Authorization: Bearer 51|WDLnX7OsIyrOz2bfeoX7hS2KzWEr0yHdJSHPBtpI
-
-###
-POST http://localhost:8000/api/employees
-Content-Type: application/json
-Accept: application/json
-Authorization: Bearer 48|u3cWECP8s4nvl25Tj6vnAZl3KdYAlZBZ6MQ3Oswb
 
 {
-    "user": {
-        "name": "Elaine Richelline",
-        "email": "elainerichell@gmail.com",
-        "password": "123456",
-        "confirm_password": "123456",
-        "type": "web",
-        "roles": []
-    },
-    "employee": {
-        "first_name": "Elaine",
-        "last_name": "Richelline",
-        "gender": "male",
-        "birth_date": "29/12/1986",
-        "cpf": "06545218409",
-        "rg": "7449629",
-        "cell_phone": "81999002918"
-    }
-
+    "email": "dev@dev.com.br",
+    "password": "123456"
 }
 
 ###
-POST http://localhost:8000/api/login
+GET http://dev.atos242.local:8080/api/v1/financial/entries?startDate=2023-09-06&endDate=2023-09-10
 Content-Type: application/json
 Accept: application/json
+Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
+
+
+###
+GET http://dev.atos242.local:8080/api/v1/financial/entries/getAmountByEntryType/tithe
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
+
+
+
+
+###
+PUT http://dev.atos242.local:8080/api/v1/financial/entries/48
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
 
 {
-  "email": "admin@atos242.com",
-  "password": "123456"
+    "entryType":"offers",
+    "transactionType":"doc_ted_tev",
+    "transactionCompensation":"compensated",
+    "dateTransactionCompensation": "2023-10-14T03:00:00.000Z",
+    "dateEntryRegister": "2023-07-01",
+    "amount":500,
+    "recipient":null,
+    "memberId":null,
+    "reviewerId":1
 }
+
+###
+GET http://dev.atos242.local:8080/api/v1/financial/entries/48
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
+

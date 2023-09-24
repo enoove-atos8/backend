@@ -2,8 +2,11 @@
 
 namespace Application\Api\v1\Entry\Resources;
 
-use Carbon\Carbon;
+use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use JsonSerializable;
+
 class EntryResourceCollection extends ResourceCollection
 {
     /**
@@ -11,26 +14,48 @@ class EntryResourceCollection extends ResourceCollection
      * with the one declared in the 'wrap' variable
      * @var string
      */
-    //public static $wrap = 'users';
+    public static $wrap = 'entries';
 
 
     /**
      * Transform the resource collection into an array.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     * @param  Request  $request
+     * @return array|Arrayable|JsonSerializable
      */
-    public function toArray($request)
+    public function toArray($request): array|JsonSerializable|Arrayable
     {
-
         return $this->collection->map(function ($item){
+            if(count($item->member()->get()) > 0) $member = $item->member()->first(); else$member = null;
 
+            $dataMember = [];
 
+            if(!is_null($member)){
+                $dataMember = ['id'=> $member->id, 'memberName'=> $member->full_name, 'memberAvatar'=> $member->avatar];
+            }
+            return [
+                'id'                            =>  $item->id,
+                'entryType'                     =>  $item->entry_type,
+                'transactionType'               =>  $item->transaction_type,
+                'transactionCompensation'       =>  $item->transaction_compensation,
+                'dateTransactionCompensation'   =>  $item->date_transaction_compensation,
+                'dateEntryRegister'             =>  $item->date_entry_register,
+                'amount'                        =>  $item->amount,
+                'devolution'                    =>  $item->devolution,
+                'recipient'                     =>  $item->recipient,
+                'deleted'                       =>  $item->deleted,
+                'member'                        =>  $dataMember,
+                'reviewer'                        =>  [
+                    'reviewerId'      =>  1,
+                    'reviewerName'    =>  'Jaime Junior da Silva Lopes',
+                    'reviewerAvatar'  =>  'female-01.jpg',
+                ],
+            ];
         });
     }
 
 
-    public function with($request)
+    public function with($request): array
     {
         return [
             'total' => count($this)

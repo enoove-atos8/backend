@@ -20,10 +20,12 @@ return new class extends Migration
             $table->string('transaction_compensation')->nullable(false);
             $table->string('date_transaction_compensation')->nullable();
             $table->string('date_entry_register')->nullable(false);
-            $table->integer('amount')->nullable(false);
+            $table->decimal('amount')->nullable(false);
             $table->string('recipient')->nullable();
+            $table->binary('devolution')->nullable()->default(0);
             $table->integer('member_id')->nullable();
             $table->integer('reviewer_id')->nullable(false);
+            $table->binary('deleted')->nullable(false)->default(0);
             $table->timestamps();
         });
     }

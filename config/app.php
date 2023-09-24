@@ -166,6 +166,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         RepositoryServiceProvider::class,
 
+
         /*
          * Package Service Providers...
          */

@@ -82,40 +82,15 @@ interface BaseRepositoryInterface
     public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model;
 
 
-
-    /**
-     * * Get a collection of items with relationships
-     *
-     * @param string $relationshipTable
-     * @param array $relationshipsConditions
-     * @param array $columns
-     * @param array $conditions
-     * @return Collection
-     */
-    public function getListWithRelationships(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Collection;
-
-
-
-    /**
-     * Get only item with relationship
-     *
-     * @param string $relationshipTable
-     * @param array $relationshipsConditions
-     * @param array $columns
-     * @param array $conditions
-     * @return Model
-     */
-    public function getItemWithRelationship(string $relationshipTable, array $relationshipsConditions, array $columns = ['*'], array $conditions = []): Model;
-
-
-
     /**
      * Get instance of model by column
      *
-     * @param  mixed $term search term
-     * @param string $column column to search
+     * @param array $queryClausesAndConditions
+     * @param string $orderBy
+     * @param string $sort
+     * @return Collection
      */
-    public function getCollectionByColumn(mixed $term, string $column = 'slug');
+    public function getItemsWithRelationshipsAndWheres(array $queryClausesAndConditions, string $orderBy = 'id', string $sort = 'desc'): Collection;
 
 
 
