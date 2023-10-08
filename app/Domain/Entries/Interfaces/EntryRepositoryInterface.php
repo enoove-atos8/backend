@@ -15,7 +15,7 @@ interface EntryRepositoryInterface
 
     public function getAllEntries(string $rangeMonthlyDate): Collection;
 
-    public function getEntryById(int $id): Model;
+    public function getEntryById(int $id): Model | null;
 
     public function getAmountByEntryType(string $rangeMonthlyDate, string $amountType, string $entryType = null, string $exitType = null): Collection;
 }

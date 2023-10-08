@@ -19,6 +19,13 @@ return new class extends Migration
             $table->string('full_name')->nullable(false);
             $table->string('avatar')->nullable();
             $table->string('type')->nullable();
+            $table->string('title')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('address')->nullable();
+            $table->string('district')->nullable();
+            $table->string('city')->nullable();
+            $table->string('country')->nullable();
+            $table->string('birthday')->nullable();
             $table->timestamps();
         });
     }

@@ -8,51 +8,80 @@ use Application\Api\v1\Users\Resources\UserResource;
 use Application\Api\v1\Users\Resources\UserResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Users\Actions\CreateUserAction;
+use Domain\Users\Actions\GetUserByIdAction;
+use Domain\Users\Actions\GetUsersAction;
+use Http\Client\Exception;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\Routing\ResponseFactory;
+use Illuminate\Http\Response;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
+use Throwable;
 
 class UserController extends Controller
 {
 
     /**
-     * @OA\Post(
-     * path="/v1/user",
-     * security={{"Bearer": {}}},
-     * tags={"Login"},
-     * summary="User Login",
-     * description="User Login here",
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *          @OA\Property(property="email", type="string", pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$", format="email", example="test@gmail.com"),
-     *          @OA\Property(property="password", type="string", format="password")
-     *          )
-     *      ),
-     *      @OA\Response(
-     *          response=201,
-     *          description="Login Successfully",
-     *          @OA\JsonContent()
-     *       ),
-     *      @OA\Response(
-     *          response=200,
-     *          description="Login Successfully",
-     *          @OA\JsonContent()
-     *       ),
-     *      @OA\Response(response=422,description="Unprocessable Entity"),
-     *      @OA\Response(response=400, description="Bad request"),
-     *      @OA\Response(response=401, description="Unauthenticated"),
-     *      @OA\Response(response=404, description="Resource Not Found"),
-     * )
-     *
-     * Store a newly created resource in storage.
-     *
      * @param UserRequest $userRequest
      * @param CreateUserAction $createUserAction
-     * @return UserResource
+     * @return Response
+     * @throws GeneralExceptions
+     * @throws Throwable
      * @throws UnknownProperties
      */
-    public function createUser(UserRequest $userRequest, CreateUserAction $createUserAction): UserResource
+    public function createUser(UserRequest $userRequest, CreateUserAction $createUserAction): Response
     {
-        $response = $createUserAction($userRequest->userData());
-        return new UserResource($response);
+        try
+        {
+            $createUserAction($userRequest->userData(), $userRequest->userDetailData());
+
+            return response([
+                'message'   =>  'Usuário cadastrado com sucesso!',
+            ], 201);
+
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param GetUsersAction $getUsersAction
+     * @return UserResourceCollection
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getUsers(GetUsersAction $getUsersAction): UserResourceCollection
+    {
+        try
+        {
+            $response = $getUsersAction();
+            return new UserResourceCollection($response);
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function getUserById($id, GetUserByIdAction $getUserByIdAction): UserResource
+    {
+        try
+        {
+            $response = $getUserByIdAction($id);
+            return new UserResource($response);
+
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
     }
 }

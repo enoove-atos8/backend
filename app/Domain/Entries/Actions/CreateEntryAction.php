@@ -24,11 +24,6 @@ class CreateEntryAction
      */
     public function __invoke(EntryData $entryData): Entry
     {
-        $entry = $this->entryRepository->newEntry($entryData);
-
-        if($entry instanceof Entry)
-            return $entry;
-        else
-            throw new GeneralExceptions('Ocorreu um erro ao criar uma nova entrada', 500);
+        return $this->entryRepository->newEntry($entryData);
     }
 }

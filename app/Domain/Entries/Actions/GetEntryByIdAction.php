@@ -4,6 +4,8 @@ namespace Domain\Entries\Actions;
 
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Entries\EntryRepository;
 use Throwable;
 
@@ -21,8 +23,13 @@ class GetEntryByIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke($id): Model
+    public function __invoke($id): Model | null
     {
-        return $this->entryRepository->getEntryById($id);
+        $entry = $this->entryRepository->getEntryById($id);
+
+        if($entry == null)
+            throw new GeneralExceptions('Nenhum entrada encontrada!', 404);
+
+        return $entry;
     }
 }
