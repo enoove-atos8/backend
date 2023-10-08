@@ -171,9 +171,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @return Model
      * @throws BindingResolutionException
      */
-    public function getItemByColumn(mixed $term, string $column = 'slug'): Model
+    public function getItemByColumn(string $column, mixed $term): Model
     {
-        $query = function () use ($term, $column) {
+        $query = function () use ($column, $term) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where($column, '=', $term)
@@ -271,6 +271,27 @@ abstract class BaseRepository implements BaseRepositoryInterface
                 })
                 ->orderBy($orderBy, $sort)
                 ->get();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * Get instance of model by column
+     *
+     * @param array $queryClausesAndConditions
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getItemWithRelationshipsAndWheres(
+        array $queryClausesAndConditions): Model | null
+    {
+        $query = function () use ($queryClausesAndConditions) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where($queryClausesAndConditions['field'], $queryClausesAndConditions['operator'], $queryClausesAndConditions['value'])
+                ->first();
         };
 
         return $this->doQuery($query);

@@ -19,6 +19,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     protected mixed $model = Entry::class;
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
     const DELETED_COLUMN = 'deleted';
+    const ID_COLUMN = 'id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const AMOUNT_COLUMN = 'amount';
     const DEVOLUTION_COLUMN = 'devolution';
@@ -87,17 +88,22 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
-
     /**
      * @param int $id
-     * @return Model
+     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getEntryById(int $id): Model
+    public function getEntryById(int $id): Model | null
     {
         $this->requiredRelationships = ['member'];
 
-        return $this->getById($id);
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,
+            ];
+
+        return $this->getItemWithRelationshipsAndWheres($conditions);
     }
 
 

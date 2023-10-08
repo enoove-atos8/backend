@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
 use Application\Api\v1\Entry\Controllers\EntryController;
+use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -72,11 +73,12 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             /*
             |------------------------------------------------------------------------------------------
+            | Resource Group: financial
             | Resource: Entries
             | EndPoints: /v1/financial/entries
             |
             |   1 - GET - /entries - OK
-            |   2 - GET - /entries/getAmountByEntryType -
+            |   2 - GET - /entries/getAmountByEntryType - OK
             |   3 - GET - /entries/{id} - OK
             |   4 - POST - /entries - OK
             |   5 - PUT - /entries/{id} - OK
@@ -131,26 +133,61 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
             });
+        });
 
 
 
-            Route::get('/monthlyBudget', function () {
-                return [
-                    'titleCard'     =>  'Orçamento mensal',
-                    'totalValue'    =>  '101,12%',
-                    'variation'     =>  4,
-                    'chart'         =>  [
-                        'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
-                        'dataSeries' => [
-                            'name'  => 'R$',
-                            'data'  => [15521.12, 15519, 15522, 15521]
-                        ]
-                    ]
-                ];
+        /*
+        |--------------------------------------------------------------------------
+        | Users routes
+        |--------------------------------------------------------------------------
+        |
+        */
+
+        Route::prefix('general')->group(function () {
+
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource Group: general
+            | Resource: Users
+            | EndPoints: /v1/general/users
+            |
+            |   1 - GET - /users -
+            |   2 - GET - /users/{id} -
+            |   3 - POST - /users -
+            |   4 - GET - /users/getTotalUsersByRoles -
+            |   5 - PUT - /users/{id}
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('users')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All Entries by Date Range
+                 */
+
+                Route::get('/', [UserController::class, 'getUsers']);
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get user by id
+                 */
+
+                Route::get('/{id}', [UserController::class, 'getUserById']);
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Create a user
+                 */
+
+                Route::post('/', [UserController::class, 'createUser']);
             });
-
-
-
         });
 
 
@@ -165,6 +202,30 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::get('/users', 'getUsers')->name('users.all');
         Route::get('/users/{id}', 'getUserByID')->name('users.byID')->where('id', '[0-9]+');
+
+
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Others routes
+        |--------------------------------------------------------------------------
+        |
+        */
+        Route::get('/monthlyBudget', function () {
+            return [
+                'titleCard'     =>  'Orçamento mensal',
+                'totalValue'    =>  '101,12%',
+                'variation'     =>  4,
+                'chart'         =>  [
+                    'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
+                    'dataSeries' => [
+                        'name'  => 'R$',
+                        'data'  => [15521.12, 15519, 15522, 15521]
+                    ]
+                ]
+            ];
+        });
 
     });
 });
