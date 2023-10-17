@@ -12,4 +12,6 @@ use Domain\Users\Models\User;
 interface UserDetailRepositoryInterface
 {
     public function createUserDetail($userId, UserDetailData $userDetailData): UserDetail;
+
+    public function updateUserDetail($id, UserDetailData $userDetailData): int;
 }

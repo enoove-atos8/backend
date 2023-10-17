@@ -29,6 +29,8 @@ class CreateUserAction
         $user = $this->userRepository->createUser($userData);
         $this->createUserDetailAction->__invoke($user->id, $userDetailData);
 
+        $user->assignRole($userData->roles);
+
         // Call action here that handle email to user activate your account
 
         return $user;

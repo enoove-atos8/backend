@@ -157,6 +157,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             |   3 - POST - /users -
             |   4 - GET - /users/getTotalUsersByRoles -
             |   5 - PUT - /users/{id}
+            |   6 - PUT - /users/{id}/status
             |------------------------------------------------------------------------------------------
             */
 
@@ -187,6 +188,24 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::post('/', [UserController::class, 'createUser']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}/status
+                 * Description: Update status of activation user
+                 */
+
+                Route::put('/{id}/status', [UserController::class, 'updateStatus']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Create a user
+                 */
+
+                Route::put('/{id}', [UserController::class, 'updateUser']);
             });
         });
 

@@ -2,6 +2,8 @@
 
 namespace Domain\Users\Actions;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\User\UserRepository;
@@ -20,11 +22,13 @@ class GetUserByIdAction
     }
 
 
-
     /**
-     * @throws Throwable
+     * @param null $id
+     * @return Model
+     * @throws GeneralExceptions
+     * @throws BindingResolutionException
      */
-    public function __invoke($id = null): Collection
+    public function __invoke($id = null): Model
     {
         $user = $this->userRepository->getUsers($id);
 
