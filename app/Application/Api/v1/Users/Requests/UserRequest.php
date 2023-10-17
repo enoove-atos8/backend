@@ -4,7 +4,9 @@ namespace Application\Api\v1\Users\Requests;
 
 use Domain\Users\DataTransferObjects\UserData;
 use Domain\Users\DataTransferObjects\UserDetailData;
+use Gerencianet\Auth;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class UserRequest extends FormRequest
@@ -27,7 +29,8 @@ class UserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email'                 =>  'required|email|unique:users',
+            'id'                    =>  'integer',
+            'email'                 =>  ['required', 'email', Rule::unique('users', 'email')->ignore($this->id)],
             'activated'             =>  'required',
             'type'                  =>  'required',
             'changedPassword'       =>  'required',
@@ -37,6 +40,7 @@ class UserRequest extends FormRequest
             'details.avatar'        =>  '',
             'details.type'          =>  '',
             'details.title'         =>  '',
+            'details.gender'        =>  '',
             'details.phone'         =>  '',
             'details.address'       =>  '',
             'details.district'      =>  '',

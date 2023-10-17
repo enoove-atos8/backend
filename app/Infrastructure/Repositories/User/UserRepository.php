@@ -5,6 +5,7 @@ namespace Infrastructure\Repositories\User;
 use Domain\Users\DataTransferObjects\UserData;
 use Domain\Users\Interfaces\UserRepositoryInterface;
 use Domain\Users\Models\User;
+use Domain\Users\Models\UserDetail;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -22,6 +23,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const AMOUNT_COLUMN = 'amount';
     const DEVOLUTION_COLUMN = 'devolution';
+    const ID_COLUMN = 'id';
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
@@ -56,7 +58,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      * @return Collection|Model
      * @throws BindingResolutionException
      */
-    public function getUsers($id = null): Collection|Model
+    public function getUsers($id = null): Collection|User
     {
         $this->requiredRelationships = ['detail'];
 
@@ -64,5 +66,45 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             return $this->getById($id);
         else
             return $this->getAll();
+    }
+
+
+    /**
+     * @param null $id
+     * @param $status
+     * @return int
+     * @throws BindingResolutionException
+     */
+    public function updateStatus($id, $status): int
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id
+        ];
+        return $this->update($conditions, ['activated' =>  $status]);
+    }
+
+
+    /**
+     * @param null $id
+     * @param UserData $userData
+     * @return int
+     * @throws BindingResolutionException
+     */
+    public function updateUser($id, UserData $userData): int
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id
+        ];
+        return $this->update($conditions, [
+            'email'                 =>  $userData->email,
+            'activated'             =>  $userData->activated,
+            'type'                  =>  $userData->type,
+            'changed_password'      =>  $userData->changedPassword,
+            'access_quantity'       =>  $userData->accessQuantity,
+        ]);
     }
 }

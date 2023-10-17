@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('type')->nullable();
             $table->string('title')->nullable();
+            $table->string('gender')->nullable();
             $table->string('phone')->nullable();
             $table->string('address')->nullable();
             $table->string('district')->nullable();

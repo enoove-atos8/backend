@@ -20,6 +20,14 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
 {
     protected mixed $model = UserDetail::class;
 
+    const USER_ID_COLUMN = 'user_id';
+
+
+    /**
+     * @param $userId
+     * @param UserDetailData $userDetailData
+     * @return UserDetail
+     */
     public function createUserDetail($userId, UserDetailData $userDetailData): UserDetail
     {
         return $this->create([
@@ -28,6 +36,36 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
             'avatar'       =>  $userDetailData->avatar,
             'type'         =>  $userDetailData->type,
             'title'        =>  $userDetailData->title,
+            'gender'        =>  $userDetailData->gender,
+            'phone'        =>  $userDetailData->phone,
+            'address'      =>  $userDetailData->address,
+            'district'     =>  $userDetailData->district,
+            'city'         =>  $userDetailData->city,
+            'country'      =>  $userDetailData->country,
+            'birthday'     =>  $userDetailData->birthday,
+        ]);
+    }
+
+
+    /**
+     * @param $id
+     * @param UserDetailData $userDetailData
+     * @return int
+     * @throws BindingResolutionException
+     */
+    public function updateUserDetail($id, UserDetailData $userDetailData): int
+    {
+        $conditions = [
+            'field' => self::USER_ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id
+        ];
+        return $this->update($conditions, [
+            'full_name'    =>  $userDetailData->full_name,
+            'avatar'       =>  $userDetailData->avatar,
+            'type'         =>  $userDetailData->type,
+            'title'        =>  $userDetailData->title,
+            'gender'       =>  $userDetailData->gender,
             'phone'        =>  $userDetailData->phone,
             'address'      =>  $userDetailData->address,
             'district'     =>  $userDetailData->district,

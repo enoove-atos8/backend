@@ -10,11 +10,11 @@ interface BaseRepositoryInterface
     /**
      * Get all items
      *
-     * @param string|null $columns specific columns to select
+     * @param string $columns specific columns to select
      * @param string $orderBy column to sort by
      * @param string $sort sort direction
      */
-    public function getAll(string $columns = null, string $orderBy = 'created_at', string $sort = 'desc');
+    public function getAll(string $columns = '*', string $orderBy = 'created_at', string $sort = 'desc');
 
 
 
