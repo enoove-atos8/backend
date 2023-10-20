@@ -46,13 +46,11 @@ class AuthController extends Controller
      *      @OA\Response(response=401, description="Unauthenticated"),
      *      @OA\Response(response=404, description="Resource Not Found"),
      * )
+     * @throws UnknownProperties
      */
     public function login(AuthRequest $authRequest, LoginAction $loginAction): JsonResponse|LoginResource
     {
         $response = $loginAction($authRequest->authData());
-
-        //$test = Crypt::encryptString('Jesus100');
-        //$test2 = Crypt::decryptString($test);
 
         if (is_array($response) && array_key_exists('error',$response))
             return (new ErrorLoginResource($response))->response()->setStatusCode($response["status"]);

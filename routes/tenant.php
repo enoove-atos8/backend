@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Application\Api\v1\Auth\Controllers\AuthController;
 use Application\Api\v1\Entry\Controllers\EntryController;
 use Application\Api\v1\Users\Controllers\UserController;
+use Application\Api\v1\Users\Controllers\UserStorageController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
@@ -62,9 +63,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::post('logout', 'logout');
 
+
+
         /*
         |--------------------------------------------------------------------------
-        | Financial routes
+        | Group Financial routes
         |--------------------------------------------------------------------------
         |
         */
@@ -136,115 +139,78 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         });
 
 
-
         /*
         |--------------------------------------------------------------------------
         | Users routes
-        |--------------------------------------------------------------------------
+        |------------------------------------------------------------------------------------------
+        | Resource Group: general
+        | Resource: Users
+        | EndPoints: /v1/general/users
         |
+        |   1 - GET - /users -
+        |   2 - GET - /users/{id} -
+        |   3 - POST - /users -
+        |   4 - GET - /users/getTotalUsersByRoles -
+        |   5 - PUT - /users/{id}
+        |   6 - PUT - /users/{id}/status
+        |------------------------------------------------------------------------------------------
         */
 
-        Route::prefix('general')->group(function () {
+        Route::prefix('users')->group(function () {
 
             /*
-            |------------------------------------------------------------------------------------------
-            | Resource Group: general
-            | Resource: Users
-            | EndPoints: /v1/general/users
-            |
-            |   1 - GET - /users -
-            |   2 - GET - /users/{id} -
-            |   3 - POST - /users -
-            |   4 - GET - /users/getTotalUsersByRoles -
-            |   5 - PUT - /users/{id}
-            |   6 - PUT - /users/{id}/status
-            |------------------------------------------------------------------------------------------
-            */
+             * Action: GET
+             * EndPoint: /
+             * Description: Get All Entries by Date Range
+             */
 
-            Route::prefix('users')->group(function () {
-
-                /*
-                 * Action: GET
-                 * EndPoint: /
-                 * Description: Get All Entries by Date Range
-                 */
-
-                Route::get('/', [UserController::class, 'getUsers']);
+            Route::get('/', [UserController::class, 'getUsers']);
 
 
-                /*
-                 * Action: GET
-                 * EndPoint: /{id}
-                 * Description: Get user by id
-                 */
+            /*
+             * Action: GET
+             * EndPoint: /{id}
+             * Description: Get user by id
+             */
 
-                Route::get('/{id}', [UserController::class, 'getUserById']);
-
-
-                /*
-                 * Action: POST
-                 * EndPoint: /
-                 * Description: Create a user
-                 */
-
-                Route::post('/', [UserController::class, 'createUser']);
+            Route::get('/{id}', [UserController::class, 'getUserById']);
 
 
-                /*
-                 * Action: PUT
-                 * EndPoint: /{id}/status
-                 * Description: Update status of activation user
-                 */
+            /*
+             * Action: POST
+             * EndPoint: /
+             * Description: Create a user
+             */
 
-                Route::put('/{id}/status', [UserController::class, 'updateStatus']);
+            Route::post('/', [UserController::class, 'createUser']);
 
 
-                /*
-                 * Action: PUT
-                 * EndPoint: /{id}
-                 * Description: Create a user
-                 */
+            /*
+             * Action: PUT
+             * EndPoint: /{id}/status
+             * Description: Update status of activation user
+             */
 
-                Route::put('/{id}', [UserController::class, 'updateUser']);
-            });
+            Route::put('/{id}/status', [UserController::class, 'updateStatus']);
+
+
+            /*
+             * Action: PUT
+             * EndPoint: /{id}
+             * Description: Create a user
+             */
+
+            Route::put('/{id}', [UserController::class, 'updateUser']);
+
+
+
+            /*
+             * Action: PUT
+             * EndPoint: /files/assets/avatar
+             * Description: Upload a avatar user image
+             */
+
+            Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
         });
-
-
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Users routes
-        |--------------------------------------------------------------------------
-        |
-        */
-
-        Route::get('/users', 'getUsers')->name('users.all');
-        Route::get('/users/{id}', 'getUserByID')->name('users.byID')->where('id', '[0-9]+');
-
-
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Others routes
-        |--------------------------------------------------------------------------
-        |
-        */
-        Route::get('/monthlyBudget', function () {
-            return [
-                'titleCard'     =>  'Orçamento mensal',
-                'totalValue'    =>  '101,12%',
-                'variation'     =>  4,
-                'chart'         =>  [
-                    'dataLabels' =>  ['01 Jan', '01 Fev', '01 Mar', '01 Abr'],
-                    'dataSeries' => [
-                        'name'  => 'R$',
-                        'data'  => [15521.12, 15519, 15522, 15521]
-                    ]
-                ]
-            ];
-        });
-
     });
 });

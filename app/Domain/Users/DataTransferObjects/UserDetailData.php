@@ -12,8 +12,8 @@ class UserDetailData extends DataTransferObject
     /** @var string  */
     public string $full_name;
 
-    /** @var string|null  */
-    public string|null $avatar;
+    /** @var string|null|array  */
+    public string|null|array $avatar;
 
     /** @var string|null  */
     public string|null $type;

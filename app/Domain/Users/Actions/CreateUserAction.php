@@ -15,7 +15,10 @@ class CreateUserAction
     private UserRepository $userRepository;
     private CreateUserDetailAction $createUserDetailAction;
 
-    public function __construct(UserRepositoryInterface $userRepositoryInterface, CreateUserDetailAction $createUserDetailAction)
+    public function __construct(
+        UserRepositoryInterface $userRepositoryInterface,
+        CreateUserDetailAction $createUserDetailAction,
+    )
     {
         $this->userRepository = $userRepositoryInterface;
         $this->createUserDetailAction = $createUserDetailAction;
