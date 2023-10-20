@@ -5,6 +5,7 @@ namespace Domain\Users\Actions;
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Models\UserDetail;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\User\UserDetailRepository;
@@ -27,6 +28,7 @@ class UpdateStatusUserAction
      * @param $userId
      * @param $status
      * @return int
+     * @throws BindingResolutionException
      */
     public function __invoke($userId, $status): int
     {

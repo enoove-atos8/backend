@@ -43,7 +43,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         $password = '123456';
         return $this->create([
-            'email'                 =>  $userData->email,
+            'email'                 =>  strtolower($userData->email),
             'password'              =>  bcrypt($password),
             'activated'             =>  $userData->activated,
             'type'                  =>  $userData->type,

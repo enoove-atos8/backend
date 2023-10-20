@@ -32,13 +32,13 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
     {
         return $this->create([
             'user_id'      =>  $userId,
-            'full_name'    =>  $userDetailData->full_name,
+            'full_name'    =>  ucwords(strtolower($userDetailData->full_name)),
             'avatar'       =>  $userDetailData->avatar,
             'type'         =>  $userDetailData->type,
             'title'        =>  $userDetailData->title,
             'gender'       =>  $userDetailData->gender,
             'phone'        =>  $userDetailData->phone,
-            'address'      =>  $userDetailData->address,
+            'address'      =>  ucwords(strtolower($userDetailData->address)),
             'district'     =>  $userDetailData->district,
             'city'         =>  $userDetailData->city,
             'country'      =>  $userDetailData->country,
@@ -61,13 +61,13 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
             'value' => $id
         ];
         return $this->update($conditions, [
-            'full_name'    =>  $userDetailData->full_name,
+            'full_name'    =>  ucwords(strtolower($userDetailData->full_name)),
             'avatar'       =>  $userDetailData->avatar,
             'type'         =>  $userDetailData->type,
             'title'        =>  $userDetailData->title,
             'gender'       =>  $userDetailData->gender,
             'phone'        =>  $userDetailData->phone,
-            'address'      =>  $userDetailData->address,
+            'address'      =>  ucwords(strtolower($userDetailData->address)),
             'district'     =>  $userDetailData->district,
             'city'         =>  $userDetailData->city,
             'country'      =>  $userDetailData->country,
