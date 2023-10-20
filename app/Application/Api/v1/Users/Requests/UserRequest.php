@@ -40,13 +40,13 @@ class UserRequest extends FormRequest
             'details.avatar'        =>  '',
             'details.type'          =>  '',
             'details.title'         =>  '',
-            'details.gender'        =>  '',
+            'details.gender'        =>  'required',
             'details.phone'         =>  '',
             'details.address'       =>  '',
             'details.district'      =>  '',
             'details.city'          =>  '',
             'details.country'       =>  '',
-            'details.birthday'      =>  '',
+            'details.birthday'      =>  'required',
 
         ];
     }

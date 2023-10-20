@@ -36,7 +36,7 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
             'avatar'       =>  $userDetailData->avatar,
             'type'         =>  $userDetailData->type,
             'title'        =>  $userDetailData->title,
-            'gender'        =>  $userDetailData->gender,
+            'gender'       =>  $userDetailData->gender,
             'phone'        =>  $userDetailData->phone,
             'address'      =>  $userDetailData->address,
             'district'     =>  $userDetailData->district,

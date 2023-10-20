@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Users\Controllers;
 
+use Application\Api\v1\Users\Requests\UserAvatarRequest;
 use Application\Api\v1\Users\Requests\UserRequest;
 use Application\Api\v1\Users\Resources\ErrorUserResource;
 use Application\Api\v1\Users\Resources\UserResource;
@@ -12,6 +13,7 @@ use Domain\Users\Actions\GetUserByIdAction;
 use Domain\Users\Actions\GetUsersAction;
 use Domain\Users\Actions\UpdateStatusUserAction;
 use Domain\Users\Actions\UpdateUserAction;
+use Domain\Users\Actions\UploadUserAvatarAction;
 use Http\Client\Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
@@ -130,6 +132,31 @@ class UserController extends Controller
                 'message'   =>  'Usuário atualizado com sucesso!',
             ], 201);
 
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param UserAvatarRequest $userAvatarRequest
+     * @param UploadUserAvatarAction $uploadUserAvatarAction
+     * @return Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function uploadUserAvatar(UserAvatarRequest $userAvatarRequest, UploadUserAvatarAction $uploadUserAvatarAction): Response
+    {
+        try
+        {
+            $response = $uploadUserAvatarAction($userAvatarRequest->files->get('avatar'));
+
+            if($response)
+                return response([
+                    'avatar'    =>  $response
+                ], 200);
         }
         catch (Exception $e)
         {

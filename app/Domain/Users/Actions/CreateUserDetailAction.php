@@ -20,7 +20,8 @@ class CreateUserDetailAction
 
     public function __construct(
         UserRepositoryInterface $userRepositoryInterface,
-        UserDetailRepositoryInterface $userDetailRepositoryInterface)
+        UserDetailRepositoryInterface $userDetailRepositoryInterface,
+    )
     {
         $this->userRepository = $userRepositoryInterface;
         $this->userDetailRepository = $userDetailRepositoryInterface;

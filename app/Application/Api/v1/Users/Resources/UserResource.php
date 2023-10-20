@@ -95,7 +95,7 @@ class UserResource extends JsonResource
         return $tempRoles;
     }
 
-    public function with($request)
+    public function with($request): array
     {
         return [];
     }
