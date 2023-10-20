@@ -97,7 +97,7 @@ class UserController extends Controller
      * @param $id
      * @param UpdateStatusUserAction $updateStatusUserAction
      * @return Response
-     * @throws GeneralExceptions
+     * @throws GeneralExceptions|BindingResolutionException
      */
     public function updateStatus(Request $request, $id, UpdateStatusUserAction $updateStatusUserAction): Response
     {
@@ -106,7 +106,7 @@ class UserController extends Controller
             $response = $updateStatusUserAction($id, $request->input('status'));
             return response([
                 'message'   =>  'Status do usuário atualizado com sucesso!',
-            ], 201);
+            ], 200);
 
         }
         catch (Exception $e)
