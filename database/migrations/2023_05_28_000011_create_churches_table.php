@@ -23,6 +23,7 @@ class CreateChurchesTable extends Migration
             $table->boolean('activated')->nullable(false);
             $table->string('doc_type')->nullable(false);
             $table->string('doc_number')->nullable(false);
+            $table->string('aws_s3_bucket')->nullable(false);
             $table->timestamps();
 
             // Relationships

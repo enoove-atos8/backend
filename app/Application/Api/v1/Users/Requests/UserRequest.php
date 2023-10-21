@@ -3,7 +3,10 @@
 namespace Application\Api\v1\Users\Requests;
 
 use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\DataTransferObjects\UserDetailData;
+use Gerencianet\Auth;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class UserRequest extends FormRequest
@@ -13,7 +16,7 @@ class UserRequest extends FormRequest
      *
      * @return bool
      */
-    public function authorize()
+    public function authorize(): bool
     {
         return true;
     }
@@ -23,14 +26,27 @@ class UserRequest extends FormRequest
      *
      * @return array
      */
-    public function rules()
+    public function rules(): array
     {
         return [
-            'email'             =>  'required|email|unique:users',
-            'password'          =>  'required|string|min:6',
-            'confirm_password'  =>  'required|same:password',
-            'activated'         =>  'required',
-            'type'              =>  'required',
+            'id'                    =>  'integer',
+            'email'                 =>  ['required', 'email', Rule::unique('users', 'email')->ignore($this->id)],
+            'activated'             =>  'required',
+            'type'                  =>  'required',
+            'changedPassword'       =>  'required',
+            'accessQuantity'        =>  'required',
+            'roles'                 =>  'required',
+            'details.fullName'      =>  'required',
+            'details.avatar'        =>  '',
+            'details.type'          =>  '',
+            'details.title'         =>  '',
+            'details.gender'        =>  'required',
+            'details.phone'         =>  '',
+            'details.address'       =>  '',
+            'details.district'      =>  '',
+            'details.city'          =>  '',
+            'details.country'       =>  '',
+            'details.birthday'      =>  'required',
 
         ];
     }
@@ -41,15 +57,10 @@ class UserRequest extends FormRequest
      *
      * @return array
      */
-    public function messages()
+    public function messages(): array
     {
         return [
-            'email.required'            => 'O Preenchimento do campo email é obrigatório',
-            'email.unique'              => 'Este email já esta cadastrado, verifique!',
-            'password.required'         => 'O Preenchimento do campo senha é obrigatório',
-            'password.min'              => 'A senha deve ter no mínimo 6 caracteres, verifique!',
-            'confirm_password.same'     => 'As senhas informadas devem ser iguais, verifique!',
-            'type.required'             => 'O Preenchimento do campo type é obrigatório',
+
         ];
     }
 
@@ -62,10 +73,37 @@ class UserRequest extends FormRequest
     public function userData(): UserData
     {
         return new UserData(
-            email:          $this->input('email'),
-            password:       $this->input('password'),
-            activated:      $this->input('activated'),
-            type:           $this->input('type'),
+            email:              $this->input('email'),
+            password:           $this->input('password'),
+            activated:          $this->input('activated'),
+            type:               $this->input('type'),
+            changedPassword:    $this->input('changedPassword'),
+            accessQuantity:     $this->input('accessQuantity'),
+            roles:              $this->input('roles'),
+        );
+    }
+
+
+    /**
+     * Function to data transfer objects to UserDetailData class
+     *
+     * @return UserDetailData
+     * @throws UnknownProperties
+     */
+    public function userDetailData(): UserDetailData
+    {
+        return new UserDetailData(
+            full_name:   $this->input('details.fullName'),
+            avatar:      $this->input('details.avatar'),
+            type:        $this->input('details.type'),
+            title:       $this->input('details.title'),
+            gender:      $this->input('details.gender'),
+            phone:       $this->input('details.phone'),
+            address:     $this->input('details.address'),
+            district:    $this->input('details.district'),
+            city:        $this->input('details.city'),
+            country:     $this->input('details.country'),
+            birthday:    $this->input('details.birthday'),
         );
     }
 }

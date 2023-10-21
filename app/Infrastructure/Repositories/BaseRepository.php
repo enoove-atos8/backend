@@ -71,17 +71,16 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
     /**
      * Get all items
      *
-     * @param string|null $columns specific columns to select
+     * @param string $columns specific columns to select
      * @param string $orderBy column to sort by
      * @param string $sort sort direction
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAll(string $columns = null, string $orderBy = 'created_at', string $sort = 'desc'): Collection
+    public function getAll(string $columns = '*', string $orderBy = 'created_at', string $sort = 'desc'): Collection
     {
         $query = function () use ($columns, $orderBy, $sort) {
 
@@ -171,9 +170,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @return Model
      * @throws BindingResolutionException
      */
-    public function getItemByColumn(mixed $term, string $column = 'slug'): Model
+    public function getItemByColumn(string $column, mixed $term): Model
     {
-        $query = function () use ($term, $column) {
+        $query = function () use ($column, $term) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where($column, '=', $term)
@@ -277,6 +276,27 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
+    /**
+     * Get instance of model by column
+     *
+     * @param array $queryClausesAndConditions
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getItemWithRelationshipsAndWheres(
+        array $queryClausesAndConditions): Model | null
+    {
+        $query = function () use ($queryClausesAndConditions) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where($queryClausesAndConditions['field'], $queryClausesAndConditions['operator'], $queryClausesAndConditions['value'])
+                ->first();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
 
     /**
      * Get item by id or column
@@ -309,13 +329,21 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Update a record using the primary key.
      *
-     * @param $id mixed primary key
+     * @param array $conditions
      * @param $data array
      * @return mixed
+     * @throws BindingResolutionException
      */
-    public function update(mixed $id, array $data): mixed
+    public function update(array $conditions, array $data): mixed
     {
-        return $this->model->where($this->model->getKeyName(), $id)->update($data);
+        $query = function () use ($conditions, $data) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where($conditions['field'], $conditions['operator'], $conditions['value'])
+                ->update($data);
+        };
+
+        return $this->doQuery($query);
     }
 
     /**
@@ -389,6 +417,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doAfterQuery($result, $methodName, $arguments);
     }
+
+
 
     /**
      *  Apply any modifiers to the query.

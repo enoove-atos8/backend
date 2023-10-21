@@ -3,6 +3,7 @@
 namespace App\Application\Api\v1\Auth\Resources;
 
 
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class LoginResource extends JsonResource
@@ -10,43 +11,87 @@ class LoginResource extends JsonResource
     /**
      * Transform the resource into an array.
      *
-     * @param  \Illuminate\Http\Request  $request*
+     * @param  Request  $request*
      */
-    public function toArray($request)
+    public function toArray($request): array
     {
+        $user = $this->resource;
+        $roles = [];
+        $detail = null;
+        if(count($user->roles()->get()) > 0)
+            $roles = $user->roles()->get();
+        if(count($user->detail()->get()) > 0)
+            $detail = $user->detail()->first();
+
         return [
             'token' => $this->token,
             'user'  =>  [
-                'id'    =>  $this->id,
-                'name'  =>  $this->name,
-                'email' =>  $this->email,
-                'avatar' =>  $this->avatar,
-                'roles'  =>  [],
+                'id'                    =>  $user->id,
+                'email'                 =>  $user->email,
+                'activated'             =>  $user->activated,
+                'type'                  =>  $user->type,
+                'changedPassword'       =>  $user->changedPassword,
+                'accessQuantity'        =>  $user->accessQuantity,
+                'roles'                 =>  $this->mountUserRolesArray($roles),
+                'details'               =>  $this->mountUserDetailsArray($detail)
             ]
         ];
     }
 
 
     /**
-     * @param $user
+     * @param mixed $detail
      * @return array
      */
-    public function getRoles($user): array
+    public function mountUserDetailsArray(mixed $detail): array
     {
-        $roles = [];
-
-        foreach ($user->roles()->get() as $role)
+        $result = [];
+        if($detail != null)
         {
-            $roles[] = [
-                'id'           =>  $role->id,
-                'name'         =>  $role->name,
-                'description'  =>  $role->description,
-                'activated'    =>  $role->activated,
-                'abilities'    =>  $this->getAbilities($role),
+            $result =  [
+                'user_id'       =>  $detail->user_id,
+                'fullName'     =>  $detail->full_name,
+                'avatar'        =>  $detail->avatar,
+                'type'          =>  $detail->type,
+                'title'         =>  $detail->title,
+                'gender'        =>  $detail->gender,
+                'phone'         =>  $detail->phone,
+                'address'       =>  $detail->address,
+                'district'      =>  $detail->district,
+                'city'          =>  $detail->city,
+                'country'       =>  $detail->country,
+                'birthday'      =>  $detail->birthday,
             ];
         }
 
-        return $roles;
+        return $result;
+    }
+
+
+
+    /**
+     * @param mixed $roles
+     * @return array
+     */
+    public function mountUserRolesArray(mixed $roles): array
+    {
+        $tempRoles = [];
+        if($roles != null)
+        {
+            foreach ($roles as $role)
+            {
+                $tempRoles [] = [
+                    'id'            =>  $role->id,
+                    'name'          =>  $role->name,
+                    'guardName'    =>  $role->guard_name,
+                    'displayName'  =>  $role->display_name,
+                    'description'   =>  $role->description,
+                    'activated'     =>  $role->activated,
+                ];
+            }
+        }
+
+        return $tempRoles;
     }
 
 
