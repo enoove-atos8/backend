@@ -36,14 +36,17 @@ class EntryController extends Controller
      */
     public function createEntry(EntryRequest $entryRequest, CreateEntryAction $createEntryAction): Application|ResponseFactory|Response
     {
-        try {
+        try
+        {
             $response = $createEntryAction($entryRequest->entryData());
             return response([
                 'id'        =>  $response->id,
                 'message'   =>  'Entrada cadastrada com sucesso!',
             ], 201);
 
-        }catch(Exception $e){
+        }
+        catch(Exception $e)
+        {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
@@ -55,11 +58,14 @@ class EntryController extends Controller
      */
     public function getEntriesByMonthlyRange(Request $request, GetEntriesAction $getEntriesAction): EntryResourceCollection
     {
-        try{
+        try
+        {
             $response = $getEntriesAction($request);
             return new EntryResourceCollection($response);
 
-        }catch (Exception $e){
+        }
+        catch (Exception $e)
+        {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
@@ -71,11 +77,13 @@ class EntryController extends Controller
      */
     public function getEntryById($id, GetEntryByIdAction $getEntryByIdAction): EntryResource
     {
-        try{
+        try
+        {
             $response = $getEntryByIdAction($id);
             return new EntryResource($response);
-
-        }catch (Exception $e){
+        }
+        catch (Exception $e)
+        {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
@@ -94,7 +102,8 @@ class EntryController extends Controller
      */
     public function updateEntry(EntryRequest $entryRequest, $id, UpdateEntryAction $updateEntryAction): Application|ResponseFactory|Response
     {
-        try {
+        try
+        {
             $result = null;
             $response = $updateEntryAction($id, $entryRequest->entryData());
 
@@ -105,7 +114,9 @@ class EntryController extends Controller
 
             return $result;
 
-        }catch(Exception $e){
+        }
+        catch(Exception $e)
+        {
             throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
     }
@@ -120,7 +131,8 @@ class EntryController extends Controller
      */
     public function getAmountByEntryType(Request $request, GetAmountByEntryTypeAction $getAmountByEntryTypeAction): array
     {
-        try{
+        try
+        {
             $rangeMonthlyDate = $request->input('rangeMonthlyDate');
             $amountType = $request->input('amountType');
             $entryType = $request->input('entryType');
@@ -132,7 +144,9 @@ class EntryController extends Controller
                 'entryType'  => $entryType,
             ];
 
-        }catch (Exception $e){
+        }
+        catch (Exception $e)
+        {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }

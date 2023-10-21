@@ -3,39 +3,35 @@
 namespace Domain\Users\Actions;
 
 use Domain\Users\DataTransferObjects\UserDetailData;
+use Domain\Users\Interfaces\UserDetailRepositoryInterface;
+use Domain\Users\Models\UserDetail;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Repositories\User\UserDetailRepository;
 use Infrastructure\Repositories\User\UserRepository;
 use Domain\Users\DataTransferObjects\UserData;
 use Domain\Users\Interfaces\UserRepositoryInterface;
 use Domain\Users\Models\User;
 use Throwable;
 
-class CreateUserAction
+class CreateUserDetailAction
 {
     private UserRepository $userRepository;
-    private CreateUserDetailAction $createUserDetailAction;
+    private UserDetailRepository $userDetailRepository;
 
     public function __construct(
         UserRepositoryInterface $userRepositoryInterface,
-        CreateUserDetailAction $createUserDetailAction,
+        UserDetailRepositoryInterface $userDetailRepositoryInterface,
     )
     {
         $this->userRepository = $userRepositoryInterface;
-        $this->createUserDetailAction = $createUserDetailAction;
+        $this->userDetailRepository = $userDetailRepositoryInterface;
     }
 
     /**
      * @throws Throwable
      */
-    public function __invoke(UserData $userData, UserDetailData $userDetailData): User
+    public function __invoke($userId, UserDetailData $userDetailData): UserDetail
     {
-        $user = $this->userRepository->createUser($userData);
-        $this->createUserDetailAction->__invoke($user->id, $userDetailData);
-
-        $user->assignRole($userData->roles);
-
-        // Call action here that handle email to user activate your account
-
-        return $user;
+        return $this->userDetailRepository->createUserDetail($userId, $userDetailData);
     }
 }

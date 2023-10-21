@@ -11,22 +11,19 @@ return new class extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
             $table->integer('id', true);
             $table->string('email')->unique();
             $table->string('password');
             $table->integer('activated')->default('0');
+            $table->boolean('changed_password')->default(false);
+            $table->integer('access_quantity')->default(0);
             $table->string('type')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
-
-        // Called to execute sql file and store procedures
-
-        //DB::unprepared(file_get_contents(''));
-        //DB::select('exec my_stored_procedure("Param1", "param2",..)');
     }
 
     /**
@@ -34,7 +31,7 @@ return new class extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('users');
     }
