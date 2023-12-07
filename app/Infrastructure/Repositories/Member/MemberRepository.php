@@ -1,11 +1,10 @@
 <?php
 
-namespace Infrastructure\Repositories\User;
+namespace Infrastructure\Repositories\Member;
 
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\Interfaces\UserRepositoryInterface;
-use Domain\Users\Models\User;
-use Domain\Users\Models\UserDetail;
+use Domain\Members\DataTransferObjects\MemberData;
+use Domain\Members\Interfaces\MemberRepositoryInterface;
+use Domain\Members\Models\Member;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
@@ -14,15 +13,9 @@ use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Throwable;
 
-class UserRepository extends BaseRepository implements UserRepositoryInterface
+class MemberRepository extends BaseRepository implements MemberRepositoryInterface
 {
-    protected mixed $model = User::class;
-
-    const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
-    const DELETED_COLUMN = 'deleted';
-    const ENTRY_TYPE_COLUMN = 'entry_type';
-    const AMOUNT_COLUMN = 'amount';
-    const DEVOLUTION_COLUMN = 'devolution';
+    protected mixed $model = Member::class;
     const ID_COLUMN = 'id';
 
     /**
@@ -36,19 +29,13 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     ];
 
     /**
-     * @param UserData $userData
-     * @return User
+     * @param MemberData $memberData
+     * @return Member
      */
-    public function createUser(UserData $userData): User
+    public function createMember(MemberData $memberData): Member
     {
-        $password = '123456';
         return $this->create([
-            'email'                 =>  strtolower($userData->email),
-            'password'              =>  bcrypt($password),
-            'activated'             =>  $userData->activated,
-            'type'                  =>  $userData->type,
-            'changed_password'      =>  $userData->changedPassword,
-            'access_quantity'       =>  $userData->accessQuantity,
+            //'email'                 =>  strtolower($userData->email),
         ]);
     }
 
@@ -58,10 +45,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
      * @return Collection|Model
      * @throws BindingResolutionException
      */
-    public function getUsers($id = null): Collection|User
+    public function getMembers($id = null): Collection|Member
     {
-        $this->requiredRelationships = ['detail'];
-
         if($id != null)
             return $this->getById($id);
         else
@@ -88,11 +73,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     /**
      * @param null $id
-     * @param MemberData $userData
+     * @param MemberData $memberData
      * @return int
      * @throws BindingResolutionException
      */
-    public function updateUser($id, MemberData $userData): int
+    public function updateMember($id, MemberData $memberData): int
     {
         $conditions = [
             'field' => self::ID_COLUMN,
@@ -100,11 +85,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             'value' => $id
         ];
         return $this->update($conditions, [
-            'email'                 =>  $userData->email,
-            'activated'             =>  $userData->activated,
-            'type'                  =>  $userData->type,
-            'changed_password'      =>  $userData->changedPassword,
-            'access_quantity'       =>  $userData->accessQuantity,
+            'email'                 =>  $memberData->email,
         ]);
     }
 }

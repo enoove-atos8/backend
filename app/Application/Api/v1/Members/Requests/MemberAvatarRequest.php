@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Users\Requests;
+namespace Application\Api\v1\Members\Requests;
 
 use Domain\Users\DataTransferObjects\MemberData;
 use Domain\Users\DataTransferObjects\UserDetailData;
@@ -9,7 +9,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
-class UserAvatarRequest extends FormRequest
+class MemberAvatarRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,7 +30,7 @@ class UserAvatarRequest extends FormRequest
     {
         return [
             'avatar' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'tenant' => 'string',
+            'tenant' => 'required',
         ];
     }
 
@@ -43,9 +43,9 @@ class UserAvatarRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'avatar.image'  => 'O arquivo deve ser do tipo imagem!',
-            'avatar.mimes'  => 'O avatar enviado está em um formato inválido!',
-            'avatar.max'    => 'O tamanho máximo do avatar deve ser de até 2MB!',
+            'avatar.image'      => 'O arquivo deve ser do tipo imagem!',
+            'avatar.mimes'      => 'O avatar enviado está em um formato inválido!',
+            'avatar.max'        => 'O tamanho máximo do avatar deve ser de até 2MB!',
             'tenant.required'   => 'O campo tenant deve ser informado!',
         ];
     }

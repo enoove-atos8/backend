@@ -151,7 +151,7 @@ class UserController extends Controller
     {
         try
         {
-            $response = $uploadUserAvatarAction($userAvatarRequest->files->get('avatar'));
+            $response = $uploadUserAvatarAction($userAvatarRequest->files->get('avatar'), $userAvatarRequest->input('tenant'));
 
             if($response)
                 return response([

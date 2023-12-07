@@ -6,16 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class Member extends Model
 {
-    protected $table = 'members';
     /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>
      */
     protected $fillable = [
-        'full_name',
-        'avatar',
-        'member_type',
         'activated',
+        'deleted',
+        'avatar',
+        'full_mame',
+        'gender',
+        'cpf',
+        'rg',
+        'work',
+        'born_date',
+        'email',
+        'phone',
+        'cell_phone',
+        'address',
+        'district',
+        'city',
+        'uf',
+        'marital_status',
+        'spouse',
+        'father',
+        'mother',
+        'ecclesiastical_function',
+        'ministries',
+        'baptism_date',
+        'blood_type',
+        'education',
     ];
 }
