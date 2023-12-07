@@ -3,7 +3,7 @@
 namespace Application\Api\v1\Church\Requests;
 
 use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\DataTransferObjects\MemberData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -96,12 +96,12 @@ class ChurchRequest extends FormRequest
     }
 
     /**
-     * @return UserData
+     * @return MemberData
      * @throws UnknownProperties
      */
-    public function userData(): UserData
+    public function userData(): MemberData
     {
-        return new UserData(
+        return new MemberData(
             email:          $this->input('user.admin_email_tenant'),
             password:       $this->input('user.pass_admin_email_tenant'),
             activated:      $this->input('user.user_activated_tenant'),

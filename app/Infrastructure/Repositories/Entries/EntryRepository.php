@@ -116,7 +116,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      */
     public function updateEntry(int $id, EntryData $entryData): bool
     {
-        return $this->update($id, [
+        $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id,];
+
+        return $this->update($conditions, [
             'entry_type'                     =>   $entryData->entryType,
             'transaction_type'               =>   $entryData->transactionType,
             'transaction_compensation'       =>   $entryData->transactionCompensation,

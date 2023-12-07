@@ -4,20 +4,20 @@ namespace Domain\Users\Actions;
 
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\UserRepository;
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\Interfaces\UserRepositoryInterface;
+use Infrastructure\Repositories\User\MemberRepository;
+use Domain\Users\DataTransferObjects\MemberData;
+use Domain\Users\Interfaces\MemberRepositoryInterface;
 use Domain\Users\Models\User;
 use Throwable;
 
 class CreateUserAction
 {
-    private UserRepository $userRepository;
+    private MemberRepository $userRepository;
     private CreateUserDetailAction $createUserDetailAction;
 
     public function __construct(
-        UserRepositoryInterface $userRepositoryInterface,
-        CreateUserDetailAction $createUserDetailAction,
+        MemberRepositoryInterface $userRepositoryInterface,
+        CreateUserDetailAction    $createUserDetailAction,
     )
     {
         $this->userRepository = $userRepositoryInterface;
@@ -27,7 +27,7 @@ class CreateUserAction
     /**
      * @throws Throwable
      */
-    public function __invoke(UserData $userData, UserDetailData $userDetailData): User
+    public function __invoke(MemberData $userData, UserDetailData $userDetailData): User
     {
         $user = $this->userRepository->createUser($userData);
         $this->createUserDetailAction->__invoke($user->id, $userDetailData);

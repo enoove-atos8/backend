@@ -6,8 +6,8 @@ use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Churches\Models\Church;
 use Domain\Churches\Models\Tenant;
-use Domain\Users\Actions\CreateUserAction;
-use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\Actions\CreateMemberAction;
+use Domain\Users\DataTransferObjects\MemberData;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
@@ -17,12 +17,12 @@ class CreateChurchAction
     const DOMAIN = '.atos242.com';
     private ChurchRepository $churchRepository;
     private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
-    private CreateUserAction $createUserAction;
+    private CreateMemberAction $createUserAction;
 
     public function __construct(
         ChurchRepositoryInterface  $churchRepositoryInterface,
         CreateDomainGoDaddyAction $createDomainGoDaddyAction,
-        CreateUserAction          $createUserAction
+        CreateMemberAction $createUserAction
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
@@ -34,7 +34,7 @@ class CreateChurchAction
      * @throws TenantCouldNotBeIdentifiedById
      * @throws \Throwable
      */
-    public function __invoke(ChurchData $churchData, UserData $userData): array
+    public function __invoke(ChurchData $churchData, MemberData $userData): array
     {
         $domain = config('api-resources.app.domain.local');
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
