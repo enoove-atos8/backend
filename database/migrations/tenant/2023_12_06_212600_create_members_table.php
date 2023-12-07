@@ -15,11 +15,11 @@ return new class extends Migration
     {
         Schema::create('members', function (Blueprint $table) {
 
-            $table->integer('id', true);
+            $table->integer('id', true)->autoIncrement();
             $table->integer('activated')->default('0');
             $table->integer('deleted')->default('0');
             $table->string('avatar')->nullable(true);
-            $table->string('full_mame')->nullable(false);
+            $table->string('full_name')->nullable(false);
             $table->string('gender')->nullable(false);
             $table->string('cpf')->nullable(false)->unique();
             $table->string('rg')->nullable(false)->unique();

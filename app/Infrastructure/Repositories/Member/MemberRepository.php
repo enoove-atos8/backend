@@ -35,7 +35,31 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     public function createMember(MemberData $memberData): Member
     {
         return $this->create([
-            //'email'                 =>  strtolower($userData->email),
+            'activated'                   =>  $memberData->activated,
+            'deleted'                     =>  $memberData->deleted,
+            'avatar'                      =>  $memberData->avatar,
+            'full_name'                   =>  $memberData->fullName,
+            'gender'                      =>  $memberData->gender,
+            'cpf'                         =>  $memberData->cpf,
+            'rg'                          =>  $memberData->rg,
+            'work'                        =>  $memberData->work,
+            'born_date'                   =>  $memberData->bornDate,
+            'email'                       =>  $memberData->email,
+            'phone'                       =>  $memberData->phone,
+            'cell_phone'                  =>  $memberData->cellPhone,
+            'address'                     =>  $memberData->address,
+            'district'                    =>  $memberData->district,
+            'city'                        =>  $memberData->city,
+            'uf'                          =>  $memberData->uf,
+            'marital_status'              =>  $memberData->maritalStatus,
+            'spouse'                      =>  $memberData->spouse,
+            'father'                      =>  $memberData->father,
+            'mother'                      =>  $memberData->mother,
+            //'ecclesiastical_function'     =>  $memberData->ecclesiasticalFunction,
+            //'ministries'                  =>  $memberData->ministries,
+            'baptism_date'                =>  $memberData->baptismDate,
+            'blood_type'                  =>  $memberData->bloodType,
+            'education'                   =>  $memberData->education,
         ]);
     }
 

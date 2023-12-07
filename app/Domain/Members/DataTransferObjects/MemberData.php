@@ -12,8 +12,11 @@ class MemberData extends DataTransferObject
     /** @var int  */
     public int $activated;
 
-    /** @var string  */
-    public string $avatar;
+    /** @var int  */
+    public int $deleted;
+
+    /** @var string|null  */
+    public string|null $avatar;
 
     /** @var string  */
     public string $fullName;
@@ -36,8 +39,8 @@ class MemberData extends DataTransferObject
     /** @var string  */
     public string $email;
 
-    /** @var string  */
-    public string $phone;
+    /** @var string|null  */
+    public string|null $phone;
 
     /** @var string  */
     public string $cellPhone;
@@ -66,11 +69,11 @@ class MemberData extends DataTransferObject
     /** @var string  */
     public string $mother;
 
-    /** @var array  */
-    public array $ecclesiasticalFunction;
+    /** @var array|null  */
+    public array|null $ecclesiasticalFunction;
 
-    /** @var array  */
-    public array $ministries;
+    /** @var array|null  */
+    public array|null $ministries;
 
     /** @var string  */
     public string $baptismDate;
