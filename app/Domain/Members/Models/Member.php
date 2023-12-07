@@ -15,7 +15,7 @@ class Member extends Model
         'activated',
         'deleted',
         'avatar',
-        'full_mame',
+        'full_name',
         'gender',
         'cpf',
         'rg',
