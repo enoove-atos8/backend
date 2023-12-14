@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('id', true)->autoIncrement();
             $table->integer('activated')->default('0');
             $table->integer('deleted')->default('0');
-            $table->string('type')->nullable(false)->default('member');
             $table->string('avatar')->nullable();
             $table->string('full_name')->nullable(false);
             $table->string('gender')->nullable(false);
