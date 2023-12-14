@@ -2,7 +2,7 @@
 
 namespace Domain\Users\Interfaces;
 
-use Domain\Users\DataTransferObjects\MemberData;
+use Domain\Users\DataTransferObjects\UserData;
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Domain\Users\Models\UserDetail;
 use Illuminate\Database\Eloquent\Model;

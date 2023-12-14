@@ -3,6 +3,8 @@
 namespace Domain\Entries\Models;
 
 use Domain\Members\Models\Member;
+use Domain\Reviewers\Models\Reviewer;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -28,6 +30,7 @@ class Entry extends Model
         'deleted',
         'devolution',
     ];
+
 
     public function member(): BelongsTo
     {

@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use function Webmozart\Assert\Tests\StaticAnalysis\length;
+
 class MemberResourceCollection extends ResourceCollection
 {
     /**
@@ -13,7 +15,7 @@ class MemberResourceCollection extends ResourceCollection
      * with the one declared in the 'wrap' variable
      * @var string
      */
-    public static $wrap = 'users';
+    public static $wrap = 'members';
 
 
     /**
@@ -25,22 +27,68 @@ class MemberResourceCollection extends ResourceCollection
     public function toArray($request): array|\JsonSerializable|Arrayable
     {
         return $this->collection->map(function ($item){
-            $roles = [];
-            $detail = null;
-            if(count($item->resource->roles()->get()) > 0)
-                $roles = $item->resource->roles()->get();
-            if(count($item->resource->detail()->get()) > 0)
-                $detail = $item->resource->detail()->first();
+
+            $ministries = [];
+            $ecclesiasticalFunction = [];
+
+            /*if(count($item->ministries) > 0)
+            {
+                foreach ($item->ministries as $ministry)
+                {
+                    $ministries [] = [
+
+                    ];
+                }
+            }
+
+            if(count($item->ecclesiasticalFunction) > 0)
+            {
+                foreach ($item->ecclesiasticalFunction as $function)
+                {
+                    $ecclesiasticalFunction [] = [
+
+                    ];
+                }
+            }*/
+
 
             return [
-                'id'                    =>  $item->id,
-                'email'                 =>  $item->email,
-                'activated'             =>  $item->activated,
-                'type'                  =>  $item->type,
-                'changedPassword'       =>  $item->changedPassword,
-                'accessQuantity'        =>  $item->accessQuantity,
-                'roles'                 =>  $this->mountUserRolesArray($roles),
-                'details'               =>  $this->mountUserDetailsArray($detail)
+                'id'                  =>  $item->id,
+                'activated'           =>  $item->activated,
+                'deleted'             =>  $item->deleted,
+                'personDataAndIdentification' => [
+                    'avatar'        => $item->avatar,
+                    'fullName'      => $item->full_name,
+                    'gender'        => $item->gender,
+                    'cpf'           => $item->cpf,
+                    'rg'            => $item->rg,
+                    'work'          => $item->work,
+                    'bornDate'      => $item->born_date,
+                ],
+                'addressAndContact' => [
+                    'email'         => $item->email,
+                    'phone'         => $item->phone,
+                    'cellPhone'     => $item->cell_phone,
+                    'address'       => $item->address,
+                    'district'      => $item->district,
+                    'city'          => $item->city,
+                    'uf'            => $item->uf,
+                ],
+                'parentageAndMaritalStatus' => [
+                    'maritalStatus'  => $item->marital_status,
+                    'spouse'         => $item->spouse,
+                    'father'         => $item->father,
+                    'mother'         => $item->mother,
+                ],
+                'ecclesiasticalInformation' => [
+                    'ecclesiasticalFunction'    => $ecclesiasticalFunction,
+                    'ministries'                => $ministries,
+                    'baptismDate'               => $item->baptism_date,
+                ],
+                'otherInformation' => [
+                    'bloodType'         => $item->blood_type,
+                    'education'         => $item->education,
+                ]
             ];
         });
     }

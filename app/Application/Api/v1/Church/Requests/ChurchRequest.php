@@ -3,7 +3,7 @@
 namespace Application\Api\v1\Church\Requests;
 
 use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Users\DataTransferObjects\MemberData;
+use Domain\Users\DataTransferObjects\UserData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 

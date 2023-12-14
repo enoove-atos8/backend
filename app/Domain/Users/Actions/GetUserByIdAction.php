@@ -6,17 +6,17 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\MemberRepository;
-use Domain\Users\DataTransferObjects\MemberData;
-use Domain\Users\Interfaces\MemberRepositoryInterface;
+use Infrastructure\Repositories\User\UserRepository;
+use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\Interfaces\UserRepositoryInterface;
 use Domain\Users\Models\User;
 use Throwable;
 
 class GetUserByIdAction
 {
-    private MemberRepository $userRepository;
+    private UserRepository $userRepository;
 
-    public function __construct(MemberRepositoryInterface $userRepositoryInterface)
+    public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {
         $this->userRepository = $userRepositoryInterface;
     }

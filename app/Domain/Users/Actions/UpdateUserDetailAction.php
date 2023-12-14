@@ -3,22 +3,22 @@
 namespace Domain\Users\Actions;
 
 use Domain\Users\DataTransferObjects\UserDetailData;
-use Domain\Users\Interfaces\MemberDetailRepositoryInterface;
+use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Models\UserDetail;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\MemberDetailRepository;
-use Infrastructure\Repositories\User\MemberRepository;
-use Domain\Users\DataTransferObjects\MemberData;
-use Domain\Users\Interfaces\MemberRepositoryInterface;
+use Infrastructure\Repositories\User\UserDetailRepository;
+use Infrastructure\Repositories\User\UserRepository;
+use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\Interfaces\UserRepositoryInterface;
 use Domain\Users\Models\User;
 use Throwable;
 
 class UpdateUserDetailAction
 {
-    private MemberDetailRepository $userDetailRepository;
+    private UserDetailRepository $userDetailRepository;
 
-    public function __construct(MemberDetailRepositoryInterface $userDetailRepositoryInterface)
+    public function __construct(UserDetailRepositoryInterface $userDetailRepositoryInterface)
     {
         $this->userDetailRepository = $userDetailRepositoryInterface;
     }

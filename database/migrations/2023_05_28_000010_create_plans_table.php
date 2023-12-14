@@ -21,6 +21,7 @@ class CreatePlansTable extends Migration
             $table->string('description')->nullable(false);
             $table->float('price')->nullable(false);
             $table->boolean('activated')->nullable(false);
+
             $table->timestamps();
         });
     }

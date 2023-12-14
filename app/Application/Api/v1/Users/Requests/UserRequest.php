@@ -2,7 +2,7 @@
 
 namespace Application\Api\v1\Users\Requests;
 
-use Domain\Users\DataTransferObjects\MemberData;
+use Domain\Users\DataTransferObjects\UserData;
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Gerencianet\Auth;
 use Illuminate\Foundation\Http\FormRequest;
@@ -67,12 +67,11 @@ class UserRequest extends FormRequest
     /**
      * Function to data transfer objects to UserData class
      *
-     * @return MemberData
      * @throws UnknownProperties
      */
-    public function userData(): MemberData
+    public function userData(): UserData
     {
-        return new MemberData(
+        return new UserData(
             email:              $this->input('email'),
             password:           $this->input('password'),
             activated:          $this->input('activated'),

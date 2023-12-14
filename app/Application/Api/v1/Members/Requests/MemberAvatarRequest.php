@@ -2,7 +2,7 @@
 
 namespace Application\Api\v1\Members\Requests;
 
-use Domain\Users\DataTransferObjects\MemberData;
+use Domain\Users\DataTransferObjects\UserData;
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Gerencianet\Auth;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,7 +30,6 @@ class MemberAvatarRequest extends FormRequest
     {
         return [
             'avatar' => 'image|mimes:jpeg,png,jpg|max:2048',
-            'tenant' => 'required',
         ];
     }
 

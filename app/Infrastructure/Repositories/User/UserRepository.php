@@ -88,11 +88,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     /**
      * @param null $id
-     * @param MemberData $userData
+     * @param UserData $userData
      * @return int
      * @throws BindingResolutionException
      */
-    public function updateUser($id, MemberData $userData): int
+    public function updateUser($id, UserData $userData): int
     {
         $conditions = [
             'field' => self::ID_COLUMN,
