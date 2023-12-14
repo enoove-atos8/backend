@@ -3,6 +3,7 @@
 namespace Domain\Entries\Actions;
 
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
+use Domain\Entries\Models\Entry;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -26,6 +27,7 @@ class GetEntryByIdAction
     public function __invoke($id): Model | null
     {
         $entry = $this->entryRepository->getEntryById($id);
+
 
         if($entry == null)
             throw new GeneralExceptions('Nenhum entrada encontrada!', 404);

@@ -3,24 +3,24 @@
 namespace Domain\Users\Actions;
 
 use Domain\Users\DataTransferObjects\UserDetailData;
-use Domain\Users\Interfaces\MemberDetailRepositoryInterface;
+use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Models\UserDetail;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\MemberDetailRepository;
-use Infrastructure\Repositories\User\MemberRepository;
-use Domain\Users\DataTransferObjects\MemberData;
-use Domain\Users\Interfaces\MemberRepositoryInterface;
+use Infrastructure\Repositories\User\UserDetailRepository;
+use Infrastructure\Repositories\User\UserRepository;
+use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\Interfaces\UserRepositoryInterface;
 use Domain\Users\Models\User;
 use Throwable;
 
 class CreateUserDetailAction
 {
-    private MemberRepository $userRepository;
-    private MemberDetailRepository $userDetailRepository;
+    private UserRepository $userRepository;
+    private UserDetailRepository $userDetailRepository;
 
     public function __construct(
-        MemberRepositoryInterface       $userRepositoryInterface,
-        MemberDetailRepositoryInterface $userDetailRepositoryInterface,
+        UserRepositoryInterface       $userRepositoryInterface,
+        UserDetailRepositoryInterface $userDetailRepositoryInterface,
     )
     {
         $this->userRepository = $userRepositoryInterface;

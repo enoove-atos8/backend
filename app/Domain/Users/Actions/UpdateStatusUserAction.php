@@ -3,23 +3,23 @@
 namespace Domain\Users\Actions;
 
 use Domain\Users\DataTransferObjects\UserDetailData;
-use Domain\Users\Interfaces\MemberDetailRepositoryInterface;
+use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Models\UserDetail;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\MemberDetailRepository;
-use Infrastructure\Repositories\User\MemberRepository;
-use Domain\Users\DataTransferObjects\MemberData;
-use Domain\Users\Interfaces\MemberRepositoryInterface;
+use Infrastructure\Repositories\User\UserDetailRepository;
+use Infrastructure\Repositories\User\UserRepository;
+use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\Interfaces\UserRepositoryInterface;
 use Domain\Users\Models\User;
 use Throwable;
 
 class UpdateStatusUserAction
 {
-    private MemberRepository $userRepository;
+    private UserRepository $userRepository;
 
-    public function __construct(MemberRepositoryInterface $userRepositoryInterface)
+    public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {
         $this->userRepository = $userRepositoryInterface;
     }

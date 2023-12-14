@@ -27,6 +27,14 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->string('country')->nullable();
             $table->string('birthday')->nullable();
+
+            // Relationships
+
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users');
+
+
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Entry\Resources;
 
+use Domain\Members\Models\Member;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -25,14 +26,8 @@ class EntryResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return $this->collection->map(function ($item){
-            if(count($item->member()->get()) > 0) $member = $item->member()->first(); else$member = null;
+        return $this->collection->map(function ($item) {
 
-            $dataMember = [];
-
-            if(!is_null($member)){
-                $dataMember = ['id'=> $member->id, 'memberName'=> $member->full_name, 'memberAvatar'=> $member->avatar];
-            }
             return [
                 'id'                            =>  $item->id,
                 'entryType'                     =>  $item->entry_type,
@@ -44,14 +39,99 @@ class EntryResourceCollection extends ResourceCollection
                 'devolution'                    =>  $item->devolution,
                 'recipient'                     =>  $item->recipient,
                 'deleted'                       =>  $item->deleted,
-                'member'                        =>  $dataMember,
-                'reviewer'                        =>  [
-                    'reviewerId'      =>  1,
-                    'reviewerName'    =>  'Jaime Junior da Silva Lopes',
-                    'reviewerAvatar'  =>  'female-01.jpg',
-                ],
+                'member'                        =>  $this->getMember($item),
+                'reviewer'                      =>  $this->getReviewer($item),
             ];
         });
+    }
+
+
+
+    /**
+     * @param mixed $data
+     * @return array
+     */
+    public function getMember(mixed $data): array
+    {
+        $member = $data->member()->first();
+
+        if(!is_null($member))
+        {
+            return [
+                'id'                  =>  $member->id,
+                'activated'           =>  $member->activated,
+                'deleted'             =>  $member->deleted,
+                'personDataAndIdentification' => [
+                    'avatar'        => $member->avatar,
+                    'fullName'      => $member->full_name,
+                    'gender'        => $member->gender,
+                    'cpf'           => $member->cpf,
+                    'rg'            => $member->rg,
+                    'work'          => $member->work,
+                    'bornDate'      => $member->born_date,
+                ],
+                'addressAndContact' => [
+                    'email'         => $member->email,
+                    'phone'         => $member->phone,
+                    'cellPhone'     => $member->cell_phone,
+                    'address'       => $member->address,
+                    'district'      => $member->district,
+                    'city'          => $member->city,
+                    'uf'            => $member->uf,
+                ],
+                'parentageAndMaritalStatus' => [
+                    'maritalStatus'  => $member->marital_status,
+                    'spouse'         => $member->spouse,
+                    'father'         => $member->father,
+                    'mother'         => $member->mother,
+                ],
+                'ecclesiasticalInformation' => [
+                    'baptismDate'               => $member->baptism_date,
+                ],
+                'otherInformation' => [
+                    'bloodType'         => $member->blood_type,
+                    'education'         => $member->education,
+                ]
+            ];
+        }
+        else
+        {
+            return [];
+        }
+    }
+
+
+
+    /**
+     * @param mixed $data
+     * @return array
+     */
+    public function getReviewer(mixed $data): array
+    {
+        $reviewerId = $data->reviewer_id;
+        $reviewerMember = Member::find($reviewerId);
+
+        if(!is_null($reviewerMember))
+        {
+            return [
+                'id'                  =>  $reviewerMember->id,
+                'activated'           =>  $reviewerMember->activated,
+                'deleted'             =>  $reviewerMember->deleted,
+                'personDataAndIdentification' => [
+                    'avatar'        => $reviewerMember->avatar,
+                    'fullName'      => $reviewerMember->full_name,
+                    'gender'        => $reviewerMember->gender,
+                    'cpf'           => $reviewerMember->cpf,
+                    'rg'            => $reviewerMember->rg,
+                    'work'          => $reviewerMember->work,
+                    'bornDate'      => $reviewerMember->born_date,
+                ],
+            ];
+        }
+        else
+        {
+            return [];
+        }
     }
 
 

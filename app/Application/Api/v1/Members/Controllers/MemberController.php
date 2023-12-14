@@ -53,6 +53,7 @@ class MemberController extends Controller
     }
 
 
+
     /**
      * @param GetMembersAction $getMembersAction
      * @return MemberResourceCollection
@@ -92,6 +93,7 @@ class MemberController extends Controller
     }
 
 
+
     /**
      * @param Request $request
      * @param $id
@@ -114,6 +116,7 @@ class MemberController extends Controller
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
+
 
 
     /**
@@ -141,6 +144,7 @@ class MemberController extends Controller
     }
 
 
+
     /**
      * @param MemberAvatarRequest $memberAvatarRequest
      * @param UploadMemberAvatarAction $uploadMemberAvatarAction
@@ -152,7 +156,8 @@ class MemberController extends Controller
     {
         try
         {
-            $response = $uploadMemberAvatarAction($memberAvatarRequest->files->get('avatar'), $memberAvatarRequest->input('tenant'));
+            $tenant = explode('.', $memberAvatarRequest->getHost())[0];
+            $response = $uploadMemberAvatarAction($memberAvatarRequest->files->get('avatar'), $tenant);
 
             if($response)
                 return response([

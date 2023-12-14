@@ -60,8 +60,8 @@ class MemberData extends DataTransferObject
     /** @var string  */
     public string $maritalStatus;
 
-    /** @var string  */
-    public string $spouse;
+    /** @var string|null  */
+    public string|null $spouse;
 
     /** @var string  */
     public string $father;

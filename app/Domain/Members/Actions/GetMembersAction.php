@@ -4,7 +4,7 @@ namespace Domain\Members\Actions;
 
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\MemberRepository;
+use Infrastructure\Repositories\Member\MemberRepository;
 use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Members\Models\Member;
@@ -26,7 +26,7 @@ class GetMembersAction
      */
     public function __invoke(): Collection
     {
-        $member = $this->memberRepository->getUsers();
+        $member = $this->memberRepository->getMembers();
 
         if($member->count() == 0)
             throw new GeneralExceptions('Nenhum membro encontrado!', 404);

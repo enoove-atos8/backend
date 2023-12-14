@@ -21,6 +21,7 @@ return new class extends Migration
             $table->boolean('changed_password')->default(false);
             $table->integer('access_quantity')->default(0);
             $table->string('type')->nullable();
+
             $table->rememberToken();
             $table->timestamps();
         });
