@@ -49,9 +49,9 @@ class EntryResourceCollection extends ResourceCollection
 
     /**
      * @param mixed $data
-     * @return array
+     * @return array|null
      */
-    public function getMember(mixed $data): array
+    public function getMember(mixed $data): ?array
     {
         $member = $data->member()->first();
 
@@ -96,7 +96,7 @@ class EntryResourceCollection extends ResourceCollection
         }
         else
         {
-            return [];
+            return null;
         }
     }
 
@@ -104,9 +104,9 @@ class EntryResourceCollection extends ResourceCollection
 
     /**
      * @param mixed $data
-     * @return array
+     * @return array|null
      */
-    public function getReviewer(mixed $data): array
+    public function getReviewer(mixed $data): ?array
     {
         $reviewerId = $data->reviewer_id;
         $reviewerMember = Member::find($reviewerId);
@@ -130,7 +130,7 @@ class EntryResourceCollection extends ResourceCollection
         }
         else
         {
-            return [];
+            return null;
         }
     }
 

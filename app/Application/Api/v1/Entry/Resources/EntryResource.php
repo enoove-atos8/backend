@@ -48,9 +48,9 @@ class EntryResource extends JsonResource
 
     /**
      * @param mixed $data
-     * @return array
+     * @return array|null
      */
-    public function getMember(mixed $data): array
+    public function getMember(mixed $data): ?array
     {
         $member = $data->member()->first();
 
@@ -95,7 +95,7 @@ class EntryResource extends JsonResource
         }
         else
         {
-            return [];
+            return null;
         }
     }
 
@@ -103,9 +103,9 @@ class EntryResource extends JsonResource
 
     /**
      * @param mixed $data
-     * @return array
+     * @return array|null
      */
-    public function getReviewer(mixed $data): array
+    public function getReviewer(mixed $data): ?array
     {
         $reviewerId = $data->reviewer_id;
         $reviewerMember = Member::find($reviewerId);
@@ -129,7 +129,7 @@ class EntryResource extends JsonResource
         }
         else
         {
-            return [];
+            return null;
         }
     }
 }
