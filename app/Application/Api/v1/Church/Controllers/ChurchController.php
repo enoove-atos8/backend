@@ -25,7 +25,11 @@ class ChurchController extends Controller
     public function createChurch(ChurchRequest $churchRequest, CreateChurchAction $createChurchAction): ChurchResource
     {
         try {
-            $response = $createChurchAction($churchRequest->churchData(), $churchRequest->userData());
+            $response = $createChurchAction(
+                $churchRequest->churchData(),
+                $churchRequest->userData(),
+                $churchRequest->userDetailData());
+
             return new ChurchResource($response);
 
         }catch(\Exception $e){

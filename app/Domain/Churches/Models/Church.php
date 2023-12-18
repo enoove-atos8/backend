@@ -19,7 +19,6 @@ class Church extends Model
         'activated',
         'doc_type',
         'doc_number',
-        'admin_email_tenant',
-        'pass_admin_email_tenant',
+        'aws_s3_bucket',
     ];
 }

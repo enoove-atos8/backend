@@ -6,6 +6,8 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use function Webmozart\Assert\Tests\StaticAnalysis\nullOrCount;
+
 class UserResourceCollection extends ResourceCollection
 {
     /**
@@ -49,16 +51,18 @@ class UserResourceCollection extends ResourceCollection
 
     /**
      * @param mixed $detail
-     * @return array
+     * @return array|null
      */
-    public function mountUserDetailsArray(mixed $detail): array
+    public function mountUserDetailsArray(mixed $detail): ?array
     {
-        $result = [];
+
         if($detail != null)
         {
+            $result = [];
+
             $result =  [
                 'user_id'       =>  $detail->user_id,
-                'fullName'     =>  $detail->full_name,
+                'fullName'      =>  $detail->full_name,
                 'avatar'        =>  $detail->avatar,
                 'type'          =>  $detail->type,
                 'title'         =>  $detail->title,
@@ -70,22 +74,28 @@ class UserResourceCollection extends ResourceCollection
                 'country'       =>  $detail->country,
                 'birthday'      =>  $detail->birthday,
             ];
+
+            return $result;
         }
 
-        return $result;
+        else
+        {
+            return null;
+        }
     }
 
 
 
     /**
      * @param mixed $roles
-     * @return array
+     * @return array|null
      */
-    public function mountUserRolesArray(mixed $roles): array
+    public function mountUserRolesArray(mixed $roles): ?array
     {
-        $tempRoles = [];
+
         if($roles != null)
         {
+            $tempRoles = [];
             foreach ($roles as $role)
             {
                 $tempRoles [] = [
@@ -97,9 +107,13 @@ class UserResourceCollection extends ResourceCollection
                     'activated'     =>  $role->activated,
                 ];
             }
-        }
 
-        return $tempRoles;
+            return $tempRoles;
+        }
+        else
+        {
+            return null;
+        }
     }
 
 

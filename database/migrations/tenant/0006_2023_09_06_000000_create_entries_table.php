@@ -16,7 +16,6 @@ return new class extends Migration
         Schema::create('entries', function (Blueprint $table) {
             $table->integer('id', true);
             $table->integer('member_id')->nullable();
-            $table->integer('reviewer_id')->nullable(false);
             $table->string('entry_type')->nullable(false);
             $table->string('transaction_type')->nullable(false);
             $table->string('transaction_compensation')->nullable(false);
@@ -32,10 +31,6 @@ return new class extends Migration
             $table->foreign('member_id')
                 ->references('id')
                 ->on('members');
-
-            $table->foreign('reviewer_id')
-                ->references('id')
-                ->on('reviewers');
 
 
             $table->timestamps();

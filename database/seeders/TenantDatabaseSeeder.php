@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\Central\PlanSeeder;
+use Database\Seeders\tenant\RolesAndPermissionsSeeder;
+use Database\Seeders\tenant\UserSeeder;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+class TenantDatabaseSeeder extends Seeder
 {
     /**
      * Seed the application's database.
@@ -15,7 +16,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            PlanSeeder::class
+            //UserSeeder::class,
+            RolesAndPermissionsSeeder::class
         ]);
     }
 }
