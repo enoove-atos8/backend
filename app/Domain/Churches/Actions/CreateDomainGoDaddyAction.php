@@ -4,11 +4,13 @@ namespace Domain\Churches\Actions;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\App;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class CreateDomainGoDaddyAction
 {
-    private string $aws_host;
+    private string $env;
+    private string|null $aws_host;
     private string $prodApiPathGodaddy;
     private string $domain;
     private string $godaddyProductionKey;
@@ -19,25 +21,35 @@ class CreateDomainGoDaddyAction
 
     public function __construct()
     {
-        $this->aws_host = config('api-resources.aws.host');
-        $this->domain = config('api-resources.godaddy.domain');
-        $this->prodApiPathGodaddy = config('api-resources.godaddy.base_url');
-        $this->godaddyProductionKey = config('api-resources.godaddy.key');
-        $this->godaddyProductionSecret = config('api-resources.godaddy.secret');
+        $this->env = App::environment() == 'development' ? 'development' : 'local';
+
+        $this->aws_host = $this->env == 'development' ?
+            config('external-env.aws.dev.host') : null;
+
+        $this->domain = $this->env == 'development' ?
+            config('external-env.app.domain.dev') :
+            config('external-env.app.domain.local');
+
+        $this->prodApiPathGodaddy = config('external-env.godaddy.base_url');
+        $this->godaddyProductionKey = config('external-env.godaddy.key');
+        $this->godaddyProductionSecret = config('external-env.godaddy.secret');
     }
 
     /**
      * @throws GeneralExceptions
      */
-    public function __invoke(string $subDomain, $envProd = true): bool
+    public function __invoke(string $tenant, $envProd = true): bool
     {
-        if($envProd)
+        $domain = config('external-env.app.domain.' . App::environment());
+        $host = config('external-env.aws.' . App::environment() . '.host' );
+
+        if(App::environment() !== 'local')
         {
             $client = new Client();
             $body = '[
               {
-                "data": "' . $this->aws_host . '",
-                "name": "' . $subDomain . '",
+                "data": "' . $host . '",
+                "name": "' . $tenant . '",
                 "ttl": 600,
                 "type": "A"
               }
@@ -48,7 +60,7 @@ class CreateDomainGoDaddyAction
                 'Content-Type' =>  'application/json',
             ];
 
-            $endpoint = $this->prodApiPathGodaddy . self::GODADDY_DOMAIN_RESOURCE . '/' . $this->domain . self::GODADDY_RECORD_RESOURCE . '/?domain='. $this->domain;
+            $endpoint = $this->prodApiPathGodaddy . self::GODADDY_DOMAIN_RESOURCE . '/' . $domain . self::GODADDY_RECORD_RESOURCE . '/?domain='. $domain;
             $request = new Request('PATCH', $endpoint, $headers, $body);
             $response = $client->sendAsync($request)->wait();
 
@@ -59,7 +71,7 @@ class CreateDomainGoDaddyAction
         }
         else
         {
-            // TODO: Implementar código para criar uma entrada no arquivo hosts
+            return true;
         }
     }
 }

@@ -4,25 +4,28 @@ namespace Domain\Churches\Actions;
 
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Churches\Models\Church;
 use Domain\Churches\Models\Tenant;
 use Domain\Users\Actions\CreateUserAction;
 use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\DataTransferObjects\UserDetailData;
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
+use Throwable;
 
 class CreateChurchAction
 {
     const DOMAIN = '.atos242.com';
     private ChurchRepository $churchRepository;
     private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
-    private CreateMemberAction $createUserAction;
+    private CreateUserAction $createUserAction;
 
     public function __construct(
         ChurchRepositoryInterface  $churchRepositoryInterface,
         CreateDomainGoDaddyAction $createDomainGoDaddyAction,
-        CreateMemberAction $createUserAction
+        CreateUserAction $createUserAction,
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
@@ -32,17 +35,22 @@ class CreateChurchAction
 
     /**
      * @throws TenantCouldNotBeIdentifiedById
-     * @throws \Throwable
+     * @throws Throwable
      */
-    public function __invoke(ChurchData $churchData, MemberData $userData): array
+    public function __invoke(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
-        $domain = config('api-resources.app.domain.local');
+        $awsS3Bucket = config('external-env.aws.' . App::environment() . '.s3' );
+        $domain = config('external-env.app.domain.' . App::environment());
+
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
 
+        Artisan::call('tenants:seed', ['--tenants' => [$churchData->tenantId],]);
+
+
         if (is_object($newTenant))
         {
-            $church = $this->churchRepository->newChurch($churchData);
+            $church = $this->churchRepository->newChurch($churchData, $awsS3Bucket);
 
             if (is_object($church))
             {
@@ -51,7 +59,7 @@ class CreateChurchAction
 
                 if($tenantCreated)
                 {
-                    $user = $this->createUserAction->__invoke($userData);
+                    $user = $this->createUserAction->__invoke($userData, $userDetailData);
 
                     if($user)
                     {

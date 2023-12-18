@@ -4,6 +4,7 @@ namespace Application\Api\v1\Church\Requests;
 
 use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Users\DataTransferObjects\UserData;
+use Domain\Users\DataTransferObjects\UserDetailData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -37,7 +38,21 @@ class ChurchRequest extends FormRequest
             'user.pass_admin_email_tenant'           =>  'required|string',
             'user.confirm_pass_admin_email_tenant'   =>  'required|string|same:user.pass_admin_email_tenant',
             'user.user_activated_tenant'             =>  'required|boolean',
+            'user.changed_password'                  =>  'required|boolean',
+            'user.access_quantity'                   =>  'required|integer',
             'user.user_type_tenant'                  =>  'required|string',
+            'user.roles'                             =>  'required',
+            'details.fullName'                       =>  'required|string',
+            'details.avatar'                         =>  '',
+            'details.type'                           =>  '',
+            'details.title'                          =>  '',
+            'details.gender'                         =>  'required|string',
+            'details.phone'                          =>  'required|string',
+            'details.address'                        =>  '',
+            'details.district'                       =>  '',
+            'details.city'                           =>  '',
+            'details.country'                        =>  '',
+            'details.birthday'                       =>  '',
         ];
     }
 
@@ -96,16 +111,43 @@ class ChurchRequest extends FormRequest
     }
 
     /**
-     * @return MemberData
+     * @return UserData
      * @throws UnknownProperties
      */
-    public function userData(): MemberData
+    public function userData(): UserData
     {
-        return new MemberData(
-            email:          $this->input('user.admin_email_tenant'),
-            password:       $this->input('user.pass_admin_email_tenant'),
-            activated:      $this->input('user.user_activated_tenant'),
-            type:           $this->input('user.user_type_tenant'),
+        return new UserData(
+            email:              $this->input('user.admin_email_tenant'),
+            password:           $this->input('user.pass_admin_email_tenant'),
+            changedPassword:    $this->input('user.changed_password'),
+            accessQuantity:     $this->input('user.user_activated_tenant'),
+            activated:          $this->input('user.user_activated_tenant'),
+            type:               $this->input('user.user_type_tenant'),
+            roles:              $this->input('user.roles'),
+        );
+    }
+
+
+    /**
+     * Function to data transfer objects to UserDetailData class
+     *
+     * @return UserDetailData
+     * @throws UnknownProperties
+     */
+    public function userDetailData(): UserDetailData
+    {
+        return new UserDetailData(
+            full_name:   $this->input('details.fullName'),
+            avatar:      $this->input('details.avatar'),
+            type:        $this->input('details.type'),
+            title:       $this->input('details.title'),
+            gender:      $this->input('details.gender'),
+            phone:       $this->input('details.phone'),
+            address:     $this->input('details.address'),
+            district:    $this->input('details.district'),
+            city:        $this->input('details.city'),
+            country:     $this->input('details.country'),
+            birthday:    $this->input('details.birthday'),
         );
     }
 }

@@ -39,7 +39,9 @@ class UserController extends Controller
     {
         try
         {
-            $createUserAction($userRequest->userData(), $userRequest->userDetailData());
+            $createUserAction(
+                $userRequest->userData(),
+                $userRequest->userDetailData());
 
             return response([
                 'message'   =>  'Usuário cadastrado com sucesso!',

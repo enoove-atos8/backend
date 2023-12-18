@@ -19,20 +19,8 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
     /**
      * @throws Throwable
      */
-    public function newChurch(ChurchData $churchData): Church
+    public function newChurch(ChurchData $churchData, string $awsS3Bucket): Church
     {
-        /*$relationshipTable = 'tenants';
-        $relationshipsConditions = [
-            ['leftColumn' => 'churches.tenant_id', 'operator' => $this::EQUALS, 'rightColumn' => 'tenants.id'],
-        ];
-        $conditions = [
-            ['tenants.id', $this::EQUALS, 'ibop']
-        ];
-        $columns = ['churches.id', 'churches.name', 'tenants.id'];
-
-        $test = $this->getItemWithRelationships($relationshipTable, $relationshipsConditions, $columns, $conditions);*/
-
-
         $church = $this->create([
             'tenant_id'           =>  $churchData->tenantId,
             'plan_id'             =>  $churchData->planId,
@@ -40,6 +28,7 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
             'activated'           =>  $churchData->activated,
             'doc_type'            =>  $churchData->docType,
             'doc_number'          =>  $churchData->docNumber,
+            'aws_s3_bucket'       =>  $awsS3Bucket,
         ]);
 
 

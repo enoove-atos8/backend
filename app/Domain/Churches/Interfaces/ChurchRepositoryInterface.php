@@ -10,5 +10,5 @@ use Infrastructure\Repositories\Church\ChurchRepository;
 
 interface ChurchRepositoryInterface
 {
-    public function newChurch(ChurchData $churchData): Church;
+    public function newChurch(ChurchData $churchData, string $awsS3Bucket): Church;
 }
