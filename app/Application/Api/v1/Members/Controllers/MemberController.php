@@ -2,9 +2,9 @@
 
 namespace Application\Api\v1\Members\Controllers;
 
+use App\Domain\Members\Constants\ReturnMessages;
 use Application\Api\v1\Members\Requests\MemberAvatarRequest;
 use Application\Api\v1\Members\Requests\MemberRequest;
-use Application\Api\v1\Members\Resources\ErrorMemberResource;
 use Application\Api\v1\Members\Resources\MemberResource;
 use Application\Api\v1\Members\Resources\MemberResourceCollection;
 use Application\Core\Http\Controllers\Controller;
@@ -13,14 +13,11 @@ use Domain\Members\Actions\GetMemberByIdAction;
 use Domain\Members\Actions\GetMembersAction;
 use Domain\Members\Actions\UpdateStatusMemberAction;
 use Domain\Members\Actions\UpdateMemberAction;
-use Domain\Members\Actions\UploadMemberAvatarAction;
-use Http\Client\Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Util\Storage\S3\UploadFile;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
@@ -42,11 +39,11 @@ class MemberController extends Controller
             $createMemberAction($memberRequest->memberData());
 
             return response([
-                'message'   =>  'Membro cadastrado com sucesso!',
+                'message'   =>  ReturnMessages::SUCCESS_MEMBER_REGISTERED,
             ], 201);
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -67,7 +64,7 @@ class MemberController extends Controller
             $response = $getMembersAction();
             return new MemberResourceCollection($response);
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -86,7 +83,7 @@ class MemberController extends Controller
             return new MemberResource($response);
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -106,12 +103,14 @@ class MemberController extends Controller
         try
         {
             $response = $updateStatusMemberAction($id, $request->input('status'));
-            return response([
-                'message'   =>  'Status do membro atualizado com sucesso!',
-            ], 200);
-
+            if($response)
+            {
+                return response([
+                    'message'   =>  ReturnMessages::SUCCESS_UPDATE_STATUS_MEMBER,
+                ], 200);
+            }
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -125,46 +124,49 @@ class MemberController extends Controller
      * @param UpdateMemberAction $updateMemberAction
      * @return Response
      * @throws GeneralExceptions
-     * @throws UnknownProperties
+     * @throws UnknownProperties|BindingResolutionException
      */
     public function updateMember(MemberRequest $memberRequest, $id, UpdateMemberAction $updateMemberAction): Response
     {
         try
         {
-            $updateMemberAction($id, $memberRequest->memberData());
-            return response([
-                'message'   =>  'Membro atualizado com sucesso!',
-            ], 201);
+            $response = $updateMemberAction($id, $memberRequest->memberData());
 
+            if($response)
+            {
+                return response([
+                    'message'   =>  ReturnMessages::SUCCESS_UPDATED_MEMBER,
+                ], 200);
+            }
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
 
 
-
     /**
      * @param MemberAvatarRequest $memberAvatarRequest
-     * @param UploadMemberAvatarAction $uploadMemberAvatarAction
+     * @param UploadFile $uploadFile
      * @return Response
      * @throws GeneralExceptions
-     * @throws Throwable
      */
-    public function uploadMemberAvatar(MemberAvatarRequest $memberAvatarRequest, UploadMemberAvatarAction $uploadMemberAvatarAction): Response
+    public function uploadMemberAvatar(MemberAvatarRequest $memberAvatarRequest, UploadFile $uploadFile): Response
     {
         try
         {
+            $tenantS3PathObject = 'members/assets/avatars';
             $tenant = explode('.', $memberAvatarRequest->getHost())[0];
-            $response = $uploadMemberAvatarAction($memberAvatarRequest->files->get('avatar'), $tenant);
+            $response = $uploadFile->upload($memberAvatarRequest->files->get('avatar'), $tenantS3PathObject, $tenant);
 
             if($response)
                 return response([
+                    'message'   => ReturnMessages::SUCCESS_UPDATE_IMAGE_MEMBER,
                     'avatar'    =>  $response
                 ], 200);
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }

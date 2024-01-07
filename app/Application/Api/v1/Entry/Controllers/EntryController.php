@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Entry\Controllers;
 
+use App\Domain\Entries\Constants\ReturnMessages;
 use Application\Api\v1\Entry\Requests\EntryRequest;
 use Application\Api\v1\Entry\Resources\EntryResource;
 use Application\Api\v1\Entry\Resources\EntryResourceCollection;
@@ -38,14 +39,13 @@ class EntryController extends Controller
     {
         try
         {
-            $response = $createEntryAction($entryRequest->entryData());
-            return response([
-                'id'        =>  $response->id,
-                'message'   =>  'Entrada cadastrada com sucesso!',
-            ], 201);
+            $createEntryAction($entryRequest->entryData());
 
+            return response([
+                'message'   =>  ReturnMessages::SUCCESS_ENTRY_REGISTERED,
+            ], 201);
         }
-        catch(Exception $e)
+        catch(GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -64,7 +64,7 @@ class EntryController extends Controller
             return new EntryResourceCollection($response);
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -82,7 +82,7 @@ class EntryController extends Controller
             $response = $getEntryByIdAction($id);
             return new EntryResource($response);
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -96,7 +96,7 @@ class EntryController extends Controller
      * @param EntryRequest $entryRequest
      * @param $id
      * @param UpdateEntryAction $updateEntryAction
-     * @return Application|ResponseFactory|Response
+     * @return Application|Response|ResponseFactory
      * @throws GeneralExceptions
      * @throws Throwable
      */
@@ -104,18 +104,14 @@ class EntryController extends Controller
     {
         try
         {
-            $result = null;
-            $response = $updateEntryAction($id, $entryRequest->entryData());
+            $updateEntryAction($id, $entryRequest->entryData());
 
-            if($response)
-                $result = response([
-                    'message'   =>  'Entrada atualizada com sucesso!',
-                ], 201);
-
-            return $result;
+            return response([
+                'message'   =>  ReturnMessages::INFO_UPDATED_ENTRY,
+            ], 201);
 
         }
-        catch(Exception $e)
+        catch(GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
@@ -139,13 +135,13 @@ class EntryController extends Controller
 
             $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $amountType, $entryType);
             return [
-                'total'       => $response,
-                'amountType'  => $amountType,
-                'entryType'  => $entryType,
+                'total'         => $response,
+                'amountType'    => $amountType,
+                'entryType'     => $entryType,
             ];
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }

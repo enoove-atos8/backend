@@ -2,11 +2,13 @@
 
 namespace Domain\Entries\Actions;
 
+use App\Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Domain\Entries\DataTransferObjects\EntryData;
 use Domain\Entries\Models\Entry;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Entries\EntryRepository;
+use Throwable;
 
 class CreateEntryAction
 {
@@ -20,7 +22,7 @@ class CreateEntryAction
     }
 
     /**
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function __invoke(EntryData $entryData): Entry
     {

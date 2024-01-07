@@ -2,11 +2,12 @@
 
 namespace Domain\Members\Actions;
 
+use App\Domain\Members\Constants\ReturnMessages;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Members\MemberRepository;
+use Infrastructure\Repositories\Member\MemberRepository;
 use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Members\Models\Member;
@@ -24,19 +25,20 @@ class GetMemberByIdAction
 
     /**
      * @param null $id
-     * @return Model
-     * @throws GeneralExceptions
+     * @return Collection|Member|Model
+     * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke($id = null): Model
+    public function __invoke($id = null): Member|Model|Collection
     {
         $member = $this->memberRepository->getMembers($id);
 
-        if(!is_object($member))
-            throw new GeneralExceptions('Erro ao retornar este usuário', 500);
-
-        if($member->count() == 0)
-            throw new GeneralExceptions('Nenhum usuário encontrado!', 404);
-
-        return $member;
+        if($member->count() > 0)
+        {
+            return $member;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::INFO_NO_MEMBER_FOUNDED, 404);
+        }
     }
 }

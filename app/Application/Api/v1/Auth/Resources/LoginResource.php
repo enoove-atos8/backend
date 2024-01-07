@@ -15,7 +15,8 @@ class LoginResource extends JsonResource
      */
     public function toArray($request): array
     {
-        $user = $this->resource;
+        $user = $this->resource['user'];
+        $church = $this->resource['church'];
         $roles = [];
         $detail = null;
         if(count($user->roles()->get()) > 0)
@@ -24,7 +25,7 @@ class LoginResource extends JsonResource
             $detail = $user->detail()->first();
 
         return [
-            'token' => $this->token,
+            'token' => $user->token,
             'user'  =>  [
                 'id'                    =>  $user->id,
                 'email'                 =>  $user->email,
@@ -34,6 +35,13 @@ class LoginResource extends JsonResource
                 'accessQuantity'        =>  $user->accessQuantity,
                 'roles'                 =>  $this->mountUserRolesArray($roles),
                 'details'               =>  $this->mountUserDetailsArray($detail)
+            ],
+            'church'    =>  [
+                'id'                =>  $church->tenant_id,
+                'name'              =>  $church->name,
+                'logo'              =>  $church->logo,
+                'activated'         =>  $church->activated,
+                'aws_s3_bucket'     =>  $church->aws_s3_bucket,
             ]
         ];
     }
@@ -49,7 +57,7 @@ class LoginResource extends JsonResource
         if($detail != null)
         {
             $result =  [
-                'user_id'       =>  $detail->user_id,
+                'userId'       =>  $detail->user_id,
                 'fullName'     =>  $detail->full_name,
                 'avatar'        =>  $detail->avatar,
                 'type'          =>  $detail->type,

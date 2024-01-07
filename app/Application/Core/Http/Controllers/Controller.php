@@ -10,10 +10,10 @@ use Illuminate\Routing\Controller as BaseController;
 /**
  * @OA\Info(
  *      version="00.00.031",
- *      title="Atos242 API Documentation",
- *      description="API documentation for multi-tenant backend application of ecclesiastical management platform Atos242",
+ *      title="atos8 API Documentation",
+ *      description="API documentation for multi-tenant backend application of ecclesiastical management platform atos8",
  *      @OA\Contact(
- *          email="developer@atos242.com"
+ *          email="developer@atos8.com"
  *      )
  * )
  * @OA\SecurityScheme(

@@ -6,7 +6,7 @@ use Exception;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Throwable;
 
 class GeneralExceptions extends Exception
 {
@@ -44,7 +44,7 @@ class GeneralExceptions extends Exception
      * @param Request $request
      * @return JsonResponse
      */
-    public function render(Request $request): JsonResponse
+    public function render(Request $request, Throwable $e): JsonResponse
     {
         $finalResponse = [];
         $this->message = $this->getMessage();

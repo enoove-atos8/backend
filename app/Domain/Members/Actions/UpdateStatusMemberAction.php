@@ -2,15 +2,11 @@
 
 namespace Domain\Members\Actions;
 
+use App\Domain\Members\Constants\ReturnMessages;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\User\MemberDetailRepository;
-use Infrastructure\Repositories\User\MemberRepository;
-use Domain\Members\DataTransferObjects\MemberData;
+use Infrastructure\Repositories\Member\MemberRepository;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
-use Throwable;
 
 class UpdateStatusMemberAction
 {
@@ -24,11 +20,21 @@ class UpdateStatusMemberAction
     /**
      * @param $memberId
      * @param $status
-     * @return int
+     * @return true
      * @throws BindingResolutionException
+     * @throws GeneralExceptions
      */
-    public function __invoke($memberId, $status): int
+    public function __invoke($memberId, $status): bool
     {
-        return $this->memberRepository->updateStatus($memberId, $status);
+        $status = $this->memberRepository->updateStatus($memberId, $status);
+
+        if($status)
+        {
+            return true;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_STATUS_MEMBER, 500);
+        }
     }
 }

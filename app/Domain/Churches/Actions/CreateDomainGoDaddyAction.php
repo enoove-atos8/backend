@@ -2,6 +2,7 @@
 
 namespace Domain\Churches\Actions;
 
+use App\Domain\Churches\Constants\ReturnMessages;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use Illuminate\Support\Facades\App;
@@ -10,9 +11,7 @@ use Infrastructure\Exceptions\GeneralExceptions;
 class CreateDomainGoDaddyAction
 {
     private string $env;
-    private string|null $aws_host;
     private string $prodApiPathGodaddy;
-    private string $domain;
     private string $godaddyProductionKey;
     private string $godaddyProductionSecret;
     const GODADDY_DOMAIN_RESOURCE = '/domains';
@@ -21,18 +20,10 @@ class CreateDomainGoDaddyAction
 
     public function __construct()
     {
-        $this->env = App::environment() == 'development' ? 'development' : 'local';
-
-        $this->aws_host = $this->env == 'development' ?
-            config('external-env.aws.dev.host') : null;
-
-        $this->domain = $this->env == 'development' ?
-            config('external-env.app.domain.dev') :
-            config('external-env.app.domain.local');
-
-        $this->prodApiPathGodaddy = config('external-env.godaddy.base_url');
-        $this->godaddyProductionKey = config('external-env.godaddy.key');
-        $this->godaddyProductionSecret = config('external-env.godaddy.secret');
+        $this->env = App::environment();
+        $this->prodApiPathGodaddy = config('godaddy.url.prod.base');
+        $this->godaddyProductionKey = config('godaddy.credentials.key');
+        $this->godaddyProductionSecret = config('godaddy.credentials.secret');
     }
 
     /**
@@ -40,8 +31,8 @@ class CreateDomainGoDaddyAction
      */
     public function __invoke(string $tenant, $envProd = true): bool
     {
-        $domain = config('external-env.app.domain.' . App::environment());
-        $host = config('external-env.aws.' . App::environment() . '.host' );
+        $domain = config('domain.' . $this->env);
+        $host = config('aws.environments.' . $this->env . '.host' );
 
         if(App::environment() !== 'local')
         {
@@ -67,7 +58,7 @@ class CreateDomainGoDaddyAction
             if($response->getStatusCode() >= 200 && $response->getStatusCode() < 300)
                 return true;
             else
-                throw new GeneralExceptions('Houve um problema ao criar o site no serviço de hospedagem', $response->getStatusCode());
+                throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_DOMAIN, $response->getStatusCode());
         }
         else
         {

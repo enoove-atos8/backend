@@ -2,12 +2,14 @@
 
 namespace Application\Api\v1\Users\Controllers;
 
+use App\Domain\Users\Constants\ReturnMessages;
 use Application\Api\v1\Users\Requests\UserAvatarRequest;
 use Application\Api\v1\Users\Requests\UserRequest;
 use Application\Api\v1\Users\Resources\ErrorUserResource;
 use Application\Api\v1\Users\Resources\UserResource;
 use Application\Api\v1\Users\Resources\UserResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Users\Actions\CreateUserAction;
 use Domain\Users\Actions\GetUserByIdAction;
 use Domain\Users\Actions\GetUsersAction;
@@ -21,6 +23,7 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Util\Storage\S3\UploadFile;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
@@ -39,16 +42,19 @@ class UserController extends Controller
     {
         try
         {
+            $tenant = explode('.', $userRequest->getHost())[0];
+
             $createUserAction(
                 $userRequest->userData(),
-                $userRequest->userDetailData());
+                $userRequest->userDetailData(),
+                $tenant);
 
             return response([
-                'message'   =>  'Usuário cadastrado com sucesso!',
+                'message'   =>  ReturnMessages::SUCCESS_USER_REGISTERED,
             ], 201);
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -68,7 +74,7 @@ class UserController extends Controller
             $response = $getUsersAction();
             return new UserResourceCollection($response);
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -87,7 +93,7 @@ class UserController extends Controller
             return new UserResource($response);
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -106,12 +112,15 @@ class UserController extends Controller
         try
         {
             $response = $updateStatusUserAction($id, $request->input('status'));
-            return response([
-                'message'   =>  'Status do usuário atualizado com sucesso!',
-            ], 200);
+            if($response)
+            {
+                return response([
+                    'message'   =>  ReturnMessages::SUCCESS_UPDATE_STATUS_USER,
+                ], 200);
+            }
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -129,13 +138,17 @@ class UserController extends Controller
     {
         try
         {
-            $updateUserAction($id, $userRequest->userData(), $userRequest->userDetailData());
-            return response([
-                'message'   =>  'Usuário atualizado com sucesso!',
-            ], 201);
+            $response = $updateUserAction($id, $userRequest->userData(), $userRequest->userDetailData());
+
+            if($response)
+            {
+                return response([
+                    'message'   =>  ReturnMessages::SUCCESS_UPDATED_USER,
+                ], 201);
+            }
 
         }
-        catch (Exception $e)
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
@@ -144,20 +157,22 @@ class UserController extends Controller
 
     /**
      * @param UserAvatarRequest $userAvatarRequest
-     * @param UploadUserAvatarAction $uploadUserAvatarAction
+     * @param UploadFile $uploadFile
      * @return Response
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function uploadUserAvatar(UserAvatarRequest $userAvatarRequest, UploadUserAvatarAction $uploadUserAvatarAction): Response
+    public function uploadUserAvatar(UserAvatarRequest $userAvatarRequest, UploadFile $uploadFile): Response
     {
         try
         {
+            $tenantS3PathObject = 'users/assets/avatars';
             $tenant = explode('.', $userAvatarRequest->getHost())[0];
-            $response = $uploadUserAvatarAction($userAvatarRequest->files->get('avatar'), $tenant);
+            $response = $uploadFile->upload($userAvatarRequest->files->get('avatar'), $tenantS3PathObject, $tenant);
 
             if($response)
                 return response([
+                    'message'   => ReturnMessages::SUCCESS_UPDATE_IMAGE_USER,
                     'avatar'    =>  $response
                 ], 200);
         }

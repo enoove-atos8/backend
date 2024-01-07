@@ -11,7 +11,7 @@ services:
       - .:/var/www/backend/html
       - ./docker/local/app.conf:/etc/nginx/sites-enabled/default
     networks:
-      - atos242-backend-network
+      - atos8-backend-network
     ports:
       - 8000:8000
     depends_on:
@@ -25,15 +25,15 @@ services:
     environment:
         MYSQL_ROOT_PASSWORD: 'root'
         MYSQL_ROOT_HOST: "%"
-        MYSQL_DATABASE: 'central_atos242'
+        MYSQL_DATABASE: 'atos8'
         MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
     volumes:
       - 'mysql:/var/lib/mysql'
     networks:
-      - atos242-backend-network
+      - atos8-backend-network
 networks:
-  atos242-backend-network:
+  atos8-backend-network:
     driver: bridge
 volumes:
   mysql:

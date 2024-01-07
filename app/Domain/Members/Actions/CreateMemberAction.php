@@ -2,11 +2,10 @@
 
 namespace Domain\Members\Actions;
 
-use Infrastructure\Exceptions\GeneralExceptions;
+use Domain\Members\Models\Member;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
 use Throwable;
 
 class CreateMemberAction

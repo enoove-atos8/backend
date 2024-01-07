@@ -9,6 +9,7 @@ use Domain\Churches\Actions\CreateChurchAction;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
+use Throwable;
 
 class ChurchController extends Controller
 {
@@ -20,7 +21,7 @@ class ChurchController extends Controller
      * @return ChurchResource
      * @throws TenantCouldNotBeIdentifiedById
      * @throws UnknownProperties
-     * @throws \Throwable
+     * @throws Throwable
      */
     public function createChurch(ChurchRequest $churchRequest, CreateChurchAction $createChurchAction): ChurchResource
     {
@@ -32,7 +33,7 @@ class ChurchController extends Controller
 
             return new ChurchResource($response);
 
-        }catch(\Exception $e){
+        }catch(GeneralExceptions $e){
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }

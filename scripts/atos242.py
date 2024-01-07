@@ -1,9 +1,9 @@
-from deploy_atos242 import DeployAtos242
+from deploy_atos8 import Deployatos8
 import sys
 
 
 
-obj = DeployAtos242()
+obj = Deployatos8()
 
 args = sys.argv
 params = []
@@ -21,7 +21,7 @@ if len(args) >= 6:
                 if '=' in arg:
 
                     if arg.split('=')[0] == '-r':
-                        repository = arg.split('=')[1]  # enoove/atos242-backend
+                        repository = arg.split('=')[1]  # enoove/atos8-backend
                         params.append(repository)
                         continue
 

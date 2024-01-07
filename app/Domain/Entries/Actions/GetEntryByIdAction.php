@@ -2,6 +2,7 @@
 
 namespace Domain\Entries\Actions;
 
+use App\Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Domain\Entries\Models\Entry;
 use Illuminate\Database\Eloquent\Model;
@@ -24,14 +25,17 @@ class GetEntryByIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke($id): Model | null
+    public function __invoke($id): Model
     {
         $entry = $this->entryRepository->getEntryById($id);
 
-
-        if($entry == null)
-            throw new GeneralExceptions('Nenhum entrada encontrada!', 404);
-
-        return $entry;
+        if($entry !== null)
+        {
+            return $entry;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::INFO_NO_ENTRY_FOUNDED, 404);
+        }
     }
 }

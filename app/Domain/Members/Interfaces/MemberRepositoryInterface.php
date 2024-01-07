@@ -13,7 +13,7 @@ interface MemberRepositoryInterface
 
     public function getMembers(): Member|Collection;
 
-    public function updateStatus($id, $status): int;
+    public function updateStatus($id, $status): mixed;
 
-    public function updateMember($id, MemberData $memberData): int;
+    public function updateMember($id, MemberData $memberData): mixed;
 }

@@ -11,7 +11,7 @@ interface EntryRepositoryInterface
 {
     public function newEntry(EntryData $entryData): Entry;
 
-    public function updateEntry(int $id, EntryData $entryData): bool;
+    public function updateEntry(int $id, EntryData $entryData): mixed;
 
     public function getAllEntries(string $rangeMonthlyDate): Collection;
 

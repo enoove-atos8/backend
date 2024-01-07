@@ -1,37 +1,37 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Atos242 API Documentation",
-        "description": "API documentation for multi-tenant backend application of ecclesiastical management platform Atos242",
+        "title": "atos8 API Documentation",
+        "description": "API documentation for multi-tenant backend application of ecclesiastical management platform atos8",
         "contact": {
-            "email": "developer@atos242.com"
+            "email": "developer@atos8.com"
         },
         "version": "00.00.031"
     },
     "servers": [
         {
-            "url": "http://www.atos242.local:8000/api",
-            "description": "Central Atos242 App - Local API Server"
+            "url": "http://www.atos8.local:8000/api",
+            "description": "Central atos8 App - Local API Server"
         },
         {
-            "url": "http://dev.atos242.local:8000/api",
-            "description": "APP Tenant Atos242 App - Local API Server"
+            "url": "http://dev.atos8.local:8000/api",
+            "description": "APP Tenant atos8 App - Local API Server"
         },
         {
-            "url": "http://www.atos242.com:8000/api",
-            "description": "Central Atos242 App - Development API Server"
+            "url": "http://www.atos8.com:8000/api",
+            "description": "Central atos8 App - Development API Server"
         },
         {
-            "url": "http://dev.atos242.com:8000/api",
-            "description": "APP Tenant Atos242 App - Development API Server"
+            "url": "http://dev.atos8.com:8000/api",
+            "description": "APP Tenant atos8 App - Development API Server"
         },
         {
-            "url": "http://www.atos242.local:8080/api",
-            "description": "Central Atos242 App - Local API Server - With RP"
+            "url": "http://www.atos8.local:8080/api",
+            "description": "Central atos8 App - Local API Server - With RP"
         },
         {
-            "url": "http://www.atos242.com/api",
-            "description": "Central Atos242 App - Development API Server - With RP"
+            "url": "http://www.atos8.com/api",
+            "description": "Central atos8 App - Development API Server - With RP"
         }
     ],
     "paths": {

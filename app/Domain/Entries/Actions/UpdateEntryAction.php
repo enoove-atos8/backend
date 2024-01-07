@@ -2,12 +2,14 @@
 
 namespace Domain\Entries\Actions;
 
+use App\Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\DataTransferObjects\EntryData;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Domain\Entries\Models\Entry;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Entries\EntryRepository;
+use Throwable;
 
 class UpdateEntryAction
 {
@@ -21,15 +23,23 @@ class UpdateEntryAction
     }
 
     /**
-     * @throws \Throwable
+     * @param $id
+     * @param EntryData $entryData
+     * @return bool|mixed
+     * @throws GeneralExceptions
+     * @throws Throwable
      */
-    public function __invoke($id, EntryData $entryData): bool
+    public function __invoke($id, EntryData $entryData): mixed
     {
         $entry = $this->entryRepository->updateEntry($id, $entryData);
 
         if($entry)
-            return true;
+        {
+            return $entry;
+        }
         else
-            throw new GeneralExceptions('Encontramos um problema ao atualizar esta entrada, tente mais tarde!', 500);
+        {
+            throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_ENTRY, 500);
+        }
     }
 }

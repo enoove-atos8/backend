@@ -10,7 +10,7 @@ use JsonSerializable;
 
 class EntryResource extends JsonResource
 {
-    public static $wrap = false;
+    public static $wrap = 'entry';
     /**
      * Transform the resource into an array.
      *
@@ -21,13 +21,6 @@ class EntryResource extends JsonResource
     {
         $entry = $this->resource;
 
-        if(count($entry->member()->get()) > 0) $member = $entry->member()->first(); else $member = null;
-
-        $dataMember = null;
-
-        if(!is_null($member)){
-            $dataMember = ['id'=> $member->id, 'name'=> $member->full_name, 'avatar'=> $member->avatar];
-        }
         return [
             'id'                            =>  $entry->id,
             'entryType'                     =>  $entry->entry_type,

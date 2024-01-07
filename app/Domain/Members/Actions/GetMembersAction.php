@@ -2,12 +2,13 @@
 
 namespace Domain\Members\Actions;
 
+use App\Domain\Members\Constants\ReturnMessages;
+use Domain\Members\Models\Member;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Member\MemberRepository;
-use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
 use Throwable;
 
 class GetMembersAction
@@ -24,13 +25,17 @@ class GetMembersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Collection
+    public function __invoke(): Member|Model|Collection
     {
         $member = $this->memberRepository->getMembers();
 
-        if($member->count() == 0)
-            throw new GeneralExceptions('Nenhum membro encontrado!', 404);
-
-        return $member;
+        if($member->count() > 0)
+        {
+            return $member;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::INFO_NO_MEMBERS_FOUNDED, 404);
+        }
     }
 }

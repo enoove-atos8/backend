@@ -7,8 +7,8 @@ import sys
 import subprocess
 
 
-class DeployAtos242:
-    
+class Deployatos8:
+
 
     def run_docker_commands(self, params):
 
@@ -59,7 +59,7 @@ class DeployAtos242:
 
         ssh = SSHClient()
         ssh.set_missing_host_key_policy(AutoAddPolicy())
-        ssh.connect(hostname=hostname, username=username, key_filename='scripts/test_atos242.pem')
+        ssh.connect(hostname=hostname, username=username, key_filename='scripts/test_atos8.pem')
 
         return ssh
 
@@ -73,14 +73,14 @@ class DeployAtos242:
 
         sftp = ssh.open_sftp()
         self.update_image_tag_docker_compose('scripts/docker-compose-ec2-template.yml', finalParams['image_tag'])
-        sftp.put('scripts/docker-compose-ec2-template.yml', 'docker-compose-ec2.yml')        
-        os.remove('scripts/docker-compose-ec2-template.yml')        
+        sftp.put('scripts/docker-compose-ec2-template.yml', 'docker-compose-ec2.yml')
+        os.remove('scripts/docker-compose-ec2-template.yml')
         os.rename('scripts/docker-compose-ec2-template.yml.yml', 'scripts/docker-compose-ec2-template.yml')
         print('docker-compose file updated!')
         sftp.close()
 
     def update_image_tag_docker_compose(self, file, tag):
-        
+
         with fileinput.FileInput(file, inplace=True, backup='.yml') as file:
             for line in file:
                 print(line.replace('#BACKEND_IMAGE_TAG#', tag), end='')
@@ -111,8 +111,8 @@ class DeployAtos242:
         cmdOptimizeClear = 'sudo docker exec backend php artisan optimize:clear'
 
         print(' ')
-        print('Start docker containers...')        
-        
+        print('Start docker containers...')
+
         cmd = cmdComposeUp + ' && ' + cmdStartNginx + ' && ' + cmdCPEnv + ' && ' + cmdOptimizeClear + ' && ' + cmdConfigCache
         ssh = self.connect_ssh()
 

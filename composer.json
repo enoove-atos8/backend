@@ -1,12 +1,13 @@
 {
-    "name": "enoove/atos242",
+    "name": "enoove/atos8",
     "type": "project",
     "description": "Manage church platform",
     "keywords": ["framework", "laravel"],
     "license": "MIT",
     "require": {
-        "php": "^8.1",
+        "php": "^8.2",
         "darkaonline/l5-swagger": "^8.5",
+        "fedeisas/laravel-mail-css-inliner": "*",
         "fruitcake/laravel-cors": "^2.0.5",
         "gerencianet/gerencianet-sdk-php": "^5.1",
         "guzzlehttp/guzzle": "^7.2",
@@ -16,6 +17,7 @@
         "laravel/telescope": "*",
         "laravel/tinker": "^2.7",
         "league/flysystem-aws-s3-v3": "^3.16",
+        "mailersend/laravel-driver": "^2.3",
         "sentry/sentry-laravel": "^3.4",
         "spatie/data-transfer-object": "^3.7",
         "spatie/laravel-permission": "^5.11",
@@ -38,7 +40,9 @@
             "Support\\": "app/Support/",
             "Infrastructure\\": "app/Infrastructure/",
             "Database\\Factories\\": "database/factories/",
-            "Database\\Seeders\\": "database/seeders/"
+            "Database\\Seeders\\": "database/seeders/",
+            "Database\\Seeders\\Central\\": "database/seeders/central/",
+            "Database\\Seeders\\Tenant\\": "database/seeders/tenant/"
         }
     },
     "autoload-dev": {

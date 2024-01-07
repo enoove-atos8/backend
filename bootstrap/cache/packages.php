@@ -10,6 +10,13 @@
       'L5Swagger' => 'L5Swagger\\L5SwaggerFacade',
     ),
   ),
+  'fedeisas/laravel-mail-css-inliner' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Fedeisas\\LaravelMailCssInliner\\LaravelMailCssInlinerServiceProvider',
+    ),
+  ),
   'fruitcake/laravel-cors' => 
   array (
     'providers' => 
@@ -43,6 +50,17 @@
     'providers' => 
     array (
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
+    ),
+  ),
+  'mailersend/laravel-driver' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'MailerSend\\LaravelDriver\\LaravelDriverServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'LaravelDriver' => 'MailerSend\\LaravelDriver\\LaravelDriverFacade',
     ),
   ),
   'nesbot/carbon' => 
