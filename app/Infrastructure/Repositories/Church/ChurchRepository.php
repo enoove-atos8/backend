@@ -5,10 +5,9 @@ namespace Infrastructure\Repositories\Church;
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Churches\Models\Church;
-use Domain\Churches\Models\Tenant;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
-use Infrastructure\Exceptions\GeneralExceptions;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 use Throwable;
 
@@ -16,12 +15,24 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
 {
     protected mixed $model = Church::class;
 
+    const TENANT_ID_COLUMN = 'tenant_id';
+
+    /**
+     * Array of where, between and another clauses that was mounted dynamically
+     */
+    private array $queryClausesAndConditions = [
+        'where_clause'    =>  [
+            'exists' => false,
+            'clause'   =>  [],
+        ]
+    ];
+
     /**
      * @throws Throwable
      */
     public function newChurch(ChurchData $churchData, string $awsS3Bucket): Church
     {
-        $church = $this->create([
+        return $this->create([
             'tenant_id'           =>  $churchData->tenantId,
             'plan_id'             =>  $churchData->planId,
             'name'                =>  $churchData->name,
@@ -30,11 +41,16 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
             'doc_number'          =>  $churchData->docNumber,
             'aws_s3_bucket'       =>  $awsS3Bucket,
         ]);
+    }
 
 
-
-        throw_if(!$church, GeneralExceptions::class, 'Houve um erro ao procesar o cadastro de uma nova igreja', 500);
-
-        return $church;
+    /**
+     * @param null $tenantId
+     * @return Model
+     * @throws BindingResolutionException
+     */
+    public function getChurch($tenantId): Model
+    {
+        return $this->getItemByColumn(self::TENANT_ID_COLUMN, $tenantId);
     }
 }

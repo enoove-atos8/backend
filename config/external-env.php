@@ -10,23 +10,23 @@ return [
     'aws'   =>  [
         'development'   =>  [
             'host'  =>  '3.14.147.95',
-            's3'    =>  'https://atos242-dev.s3.us-east-2.amazonaws.com/clients/'
+            's3'    =>  'https://atos8-dev.s3.us-east-2.amazonaws.com/clients/'
         ],
         'production'   =>  [
             'host'  =>  '3.14.147.95',
-            's3'    =>  'https://atos242-prod.s3.us-east-2.amazonaws.com/clients/'
+            's3'    =>  'https://atos8-prod.s3.us-east-2.amazonaws.com/clients/'
         ],
         'local'   =>  [
             'host'  =>  '3.14.147.95',
-            's3'    =>  'https://atos242-local.s3.us-east-2.amazonaws.com/clients/'
+            's3'    =>  'https://atos8-local.s3.us-east-2.amazonaws.com/clients/'
         ],
     ],
 
     'app'   =>  [
         'domain'  =>  [
-            'local'         =>  'atos242.local',
-            'production'    =>  'atos242.com',
-            'development'   =>  'atos242.com',
+            'local'         =>  'atos8.local',
+            'production'    =>  'atos8.com',
+            'development'   =>  'atos8.com',
         ]
     ],
 ];

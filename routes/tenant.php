@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
+use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Entry\Controllers\EntryController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
@@ -288,6 +289,44 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+        });
+
+
+        /*
+        |------------------------------------------------------------------------------------------
+        | Notification routes
+        |------------------------------------------------------------------------------------------
+        | Resource Group: Notifications
+        | EndPoints: /v1/notification
+        |
+        |------------------------------------------------------------------------------------------
+        */
+
+        Route::prefix('notifications')->group(function () {
+
+            /*
+            |--------------------------------------------------------------------------
+            | Users Notifications
+            |------------------------------------------------------------------------------------------
+            | Resource: Users
+            | EndPoints: /v1/notification/users
+            |
+            |   1 - POST - /newUser - OK
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('users')->group(function () {
+
+                Route::post('/newUser', [UserNotificationController::class, 'newUser']);
+
+            });
+            /*
+             * Action: GET
+             * EndPoint: /
+             * Description: Get All users
+             */
+
+
         });
     });
 });

@@ -2,6 +2,9 @@
 
 namespace Domain\Users\Actions;
 
+use App\Domain\Notifications\Actions\User\NewUserNotificationAction;
+use App\Domain\Notifications\Actions\Church\NewChurchUserNotificationAction;
+use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\User\UserRepository;
@@ -14,28 +17,53 @@ class CreateUserAction
 {
     private UserRepository $userRepository;
     private CreateUserDetailAction $createUserDetailAction;
+    private NewUserNotificationAction $newUserNotificationAction;
+    private NewChurchUserNotificationAction $newChurchUserNotificationAction;
 
     public function __construct(
         UserRepositoryInterface $userRepositoryInterface,
-        CreateUserDetailAction    $createUserDetailAction,
+        CreateUserDetailAction $createUserDetailAction,
+        NewUserNotificationAction $newUserNotificationAction,
+        NewChurchUserNotificationAction $newChurchUserNotificationAction,
     )
     {
         $this->userRepository = $userRepositoryInterface;
         $this->createUserDetailAction = $createUserDetailAction;
+        $this->newUserNotificationAction = $newUserNotificationAction;
+        $this->newChurchUserNotificationAction = $newChurchUserNotificationAction;
     }
 
     /**
      * @throws Throwable
      */
-    public function __invoke(UserData $userData, UserDetailData $userDetailData): User
+    public function __invoke(UserData $userData, UserDetailData $userDetailData, string $tenant, bool $firstUserChurch = false): User
     {
+        if(!$firstUserChurch)
+            $userData->password = $this->generatePassword();
+
         $user = $this->userRepository->createUser($userData);
         $this->createUserDetailAction->__invoke($user->id, $userDetailData);
 
         $user->assignRole($userData->roles);
 
-        // Call action here that handle email to user activate your account
+        if($firstUserChurch)
+            $this->newChurchUserNotificationAction->__invoke($userData, $userDetailData, $tenant);
+        else
+            $this->newUserNotificationAction->__invoke($userData, $userDetailData, $tenant);
 
         return $user;
+    }
+
+
+    /**
+     * Generate password
+     */
+    public function generatePassword(): string
+    {
+        $digits    = array_flip(range('0', '9'));
+        $combined  = array_merge($digits);
+
+        return str_shuffle(array_rand($digits) .
+            implode(array_rand($combined, rand(4, 7))));
     }
 }

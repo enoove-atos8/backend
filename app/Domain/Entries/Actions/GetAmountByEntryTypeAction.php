@@ -2,6 +2,7 @@
 
 namespace Domain\Entries\Actions;
 
+use App\Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\DataTransferObjects\EntryData;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Domain\Entries\Models\Entry;
@@ -30,7 +31,12 @@ class GetAmountByEntryTypeAction
         $total = $entries->sum(EntryRepository::AMOUNT_COLUMN);
 
         if(count($entries) !== 0 and $total !== 0)
+        {
             return $total;
-        throw_if(count($entries) == 0 and $total == 0, GeneralExceptions::class, "Nenhum resultado encontrado!", 404);
+        }
+        elseif (count($entries) == 0 and $total == 0)
+        {
+            throw new GeneralExceptions(ReturnMessages::INFO_AMOUNT_BY_ENTRY_TYPE_NO_RECORDS, 404);
+        }
     }
 }

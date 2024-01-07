@@ -2,6 +2,7 @@
 
 namespace Domain\Members\Actions;
 
+use App\Domain\Members\Constants\ReturnMessages;
 use Domain\Users\DataTransferObjects\UserDetailData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
@@ -24,10 +25,19 @@ class UpdateMemberAction
     /**
      * @param $id
      * @param MemberData $memberData
-     * @return Member
+     * @return true
+     * @throws BindingResolutionException
+     * @throws GeneralExceptions
      */
-    public function __invoke($id, MemberData $memberData): Member
+    public function __invoke($id, MemberData $memberData): bool
     {
-        return $this->memberRepository->updateMember($id, $memberData);
+        if($this->memberRepository->updateMember($id, $memberData))
+        {
+            return true;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_MEMBER, 500);
+        }
     }
 }

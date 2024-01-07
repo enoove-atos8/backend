@@ -21,6 +21,7 @@ class CreateChurchesTable extends Migration
             $table->integer('plan_id')->nullable(false);
             $table->string('name')->nullable(false);
             $table->boolean('activated')->nullable(false);
+            $table->string('logo')->nullable();
             $table->string('doc_type')->nullable(false);
             $table->string('doc_number')->nullable(false);
             $table->string('aws_s3_bucket')->nullable(false);

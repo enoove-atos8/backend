@@ -1,20 +1,49 @@
-POST http://dev.atos242.local:8080/api/v1/login
+POST https://www.atos8.com/api/v1/church
 Content-Type: application/json
 
 {
-    "email": "dev@dev.com.br",
-    "password": "123456"
+    "church": {
+        "tenant_id": "iebrd",
+        "plan_id": 1,
+        "name": "Igreja Evangélica Batista em Rio Doce",
+        "activated": true,
+        "doc_type": "cnpj",
+        "doc_number": "24162422000121"
+    },
+    "user": {
+        "admin_email_tenant": "iebrd@atos8.com",
+        "pass_admin_email_tenant": "123456",
+        "confirm_pass_admin_email_tenant": "123456",
+        "user_activated_tenant": true,
+        "changed_password": false,
+        "access_quantity": 0,
+        "user_type_tenant": "web",
+        "roles": ["admin"]
+    },
+    "details": {
+        "fullName": "Administrador",
+        "avatar": "",
+        "type": "",
+        "title": "Administrador",
+        "gender": "male",
+        "phone": "81999002918",
+        "address": "Rua Aluísio de Azevedo, 378",
+        "district": "Jardim Atlântico",
+        "city": "Olinda",
+        "country": "Brasil",
+        "birthday": "29121986"
+    }
 }
 
 ###
-GET http://dev.atos242.local:8080/api/v1/financial/entries?startDate=2023-09-06&endDate=2023-09-10
+GET http://dev.atos8.local:8080/api/v1/financial/entries?startDate=2023-09-06&endDate=2023-09-10
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
 
 
 ###
-GET http://dev.atos242.local:8080/api/v1/financial/entries/getAmountByEntryType/tithe
+GET http://dev.atos8.local:8080/api/v1/financial/entries/getAmountByEntryType/tithe
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
@@ -23,7 +52,7 @@ Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
 
 
 ###
-PUT http://dev.atos242.local:8080/api/v1/financial/entries/48
+PUT http://dev.atos8.local:8080/api/v1/financial/entries/48
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
@@ -41,7 +70,7 @@ Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS
 }
 
 ###
-GET http://dev.atos242.local:8080/api/v1/financial/entries/48
+GET http://dev.atos8.local:8080/api/v1/financial/entries/48
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer 35|zeNnOUyfRwDhHMxIyFNmq3DuPX2mlCAsrCi8rJoS

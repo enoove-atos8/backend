@@ -114,7 +114,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      * @return bool
      * @throws Throwable
      */
-    public function updateEntry(int $id, EntryData $entryData): bool
+    public function updateEntry(int $id, EntryData $entryData): mixed
     {
         $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id,];
 

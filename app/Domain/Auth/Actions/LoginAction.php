@@ -3,26 +3,45 @@
 namespace Domain\Auth\Actions;
 
 use Domain\Auth\DataTransferObjects\AuthData;
+use Domain\Churches\Actions\GetChurchAction;
+use Domain\Churches\DataTransferObjects\ChurchData;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Infrastructure\Traits\Roles\HasAuthorization;
+use Throwable;
 
 
 class LoginAction
 {
     use HasAuthorization;
 
-    public function __invoke(AuthData $authData)
+    private GetChurchAction $getChurchAction;
+
+
+    public function __construct(GetChurchAction $getChurchAction)
+    {
+        $this->getChurchAction = $getChurchAction;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(AuthData $authData, string $tenantId): array|Authenticatable|null
     {
         if(Auth::attempt($authData->toArray()))
         {
             $user = auth()->user();
+            $church = $this->getChurchAction->__invoke($tenantId);
 
             if ($user->activated)
             {
                 $token = $user->createToken('web')->plainTextToken;
                 $user->token = $token;
 
-                return $user;
+                return [
+                    'user'      => $user,
+                    'church'    => $church
+                ];
             }
             else
                 return ["error"  =>  false,"status"  =>  401];

@@ -11,9 +11,9 @@ services:
       - .:/var/www/backend/html
       - ./docker/local/app.conf:/etc/nginx/sites-enabled/default
     networks:
-      - atos242-backend-network
+      - atos8-backend-network
     ports:
       - 8000:8000
 networks:
-  atos242-backend-network:
+  atos8-backend-network:
     driver: bridge

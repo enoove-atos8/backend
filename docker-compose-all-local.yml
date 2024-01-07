@@ -5,18 +5,18 @@ services:
   # Base Proxy ##############################
   ###########################################
 
-  rp_atos242_base:
+  rp_atos8_base:
     image: nginx:alpine
-    container_name: rp_atos242_base
+    container_name: rp_atos8_base
     depends_on:
-      - rp_atos242_app
-      - rp_atos242_site
+      - rp_atos8_app
+      - rp_atos8_site
     volumes:
-      - ./rp_atos242_base.conf:/etc/nginx/conf.d/rp_atos242_base.conf
+      - ./rp_atos8_base.conf:/etc/nginx/conf.d/rp_atos8_base.conf
     networks:
-      network_atos242:
+      network_atos8:
         - aliases:
-            - alias_rp_atos242_base
+            - alias_rp_atos8_base
     ports:
       - "80:80"
 
@@ -26,29 +26,29 @@ services:
   ##########################################
 
 
-  rp_atos242_app:
+  rp_atos8_app:
     image: nginx:alpine
-    container_name: rp_atos242_app
+    container_name: rp_atos8_app
     depends_on:
-      - atos242_backend_app
-      #- atos242_frontend_app
+      - atos8_backend_app
+      #- atos8_frontend_app
     volumes:
-      - ./rp_atos242_app.conf:/etc/nginx/conf.d/rp_atos242_app.conf
+      - ./rp_atos8_app.conf:/etc/nginx/conf.d/rp_atos8_app.conf
     networks:
-      network_atos242:
+      network_atos8:
         - aliases:
-            - alias_rp_atos242_app
+            - alias_rp_atos8_app
     ports:
       - "81:81"
 
 
-  atos242_backend_app:
+  atos8_backend_app:
     build:
       context: ../../backend
       dockerfile: DockerfileLocal
     ports:
       - "8000:8000"
-    container_name: atos242_backend_app
+    container_name: atos8_backend_app
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
@@ -57,9 +57,9 @@ services:
     depends_on:
       - mysql
     networks:
-      network_atos242:
+      network_atos8:
         - aliases:
-            - alias_atos242_backend_app
+            - alias_atos8_backend_app
 
 
   mysql:
@@ -70,28 +70,28 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: 'root'
       MYSQL_ROOT_HOST: "%"
-      MYSQL_DATABASE: 'central_atos242'
+      MYSQL_DATABASE: 'atos8'
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
     volumes:
       - 'mysql:/var/lib/mysql'
     networks:
-      - network_atos242
+      - network_atos8
 
   ##########################################
   # Frontend APP and RP Containers #########
   ##########################################
 
 
-  #atos242_frontend_app:
-  #  image: 'enoove/atos242-frontend:00.00.000'
+  #atos8_frontend_app:
+  #  image: 'enoove/atos8-frontend:00.00.000'
   #  ports:
   #    - "83:83"
-  #  container_name: atos242_frontend_app
+  #  container_name: atos8_frontend_app
   #  networks:
-  #    network_atos242:
+  #    network_atos8:
   #      - aliases:
-  #          - alias_atos242_frontend_app
+  #          - alias_atos8_frontend_app
 
 
   ###########################################
@@ -99,33 +99,33 @@ services:
   ###########################################
 
 
-  rp_atos242_site:
+  rp_atos8_site:
     image: nginx:alpine
-    container_name: rp_atos242_site
+    container_name: rp_atos8_site
     depends_on:
-      - atos242_backend_app
-      - atos242_frontend_app
+      - atos8_backend_app
+      - atos8_frontend_app
     volumes:
-      - ./rp_atos242_site.conf:/etc/nginx/conf.d/rp_atos242_site.conf
+      - ./rp_atos8_site.conf:/etc/nginx/conf.d/rp_atos8_site.conf
     networks:
-      network_atos242:
+      network_atos8:
         - aliases:
-            - alias_rp_atos242_site
+            - alias_rp_atos8_site
     ports:
       - "82:82"
 
 
-  atos242_frontend_site:
+  atos8_frontend_site:
     build:
       context: ../../site
       dockerfile: Dockerfile
     ports:
       - "84:84"
-    container_name: atos242_frontend_site
+    container_name: atos8_frontend_site
     networks:
-      network_atos242:
+      network_atos8:
         - aliases:
-            - alias_atos242_frontend_site
+            - alias_atos8_frontend_site
 
 networks:
-  network_atos242:
+  network_atos8:

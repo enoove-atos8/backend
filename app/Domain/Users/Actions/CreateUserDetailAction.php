@@ -15,15 +15,12 @@ use Throwable;
 
 class CreateUserDetailAction
 {
-    private UserRepository $userRepository;
     private UserDetailRepository $userDetailRepository;
 
     public function __construct(
-        UserRepositoryInterface       $userRepositoryInterface,
         UserDetailRepositoryInterface $userDetailRepositoryInterface,
     )
     {
-        $this->userRepository = $userRepositoryInterface;
         $this->userDetailRepository = $userDetailRepositoryInterface;
     }
 

@@ -2,8 +2,10 @@
 
 namespace Domain\Churches\Actions;
 
+use App\Domain\Churches\Constants\ReturnMessages;
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\DataTransferObjects\ChurchData;
+use Domain\Churches\Models\Church;
 use Domain\Churches\Models\Tenant;
 use Domain\Users\Actions\CreateUserAction;
 use Domain\Users\DataTransferObjects\UserData;
@@ -17,7 +19,7 @@ use Throwable;
 
 class CreateChurchAction
 {
-    const DOMAIN = '.atos242.com';
+    const DOMAIN = '.atos8.com';
     private ChurchRepository $churchRepository;
     private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
     private CreateUserAction $createUserAction;
@@ -39,8 +41,8 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
-        $awsS3Bucket = config('external-env.aws.' . App::environment() . '.s3' );
-        $domain = config('external-env.app.domain.' . App::environment());
+        $awsS3Bucket = config('aws.environments.' . App::environment() . '.s3' );
+        $domain = config('domain.' . App::environment());
 
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
@@ -52,29 +54,29 @@ class CreateChurchAction
         {
             $church = $this->churchRepository->newChurch($churchData, $awsS3Bucket);
 
-            if (is_object($church))
+            $tenantCreated = Tenant::find($churchData->tenantId);
+            tenancy()->initialize($tenantCreated);
+
+            if($tenantCreated)
             {
-                $tenantCreated = Tenant::find($churchData->tenantId);
-                tenancy()->initialize($tenantCreated);
+                $user = $this->createUserAction->__invoke($userData, $userDetailData, $churchData->tenantId, true);
+                $goDaddyDomainCreated = $this->createDomainGoDaddyAction->__invoke($churchData->tenantId);
 
-                if($tenantCreated)
+                if($goDaddyDomainCreated)
                 {
-                    $user = $this->createUserAction->__invoke($userData, $userDetailData);
-
-                    if($user)
-                    {
-                        $goDaddyDomainCreated = $this->createDomainGoDaddyAction->__invoke($churchData->tenantId);
-
-                        if($goDaddyDomainCreated)
-                        {
-                            return [$church, $user];
-                        }
-                    }
-                    throw_if(!$user, GeneralExceptions::class, 'Não foi possível criar o usuário adminsitrador na base de dados: ' . $churchData->tenantId, 500);
+                    return [
+                        'message'   =>  ReturnMessages::SUCCESS_CHURCH_REGISTERED,
+                        'data'      =>  [
+                            'church'    =>  $church,
+                            'user'      =>  $user
+                        ]
+                    ];
                 }
-                throw_if(!$tenantCreated, GeneralExceptions::class, 'Não foi encontrado um tenant com esse id', 404);
             }
-            throw_if(!is_object($church), GeneralExceptions::class, 'Erro ao criar uma igreja na base central', 500);
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_TENANT, 500);
         }
     }
 }

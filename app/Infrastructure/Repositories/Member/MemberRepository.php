@@ -84,7 +84,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
      * @return int
      * @throws BindingResolutionException
      */
-    public function updateStatus($id, $status): int
+    public function updateStatus($id, $status): mixed
     {
         $conditions = [
             'field' => self::ID_COLUMN,
@@ -98,18 +98,39 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     /**
      * @param null $id
      * @param MemberData $memberData
-     * @return int
+     * @return bool
      * @throws BindingResolutionException
      */
-    public function updateMember($id, MemberData $memberData): int
+    public function updateMember($id, MemberData $memberData): mixed
     {
-        $conditions = [
-            'field' => self::ID_COLUMN,
-            'operator' => BaseRepository::OPERATORS['EQUALS'],
-            'value' => $id
-        ];
+        $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id,];
+
         return $this->update($conditions, [
-            'email'                 =>  $memberData->email,
+            'activated'                 =>  $memberData->activated,
+            'deleted'                   =>  $memberData->activated,
+            'avatar'                    =>  $memberData->avatar,
+            'full_name'                 =>  $memberData->fullName,
+            'gender'                    =>  $memberData->gender,
+            'cpf'                       =>  $memberData->cpf,
+            'rg'                        =>  $memberData->rg,
+            'work'                      =>  $memberData->work,
+            'born_date'                 =>  $memberData->bornDate,
+            'email'                     =>  $memberData->email,
+            'phone'                     =>  $memberData->phone,
+            'cell_phone'                =>  $memberData->cellPhone,
+            'address'                   =>  $memberData->address,
+            'district'                  =>  $memberData->district,
+            'city'                      =>  $memberData->city,
+            'uf'                        =>  $memberData->uf,
+            'marital_status'            =>  $memberData->maritalStatus,
+            'spouse'                    =>  $memberData->spouse,
+            'father'                    =>  $memberData->father,
+            'mother'                    =>  $memberData->mother,
+            'ecclesiastical_function'   =>  $memberData->ecclesiasticalFunction,
+            'ministries'                =>  $memberData->ministries,
+            'baptism_date'              =>  $memberData->baptismDate,
+            'blood_type'                =>  $memberData->bloodType,
+            'education'                 =>  $memberData->education,
         ]);
     }
 }

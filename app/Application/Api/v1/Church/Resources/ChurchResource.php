@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Church\Resources;
 
+use App\Domain\Churches\Constants\ReturnMessages;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -18,14 +19,18 @@ class ChurchResource extends JsonResource
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $church = $this->resource[0];
-        $user = $this->resource[1];
+        $church = $this->resource['data']['church'];
+        $user = $this->resource['data']['user'];
+        $message = $this->resource['message'];
 
         return [
-            'tenant_id'     =>  $church->tenant_id,
-            'name'          =>  $church->name,
-            'user'  =>  [
-                'email'    => $user->email,
+            'message'   =>  $message,
+            'data'      =>  [
+                'tenant_id'     =>  $church->tenant_id,
+                'name'          =>  $church->name,
+                'user'  =>  [
+                    'email'    => $user->email,
+                ]
             ]
         ];
     }

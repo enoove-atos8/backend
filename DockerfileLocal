@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM php:8.2-fpm
 
 WORKDIR /var/www
 RUN mkdir -p backend/html
@@ -23,7 +23,7 @@ RUN apt-get update && apt-get install -y \
     nano
 
 # Xdebug
-RUN pecl install xdebug-3.1.2
+RUN pecl install xdebug-3.3.1
 ADD docker/local/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
 
 # Configure nginx

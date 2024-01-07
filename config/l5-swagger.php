@@ -5,7 +5,7 @@ return [
     'documentations' => [
         'default' => [
             'api' => [
-                'title' => 'Atos242 API',
+                'title' => 'atos8 API',
             ],
 
             'routes' => [
