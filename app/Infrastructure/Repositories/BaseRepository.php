@@ -165,18 +165,43 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Get instance of model by column
      *
-     * @param mixed $term search term
      * @param string $column column to search
-     * @return Model
+     * @param mixed $term search term
+     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getItemByColumn(string $column, mixed $term): Model
+    public function getItemByColumn(string $column, mixed $term): Model|null
     {
         $query = function () use ($column, $term) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where($column, '=', $term)
                 ->first();
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * Get instance of model by column
+     *
+     * @param string $column column to search
+     * @param mixed $term search term
+     * @param string $orderByCollumn
+     * @param string $sortType
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getItemsByColumn(string $column, mixed $term, string $orderByCollumn = 'id', string $sortType = 'desc'): Collection
+    {
+        $query = function () use ($column, $term, $orderByCollumn, $sortType) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where($column, '=', $term)
+                ->whereNot('', '', '')
+                ->orderBy($orderByCollumn, $sortType)
+                ->get();
         };
 
         return $this->doQuery($query);
@@ -264,6 +289,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
                             }
                             if($clause['type'] == 'in'){
                                 $q->whereIn($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                            }
+                            if($clause['type'] == 'not_in'){
+                                $q->whereNot($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                             }
                         }
                     }
@@ -457,14 +485,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
             $this->caching = true;
         }
 
-        if (in_array(ThrowsHttpExceptions::class, $traits)) {
+        /*if (in_array(ThrowsHttpExceptions::class, $traits)) {
 
             if ($this->shouldThrowHttpException($result, $methodName)) {
                 $this->throwNotFoundHttpException($methodName, $arguments);
             }
 
             $this->exceptionsDisabled = false;
-        }
+        }*/
 
         return $result;
     }

@@ -2,11 +2,11 @@
 
 namespace Domain\Entries\Actions;
 
-use App\Domain\Entries\Constants\ReturnMessages;
+use Domain\ConsolidationEntries\Actions\CreateConsolidatedEntryAction;
+use Domain\ConsolidationEntries\DataTransferObjects\ConsolidationEntriesData;
+use Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\DataTransferObjects\EntryData;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
-use Domain\Entries\Models\Entry;
-use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Entries\EntryRepository;
 use Throwable;
@@ -14,12 +14,16 @@ use Throwable;
 class UpdateEntryAction
 {
     private EntryRepository $entryRepository;
+    private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,
+        CreateConsolidatedEntryAction $createConsolidatedEntryAction,
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
+        $this->createConsolidatedEntryAction = $createConsolidatedEntryAction;
+
     }
 
     /**
@@ -29,8 +33,9 @@ class UpdateEntryAction
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function __invoke($id, EntryData $entryData): mixed
+    public function __invoke($id, EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): mixed
     {
+        $this->createConsolidatedEntryAction->__invoke($consolidationEntriesData);
         $entry = $this->entryRepository->updateEntry($id, $entryData);
 
         if($entry)

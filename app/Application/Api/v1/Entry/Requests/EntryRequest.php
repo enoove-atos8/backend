@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Entry\Requests;
 
+use Domain\ConsolidationEntries\DataTransferObjects\ConsolidationEntriesData;
 use Domain\Entries\DataTransferObjects\EntryData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -85,7 +86,7 @@ class EntryRequest extends FormRequest
     }
 
     /**
-     * Function to data transfer objects to ChurchData class
+     * Function to data transfer objects to EntryData class
      *
      * @return EntryData
      * @throws UnknownProperties
@@ -104,6 +105,20 @@ class EntryRequest extends FormRequest
             reviewerId:                     $this->input('reviewerId'),
             devolution:                     $this->input('devolution'),
             deleted:                        $this->input('deleted'),
+        );
+    }
+
+
+    /**
+     * Function to data transfer objects to ConsolidationEntriesData class
+     *
+     * @return ConsolidationEntriesData
+     * @throws UnknownProperties
+     */
+    public function consolidationEntriesData(): ConsolidationEntriesData
+    {
+        return new ConsolidationEntriesData(
+            date:           $this->input('dateTransactionCompensation'),
         );
     }
 }

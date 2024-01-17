@@ -2,17 +2,23 @@
 
 namespace Application\Api\v1\Entry\Controllers;
 
-use App\Domain\Entries\Constants\ReturnMessages;
+use Domain\Entries\Constants\ReturnMessages;
+use Domain\ConsolidationEntries\Constants\ReturnMessages as ConsolidationEntriesReturnMessages;
 use Application\Api\v1\Entry\Requests\EntryRequest;
+use Application\Api\v1\Entry\Resources\EntryConsolidationResourceCollection;
 use Application\Api\v1\Entry\Resources\EntryResource;
 use Application\Api\v1\Entry\Resources\EntryResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Domain\ConsolidationEntries\Actions\GetConsolidationEntriesByStatus;
+use Domain\ConsolidationEntries\Actions\GetConsolidationEntriesStatusByDateAction;
+use Domain\ConsolidationEntries\Actions\UpdateStatusConsolidationEntriesAction;
 use Domain\Entries\Actions\CreateEntryAction;
 use Domain\Entries\Actions\GetAmountByEntryTypeAction;
 use Domain\Entries\Actions\GetEntriesAction;
 use Domain\Entries\Actions\GetEntryByIdAction;
 use Domain\Entries\Actions\UpdateEntryAction;
 use Exception;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -39,7 +45,7 @@ class EntryController extends Controller
     {
         try
         {
-            $createEntryAction($entryRequest->entryData());
+            $createEntryAction($entryRequest->entryData(), $entryRequest->consolidationEntriesData());
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_ENTRY_REGISTERED,
@@ -52,9 +58,12 @@ class EntryController extends Controller
     }
 
 
-
     /**
-     * @throws GeneralExceptions|Throwable
+     * @param Request $request
+     * @param GetEntriesAction $getEntriesAction
+     * @return EntryResourceCollection
+     * @throws GeneralExceptions
+     * @throws Throwable
      */
     public function getEntriesByMonthlyRange(Request $request, GetEntriesAction $getEntriesAction): EntryResourceCollection
     {
@@ -71,9 +80,34 @@ class EntryController extends Controller
     }
 
 
+    /**
+     * @param Request $request
+     * @param GetConsolidationEntriesByStatus $getConsolidationEntriesByStatus
+     * @return EntryConsolidationResourceCollection
+     * @throws GeneralExceptions|BindingResolutionException
+     */
+    public function getConsolidationEntriesByStatus(Request $request, GetConsolidationEntriesByStatus $getConsolidationEntriesByStatus): EntryConsolidationResourceCollection
+    {
+        try
+        {
+            $status = $request->input('status');
+            $response = $getConsolidationEntriesByStatus(intval($status));
+            return new EntryConsolidationResourceCollection($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
 
     /**
-     * @throws GeneralExceptions|Throwable
+     * @param $id
+     * @param GetEntryByIdAction $getEntryByIdAction
+     * @return EntryResource
+     * @throws GeneralExceptions
+     * @throws Throwable
      */
     public function getEntryById($id, GetEntryByIdAction $getEntryByIdAction): EntryResource
     {
@@ -104,12 +138,42 @@ class EntryController extends Controller
     {
         try
         {
-            $updateEntryAction($id, $entryRequest->entryData());
+            $updateEntryAction($id, $entryRequest->entryData(), $entryRequest->consolidationEntriesData());
 
             return response([
                 'message'   =>  ReturnMessages::INFO_UPDATED_ENTRY,
-            ], 201);
+            ], 200);
 
+        }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     *
+     * Store a newly created resource in storage.
+     *
+     * @param Request $request
+     * @param UpdateStatusConsolidationEntriesAction $updateStatusConsolidationEntriesAction
+     * @return Application|Response|ResponseFactory
+     * @throws BindingResolutionException
+     * @throws GeneralExceptions
+     */
+    public function updateStatusConsolidationEntries(Request $request, UpdateStatusConsolidationEntriesAction $updateStatusConsolidationEntriesAction): Application|ResponseFactory|Response
+    {
+        try
+        {
+            $response = $updateStatusConsolidationEntriesAction($request->input('date'), $request->input('status'));
+
+            if($response)
+            {
+                return response([
+                    'message'   =>  ConsolidationEntriesReturnMessages::SUCCESS_ENTRIES_CONSOLIDATED,
+                ], 200);
+            }
         }
         catch(GeneralExceptions $e)
         {

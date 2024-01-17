@@ -21,26 +21,26 @@ return new class extends Migration
             $table->string('avatar')->nullable();
             $table->string('full_name')->nullable(false);
             $table->string('gender')->nullable(false);
-            $table->string('cpf')->nullable(false)->unique();
-            $table->string('rg')->nullable(false)->unique();
+            $table->string('cpf')->nullable()->unique();
+            $table->string('rg')->nullable()->unique();
             $table->string('work')->nullable();
             $table->string('born_date')->nullable(false);
-            $table->string('email')->unique()->nullable(false);
+            $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
             $table->string('cell_phone')->unique()->nullable(false);
             $table->string('address')->nullable(false);
             $table->string('district')->nullable(false);
             $table->string('city')->nullable(false);
             $table->string('uf')->nullable(false);
-            $table->string('marital_status')->nullable(false);
+            $table->string('marital_status')->nullable();
             $table->string('spouse')->nullable();
-            $table->string('father')->nullable();
-            $table->string('mother')->nullable();
+            $table->string('father')->nullable(false);
+            $table->string('mother')->nullable(false);
             $table->string('ecclesiastical_function')->nullable();
             $table->string('ministries')->nullable();
-            $table->string('baptism_date')->nullable(false);
-            $table->string('blood_type')->nullable(false);
-            $table->string('education')->nullable(false);
+            $table->string('baptism_date')->nullable();
+            $table->string('blood_type')->nullable();
+            $table->string('education')->nullable();
 
 
             $table->rememberToken();
