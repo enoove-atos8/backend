@@ -41,7 +41,7 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
-        $awsS3Bucket = config('aws.environments.' . App::environment() . '.s3' );
+        $awsS3Bucket = config('aws.environments.' . App::environment() . '.s3' ) . $churchData->tenantId;
         $domain = config('domain.' . App::environment());
 
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);

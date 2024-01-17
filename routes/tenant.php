@@ -84,8 +84,10 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             |   1 - GET - /entries - OK
             |   2 - GET - /entries/getAmountByEntryType - OK
             |   3 - GET - /entries/{id} - OK
-            |   4 - POST - /entries - OK
-            |   5 - PUT - /entries/{id} - OK
+            |   4 - GET - /entries/getConsolidationEntries - OK
+            |   5 - GET - /entries/updateStatusConsolidationEntries - OK
+            |   6 - POST - /entries - OK
+            |   7 - PUT - /entries/{id} - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -107,6 +109,23 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 */
                 Route::get('/getAmountByEntryType/', [EntryController::class, 'getAmountByEntryType']);
 
+
+                /*
+                 * Action: GET
+                 * EndPoint: /getConsolidationEntries
+                 * Description: Get a list of months do not consolidated
+                 */
+
+                Route::get('/getConsolidationEntriesByStatus/', [EntryController::class, 'getConsolidationEntriesByStatus']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /updateStatusConsolidationEntries
+                 * Description: Update status consolidation from month
+                 */
+
+                Route::put('/updateStatusConsolidationEntries', [EntryController::class, 'updateStatusConsolidationEntries']);
 
 
                 /*
@@ -133,8 +152,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * Description: Update an entry
                  */
 
-                Route::put('/{id}', [EntryController::class, 'updateEntry']);
-
+                Route::put('/{id}', [EntryController::class, 'updateEntry'])->where('id', '[0-9]+');;
 
             });
         });
@@ -327,6 +345,81 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
 
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Members routes
+        |------------------------------------------------------------------------------------------
+        | Resource Group: general
+        | Resource: Members
+        | EndPoints: /v1/general/members
+        |
+        |   1 - GET - /members - OK
+        |   2 - GET - /members/{id} - OK
+        |   3 - POST - /members - OK
+        |   4 - PUT - /members/{id} - OK
+        |   5 - PUT - /members/{id}/status - OK
+        |   6 - POST - /files/assets/avatar - OK
+        |------------------------------------------------------------------------------------------
+        */
+
+        Route::prefix('members')->group(function () {
+
+            /*
+             * Action: GET
+             * EndPoint: /
+             * Description: Get All members
+             */
+
+            Route::get('/', [MemberController::class, 'getMembers']);
+
+
+            /*
+             * Action: GET
+             * EndPoint: /{id}
+             * Description: Get member by id
+             */
+
+            Route::get('/{id}', [MemberController::class, 'getMemberById']);
+
+
+            /*
+             * Action: POST
+             * EndPoint: /
+             * Description: Create a member
+             */
+
+            Route::post('/', [MemberController::class, 'createMember']);
+
+
+            /*
+             * Action: PUT
+             * EndPoint: /{id}/status
+             * Description: Update status of activation member
+             */
+
+            Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
+
+
+            /*
+             * Action: PUT
+             * EndPoint: /{id}
+             * Description: Update a member
+             */
+
+            Route::put('/{id}', [MemberController::class, 'updateMember']);
+
+
+
+            /*
+             * Action: PUT
+             * EndPoint: /files/assets/avatar
+             * Description: Upload a avatar member image
+             */
+
+            Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
         });
     });
 });

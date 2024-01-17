@@ -3,11 +3,13 @@
 namespace Application\Core\Providers;
 
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
+use Domain\ConsolidationEntries\Interfaces\ConsolidationEntriesRepositoryInterface;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Interfaces\UserRepositoryInterface;
 use Infrastructure\Repositories\Church\ChurchRepository;
+use Infrastructure\Repositories\ConsolidationEntries\ConsolidationEntriesRepository;
 use Infrastructure\Repositories\Entries\EntryRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Repositories\User\UserDetailRepository;
@@ -31,6 +33,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ChurchRepositoryInterface::class, ChurchRepository::class);
         $this->app->bind(EntryRepositoryInterface::class, EntryRepository::class);
         $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
+        $this->app->bind(ConsolidationEntriesRepositoryInterface::class, ConsolidationEntriesRepository::class);
     }
 
     /**

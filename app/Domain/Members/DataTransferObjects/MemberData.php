@@ -24,20 +24,20 @@ class MemberData extends DataTransferObject
     /** @var string  */
     public string $gender;
 
-    /** @var string  */
-    public string $cpf;
+    /** @var string|null  */
+    public string|null $cpf;
 
-    /** @var string  */
-    public string $rg;
+    /** @var string|null  */
+    public string|null $rg;
 
-    /** @var string  */
-    public string $work;
+    /** @var string|null  */
+    public string|null $work;
 
     /** @var string  */
     public string $bornDate;
 
-    /** @var string  */
-    public string $email;
+    /** @var string|null  */
+    public string|null $email;
 
     /** @var string|null  */
     public string|null $phone;
@@ -57,8 +57,8 @@ class MemberData extends DataTransferObject
     /** @var string  */
     public string $uf;
 
-    /** @var string  */
-    public string $maritalStatus;
+    /** @var string|null  */
+    public string|null $maritalStatus;
 
     /** @var string|null  */
     public string|null $spouse;
@@ -75,13 +75,13 @@ class MemberData extends DataTransferObject
     /** @var array|null  */
     public array|null $ministries;
 
-    /** @var string  */
-    public string $baptismDate;
+    /** @var string|null  */
+    public string|null $baptismDate;
 
-    /** @var string  */
-    public string $bloodType;
+    /** @var string|null  */
+    public string|null $bloodType;
 
-    /** @var string  */
-    public string $education;
+    /** @var string|null  */
+    public string|null $education;
 }
 

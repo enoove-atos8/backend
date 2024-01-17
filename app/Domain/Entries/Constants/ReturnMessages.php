@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Entries\Constants;
+namespace Domain\Entries\Constants;
 
 class ReturnMessages
 {

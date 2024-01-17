@@ -14,62 +14,12 @@
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; clear: both; padding: 0; margin: 0; table-layout: fixed;" width="100%">
                                 <tbody>
                                 <tr>
-                                    <td
-                                        dir="ltr"
-                                        style="
-                                                        width: 100%;
-                                                        font-weight: 400;
-                                                        border-collapse: collapse;
-                                                        word-break: normal;
-                                                        padding: 19px 0px 21px 0px;
-                                                        font-size: 19px;
-                                                        line-height: 24px;
-                                                        color: #ffffff;
-                                                        font-weight: 500;
-                                                        background-color: #7091c8;
-                                                        border-radius: 5px;
-                                                        direction: ltr;
-                                                        font-family: 'Google Sans', 'Roboto', Arial, sans-serif;
-                                                        text-align: center;
-                                                    "
-                                        width="95%"
-                                    >
-                                        Seja bem vindo ao Atos8
+                                    <td style="width: 250px; margin:auto; display: flex; align-content: center; height: 90px;">
+                                        <img src="https://atos8-test.s3.us-east-2.amazonaws.com/atos8/assets/images/logo/atos8_.png" width=""/>
                                     </td>
                                 </tr>
                                 </tbody>
                             </table>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-
-                <table align="center" cellpadding="0" cellspacing="0" border="0" width="480" style="width: 480px; background-color: #ffffff; margin: 0 auto; text-align: center; padding: 30px 0;" bgcolor="#ffffff">
-                    <tbody>
-                    <tr>
-                        <td
-                            style="
-                                        font-size: 16px;
-                                        word-break: normal;
-                                        text-align: center;
-                                        font-weight: normal;
-                                        line-height: 26px;
-                                        color: #25272b;
-                                        padding: 0 40px;
-                                        font-family: Google Sans, Arial, sans-serif;
-                                        direction: ltr;
-                                        background-color: #ffffff;
-                                    "
-                            bgcolor="#ffffff"
-                        >
-                            <img
-                                src="https://ci3.googleusercontent.com/meips/ADKq_NbxbZhdE7Pl2FguimukkTURxdzhD2p5yyZkZTRq5OMY-6jOG05lQ6KdEyWWbK2AJMfleABkJFu2T47PWUKBAVFfKUHx5_bhMmuNPOLdQ1w=s0-d-e1-ft#https://services.google.com/fh/files/emails/bang_icon.png"
-                                alt="Aviso"
-                                width="56"
-                                style="width: 56px;"
-                                class="CToWUd"
-                                data-bit="iit"
-                            />
                         </td>
                     </tr>
                     </tbody>

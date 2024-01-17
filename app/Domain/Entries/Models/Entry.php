@@ -3,8 +3,7 @@
 namespace Domain\Entries\Models;
 
 use Domain\Members\Models\Member;
-use Domain\Reviewers\Models\Reviewer;
-use Illuminate\Database\Eloquent\Collection;
+use Domain\Recipients\Models\Recipient;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -35,5 +34,11 @@ class Entry extends Model
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
+    }
+
+
+    public function recipient(): BelongsTo
+    {
+        return $this->belongsTo(Recipient::class);
     }
 }
