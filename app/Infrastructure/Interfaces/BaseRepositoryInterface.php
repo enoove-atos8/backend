@@ -138,4 +138,14 @@ interface BaseRepositoryInterface
      * @return bool
      */
     public function delete($id): bool;
+
+
+    /**
+     * Delete a record by the column specified.
+     *
+     * @param string $column
+     * @param mixed $data
+     * @return bool
+     */
+    public function deleteByColumn(string $column, string $data): bool;
 }

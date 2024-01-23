@@ -7,6 +7,7 @@ use Domain\ConsolidationEntries\DataTransferObjects\ConsolidationEntriesData;
 use Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\DataTransferObjects\EntryData;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Entries\EntryRepository;
 use Throwable;
@@ -29,9 +30,11 @@ class UpdateEntryAction
     /**
      * @param $id
      * @param EntryData $entryData
+     * @param ConsolidationEntriesData $consolidationEntriesData
      * @return bool|mixed
      * @throws GeneralExceptions
      * @throws Throwable
+     * @throws BindingResolutionException
      */
     public function __invoke($id, EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): mixed
     {

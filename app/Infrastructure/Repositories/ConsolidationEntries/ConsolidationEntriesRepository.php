@@ -78,8 +78,6 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
     {
         foreach ($dates as $date)
         {
-            $test = $date;
-
             $this->update([
                 'field' =>  'date',
                 'operator'  =>  '=',
@@ -88,5 +86,15 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
         }
 
         return true;
+    }
+
+
+    /**
+     * @param string $date
+     * @return bool
+     */
+    public function deleteConsolidationEntry(string $date): bool
+    {
+        return $this->deleteByColumn(self::DATE_COLUMN, $date);
     }
 }

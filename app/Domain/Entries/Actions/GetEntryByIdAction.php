@@ -2,7 +2,7 @@
 
 namespace Domain\Entries\Actions;
 
-use App\Domain\Entries\Constants\ReturnMessages;
+use Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Domain\Entries\Models\Entry;
 use Illuminate\Database\Eloquent\Model;

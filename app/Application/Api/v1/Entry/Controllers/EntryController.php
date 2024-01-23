@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Entry\Controllers;
 
+use Domain\Entries\Actions\DeleteEntryAction;
 use Domain\Entries\Constants\ReturnMessages;
 use Domain\ConsolidationEntries\Constants\ReturnMessages as ConsolidationEntriesReturnMessages;
 use Application\Api\v1\Entry\Requests\EntryRequest;
@@ -31,8 +32,6 @@ use Throwable;
 class EntryController extends Controller
 {
     /**
-     *
-     * Store a newly created resource in storage.
      *
      * @param EntryRequest $entryRequest
      * @param CreateEntryAction $createEntryAction
@@ -125,8 +124,6 @@ class EntryController extends Controller
 
     /**
      *
-     * Store a newly created resource in storage.
-     *
      * @param EntryRequest $entryRequest
      * @param $id
      * @param UpdateEntryAction $updateEntryAction
@@ -143,6 +140,34 @@ class EntryController extends Controller
             return response([
                 'message'   =>  ReturnMessages::INFO_UPDATED_ENTRY,
             ], 200);
+
+        }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     *
+     * @param $id
+     * @param DeleteEntryAction $deleteEntryAction
+     * @return Application|Response|ResponseFactory
+     * @throws GeneralExceptions|Throwable
+     */
+    public function deleteEntry($id, DeleteEntryAction $deleteEntryAction): Application|ResponseFactory|Response
+    {
+        try
+        {
+            $entryDeleted = $deleteEntryAction($id);
+
+            if($entryDeleted)
+            {
+                return response([
+                    'message'   =>  ReturnMessages::ENTRY_DELETED,
+                ], 200);
+            }
 
         }
         catch(GeneralExceptions $e)
@@ -199,7 +224,8 @@ class EntryController extends Controller
 
             $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $amountType, $entryType);
             return [
-                'total'         => $response,
+                'totalGeneral'         => $response['totalGeneral'],
+                'totalCompensated'         => $response['totalCompensated'],
                 'amountType'    => $amountType,
                 'entryType'     => $entryType,
             ];

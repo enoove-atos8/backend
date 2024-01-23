@@ -405,6 +405,19 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->model->where($this->model->getKeyName(), $id)->delete();
     }
 
+
+    /**
+     * Delete a record by the column specified.
+     *
+     * @param string $column
+     * @param string $data
+     * @return bool
+     */
+    public function deleteByColumn(string $column, string $data): bool
+    {
+        return $this->model->where($column, $data)->delete();
+    }
+
     /**
      * Choose what relationships to return with query.
      *
