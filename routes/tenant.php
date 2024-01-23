@@ -88,6 +88,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             |   5 - GET - /entries/updateStatusConsolidationEntries - OK
             |   6 - POST - /entries - OK
             |   7 - PUT - /entries/{id} - OK
+            |   8 - DELETE - /entries/{id} - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -152,7 +153,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  * Description: Update an entry
                  */
 
-                Route::put('/{id}', [EntryController::class, 'updateEntry'])->where('id', '[0-9]+');;
+                Route::put('/{id}', [EntryController::class, 'updateEntry'])->where('id', '[0-9]+');
+
+
+
+                /*
+                 * Action: DELETE
+                 * EndPoint: /{id}
+                 * Description: Delete an entry
+                 */
+
+                Route::delete('/{id}', [EntryController::class, 'deleteEntry']);
 
             });
         });

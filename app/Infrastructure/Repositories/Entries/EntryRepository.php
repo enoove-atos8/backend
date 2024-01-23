@@ -11,14 +11,15 @@ use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Throwable;
-use function Webmozart\Assert\Tests\StaticAnalysis\nullOrCount;
-use function Webmozart\Assert\Tests\StaticAnalysis\string;
 
 class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 {
     protected mixed $model = Entry::class;
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
+    const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
     const DELETED_COLUMN = 'deleted';
+    const COMPENSATED_COLUMN = 'transaction_compensation';
+    const COMPENSATED_VALUE = 'compensated';
     const ID_COLUMN = 'id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const AMOUNT_COLUMN = 'amount';
@@ -59,15 +60,16 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
-
     /**
-     * @param string $rangeMonthlyDate
+     * @param string|null $rangeMonthlyDate
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAllEntries(string $rangeMonthlyDate): Collection
+    public function getAllEntries(string|null $rangeMonthlyDate): Collection
     {
-        $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+        if($rangeMonthlyDate !== 'all')
+            $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+
         $this->queryClausesAndConditions['where_clause']['exists'] = true;
 
         $this->requiredRelationships = ['member'];
@@ -78,11 +80,13 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'condition' => ['field' => self::DELETED_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]
         ];
 
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'andWithOrInside',
-            'condition' => ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
-        ];
-
+        if($rangeMonthlyDate !== 'all')
+        {
+            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                'type' => 'andWithOrInside',
+                'condition' => ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
+            ];
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
     }
@@ -134,6 +138,24 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
+    /**
+     * @param int $id
+     * @return mixed
+     */
+    public function deleteEntry(int $id): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,
+        ];
+
+        return $this->update($conditions, [
+            'deleted' =>   1,
+        ]);
+    }
+
+
 
     /**
      * @param string $rangeMonthlyDate
@@ -158,9 +180,15 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             ['type' => 'and', 'condition' => ['field' => self::ENTRY_TYPE_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $entryType,]];
         $this->queryClausesAndConditions['where_clause']['clause'][] =
             ['type' => 'and', 'condition' => ['field' => self::DEVOLUTION_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]];
-        $this->queryClausesAndConditions['where_clause']['clause'][] =
-            ['type' => 'andWithOrInside', 'condition' =>  ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]];
+
+        if($rangeMonthlyDate !== 'all')
+        {
+            $this->queryClausesAndConditions['where_clause']['clause'][] =
+                ['type' => 'andWithOrInside', 'condition' =>  ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]];
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
     }
+
+
 }

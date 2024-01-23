@@ -16,4 +16,5 @@ interface ConsolidationEntriesRepositoryInterface
     public function new(ConsolidationEntriesData $consolidationEntriesData): void;
 
     public function updateConsolidationStatus(array $dates, string $status): bool;
+    public function deleteConsolidationEntry(string $date): bool;
 }

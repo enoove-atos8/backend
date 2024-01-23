@@ -2,7 +2,7 @@
 
 namespace Domain\Entries\Actions;
 
-use App\Domain\Entries\Constants\ReturnMessages;
+use Domain\Entries\Constants\ReturnMessages;
 use Domain\Entries\Interfaces\EntryRepositoryInterface;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;

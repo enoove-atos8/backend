@@ -91,6 +91,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'operator' => BaseRepository::OPERATORS['EQUALS'],
             'value' => $id
         ];
+
         return $this->update($conditions, ['activated' =>  $status]);
     }
 

@@ -31,12 +31,15 @@ class CreateConsolidatedEntryAction
      */
     public function __invoke(ConsolidationEntriesData $consolidationEntriesData): void
     {
-        $existConsolidationRegister = $this->consolidationEntriesRepository->getByDate(substr($consolidationEntriesData->date, 0, 7));
+        if($consolidationEntriesData->date !== null)
+        {
+            $existConsolidationRegister = $this->consolidationEntriesRepository->getByDate(substr($consolidationEntriesData->date, 0, 7));
 
-        if($existConsolidationRegister == null)
-            $this->consolidationEntriesRepository->new($consolidationEntriesData);
+            if($existConsolidationRegister == null)
+                $this->consolidationEntriesRepository->new($consolidationEntriesData);
 
-        if($existConsolidationRegister !== null and $existConsolidationRegister->consolidated == 1)
-            throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_ENTRIES_CONSOLIDATED_MONTH, 500);
+            if($existConsolidationRegister !== null and $existConsolidationRegister->consolidated == 1)
+                throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_ENTRIES_CONSOLIDATED_MONTH, 500);
+        }
     }
 }
