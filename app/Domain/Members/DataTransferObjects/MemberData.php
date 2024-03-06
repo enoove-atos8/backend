@@ -9,11 +9,11 @@ class MemberData extends DataTransferObject
     /** @var integer  */
     public int $id = 0;
 
-    /** @var int  */
-    public int $activated;
+    /** @var bool  */
+    public bool $activated;
 
-    /** @var int  */
-    public int $deleted;
+    /** @var bool  */
+    public bool $deleted;
 
     /** @var string|null  */
     public string|null $avatar;
@@ -63,8 +63,8 @@ class MemberData extends DataTransferObject
     /** @var string|null  */
     public string|null $spouse;
 
-    /** @var string  */
-    public string $father;
+    /** @var string|null  */
+    public string|null $father;
 
     /** @var string  */
     public string $mother;

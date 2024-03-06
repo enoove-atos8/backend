@@ -41,6 +41,8 @@ class EntryResourceCollection extends ResourceCollection
                 'deleted'                       =>  $item->deleted,
                 'member'                        =>  $this->getMember($item),
                 'reviewer'                      =>  $this->getReviewer($item),
+                'comments'                      =>  $item->comments,
+                'receipt'                       =>  $item->receipt_link,
             ];
         });
     }

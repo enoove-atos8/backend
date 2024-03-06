@@ -30,6 +30,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
       'NOT_NULL' => 'NOT NULL',
     ];
 
+    const ORDERS = [
+        'ASC' => 'ASC',
+        'DESC' => 'DESC',
+    ];
+
 
 
     /**
@@ -250,22 +255,23 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
     /**
      * Get instance of model by column
      *
      * @param array $queryClausesAndConditions
      * @param string $orderBy
      * @param string $sort
+     * @param string $limit
      * @return Collection
      * @throws BindingResolutionException
      */
     public function getItemsWithRelationshipsAndWheres(
         array $queryClausesAndConditions,
         string $orderBy = 'id',
-        string $sort = 'desc'): Collection
+        string $sort = 'desc',
+        string $limit = '1000'): Collection
     {
-        $query = function () use ($queryClausesAndConditions, $orderBy, $sort) {
+        $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $limit) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where(function ($q) use($queryClausesAndConditions){
@@ -273,7 +279,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
                         count($queryClausesAndConditions['where_clause']['clause']) > 0){
                         foreach ($queryClausesAndConditions['where_clause']['clause'] as $key => $clause) {
                             if($clause['type'] == 'and'){
-                                $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                                if($clause['condition']['operator'] == 'LIKE')
+                                {
+                                    $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
+                                }
+                                else
+                                {
+                                    $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                                }
                             }
                             if($clause['type'] == 'andWithOrInside'){
                                 $q->where(function($query) use($clause){
@@ -288,15 +301,16 @@ abstract class BaseRepository implements BaseRepositoryInterface
                                 $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                             }
                             if($clause['type'] == 'in'){
-                                $q->whereIn($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                                $q->whereIn($clause['condition']['field'], $clause['condition']['value']);
                             }
                             if($clause['type'] == 'not_in'){
-                                $q->whereNot($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                                $q->whereNot($clause['condition']['field'], $clause['condition']['value']);
                             }
                         }
                     }
                 })
                 ->orderBy($orderBy, $sort)
+                ->limit($limit)
                 ->get();
         };
 

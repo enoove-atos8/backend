@@ -11,6 +11,7 @@ use Application\Core\Http\Controllers\Controller;
 use Domain\Members\Actions\CreateMemberAction;
 use Domain\Members\Actions\GetMemberByIdAction;
 use Domain\Members\Actions\GetMembersAction;
+use Domain\Members\Actions\GetMembersCountersAction;
 use Domain\Members\Actions\UpdateStatusMemberAction;
 use Domain\Members\Actions\UpdateMemberAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -71,6 +72,35 @@ class MemberController extends Controller
     }
 
 
+    /**
+     * @param Request $request
+     * @param GetMembersCountersAction $getMembersCountersAction
+     * @return Response
+     * @throws Throwable
+     */
+    public function getCounters(Request $request, GetMembersCountersAction $getMembersCountersAction): Response
+    {
+        try
+        {
+            $response = $getMembersCountersAction($request->input('key'));
+
+            if($response)
+            {
+                return response(
+                    [
+                    'data'   =>  [
+                        'counter'   =>  $response['counter']
+                    ]], 200);
+            }
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
 
     /**
      * @throws GeneralExceptions|Throwable
@@ -102,7 +132,8 @@ class MemberController extends Controller
     {
         try
         {
-            $response = $updateStatusMemberAction($id, $request->input('status'));
+            $activated = $request->input('activated');
+            $response = $updateStatusMemberAction($id, $activated);
             if($response)
             {
                 return response([

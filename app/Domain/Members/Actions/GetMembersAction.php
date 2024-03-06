@@ -27,11 +27,11 @@ class GetMembersAction
      */
     public function __invoke(): Member|Model|Collection
     {
-        $member = $this->memberRepository->getMembers();
+        $members = $this->memberRepository->getMembers();
 
-        if($member->count() > 0)
+        if($members->count() > 0)
         {
-            return $member;
+            return $members;
         }
         else
         {
