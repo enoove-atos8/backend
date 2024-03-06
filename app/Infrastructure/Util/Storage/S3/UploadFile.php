@@ -5,6 +5,7 @@ namespace Infrastructure\Util\Storage\S3;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Spatie\PdfToImage\Pdf;
 
 class UploadFile
 {
@@ -29,7 +30,6 @@ class UploadFile
             $fileExtension = explode('.', $file->getClientOriginalName())[1];
             $s3 = Storage::disk('s3');
             $fileName = uniqid().'.'.$fileExtension;
-
             $s3Path = 'clients/' . $tenant . '/' . $tenantS3PathObject . '/' . $fileName;
 
             $s3->put($s3Path, file_get_contents($file));

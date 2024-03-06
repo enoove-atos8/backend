@@ -2,8 +2,8 @@
 
 namespace Application\Api\v1\Entry\Requests;
 
-use Domain\ConsolidationEntries\DataTransferObjects\ConsolidationEntriesData;
-use Domain\Entries\DataTransferObjects\EntryData;
+use Domain\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
+use Domain\Entries\General\DataTransferObjects\EntryData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -42,6 +42,8 @@ class EntryRequest extends FormRequest
             'reviewerId'                     =>  'required',
             'devolution'                     =>  'integer',
             'deleted'                        =>  'required|integer',
+            'comments'                       =>  '',
+            'receipt'                        =>  'required',
         ];
     }
 
@@ -82,6 +84,7 @@ class EntryRequest extends FormRequest
             'devolution.integer'                =>  "O valor do campo 'Devolução' deve ser um valor inteiro, 0 ou 1",
             'deleted.required'                  =>  "A informação de 'deleted' é obrigatória para a entrada!",
             'deleted.integer'                   =>  "O valor da informação 'deleted' deve ser um valor inteiro, 0 ou 1",
+            'receipt.required'              =>  "O cadastro do comprovante é obrigatório, verifique!",
         ];
     }
 
@@ -105,6 +108,8 @@ class EntryRequest extends FormRequest
             reviewerId:                     $this->input('reviewerId'),
             devolution:                     $this->input('devolution'),
             deleted:                        $this->input('deleted'),
+            comments:                       $this->input('comments'),
+            receipt:                        $this->input('receipt'),
         );
     }
 

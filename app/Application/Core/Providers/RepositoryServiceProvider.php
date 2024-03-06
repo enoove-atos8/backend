@@ -3,20 +3,20 @@
 namespace Application\Core\Providers;
 
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
-use Domain\ConsolidationEntries\Interfaces\ConsolidationEntriesRepositoryInterface;
-use Domain\Entries\Interfaces\EntryRepositoryInterface;
+use Domain\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use Domain\Entries\General\Interfaces\EntryRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Interfaces\UserRepositoryInterface;
+use Illuminate\Support\ServiceProvider;
+use Infrastructure\Interfaces\BaseRepositoryInterface;
+use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
-use Infrastructure\Repositories\ConsolidationEntries\ConsolidationEntriesRepository;
-use Infrastructure\Repositories\Entries\EntryRepository;
+use Infrastructure\Repositories\Entries\Consolidated\ConsolidatedEntriesRepository;
+use Infrastructure\Repositories\Entries\General\EntryRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Repositories\User\UserDetailRepository;
 use Infrastructure\Repositories\User\UserRepository;
-use Infrastructure\Interfaces\BaseRepositoryInterface;
-use Infrastructure\Repositories\BaseRepository;
-use Illuminate\Support\ServiceProvider;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -33,7 +33,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ChurchRepositoryInterface::class, ChurchRepository::class);
         $this->app->bind(EntryRepositoryInterface::class, EntryRepository::class);
         $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
-        $this->app->bind(ConsolidationEntriesRepositoryInterface::class, ConsolidationEntriesRepository::class);
+        $this->app->bind(ConsolidatedEntriesRepositoryInterface::class, ConsolidatedEntriesRepository::class);
     }
 
     /**

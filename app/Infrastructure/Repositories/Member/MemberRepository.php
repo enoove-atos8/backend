@@ -17,6 +17,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 {
     protected mixed $model = Member::class;
     const ID_COLUMN = 'id';
+    const ALL_COLUMNS = '*';
+    const FULL_NAME_COLUMN = 'full_name';
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
@@ -44,7 +46,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'rg'                          =>  $memberData->rg,
             'work'                        =>  $memberData->work,
             'born_date'                   =>  $memberData->bornDate,
-            'email'                       =>  $memberData->email,
+            'email'                       =>  strtolower($memberData->email),
             'phone'                       =>  $memberData->phone,
             'cell_phone'                  =>  $memberData->cellPhone,
             'address'                     =>  $memberData->address,
@@ -74,7 +76,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         if($id != null)
             return $this->getById($id);
         else
-            return $this->getAll();
+            return $this->getAll(
+                self::ALL_COLUMNS,
+                self::FULL_NAME_COLUMN,
+                BaseRepository::ORDERS['ASC']);
     }
 
 
@@ -116,7 +121,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'rg'                        =>  $memberData->rg,
             'work'                      =>  $memberData->work,
             'born_date'                 =>  $memberData->bornDate,
-            'email'                     =>  $memberData->email,
+            'email'                     =>  strtolower($memberData->email),
             'phone'                     =>  $memberData->phone,
             'cell_phone'                =>  $memberData->cellPhone,
             'address'                   =>  $memberData->address,

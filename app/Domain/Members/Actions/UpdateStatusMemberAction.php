@@ -19,16 +19,16 @@ class UpdateStatusMemberAction
 
     /**
      * @param $memberId
-     * @param $status
+     * @param $activated
      * @return true
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke($memberId, $status): bool
+    public function __invoke($memberId, $activated): bool
     {
-        $status = $this->memberRepository->updateStatus($memberId, $status);
+        $activated = $this->memberRepository->updateStatus($memberId, $activated);
 
-        if($status)
+        if($activated)
         {
             return true;
         }

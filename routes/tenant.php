@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
-use Application\Api\v1\Entry\Controllers\EntryController;
+use Application\Api\v1\Entry\Controllers\Consolidated\EntriesConsolidatedController;
+use Application\Api\v1\Entry\Controllers\General\EntryController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -89,6 +90,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             |   6 - POST - /entries - OK
             |   7 - PUT - /entries/{id} - OK
             |   8 - DELETE - /entries/{id} - OK
+            |   9 - POST - /entries/files/uploadReceiptEntry - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -165,6 +167,51 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::delete('/{id}', [EntryController::class, 'deleteEntry']);
 
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /files/assets/avatar
+                 * Description: Upload a receipt entry
+                 */
+
+                Route::post('/files/assets/uploadReceiptEntry', [EntryController::class, 'uploadEntryReceipt']);
+
+            });
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Group Dashboard Financial routes
+            |--------------------------------------------------------------------------
+            |
+            */
+
+            Route::prefix('dashboards')->group(function () {
+
+
+                /*
+                |------------------------------------------------------------------------------------------
+                | Resource Group: Dashboard financial entries
+                | Resource: Dashboards
+                | EndPoints: /v1/financial/dashboards/entries
+                |------------------------------------------------------------------------------------------
+                */
+                Route::prefix('entries')->group(function () {
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /
+                     * Description: Get All consolidated entries to mount dashboard entries evolution
+                     */
+
+                    Route::get('/getEntriesEvolution/', [EntriesConsolidatedController::class, 'getEntriesEvolution']);
+
+                });
+
             });
         });
 
@@ -236,7 +283,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
             /*
-             * Action: PUT
+             * Action: POST
              * EndPoint: /files/assets/avatar
              * Description: Upload a avatar user image
              */
@@ -256,10 +303,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         |
         |   1 - GET - /members - OK
         |   2 - GET - /members/{id} - OK
-        |   3 - POST - /members - OK
-        |   4 - PUT - /members/{id} - OK
-        |   5 - PUT - /members/{id}/status - OK
-        |   6 - POST - /files/assets/avatar - OK
+        |   3 - GET - /members/getCounters - OK
+        |   4 - POST - /members - OK
+        |   5 - PUT - /members/{id} - OK
+        |   6 - PUT - /members/{id}/status - OK
+        |   7 - POST - /files/assets/avatar - OK
         |------------------------------------------------------------------------------------------
         */
 
@@ -274,6 +322,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             Route::get('/', [MemberController::class, 'getMembers']);
 
 
+
+            /*
+             * Action: GET
+             * EndPoint: /getCounters
+             * Description: Get counters of members registered
+             */
+
+            Route::get('/getCounters/', [MemberController::class, 'getCounters']);
+
+
+
+
             /*
              * Action: GET
              * EndPoint: /{id}
@@ -281,6 +341,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::get('/{id}', [MemberController::class, 'getMemberById']);
+
 
 
             /*

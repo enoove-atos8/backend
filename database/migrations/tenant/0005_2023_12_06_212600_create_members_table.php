@@ -27,14 +27,14 @@ return new class extends Migration
             $table->string('born_date')->nullable(false);
             $table->string('email')->unique()->nullable();
             $table->string('phone')->nullable();
-            $table->string('cell_phone')->unique()->nullable(false);
+            $table->string('cell_phone')->nullable(false);
             $table->string('address')->nullable(false);
             $table->string('district')->nullable(false);
             $table->string('city')->nullable(false);
             $table->string('uf')->nullable(false);
             $table->string('marital_status')->nullable();
             $table->string('spouse')->nullable();
-            $table->string('father')->nullable(false);
+            $table->string('father')->nullable();
             $table->string('mother')->nullable(false);
             $table->string('ecclesiastical_function')->nullable();
             $table->string('ministries')->nullable();

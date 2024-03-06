@@ -27,8 +27,8 @@ class MemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'activated'                                               =>  'required|integer',
-            'deleted'                                                 =>  'required|integer',
+            'activated'                                               =>  'required',
+            'deleted'                                                 =>  'required',
             'personDataAndIdentification.avatar'                      =>  '',
             'personDataAndIdentification.fullName'                    =>  'required',
             'personDataAndIdentification.gender'                      =>  'required',
@@ -36,16 +36,17 @@ class MemberRequest extends FormRequest
             'personDataAndIdentification.rg'                          =>  ['nullable',Rule::unique('members', 'rg')->ignore($this->id)],
             'personDataAndIdentification.work'                        =>  '',
             'personDataAndIdentification.bornDate'                    =>  'required',
-            'addressAndContact.email'                                 =>  ['nullable', Rule::unique('members', 'email')->ignore($this->id)],
+            'addressAndContact.email'                                 =>  '',
             'addressAndContact.phone'                                 =>  '',
-            'addressAndContact.cellPhone'                             =>  ['required',Rule::unique('members', 'cell_phone')->ignore($this->id)],
+            'addressAndContact.cellPhone'                             =>  'required',
+            //'addressAndContact.cellPhone'                             =>  ['required',Rule::unique('members', 'cell_phone')->ignore($this->id)],
             'addressAndContact.address'                               =>  'required',
             'addressAndContact.district'                              =>  'required',
             'addressAndContact.city'                                  =>  'required',
             'addressAndContact.uf'                                    =>  'required',
             'parentageAndMaritalStatus.maritalStatus'                 =>  '',
             'parentageAndMaritalStatus.spouse'                        =>  '',
-            'parentageAndMaritalStatus.father'                        =>  'required',
+            'parentageAndMaritalStatus.father'                        =>  '',
             'parentageAndMaritalStatus.mother'                        =>  'required',
             'ecclesiasticalInformation.ecclesiasticalFunction'        =>  '',
             'ecclesiasticalInformation.ministries'                    =>  '',
@@ -102,7 +103,6 @@ class MemberRequest extends FormRequest
             baptismDate:                $this->input('ecclesiasticalInformation.baptismDate'),
             bloodType:                  $this->input('otherInformation.bloodType'),
             education:                  $this->input('otherInformation.education'),
-
         );
     }
 }

@@ -34,6 +34,8 @@ class EntryResource extends JsonResource
             'deleted'                       =>  $entry->deleted,
             'member'                        =>  $this->getMember($entry),
             'reviewer'                      =>  $this->getReviewer($entry),
+            'comments'                      =>  $entry->comments,
+            'receipt'                       =>  $entry->receipt_link,
         ];
     }
 

@@ -9,6 +9,7 @@ class ReturnMessages
     public const SUCCESS_UPDATED_MEMBER = "Membro atualizado com sucesso...";
     public const SUCCESS_UPDATE_STATUS_MEMBER = "Status do membro atualizado!";
     public const SUCCESS_UPDATE_IMAGE_MEMBER = "Imagem processada com sucesso!";
+    public const SUCCESS_DELETED_MEMBER = "Imagem processada com sucesso!";
 
     // Error messages
     public const ERROR_UPDATE_MEMBER = "Encontramos um problema ao atualizar este membro, tente mais tarde!";

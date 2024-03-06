@@ -26,6 +26,8 @@ return new class extends Migration
             $table->string('recipient')->nullable();
             $table->boolean('devolution')->default(0);
             $table->boolean('deleted')->nullable(false)->default(0);
+            $table->string('comments')->nullable();
+            $table->string('receipt_link')->nullable(false);
 
             // Relationships
 
