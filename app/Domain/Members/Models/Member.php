@@ -33,6 +33,7 @@ class Member extends Model
         'father',
         'mother',
         'ecclesiastical_function',
+        'member_type',
         'ministries',
         'baptism_date',
         'blood_type',

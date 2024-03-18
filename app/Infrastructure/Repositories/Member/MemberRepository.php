@@ -16,9 +16,42 @@ use Throwable;
 class MemberRepository extends BaseRepository implements MemberRepositoryInterface
 {
     protected mixed $model = Member::class;
+    const TABLE_NAME = 'members';
+    const ID_COLUMN_JOINED = 'members.id';
     const ID_COLUMN = 'id';
     const ALL_COLUMNS = '*';
     const FULL_NAME_COLUMN = 'full_name';
+
+    const DISPLAY_SELECT_COLUMNS = [
+        'members.id as members_id',
+        'members.activated as members_activated',
+        'members.deleted as members_deleted',
+        'members.avatar as members_avatar',
+        'members.full_name as members_full_name',
+        'members.gender as members_gender',
+        'members.cpf as members_cpf',
+        'members.rg as members_rg',
+        'members.work as members_work',
+        'members.born_date as members_born_date',
+        'members.email as members_email',
+        'members.phone as members_phone',
+        'members.cell_phone as members_cell_phone',
+        'members.address as members_address',
+        'members.district as members_district',
+        'members.city as members_city',
+        'members.uf as members_uf',
+        'members.marital_status as members_marital_status',
+        'members.spouse as members_spouse',
+        'members.father as members_father',
+        'members.mother as members_mother',
+        'members.ecclesiastical_function as members_ecclesiastical_function',
+        'members.member_type as members_member_type',
+        'members.ministries as members_ministries',
+        'members.baptism_date as members_baptism_date',
+        'members.blood_type as members_blood_type',
+        'members.education as members_education'
+    ];
+
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
@@ -58,6 +91,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'father'                      =>  $memberData->father,
             'mother'                      =>  $memberData->mother,
             //'ecclesiastical_function'     =>  $memberData->ecclesiasticalFunction,
+            'member_type'                 =>  $memberData->memberType,
             //'ministries'                  =>  $memberData->ministries,
             'baptism_date'                =>  $memberData->baptismDate,
             'blood_type'                  =>  $memberData->bloodType,
@@ -133,6 +167,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'father'                    =>  $memberData->father,
             'mother'                    =>  $memberData->mother,
             'ecclesiastical_function'   =>  $memberData->ecclesiasticalFunction,
+            'member_type'               =>  $memberData->memberType,
             'ministries'                =>  $memberData->ministries,
             'baptism_date'              =>  $memberData->baptismDate,
             'blood_type'                =>  $memberData->bloodType,

@@ -3,9 +3,11 @@
 declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
+use App\Application\Api\v1\Financial\Entry\Controllers\Consolidated\EntriesConsolidatedController;
+use App\Application\Api\v1\Financial\Entry\Controllers\General\EntryController;
+use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
-use Application\Api\v1\Entry\Controllers\Consolidated\EntriesConsolidatedController;
-use Application\Api\v1\Entry\Controllers\General\EntryController;
+use Application\Api\v1\Financial\Entry\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -181,6 +183,30 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
 
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource Group: financial
+            | Resource: Reviewers
+            | EndPoints: /v1/financial/reviewers
+            |
+            |   1 - GET - /reviewers - OK
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('reviewers')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All financials reviewers
+                 */
+
+                Route::get('/', [FinancialReviewerController::class, 'getFinancialReviewers']);
+
+            });
+
+
+
 
             /*
             |--------------------------------------------------------------------------
@@ -209,6 +235,41 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('/getEntriesEvolution/', [EntriesConsolidatedController::class, 'getEntriesEvolution']);
+
+                });
+
+            });
+
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Group Indicators Financial routes
+            |--------------------------------------------------------------------------
+            |
+            */
+
+            Route::prefix('indicators')->group(function () {
+
+
+                /*
+                |------------------------------------------------------------------------------------------
+                | Resource Group: Indicators financial entries
+                | Resource: Indicators
+                | EndPoints: /v1/financial/indicators/entries
+                |------------------------------------------------------------------------------------------
+                */
+                Route::prefix('entries')->group(function () {
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getEntriesIndicators
+                     * Description: Get entries indicators
+                     */
+
+                    Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
 
                 });
 

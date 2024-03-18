@@ -37,6 +37,7 @@ return new class extends Migration
             $table->string('father')->nullable();
             $table->string('mother')->nullable(false);
             $table->string('ecclesiastical_function')->nullable();
+            $table->string('member_type')->nullable(false);
             $table->string('ministries')->nullable();
             $table->string('baptism_date')->nullable();
             $table->string('blood_type')->nullable();
