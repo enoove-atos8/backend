@@ -2,6 +2,8 @@
 
 namespace Infrastructure\Repositories;
 
+use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Collection;
@@ -10,6 +12,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
+use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Traits\Repositories\CacheResults;
 use Infrastructure\Traits\Repositories\ThrowsHttpExceptions;
 use PhpParser\Node\Expr\AssignOp\Mod;
@@ -51,9 +54,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Array of relationships to include in next query
-     * @var array
+     * @var string|array
      */
-    protected array $requiredRelationships = [];
+    protected string|array $requiredRelationships = [];
 
     /**
      * Array of traits being used by the repository.
@@ -75,6 +78,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->setUses();
     }
 
+    /*
+    |------------------------------------------------------------------------------------------
+    |
+    | GENERAL QUERIES
+    | Description: These queries run simple actions on database without
+    |               relationships in data returned
+    |
+    |------------------------------------------------------------------------------------------
+    */
 
     /**
      * Get all items
@@ -167,6 +179,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
+
+
     /**
      * Get instance of model by column
      *
@@ -186,6 +200,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
+
 
 
     /**
@@ -213,6 +228,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
+
     /**
      * Get a collection of items with conditions
      *
@@ -234,6 +250,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
+
     /**
      * Get an item with conditions
      *
@@ -253,6 +270,145 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+
+
+    /**
+     * Get item by id or column
+     *
+     * @param mixed $term id or term
+     * @param string $column column to search
+     * @return Model
+     * @throws BindingResolutionException
+     */
+    public function getActively(mixed $term, string $column = 'slug'): Model
+    {
+        if (is_numeric($term)) {
+            return $this->getById($term);
+        }
+
+        return $this->getItemByColumn($term, $column);
+    }
+
+
+
+    /**
+     * Create new using mass assignment
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public function create(array $data): Model
+    {
+        return $this->model->create($data);
+    }
+
+
+
+    /**
+     * Update a record using the primary key.
+     *
+     * @param array $conditions
+     * @param $data array
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function update(array $conditions, array $data): mixed
+    {
+        $query = function () use ($conditions, $data) {
+            return $this->model
+                ->with($this->requiredRelationships)
+                ->where($conditions['field'], $conditions['operator'], $conditions['value'])
+                ->update($data);
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+
+    /**
+     * Update or crate a record and return the entity
+     *
+     * @param array $identifiers columns to search for
+     * @param array $data
+     * @return mixed
+     */
+    public function updateOrCreate(array $identifiers, array $data): mixed
+    {
+        $existing = $this->model->where(array_only($data, $identifiers))->first();
+
+        if ($existing) {
+            $existing->update($data);
+
+            return $existing;
+        }
+
+        return $this->create($data);
+    }
+
+
+
+    /**
+     * Delete a record by the primary key.
+     *
+     * @param $id
+     * @return bool
+     */
+    public function delete($id): bool
+    {
+        return $this->model->where($this->model->getKeyName(), $id)->delete();
+    }
+
+
+
+    /**
+     * Delete a record by the column specified.
+     *
+     * @param string $column
+     * @param string $data
+     * @return bool
+     */
+    public function deleteByColumn(string $column, string $data): bool
+    {
+        return $this->model->where($column, $data)->delete();
+    }
+
+
+    /*
+    |------------------------------------------------------------------------------------------
+    |
+    | CUSTOM QUERIES
+    | Description: These queries run custom actions on database
+    |               with relationships in data returned
+    |
+    |------------------------------------------------------------------------------------------
+    */
+
+
+    /**
+     * Choose what relationships to return with query.
+     *
+     * @param mixed $relationships
+     * @return $this
+     */
+    public function with(mixed $relationships): static
+    {
+        $this->requiredRelationships = [];
+
+        if ($relationships == 'all') {
+            $this->requiredRelationships = $this->relationships;
+        } elseif (is_array($relationships)) {
+            $this->requiredRelationships = array_filter($relationships, function ($value) {
+                return in_array($value, $this->relationships);
+            });
+        } elseif (is_string($relationships)) {
+            array_push($this->requiredRelationships, $relationships);
+        }
+
+        return $this;
+    }
+
 
 
     /**
@@ -322,16 +478,27 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * Get instance of model by column
      *
      * @param array $queryClausesAndConditions
+     * @param string $orderByColumn
+     * @param array $selectColumns
+     * @param int $limit
+     * @param string $orderDirection
      * @return Model|null
      * @throws BindingResolutionException
      */
     public function getItemWithRelationshipsAndWheres(
-        array $queryClausesAndConditions): Model | null
+        array $queryClausesAndConditions,
+        string $orderByColumn = 'id',
+        array $selectColumns = ['*'],
+        int $limit = 1000,
+        string $orderDirection = 'desc'): Model | null
     {
-        $query = function () use ($queryClausesAndConditions) {
+        $query = function () use ($queryClausesAndConditions, $orderByColumn, $orderDirection, $limit, $selectColumns) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where($queryClausesAndConditions['field'], $queryClausesAndConditions['operator'], $queryClausesAndConditions['value'])
+                ->limit($limit)
+                ->select($selectColumns)
+                ->orderBy($orderByColumn, $orderDirection)
                 ->first();
         };
 
@@ -340,120 +507,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
 
 
-    /**
-     * Get item by id or column
-     *
-     * @param mixed $term id or term
-     * @param string $column column to search
-     * @return Model
-     * @throws BindingResolutionException
-     */
-    public function getActively(mixed $term, string $column = 'slug'): Model
-    {
-        if (is_numeric($term)) {
-            return $this->getById($term);
-        }
 
-        return $this->getItemByColumn($term, $column);
-    }
-
-    /**
-     * Create new using mass assignment
-     *
-     * @param array $data
-     * @return mixed
-     */
-    public function create(array $data): Model
-    {
-        return $this->model->create($data);
-    }
-
-    /**
-     * Update a record using the primary key.
-     *
-     * @param array $conditions
-     * @param $data array
-     * @return mixed
-     * @throws BindingResolutionException
-     */
-    public function update(array $conditions, array $data): mixed
-    {
-        $query = function () use ($conditions, $data) {
-            return $this->model
-                ->with($this->requiredRelationships)
-                ->where($conditions['field'], $conditions['operator'], $conditions['value'])
-                ->update($data);
-        };
-
-        return $this->doQuery($query);
-    }
-
-    /**
-     * Update or crate a record and return the entity
-     *
-     * @param array $identifiers columns to search for
-     * @param array $data
-     * @return mixed
-     */
-    public function updateOrCreate(array $identifiers, array $data): mixed
-    {
-        $existing = $this->model->where(array_only($data, $identifiers))->first();
-
-        if ($existing) {
-            $existing->update($data);
-
-            return $existing;
-        }
-
-        return $this->create($data);
-    }
-
-    /**
-     * Delete a record by the primary key.
-     *
-     * @param $id
-     * @return bool
-     */
-    public function delete($id): bool
-    {
-        return $this->model->where($this->model->getKeyName(), $id)->delete();
-    }
-
-
-    /**
-     * Delete a record by the column specified.
-     *
-     * @param string $column
-     * @param string $data
-     * @return bool
-     */
-    public function deleteByColumn(string $column, string $data): bool
-    {
-        return $this->model->where($column, $data)->delete();
-    }
-
-    /**
-     * Choose what relationships to return with query.
-     *
-     * @param mixed $relationships
-     * @return $this
-     */
-    public function with(mixed $relationships): static
-    {
-        $this->requiredRelationships = [];
-
-        if ($relationships == 'all') {
-            $this->requiredRelationships = $this->relationships;
-        } elseif (is_array($relationships)) {
-            $this->requiredRelationships = array_filter($relationships, function ($value) {
-                return in_array($value, $this->relationships);
-            });
-        } elseif (is_string($relationships)) {
-            array_push($this->requiredRelationships, $relationships);
-        }
-
-        return $this;
-    }
 
     /**
      * Perform the repository query.

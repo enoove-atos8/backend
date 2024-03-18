@@ -64,6 +64,7 @@ class MemberResourceCollection extends ResourceCollection
                 'ecclesiasticalInformation' => [
                     'ecclesiasticalFunction'    => $ecclesiasticalFunction,
                     'ministries'                => $ministries,
+                    'memberType'                => $item->member_type,
                     'baptismDate'               => $item->baptism_date,
                 ],
                 'otherInformation' => [

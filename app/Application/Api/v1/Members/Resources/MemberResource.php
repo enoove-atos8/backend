@@ -61,6 +61,7 @@ class MemberResource extends JsonResource
             'ecclesiasticalInformation' => [
                 'ecclesiasticalFunction'    => $ecclesiasticalFunction,
                 'ministries'                => $ministries,
+                'memberType'                => $member->member_type,
                 'baptismDate'               => $member->baptism_date,
             ],
             'otherInformation' => [

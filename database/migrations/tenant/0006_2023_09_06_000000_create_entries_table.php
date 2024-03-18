@@ -27,13 +27,19 @@ return new class extends Migration
             $table->boolean('devolution')->default(0);
             $table->boolean('deleted')->nullable(false)->default(0);
             $table->string('comments')->nullable();
-            $table->string('receipt_link')->nullable(false);
+            $table->string('receipt_link')->nullable();
 
             // Relationships
 
             $table->foreign('member_id')
                 ->references('id')
                 ->on('members');
+
+            // Relationships
+
+            $table->foreign('reviewer_id')
+                ->references('id')
+                ->on('financial_reviewers');
 
 
             $table->timestamps();

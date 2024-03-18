@@ -32,11 +32,8 @@ class GetMembersCountersAction
         $counters = null;
         $members = $this->memberRepository->getMembers();
 
-        if($key == 'member')
-            $counters = $members->count();
-
-        elseif($key == 'congregate')
-            $counters = $members->count();
+        if($key == 'member' or $key == 'congregate')
+            $counters = $members->where('member_type', '=', $key)->count();
 
         elseif($key == 'inactive')
             $counters = $members->where('activated', '=', 0)->count();

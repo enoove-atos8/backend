@@ -93,12 +93,15 @@ interface BaseRepositoryInterface
     public function getItemsWithRelationshipsAndWheres(array $queryClausesAndConditions, string $orderBy = 'id', string $sort = 'desc'): Collection;
 
 
-
     /**
      * @param array $queryClausesAndConditions
+     * @param string $orderByColumn
+     * @param array $selectColumns
+     * @param int $limit
+     * @param string $orderDirection
      * @return Model|null
      */
-    public function getItemWithRelationshipsAndWheres(array $queryClausesAndConditions): Model | null;
+    public function getItemWithRelationshipsAndWheres(array $queryClausesAndConditions ,string $orderByColumn, array $selectColumns = ['*'], int $limit = 1000, string $orderDirection = 'desc'): Model | null;
 
 
 
