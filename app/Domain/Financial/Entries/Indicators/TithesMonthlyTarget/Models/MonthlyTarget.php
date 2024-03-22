@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Financial\Entries\Indicators\MonthlyTarget\Models;
+namespace Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
