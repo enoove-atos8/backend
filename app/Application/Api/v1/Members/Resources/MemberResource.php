@@ -37,6 +37,7 @@ class MemberResource extends JsonResource
             'personDataAndIdentification' => [
                 'avatar'        => $member->avatar,
                 'fullName'      => $member->full_name,
+                'memberType'    => $member->member_type,
                 'gender'        => $member->gender,
                 'cpf'           => $member->cpf,
                 'rg'            => $member->rg,

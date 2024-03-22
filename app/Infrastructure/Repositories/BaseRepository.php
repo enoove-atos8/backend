@@ -410,7 +410,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
     /**
      * Get instance of model by column
      *
@@ -418,6 +417,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param string $orderBy
      * @param string $sort
      * @param string $limit
+     * @param array $selectColumns
      * @return Collection
      * @throws BindingResolutionException
      */
@@ -425,7 +425,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
         array $queryClausesAndConditions,
         string $orderBy = 'id',
         string $sort = 'desc',
-        string $limit = '1000'): Collection
+        string $limit = '1000',
+        array $selectColumns = ['*']): Collection
     {
         $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $limit) {
             return $this->model
@@ -467,6 +468,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
                 })
                 ->orderBy($orderBy, $sort)
                 ->limit($limit)
+                ->select()
                 ->get();
         };
 
