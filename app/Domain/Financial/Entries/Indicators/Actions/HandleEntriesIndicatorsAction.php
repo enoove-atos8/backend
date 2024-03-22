@@ -2,30 +2,30 @@
 
 namespace Domain\Financial\Entries\Indicators\Actions;
 
-use Domain\Financial\Entries\Indicators\MonthlyTarget\Actions\GetMonthlyTargetEntriesAction;
+use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Actions\GetTithesMonthlyTargetEntriesAction;
 use Illuminate\Support\Collection;
 use Throwable;
 
 class HandleEntriesIndicatorsAction
 {
-    const MONTHLY_TARGET_INDICATOR = 'monthlyTargetEntries';
+    const TITHES_MONTHLY_TARGET_INDICATOR = 'monthlyTargetEntries';
 
-    private GetMonthlyTargetEntriesAction $getMonthlyTargetEntriesAction;
+    private GetTithesMonthlyTargetEntriesAction $getTithesMonthlyTargetEntriesAction;
 
     public function __construct(
-        GetMonthlyTargetEntriesAction $getMonthlyTargetEntriesAction
+        GetTithesMonthlyTargetEntriesAction $getTithesMonthlyTargetEntriesAction
     )
     {
-        $this->getMonthlyTargetEntriesAction = $getMonthlyTargetEntriesAction;
+        $this->getTithesMonthlyTargetEntriesAction = $getTithesMonthlyTargetEntriesAction;
     }
 
 
     /**
      * @throws Throwable
      */
-    public function __invoke(string $indicator): float|int
+    public function __invoke(string $indicator): array
     {
-        if($indicator == self::MONTHLY_TARGET_INDICATOR)
-            return $this->getMonthlyTargetEntriesAction->__invoke();
+        if($indicator == self::TITHES_MONTHLY_TARGET_INDICATOR)
+            return $this->getTithesMonthlyTargetEntriesAction->__invoke();
     }
 }

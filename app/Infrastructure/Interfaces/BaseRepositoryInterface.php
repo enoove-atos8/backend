@@ -88,9 +88,10 @@ interface BaseRepositoryInterface
      * @param array $queryClausesAndConditions
      * @param string $orderBy
      * @param string $sort
+     * @param array $selectColumns
      * @return Collection
      */
-    public function getItemsWithRelationshipsAndWheres(array $queryClausesAndConditions, string $orderBy = 'id', string $sort = 'desc'): Collection;
+    public function getItemsWithRelationshipsAndWheres(array $queryClausesAndConditions, string $orderBy = 'id', string $sort = 'desc', string $limit = '1000', array $selectColumns = ['*']): Collection;
 
 
     /**

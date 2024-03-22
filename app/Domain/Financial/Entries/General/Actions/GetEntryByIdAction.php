@@ -27,7 +27,7 @@ class GetEntryByIdAction
     {
         $entry = $this->entryRepository->getEntryById($id);
 
-        if($entry !== null)
+        if($entry != null)
         {
             return $entry;
         }

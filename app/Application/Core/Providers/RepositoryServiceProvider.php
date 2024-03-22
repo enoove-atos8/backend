@@ -9,7 +9,7 @@ use App\Infrastructure\Repositories\Financial\Entries\Consolidated\Consolidation
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
-use Domain\Financial\Entries\Indicators\MonthlyTarget\Interfaces\MonthlyTargetEntriesRepositoryInterface;
+use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Users\Interfaces\UserDetailRepositoryInterface;
 use Domain\Users\Interfaces\UserRepositoryInterface;
@@ -17,7 +17,7 @@ use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
-use Infrastructure\Repositories\Financial\Entries\MonthlyTarget\MonthlyTargetEntriesRepository;
+use Infrastructure\Repositories\Financial\Entries\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Repositories\User\UserDetailRepository;
 use Infrastructure\Repositories\User\UserRepository;
@@ -39,7 +39,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
         $this->app->bind(ConsolidatedEntriesRepositoryInterface::class, ConsolidationEntriesRepository::class);
         $this->app->bind(FinancialReviewerRepositoryInterface::class, FinancialReviewerRepository::class);
-        $this->app->bind(MonthlyTargetEntriesRepositoryInterface::class, MonthlyTargetEntriesRepository::class);
+        $this->app->bind(TithesMonthlyTargetEntriesRepositoryInterface::class, TithesMonthlyTargetEntriesRepository::class);
     }
 
     /**

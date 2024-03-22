@@ -5,9 +5,7 @@ namespace Application\Api\v1\Financial\Entry\Controllers\Indicators;
 
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Entries\Indicators\Actions\HandleEntriesIndicatorsAction;
-use Domain\Financial\Entries\Indicators\MonthlyTarget\Actions\GetMonthlyTargetEntriesAction;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
 
