@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Financial\Entries\Indicators\MonthlyTarget\Constants;
+namespace Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Constants;
 
 class ReturnMessages
 {
