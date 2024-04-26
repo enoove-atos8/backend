@@ -19,7 +19,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     protected mixed $model = Entry::class;
     const TABLE_NAME = 'entries';
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
+    const DATE_ENTRY_REGISTER_COLUMN_JOINED = 'entries.date_entry_register';
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
+    const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'entries.date_transaction_compensation';
     const DELETED_COLUMN = 'deleted';
     const DELETED_COLUMN_JOINED = 'entries.deleted';
     const REVIEWER_ID_COLUMN_JOINED = 'entries.reviewer_id';
@@ -28,6 +30,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const TO_COMPENSATE_VALUE = 'to_compensate';
     const ID_COLUMN = 'id';
     const MEMBER_ID_COLUMN_JOINED = 'entries.member_id';
+    const MEMBER_ID_COLUMN = 'member_id';
     const ID_COLUMN_JOINED = 'entries.id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const AMOUNT_COLUMN = 'amount';
@@ -35,6 +38,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const TITHE_VALUE = 'tithe';
     const DESIGNATED_VALUE = 'designated';
     const OFFERS_VALUE = 'offers';
+    const REGISTER_INDICATOR = 'register';
+    const TRANSACTION_INDICATOR = 'transaction';
 
     const DISPLAY_SELECT_COLUMNS = [
         'entries.id as entries_id',
@@ -97,8 +102,38 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      */
     public function getAllEntries(string|null $rangeMonthlyDate): Collection
     {
-        $displayColumnsFromRelationship = array_merge(
-            self::DISPLAY_SELECT_COLUMNS,
+        $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+
+        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryClausesAndConditions['where_clause']['clause'] = [];
+        $this->queryClausesAndConditions['where_clause']['clause'][] = [
+            'type' => 'and',
+            'condition' => ['field' => self::DELETED_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]
+        ];
+
+        if($rangeMonthlyDate !== 'all')
+        {
+            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                'type' => 'andWithOrInside',
+                'condition' => ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
+            ];
+        }
+
+        return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
+    }
+
+
+    /**
+     * @param string|null $rangeMonthlyDate
+     * @param string|null $transactionCompensation
+     * @param string $orderBy
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getAllEntriesWithMembersAndReviewers(string|null $rangeMonthlyDate, string|null $transactionCompensation = 'to_compensate' | 'compensated' | '*', string $orderBy = 'entries.id'): Collection
+    {
+        $arrRangeMonthlyDate = [];
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS,
             FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
@@ -107,22 +142,62 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
 
         $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryClausesAndConditions['where_clause']['clause'] = [];
         $this->queryClausesAndConditions['where_clause']['clause'][] = [
             'type' => 'and',
             'condition' => ['field' => self::DELETED_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]
         ];
 
-        if($rangeMonthlyDate !== 'all')
+        if($transactionCompensation == 'compensated')
         {
-            $this->queryClausesAndConditions['where_clause']['clause'][] = [
-                'type' => 'andWithOrInside',
-                'condition' => ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
-            ];
+            if($rangeMonthlyDate !== 'all')
+            {
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'and',
+                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::COMPENSATED_VALUE,]
+                ];
+
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'andWithOrInside',
+                    'condition' => ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
+                ];
+            }
+            else
+            {
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'and',
+                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::COMPENSATED_VALUE,]
+                ];
+            }
+        }
+        elseif ($transactionCompensation == 'to_compensate')
+        {
+            if($rangeMonthlyDate !== 'all')
+            {
+
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'andWithOrInside',
+                    'condition' => ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
+                ];
+
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'and',
+                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::TO_COMPENSATE_VALUE,]
+                ];
+            }
+            else
+            {
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'and',
+                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::TO_COMPENSATE_VALUE,]
+                ];
+            }
         }
 
-        return $this->_qb_getEntriesWithMembersAndReviewers(
+        return $this->qbGetEntriesWithMembersAndReviewers(
             $this->queryClausesAndConditions,
             $displayColumnsFromRelationship,
+            $orderBy
         );
     }
 
@@ -266,18 +341,17 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     {
         $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
         $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryClausesAndConditions['where_clause']['clause'] = [];
 
         $this->queryClausesAndConditions['where_clause']['clause'][] =
             ['type' => 'and', 'condition' => ['field' => self::DELETED_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]];
         $this->queryClausesAndConditions['where_clause']['clause'][] =
             ['type' => 'and', 'condition' => ['field' => self::ENTRY_TYPE_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $entryType,]];
-        $this->queryClausesAndConditions['where_clause']['clause'][] =
-            ['type' => 'and', 'condition' => ['field' => self::DEVOLUTION_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]];
 
         if($rangeMonthlyDate !== 'all')
         {
             $this->queryClausesAndConditions['where_clause']['clause'][] =
-                ['type' => 'andWithOrInside', 'condition' =>  ['field' => self::DATE_ENTRY_REGISTER_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]];
+                ['type' => 'andWithOrInside', 'condition' =>  ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]];
         }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
@@ -301,7 +375,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function _qb_getEntriesWithMembersAndReviewers(
+    public function qbGetEntriesWithMembersAndReviewers(
         array $queryClausesAndConditions,
         array $selectColumns,
         string $orderBy = 'entries.id',
@@ -333,10 +407,20 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
                                 }
+
                                 else
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                                 }
+                            }
+                            if($clause['type'] == 'andWithOrInside'){
+                                $q->where(function($query) use($clause){
+                                    if(count($clause['condition']) > 0){
+                                        foreach ($clause['condition']['value'] as $value){
+                                            $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                                        }
+                                    }
+                                });
                             }
                             if($clause['type'] == 'or'){
                                 $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);

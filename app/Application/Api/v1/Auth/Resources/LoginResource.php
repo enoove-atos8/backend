@@ -16,13 +16,12 @@ class LoginResource extends JsonResource
     public function toArray($request): array
     {
         $user = $this->resource['user'];
+        $userDetail = $this->resource['userDetail'];
         $church = $this->resource['church'];
         $roles = [];
-        $detail = null;
+
         if(count($user->roles()->get()) > 0)
             $roles = $user->roles()->get();
-        if(count($user->detail()->get()) > 0)
-            $detail = $user->detail()->first();
 
         return [
             'token' => $user->token,
@@ -34,7 +33,7 @@ class LoginResource extends JsonResource
                 'changedPassword'       =>  $user->changedPassword,
                 'accessQuantity'        =>  $user->accessQuantity,
                 'roles'                 =>  $this->mountUserRolesArray($roles),
-                'details'               =>  $this->mountUserDetailsArray($detail)
+                'details'               =>  $this->mountUserDetailsArray($userDetail)
             ],
             'church'    =>  [
                 'id'                =>  $church->tenant_id,

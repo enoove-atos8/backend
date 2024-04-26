@@ -15,9 +15,12 @@ use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\General\Actions\DeleteEntryAction;
 use App\Domain\Financial\Entries\General\Actions\GetAmountByEntryTypeAction;
 use App\Domain\Financial\Entries\General\Actions\GetEntriesAction;
+use App\Domain\Financial\Entries\General\Actions\GetEntriesToCompensateAction;
 use App\Domain\Financial\Entries\General\Actions\GetEntryByIdAction;
 use App\Domain\Financial\Entries\General\Actions\UpdateEntryAction;
 use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
+use Application\Api\v1\Financial\Entry\Resources\AmountByEntryTypeResource;
+use Application\Api\v1\Financial\Entry\Resources\EntriesToCompensateResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
@@ -32,6 +35,11 @@ use Throwable;
 
 class EntryController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware(['role:admin|pastor|treasury']);
+    }
+
     /**
      *
      * @param EntryRequest $entryRequest
@@ -58,6 +66,7 @@ class EntryController extends Controller
     }
 
 
+
     /**
      * @param Request $request
      * @param GetEntriesAction $getEntriesAction
@@ -78,6 +87,7 @@ class EntryController extends Controller
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
+
 
 
     /**
@@ -106,6 +116,7 @@ class EntryController extends Controller
     }
 
 
+
     /**
      * @param $id
      * @param GetEntryByIdAction $getEntryByIdAction
@@ -125,6 +136,7 @@ class EntryController extends Controller
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
+
 
 
     /**
@@ -154,6 +166,7 @@ class EntryController extends Controller
     }
 
 
+
     /**
      *
      * @param $id
@@ -180,6 +193,7 @@ class EntryController extends Controller
             throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
     }
+
 
 
     /**
@@ -212,14 +226,15 @@ class EntryController extends Controller
     }
 
 
+
     /**
      * @param Request $request
      * @param GetAmountByEntryTypeAction $getAmountByEntryTypeAction
-     * @return array
+     * @return AmountByEntryTypeResource
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getAmountByEntryType(Request $request, GetAmountByEntryTypeAction $getAmountByEntryTypeAction): array
+    public function getAmountByEntryType(Request $request, GetAmountByEntryTypeAction $getAmountByEntryTypeAction): AmountByEntryTypeResource
     {
         try
         {
@@ -228,12 +243,7 @@ class EntryController extends Controller
             $entryType = $request->input('entryType');
 
             $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $amountType, $entryType);
-            return [
-                'totalGeneral'         => $response['totalGeneral'],
-                'totalCompensated'         => $response['totalCompensated'],
-                'amountType'    => $amountType,
-                'entryType'     => $entryType,
-            ];
+            return new AmountByEntryTypeResource($response);
 
         }
         catch (GeneralExceptions $e)
@@ -241,6 +251,7 @@ class EntryController extends Controller
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
+
 
 
     /**
@@ -265,6 +276,26 @@ class EntryController extends Controller
                     'receipt'   =>  $response
                 ], 200);
 
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param GetEntriesToCompensateAction $getEntriesToCompensateAction
+     * @return EntriesToCompensateResourceCollection
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getEntriesByTransactionCompensation(GetEntriesToCompensateAction $getEntriesToCompensateAction): EntriesToCompensateResourceCollection
+    {
+        try
+        {
+            $entries = $getEntriesToCompensateAction();
+            return new EntriesToCompensateResourceCollection($entries);
         }
         catch (GeneralExceptions $e)
         {

@@ -2,7 +2,8 @@
 
 namespace App\Domain\Financial\Entries\General\Actions;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\MonthlyTargetEntriesData;
+use App\Domain\Financial\Entries\Consolidated\Actions\CreateConsolidatedEntryAction;
+use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
@@ -14,11 +15,11 @@ use Throwable;
 class UpdateEntryAction
 {
     private EntryRepository $entryRepository;
-    private \App\Domain\Financial\Entries\Consolidated\Actions\CreateConsolidatedEntryAction $createConsolidatedEntryAction;
+    private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
 
     public function __construct(
-        EntryRepositoryInterface                                                         $entryRepositoryInterface,
-        \App\Domain\Financial\Entries\Consolidated\Actions\CreateConsolidatedEntryAction $createConsolidatedEntryAction,
+        EntryRepositoryInterface      $entryRepositoryInterface,
+        CreateConsolidatedEntryAction $createConsolidatedEntryAction,
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
@@ -29,14 +30,23 @@ class UpdateEntryAction
     /**
      * @param $id
      * @param EntryData $entryData
-     * @param \App\Domain\Financial\Entries\Consolidated\DataTransferObjects\MonthlyTargetEntriesData $consolidationEntriesData
+     * @param ConsolidationEntriesData $consolidationEntriesData
      * @return bool|mixed
      * @throws GeneralExceptions
      * @throws Throwable
      * @throws BindingResolutionException
      */
-    public function __invoke($id, EntryData $entryData, MonthlyTargetEntriesData $consolidationEntriesData): mixed
+    public function __invoke($id, EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): mixed
     {
+        $dateEntryRegister = $entryData->dateEntryRegister;
+        $dateTransactionCompensation = $entryData->dateTransactionCompensation;
+
+        if($dateTransactionCompensation !== null)
+        {
+            if(substr($dateEntryRegister, 0, 7) !== substr($dateTransactionCompensation, 0, 7))
+                $entryData->dateEntryRegister = substr($dateTransactionCompensation, 0, 7) . '-01';
+        }
+
         $this->createConsolidatedEntryAction->__invoke($consolidationEntriesData);
         $entry = $this->entryRepository->updateEntry($id, $entryData);
 

@@ -60,7 +60,7 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
     /**
      * @throws BindingResolutionException
      */
-    public function getConsolidatedEntriesByStatus(string $consolidated = 'all', int $limit = 6): Collection
+    public function getConsolidatedEntriesByStatus(string $consolidated = 'all', int $limit = 6, string $orderDirection = 'DESC'): Collection
     {
         $currentYearMonth = date("Y-m");
         $this->queryClausesAndConditions['where_clause']['exists'] = true;
@@ -83,7 +83,7 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
         return $this->getItemsWithRelationshipsAndWheres(
                                 $this->queryClausesAndConditions,
                                 self::DATE_COLUMN,
-                                BaseRepository::ORDERS['ASC'],
+                                $orderDirection,
                                 $limit);
     }
 

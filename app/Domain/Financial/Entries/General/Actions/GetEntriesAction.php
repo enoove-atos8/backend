@@ -5,7 +5,6 @@ namespace App\Domain\Financial\Entries\General\Actions;
 use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
-use Domain\Members\Actions\GetMembersAction;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
@@ -13,15 +12,12 @@ use Throwable;
 class GetEntriesAction
 {
     private EntryRepository $entryRepository;
-    private GetMembersAction $getMembersAction;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,
-        GetMembersAction $getMembersAction
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
-        $this->getMembersAction = $getMembersAction;
     }
 
     /**
@@ -29,8 +25,7 @@ class GetEntriesAction
      */
     public function __invoke(string $dates): Collection
     {
-        $entries = $this->entryRepository->getAllEntries($dates);
-        //$members = $this->getMembersAction->__invoke();
+        $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers($dates, 'compensated');
 
         if($entries->count() > 0)
         {

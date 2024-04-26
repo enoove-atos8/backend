@@ -2,16 +2,14 @@
 
 namespace App\Domain\Notifications\Mail\Church;
 
-use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\DataTransferObjects\UserDetailData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 
 class NewChurchUserMail extends Mailable
 {

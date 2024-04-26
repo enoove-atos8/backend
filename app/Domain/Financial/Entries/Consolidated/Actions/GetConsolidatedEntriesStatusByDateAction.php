@@ -3,18 +3,18 @@
 namespace App\Domain\Financial\Entries\Consolidated\Actions;
 
 use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\MonthlyTargetEntriesData;
-use App\Domain\Financial\Entries\Consolidated\Interfaces\MonthlyTargetEntriesRepositoryInterface;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidated\MonthlyTargetEntriesRepository;
+use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
+use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class GetConsolidatedEntriesStatusByDateAction
 {
-    private MonthlyTargetEntriesRepository $consolidationEntriesRepository;
+    private ConsolidationEntriesRepository $consolidationEntriesRepository;
 
     public function __construct(
-        MonthlyTargetEntriesRepositoryInterface $consolidationEntriesRepositoryInterface
+        ConsolidatedEntriesRepositoryInterface $consolidationEntriesRepositoryInterface
     )
     {
         $this->consolidationEntriesRepository = $consolidationEntriesRepositoryInterface;
@@ -24,7 +24,7 @@ class GetConsolidatedEntriesStatusByDateAction
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke(MonthlyTargetEntriesData $consolidationEntriesData): array
+    public function __invoke(ConsolidationEntriesData $consolidationEntriesData): array
     {
         $consolidatedEntries = $this->consolidationEntriesRepository->getByDate($consolidationEntriesData->date);
 

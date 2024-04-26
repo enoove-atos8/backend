@@ -25,20 +25,24 @@ class EntryConsolidatedResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $data[] =  $this->collection->map(function ($item){
 
-        return $this->collection->map(function ($item, $result) {
             return [
-                'id'                   =>  $item->id,
-                'date'                 =>  $item->date,
-                'monthName'            =>  $this->getMonthName($item->date),
-                'consolidated'         =>  $item->consolidated,
-                'designatedAmount'     =>  $item->designated_amount,
-                'offersAmount'         =>  $item->offers_amount,
-                'titheAmount'          =>  $item->tithe_amount,
-                'totalAmount'          =>  $item->total_amount,
-                'entriesNoCompensate'  =>  $item->entriesNoCompensate,
+                'id'                        =>  $item->id,
+                'date'                      =>  $item->date,
+                'monthName'                 =>  $this->getMonthName($item->date),
+                'consolidated'              =>  $item->consolidated,
+                'entriesNoCompensate'       =>  $item->entriesNoCompensate,
+                'amountEntriesNoCompensate' =>  $item->amountEntriesNoCompensate,
+                'amountEntries'             =>  $item->amountEntries,
             ];
         });
+
+        return [
+            'qtdMonths'    =>  $this->resource->count(),
+            'totalAmount'   =>  $this->resource->sum('amountEntries'),
+            'data'          =>  $data[0]
+        ];
     }
 
 
@@ -64,8 +68,7 @@ class EntryConsolidatedResourceCollection extends ResourceCollection
             'Dezembro'
         ];
 
-        $monthName = $monthNames[$monthIndex];
-        return $monthName;
+        return $monthNames[$monthIndex];
     }
 
 

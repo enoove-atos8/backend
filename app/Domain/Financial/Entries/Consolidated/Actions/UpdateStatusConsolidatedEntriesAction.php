@@ -3,9 +3,9 @@
 namespace App\Domain\Financial\Entries\Consolidated\Actions;
 
 use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
-use App\Domain\Financial\Entries\Consolidated\Interfaces\MonthlyTargetEntriesRepositoryInterface;
+use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidated\MonthlyTargetEntriesRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -13,12 +13,12 @@ use Infrastructure\Repositories\BaseRepository;
 
 class UpdateStatusConsolidatedEntriesAction
 {
-    private MonthlyTargetEntriesRepository $consolidationEntriesRepository;
+    private ConsolidationEntriesRepository $consolidationEntriesRepository;
     private EntryRepository $entryRepository;
     private UpdateAmountConsolidatedEntriesAction $updateAmountConsolidationEntriesAction;
 
     public function __construct(
-        MonthlyTargetEntriesRepositoryInterface $consolidationEntriesRepositoryInterface,
+        ConsolidatedEntriesRepositoryInterface $consolidationEntriesRepositoryInterface,
         EntryRepositoryInterface                $entryRepositoryInterface,
         UpdateAmountConsolidatedEntriesAction   $updateAmountConsolidationEntriesAction,
     )

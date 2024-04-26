@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use JsonSerializable;
 use function Webmozart\Assert\Tests\StaticAnalysis\nullOrCount;
 
 class UserResourceCollection extends ResourceCollection
@@ -22,9 +23,9 @@ class UserResourceCollection extends ResourceCollection
      * Transform the resource collection into an array.
      *
      * @param  Request  $request
-     * @return array|Arrayable|\JsonSerializable
+     * @return array|Arrayable|JsonSerializable
      */
-    public function toArray($request): array|\JsonSerializable|Arrayable
+    public function toArray($request): array|JsonSerializable|Arrayable
     {
         return $this->collection->map(function ($item){
             $roles = [];
@@ -58,9 +59,7 @@ class UserResourceCollection extends ResourceCollection
 
         if($detail != null)
         {
-            $result = [];
-
-            $result =  [
+            return [
                 'user_id'       =>  $detail->user_id,
                 'fullName'      =>  $detail->full_name,
                 'avatar'        =>  $detail->avatar,
@@ -74,8 +73,6 @@ class UserResourceCollection extends ResourceCollection
                 'country'       =>  $detail->country,
                 'birthday'      =>  $detail->birthday,
             ];
-
-            return $result;
         }
 
         else

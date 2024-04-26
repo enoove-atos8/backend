@@ -88,6 +88,7 @@ interface BaseRepositoryInterface
      * @param array $queryClausesAndConditions
      * @param string $orderBy
      * @param string $sort
+     * @param string $limit
      * @param array $selectColumns
      * @return Collection
      */

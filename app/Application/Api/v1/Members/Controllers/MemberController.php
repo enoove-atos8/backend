@@ -24,6 +24,10 @@ use Throwable;
 
 class MemberController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware(['role:admin|secretary']);
+    }
 
     /**
      * @param MemberRequest $memberRequest

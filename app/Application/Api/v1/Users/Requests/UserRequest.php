@@ -2,9 +2,8 @@
 
 namespace Application\Api\v1\Users\Requests;
 
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\DataTransferObjects\UserDetailData;
-use Gerencianet\Auth;
+use App\Domain\Accounts\Users\DataTransferObjects\UserData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

@@ -25,10 +25,18 @@ class EntriesEvolutionConsolidationResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $amounts = $this->collection->get('amounts');
+        $collection = $this->collection->get('collection');
 
         return [
-            'name'  =>  'Entradas',
-            'data'  =>  $this->collection,
+            'amounts'    =>  [
+                'monthlyTarget' =>  $amounts['monthlyTarget'],
+                'maxAmount'     =>  $amounts['maxAmount'],
+            ],
+            'chart' =>  [
+                'name'  =>  'Entradas',
+                'data'  =>  $collection,
+            ]
         ];
     }
 

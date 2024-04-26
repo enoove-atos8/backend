@@ -7,6 +7,7 @@ use App\Application\Api\v1\Financial\Entry\Controllers\Consolidated\EntriesConso
 use App\Application\Api\v1\Financial\Entry\Controllers\General\EntryController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
+use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Financial\Entry\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
@@ -45,9 +46,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
     */
 
         Route::post('login', [AuthController::class, 'login'])->name('login');
-        Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
-            Route::post('logout', 'logout');
-        });
 
 
 
@@ -68,6 +66,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         Route::post('logout', 'logout');
 
 
+        /*
+        |--------------------------------------------------------------------------
+        | Navigate menu Routes
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('navigation')->group(function () {
+            Route::get('/menu', [NavigationMenuController::class, 'getMenu']);
+        });
+
+
 
         /*
         |--------------------------------------------------------------------------
@@ -78,203 +87,194 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::prefix('financial')->group(function () {
 
-            /*
-            |------------------------------------------------------------------------------------------
-            | Resource Group: financial
-            | Resource: Entries
-            | EndPoints: /v1/financial/entries
-            |
-            |   1 - GET - /entries - OK
-            |   2 - GET - /entries/getAmountByEntryType - OK
-            |   3 - GET - /entries/{id} - OK
-            |   4 - GET - /entries/getConsolidationEntries - OK
-            |   5 - GET - /entries/updateStatusConsolidationEntries - OK
-            |   6 - POST - /entries - OK
-            |   7 - PUT - /entries/{id} - OK
-            |   8 - DELETE - /entries/{id} - OK
-            |   9 - POST - /entries/files/uploadReceiptEntry - OK
-            |------------------------------------------------------------------------------------------
-            */
-
-            Route::prefix('entries')->group(function () {
-
-                /*
-                 * Action: GET
-                 * EndPoint: /
-                 * Description: Get All Entries by Date Range
-                 */
-
-                Route::get('/', [EntryController::class, 'getEntriesByMonthlyRange']);
-
-
-                /*
-                 * Action: GET
-                 * EndPoint: /getAmountByEntryType/
-                 * Description: Get amount of entries by Date Range
-                */
-                Route::get('/getAmountByEntryType/', [EntryController::class, 'getAmountByEntryType']);
-
-
-                /*
-                 * Action: GET
-                 * EndPoint: /getConsolidationEntries
-                 * Description: Get a list of months do not consolidated
-                 */
-
-                Route::get('/getConsolidationEntriesByStatus/', [EntryController::class, 'getConsolidationEntriesByStatus']);
-
-
-                /*
-                 * Action: PUT
-                 * EndPoint: /updateStatusConsolidationEntries
-                 * Description: Update status consolidation from month
-                 */
-
-                Route::put('/updateStatusConsolidationEntries', [EntryController::class, 'updateStatusConsolidationEntries']);
-
-
-                /*
-                 * Action: GET
-                 * EndPoint: /{id}
-                 * Description: Get an entry by id
-                 */
-
-                Route::get('/{id}', [EntryController::class, 'getEntryById']);
-
-
-                /*
-                 * Action: POST
-                 * EndPoint: /
-                 * Description: Get All Entries by Date Range
-                 */
-                Route::post('/', [EntryController::class, 'createEntry']);
-
-
-
-                /*
-                 * Action: PUT
-                 * EndPoint: /{id}
-                 * Description: Update an entry
-                 */
-
-                Route::put('/{id}', [EntryController::class, 'updateEntry'])->where('id', '[0-9]+');
-
-
-
-                /*
-                 * Action: DELETE
-                 * EndPoint: /{id}
-                 * Description: Delete an entry
-                 */
-
-                Route::delete('/{id}', [EntryController::class, 'deleteEntry']);
-
-
-
-                /*
-                 * Action: POST
-                 * EndPoint: /files/assets/avatar
-                 * Description: Upload a receipt entry
-                 */
-
-                Route::post('/files/assets/uploadReceiptEntry', [EntryController::class, 'uploadEntryReceipt']);
-
-            });
-
-
-
-            /*
-            |------------------------------------------------------------------------------------------
-            | Resource Group: financial
-            | Resource: Reviewers
-            | EndPoints: /v1/financial/reviewers
-            |
-            |   1 - GET - /reviewers - OK
-            |------------------------------------------------------------------------------------------
-            */
-
-            Route::prefix('reviewers')->group(function () {
-
-                /*
-                 * Action: GET
-                 * EndPoint: /
-                 * Description: Get All financials reviewers
-                 */
-
-                Route::get('/', [FinancialReviewerController::class, 'getFinancialReviewers']);
-
-            });
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Group Dashboard Financial routes
-            |--------------------------------------------------------------------------
-            |
-            */
-
-            Route::prefix('dashboards')->group(function () {
-
-
                 /*
                 |------------------------------------------------------------------------------------------
-                | Resource Group: Dashboard financial entries
-                | Resource: Dashboards
-                | EndPoints: /v1/financial/dashboards/entries
+                | Resource Group: financial
+                | Resource: Entries
+                | EndPoints: /v1/financial/entries
+                |
+                |   1 - GET - / - OK
+                |   2 - GET - /getAmountByEntryType - OK
+                |   3 - GET - /{id} - OK
+                |   4 - GET - /getConsolidationEntries - OK
+                |   5 - GET - /updateStatusConsolidationEntries - OK
+                |   6 - POST - / - OK
+                |   7 - PUT - /{id} - OK
+                |   8 - DELETE - /{id} - OK
+                |   9 - POST - /files/uploadReceiptEntry - OK
+                |   10 - GET - /getEntriesByTransactionCompensation - OK
                 |------------------------------------------------------------------------------------------
                 */
+
                 Route::prefix('entries')->group(function () {
-
 
                     /*
                      * Action: GET
                      * EndPoint: /
-                     * Description: Get All consolidated entries to mount dashboard entries evolution
+                     * Description: Get All Entries by Date Range
                      */
 
-                    Route::get('/getEntriesEvolution/', [EntriesConsolidatedController::class, 'getEntriesEvolution']);
-
-                });
-
-            });
-
-
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | Group Indicators Financial routes
-            |--------------------------------------------------------------------------
-            |
-            */
-
-            Route::prefix('indicators')->group(function () {
-
-
-                /*
-                |------------------------------------------------------------------------------------------
-                | Resource Group: Indicators financial entries
-                | Resource: Indicators
-                | EndPoints: /v1/financial/indicators/entries
-                |------------------------------------------------------------------------------------------
-                */
-                Route::prefix('entries')->group(function () {
+                    Route::get('/', [EntryController::class, 'getEntriesByMonthlyRange']);
 
 
                     /*
                      * Action: GET
-                     * EndPoint: /getEntriesIndicators
-                     * Description: Get entries indicators
+                     * EndPoint: /getAmountByEntryType/
+                     * Description: Get amount of entries by Date Range
+                    */
+                    Route::get('/getAmountByEntryType/', [EntryController::class, 'getAmountByEntryType']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getConsolidationEntries
+                     * Description: Get a list of months do not consolidated
                      */
 
-                    Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
+                    Route::get('/getConsolidationEntriesByStatus/', [EntryController::class, 'getConsolidationEntriesByStatus']);
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /updateStatusConsolidationEntries
+                     * Description: Update status consolidation from month
+                     */
+
+                    Route::put('/updateStatusConsolidationEntries', [EntryController::class, 'updateStatusConsolidationEntries']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /{id}
+                     * Description: Get an entry by id
+                     */
+
+                    Route::get('/{id}', [EntryController::class, 'getEntryById'])->whereNumber('id');
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /
+                     * Description: Get All Entries by Date Range
+                     */
+                    Route::post('/', [EntryController::class, 'createEntry']);
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /{id}
+                     * Description: Update an entry
+                     */
+
+                    Route::put('/{id}', [EntryController::class, 'updateEntry'])->whereNumber('id');
+
+
+                    /*
+                     * Action: DELETE
+                     * EndPoint: /{id}
+                     * Description: Delete an entry
+                     */
+
+                    Route::delete('/{id}', [EntryController::class, 'deleteEntry'])->whereNumber('id');
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /files/assets/avatar
+                     * Description: Upload a receipt entry
+                     */
+
+                    Route::post('/files/assets/uploadReceiptEntry', [EntryController::class, 'uploadEntryReceipt']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getEntriesByTransactionCompensation
+                     * Description: Get a  entries to compensate list
+                     */
+
+                    Route::get('/getEntriesByTransactionCompensation', [EntryController::class, 'getEntriesByTransactionCompensation']);
+
+
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Group Indicators Financial routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('indicators')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getEntriesIndicators
+                         * Description: Get entries indicators
+                         */
+
+                        Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
+
+                    });
 
                 });
 
+
+                /*
+                |------------------------------------------------------------------------------------------
+                | Resource Group: financial
+                | Resource: Reviewers
+                | EndPoints: /v1/financial/reviewers
+                |
+                |   1 - GET - /reviewers - OK
+                |------------------------------------------------------------------------------------------
+                */
+
+                Route::prefix('reviewers')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /
+                     * Description: Get All financials reviewers
+                     */
+
+                    Route::get('/', [FinancialReviewerController::class, 'getFinancialReviewers']);
+
+                });
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Group Dashboard Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+
+                Route::prefix('dashboards')->group(function () {
+
+
+                    /*
+                    |------------------------------------------------------------------------------------------
+                    | Resource Group: Dashboard financial entries
+                    | Resource: Dashboards
+                    | EndPoints: /v1/financial/dashboards/entries
+                    |------------------------------------------------------------------------------------------
+                    */
+                    Route::prefix('entries')->group(function () {
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get All consolidated entries to mount dashboard entries evolution
+                         */
+
+                        Route::get('/getEntriesEvolution/', [EntriesConsolidatedController::class, 'getEntriesEvolution']);
+
+                    });
+
+                });
             });
-        });
+
 
 
         /*
@@ -297,60 +297,60 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::prefix('users')->group(function () {
 
-            /*
-             * Action: GET
-             * EndPoint: /
-             * Description: Get All users
-             */
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All users
+                 */
 
-            Route::get('/', [UserController::class, 'getUsers']);
-
-
-            /*
-             * Action: GET
-             * EndPoint: /{id}
-             * Description: Get user by id
-             */
-
-            Route::get('/{id}', [UserController::class, 'getUserById']);
+                Route::get('/', [UserController::class, 'getUsers']);
 
 
-            /*
-             * Action: POST
-             * EndPoint: /
-             * Description: Create a user
-             */
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get user by id
+                 */
 
-            Route::post('/', [UserController::class, 'createUser']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}/status
-             * Description: Update status of activation user
-             */
-
-            Route::put('/{id}/status', [UserController::class, 'updateStatus']);
+                Route::get('/{id}', [UserController::class, 'getUserById']);
 
 
-            /*
-             * Action: PUT
-             * EndPoint: /{id}
-             * Description: Update a user
-             */
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Create a user
+                 */
 
-            Route::put('/{id}', [UserController::class, 'updateUser']);
+                Route::post('/', [UserController::class, 'createUser']);
 
 
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}/status
+                 * Description: Update status of activation user
+                 */
 
-            /*
-             * Action: POST
-             * EndPoint: /files/assets/avatar
-             * Description: Upload a avatar user image
-             */
+                Route::put('/{id}/status', [UserController::class, 'updateStatus']);
 
-            Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
-        });
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Update a user
+                 */
+
+                Route::put('/{id}', [UserController::class, 'updateUser']);
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /files/assets/avatar
+                 * Description: Upload a avatar user image
+                 */
+
+                Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
+            });
+
 
 
 
@@ -374,73 +374,73 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::prefix('members')->group(function () {
 
-            /*
-             * Action: GET
-             * EndPoint: /
-             * Description: Get All members
-             */
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All members
+                 */
 
-            Route::get('/', [MemberController::class, 'getMembers']);
-
-
-
-            /*
-             * Action: GET
-             * EndPoint: /getCounters
-             * Description: Get counters of members registered
-             */
-
-            Route::get('/getCounters/', [MemberController::class, 'getCounters']);
+                Route::get('/', [MemberController::class, 'getMembers']);
 
 
 
+                /*
+                 * Action: GET
+                 * EndPoint: /getCounters
+                 * Description: Get counters of members registered
+                 */
 
-            /*
-             * Action: GET
-             * EndPoint: /{id}
-             * Description: Get member by id
-             */
-
-            Route::get('/{id}', [MemberController::class, 'getMemberById']);
-
-
-
-            /*
-             * Action: POST
-             * EndPoint: /
-             * Description: Create a member
-             */
-
-            Route::post('/', [MemberController::class, 'createMember']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}/status
-             * Description: Update status of activation member
-             */
-
-            Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}
-             * Description: Update a member
-             */
-
-            Route::put('/{id}', [MemberController::class, 'updateMember']);
+                Route::get('/getCounters/', [MemberController::class, 'getCounters']);
 
 
 
-            /*
-             * Action: PUT
-             * EndPoint: /files/assets/avatar
-             * Description: Upload a avatar member image
-             */
 
-            Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
-        });
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get member by id
+                 */
+
+                Route::get('/{id}', [MemberController::class, 'getMemberById']);
+
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Create a member
+                 */
+
+                Route::post('/', [MemberController::class, 'createMember']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}/status
+                 * Description: Update status of activation member
+                 */
+
+                Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Update a member
+                 */
+
+                Route::put('/{id}', [MemberController::class, 'updateMember']);
+
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /files/assets/avatar
+                 * Description: Upload a avatar member image
+                 */
+
+                Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+            });
 
 
         /*
@@ -478,81 +478,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
 
-        });
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | Members routes
-        |------------------------------------------------------------------------------------------
-        | Resource Group: general
-        | Resource: Members
-        | EndPoints: /v1/general/members
-        |
-        |   1 - GET - /members - OK
-        |   2 - GET - /members/{id} - OK
-        |   3 - POST - /members - OK
-        |   4 - PUT - /members/{id} - OK
-        |   5 - PUT - /members/{id}/status - OK
-        |   6 - POST - /files/assets/avatar - OK
-        |------------------------------------------------------------------------------------------
-        */
-
-        Route::prefix('members')->group(function () {
-
-            /*
-             * Action: GET
-             * EndPoint: /
-             * Description: Get All members
-             */
-
-            Route::get('/', [MemberController::class, 'getMembers']);
-
-
-            /*
-             * Action: GET
-             * EndPoint: /{id}
-             * Description: Get member by id
-             */
-
-            Route::get('/{id}', [MemberController::class, 'getMemberById']);
-
-
-            /*
-             * Action: POST
-             * EndPoint: /
-             * Description: Create a member
-             */
-
-            Route::post('/', [MemberController::class, 'createMember']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}/status
-             * Description: Update status of activation member
-             */
-
-            Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}
-             * Description: Update a member
-             */
-
-            Route::put('/{id}', [MemberController::class, 'updateMember']);
-
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /files/assets/avatar
-             * Description: Upload a avatar member image
-             */
-
-            Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
         });
     });
 });

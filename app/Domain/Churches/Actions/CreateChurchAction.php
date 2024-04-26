@@ -2,14 +2,13 @@
 
 namespace Domain\Churches\Actions;
 
+use App\Domain\Accounts\Users\Actions\CreateUserAction;
+use App\Domain\Accounts\Users\DataTransferObjects\UserData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use App\Domain\Churches\Constants\ReturnMessages;
-use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Churches\Models\Church;
+use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\Models\Tenant;
-use Domain\Users\Actions\CreateUserAction;
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\DataTransferObjects\UserDetailData;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Infrastructure\Exceptions\GeneralExceptions;
