@@ -26,6 +26,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
       'BETWEEN' => 'BETWEEN',
       'EQUALS' => '=',
       'NOT_EQUALS' => '<>',
+      'DIFFERENT' => '!=',
       'MINOR' => '<',
       'MAJOR' => '>',
       'NOT_IN' => 'NOT IN',

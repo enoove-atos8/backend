@@ -4,9 +4,9 @@ namespace App\Domain\Financial\Entries\Consolidated\Actions;
 
 
 use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
-use App\Domain\Financial\Entries\Consolidated\Interfaces\MonthlyTargetEntriesRepositoryInterface;
+use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidated\MonthlyTargetEntriesRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -14,12 +14,12 @@ use Infrastructure\Repositories\BaseRepository;
 
 class UpdateAmountConsolidatedEntriesAction
 {
-    private MonthlyTargetEntriesRepository $consolidationEntriesRepository;
+    private ConsolidationEntriesRepository $consolidationEntriesRepository;
     private EntryRepository $entryRepository;
 
 
     public function __construct(
-        MonthlyTargetEntriesRepositoryInterface $consolidationEntriesRepositoryInterface,
+        ConsolidatedEntriesRepositoryInterface $consolidationEntriesRepositoryInterface,
         EntryRepositoryInterface                $entryRepositoryInterface
     )
     {
@@ -63,19 +63,19 @@ class UpdateAmountConsolidatedEntriesAction
 
         if($amountTithe != 0)
             $amountUpdated = $this->consolidationEntriesRepository
-                ->updateTotalValueConsolidation($date, $amountTithe, MonthlyTargetEntriesRepository::AMOUNT_TITHE_COLUMN);
+                ->updateTotalValueConsolidation($date, $amountTithe, ConsolidationEntriesRepository::AMOUNT_TITHE_COLUMN);
 
         if($amountDesignated != 0)
             $amountUpdated = $this->consolidationEntriesRepository
-                ->updateTotalValueConsolidation($date, $amountDesignated, MonthlyTargetEntriesRepository::AMOUNT_DESIGNATED_COLUMN);
+                ->updateTotalValueConsolidation($date, $amountDesignated, ConsolidationEntriesRepository::AMOUNT_DESIGNATED_COLUMN);
 
         if($amountOffers != 0)
             $amountUpdated = $this->consolidationEntriesRepository
-                ->updateTotalValueConsolidation($date, $amountOffers, MonthlyTargetEntriesRepository::AMOUNT_OFFERS_COLUMN);
+                ->updateTotalValueConsolidation($date, $amountOffers, ConsolidationEntriesRepository::AMOUNT_OFFERS_COLUMN);
 
 
         $this->consolidationEntriesRepository
-            ->updateTotalValueConsolidation($date, $totalAmount, MonthlyTargetEntriesRepository::AMOUNT_TOTAL_COLUMN);
+            ->updateTotalValueConsolidation($date, $totalAmount, ConsolidationEntriesRepository::AMOUNT_TOTAL_COLUMN);
 
         if($amountUpdated)
             return true;

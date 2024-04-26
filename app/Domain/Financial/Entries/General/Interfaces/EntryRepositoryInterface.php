@@ -15,6 +15,7 @@ interface EntryRepositoryInterface
 
     public function deleteEntry(int $id): bool;
 
+    public function getAllEntriesWithMembersAndReviewers(string|null $rangeMonthlyDate, string $transactionCompensation = 'to_compensate' | 'compensated' | '*', string $orderBy = 'entries.id'): Collection;
     public function getAllEntries(string|null $rangeMonthlyDate): Collection;
 
     public function getAllEntriesByDateAndType(string $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection;

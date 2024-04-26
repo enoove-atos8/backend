@@ -5,45 +5,69 @@ namespace App\Domain\Financial\Entries\General\Actions;
 use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use Domain\Members\Actions\GetMembersAction;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
+use function Webmozart\Assert\Tests\StaticAnalysis\object;
 
 class GetAmountByEntryTypeAction
 {
     private EntryRepository $entryRepository;
+    private GetMembersAction $getMembersAction;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,
+        GetMembersAction $getMembersAction,
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
+        $this->getMembersAction = $getMembersAction;
     }
 
     /**
      * @throws Throwable
      */
-    public function __invoke($rangeMonthlyDate, $amountType, $entryType)
+    public function __invoke($rangeMonthlyDate, $amountType, $entryType): object
     {
-        $entries = $this->entryRepository->getAmountByEntryType($rangeMonthlyDate, $amountType, $entryType);
-        $totalGeneral = $entries->sum(EntryRepository::AMOUNT_COLUMN);
-        $totalCompensated = $entries
-                            ->where(
-                                EntryRepository::COMPENSATED_COLUMN,
-                                BaseRepository::OPERATORS['EQUALS'],
-                                EntryRepository::COMPENSATED_VALUE)
-                            ->sum(EntryRepository::AMOUNT_COLUMN);
+        $amountByEntryType = new class{};
 
-        if(count($entries) !== 0 and $totalGeneral !== 0)
-        {
-            return [
-                    'totalGeneral' => $totalGeneral,
-                    'totalCompensated' => $totalCompensated
-            ];
+        $entries = $this->entryRepository->getAmountByEntryType($rangeMonthlyDate, $amountType, $entryType);
+        $allEntries = $this->entryRepository->getAllEntries($rangeMonthlyDate)->count();
+        $totalMembers = $this->getMembersAction->__invoke()->where(MemberRepository::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1)
+                                                         ->count();
+        $qtdEntriesByMembers = $entries->where(EntryRepository::MEMBER_ID_COLUMN, BaseRepository::OPERATORS['DIFFERENT'], null)
+                                      ->groupBy(EntryRepository::MEMBER_ID_COLUMN)
+                                      ->count();
+
+        $totalGeneral = $entries->sum(EntryRepository::AMOUNT_COLUMN);
+
+        $amountByEntryType->entryType = $entryType;
+        $amountByEntryType->amountType = $amountType;
+        $amountByEntryType->totalGeneral = $totalGeneral;
+        $amountByEntryType->qtdTithingMembers = null;
+
+        if($entryType == EntryRepository::TITHE_VALUE){
+            $amountByEntryType->qtdTithes = $entries->count();
+            $amountByEntryType->proportionEntriesTithes = $entries->count() > 0 ? $entries->count() / $allEntries : 0;
+            $amountByEntryType->qtdTithingMembers = $qtdEntriesByMembers;
+            $amountByEntryType->proportionEntriesTithesMembers = $qtdEntriesByMembers / $totalMembers;
         }
-        elseif (count($entries) == 0 and $totalGeneral == 0)
-        {
-            throw new GeneralExceptions(ReturnMessages::INFO_AMOUNT_BY_ENTRY_TYPE_NO_RECORDS, 404);
+
+        elseif ($entryType == EntryRepository::OFFERS_VALUE){
+            $amountByEntryType->qtdOffers = $entries->count();
+            $amountByEntryType->proportionEntriesOffers = $entries->count() > 0 ? $entries->count() / $allEntries : 0;
+            $amountByEntryType->offersDoNotIdentified = 0;
         }
+
+        elseif ($entryType == EntryRepository::DESIGNATED_VALUE){
+            $entriesDesignatedDevolution = $entries->where(EntryRepository::DEVOLUTION_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1);
+            $amountByEntryType->qtdDesignated = $entries->count();
+            $amountByEntryType->proportionEntriesDesignated = $entries->count() > 0 ? $entries->count() / $allEntries : 0;
+            $amountByEntryType->designatedOfDevolutions = $entriesDesignatedDevolution->sum(EntryRepository::AMOUNT_COLUMN);
+        }
+
+        return $amountByEntryType;
     }
 }

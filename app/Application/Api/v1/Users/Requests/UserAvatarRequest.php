@@ -2,12 +2,7 @@
 
 namespace Application\Api\v1\Users\Requests;
 
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\DataTransferObjects\UserDetailData;
-use Gerencianet\Auth;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
-use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class UserAvatarRequest extends FormRequest
 {

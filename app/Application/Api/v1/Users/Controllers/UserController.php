@@ -2,37 +2,35 @@
 
 namespace Application\Api\v1\Users\Controllers;
 
-use App\Domain\Users\Constants\ReturnMessages;
+use App\Domain\Accounts\Users\Actions\CreateUserAction;
+use App\Domain\Accounts\Users\Actions\GetUsersAction;
+use App\Domain\Accounts\Users\Actions\GetUserByIdAction;
+use App\Domain\Accounts\Users\Actions\UpdateUserAction;
+use App\Domain\Accounts\Users\Actions\UpdateStatusUserAction;
 use Application\Api\v1\Users\Requests\UserAvatarRequest;
 use Application\Api\v1\Users\Requests\UserRequest;
-use Application\Api\v1\Users\Resources\ErrorUserResource;
-use Application\Api\v1\Users\Resources\UserResource;
-use Application\Api\v1\Users\Resources\UserResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Users\Actions\CreateUserAction;
-use Domain\Users\Actions\GetUserByIdAction;
-use Domain\Users\Actions\GetUsersAction;
-use Domain\Users\Actions\UpdateStatusUserAction;
-use Domain\Users\Actions\UpdateUserAction;
-use Domain\Users\Actions\UploadUserAvatarAction;
 use Http\Client\Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Util\Storage\S3\UploadFile;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
+use Application\Api\v1\Users\Resources\UserResourceCollection;
+use Application\Api\v1\Users\Resources\UserResource;
+use App\Domain\Accounts\Users\Constants\ReturnMessages;
 use Throwable;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        //$this->middleware(['role:admin|pastor']);
+    }
 
     /**
      * @param UserRequest $userRequest
-     * @param CreateUserAction $createUserAction
      * @return Response
      * @throws GeneralExceptions
      * @throws Throwable
@@ -62,7 +60,7 @@ class UserController extends Controller
 
 
     /**
-     * @param GetUsersAction $getUsersAction
+     * @param \App\Domain\Users\User\Actions\GetUsersAction $getUsersAction
      * @return UserResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
@@ -130,7 +128,6 @@ class UserController extends Controller
     /**
      * @param UserRequest $userRequest
      * @param $id
-     * @param UpdateUserAction $updateUserAction
      * @return Response
      * @throws GeneralExceptions|UnknownProperties|BindingResolutionException
      */

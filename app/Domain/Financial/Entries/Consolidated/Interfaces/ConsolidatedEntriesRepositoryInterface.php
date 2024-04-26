@@ -11,7 +11,7 @@ interface ConsolidatedEntriesRepositoryInterface
 {
     public function getByDate(string $date): Model|null;
 
-    public function getConsolidatedEntriesByStatus(string $consolidated = 'all'): Collection;
+    public function getConsolidatedEntriesByStatus(string $consolidated = 'all', int $limit = 6, string $orderDirection = 'DESC'): Collection;
 
     public function getEntriesEvolutionConsolidation(string $consolidatedValues, int $limit = 6): Collection;
 

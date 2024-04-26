@@ -31,16 +31,23 @@ class LoginAction
         if(Auth::attempt($authData->toArray()))
         {
             $user = auth()->user();
+            $userDetail = $user->detail()->first();
+            $userRoles = [];
+
+            foreach ($user->roles()->get() as $role)
+                $userRoles [] = $role->name;
+
             $church = $this->getChurchAction->__invoke($tenantId);
 
             if ($user->activated)
             {
-                $token = $user->createToken('web')->plainTextToken;
+                $token = $user->createToken('web', $userRoles)->plainTextToken;
                 $user->token = $token;
 
                 return [
-                    'user'      => $user,
-                    'church'    => $church
+                    'user'          => $user,
+                    'userDetail'    => $userDetail,
+                    'church'        => $church
                 ];
             }
             else

@@ -2,16 +2,14 @@
 
 namespace App\Domain\Notifications\Mail\User;
 
-use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\DataTransferObjects\UserDetailData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\App;
 
 class NewUserMail extends Mailable
 {
@@ -26,8 +24,6 @@ class NewUserMail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param UserData $userData
-     * @param UserDetailData $userDetailData
      * @param string $tenant
      */
     public function __construct(UserData $userData, UserDetailData $userDetailData, string $tenant)

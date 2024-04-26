@@ -5,6 +5,7 @@ namespace App\Domain\Financial\Entries\Consolidated\Actions;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 
 class GetQtdEntriesNoCompensateByMonthAction
@@ -22,16 +23,15 @@ class GetQtdEntriesNoCompensateByMonthAction
 
     /**
      * @param string $dateRegister
-     * @return int
+     * @return Collection
      * @throws BindingResolutionException
      */
-    public function __invoke(string $dateRegister): int
+    public function __invoke(string $dateRegister): Collection
     {
        return $this->entryRepository->getAllEntriesByDateAndType($dateRegister, 'register')
                                     ->where(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
                                             BaseRepository::OPERATORS['EQUALS'],
-                                            null)
-                                    ->count();
+                                            null);
     }
 
 }

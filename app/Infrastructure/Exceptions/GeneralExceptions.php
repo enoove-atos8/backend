@@ -42,6 +42,7 @@ class GeneralExceptions extends Exception
      * Report the exception as an HTTP response
      *
      * @param Request $request
+     * @param Throwable $e
      * @return JsonResponse
      */
     public function render(Request $request, Throwable $e): JsonResponse

@@ -2,7 +2,7 @@
 
 namespace App\Application\Api\v1\Financial\Entry\Requests;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\MonthlyTargetEntriesData;
+use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -135,12 +135,12 @@ class EntryRequest extends FormRequest
     /**
      * Function to data transfer objects to ConsolidationEntriesData class
      *
-     * @return MonthlyTargetEntriesData
+     * @return ConsolidationEntriesData
      * @throws UnknownProperties
      */
-    public function consolidationEntriesData(): MonthlyTargetEntriesData
+    public function consolidationEntriesData(): ConsolidationEntriesData
     {
-        return new MonthlyTargetEntriesData(
+        return new ConsolidationEntriesData(
             date:           $this->input('dateTransactionCompensation'),
         );
     }

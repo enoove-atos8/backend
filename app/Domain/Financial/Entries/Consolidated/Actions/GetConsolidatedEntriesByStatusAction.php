@@ -4,6 +4,9 @@ namespace App\Domain\Financial\Entries\Consolidated\Actions;
 
 use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
+use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use Domain\Financial\Entries\General\Actions\GetAmountByMonthAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -12,32 +15,43 @@ class GetConsolidatedEntriesByStatusAction
 {
     private ConsolidatedEntriesRepositoryInterface $consolidationEntriesRepository;
     private GetQtdEntriesNoCompensateByMonthAction $getQtdEntriesNoCompensateByMonthAction;
+    private GetAmountByMonthAction $getAmountByMonthAction;
 
     public function __construct(
         ConsolidatedEntriesRepositoryInterface $consolidationEntriesRepositoryInterface,
-        GetQtdEntriesNoCompensateByMonthAction  $getQtdEntriesNoCompensateByMonthAction
+        GetQtdEntriesNoCompensateByMonthAction  $getQtdEntriesNoCompensateByMonthAction,
+        GetAmountByMonthAction  $getAmountByMonthAction,
     )
     {
         $this->consolidationEntriesRepository = $consolidationEntriesRepositoryInterface;
         $this->getQtdEntriesNoCompensateByMonthAction = $getQtdEntriesNoCompensateByMonthAction;
+        $this->getAmountByMonthAction = $getAmountByMonthAction;
     }
 
 
     /**
+     * @param string|int $consolidated
+     * @param bool $returnNumberEntriesNoCompensate
+     * @param int $limit
+     * @param bool $callableByTithesBalance
+     * @return Collection
      * @throws GeneralExceptions
      */
-    public function __invoke(string $consolidated, bool $returnNumberEntriesNoCompensate = false): Collection
+    public function __invoke(string | int $consolidated, bool $returnNumberEntriesNoCompensate = false, int $limit = 6, bool $callableByTithesBalance = false): Collection
     {
-        $consolidatedEntriesByStatus = $this->consolidationEntriesRepository->getConsolidatedEntriesByStatus($consolidated);
+        $consolidatedEntriesByStatus = $this->consolidationEntriesRepository->getConsolidatedEntriesByStatus($consolidated, $limit);
 
-        if(count($consolidatedEntriesByStatus) > 0)
+        if(!$callableByTithesBalance)
         {
             if($returnNumberEntriesNoCompensate)
             {
-                $consolidatedEntriesByStatus->map(function ($value)
+                $consolidatedEntriesByStatus->map(function ($value) use($consolidatedEntriesByStatus)
                 {
-                    $countEntriesNoCompensateByMonth = $this->getQtdEntriesNoCompensateByMonthAction->__invoke($value->date);
-                    $value['entriesNoCompensate'] = $countEntriesNoCompensateByMonth;
+                    $entriesNoCompensate = $this->getQtdEntriesNoCompensateByMonthAction->__invoke($value->date);
+                    $amountEntriesNoCompensate = $entriesNoCompensate->sum(EntryRepository::AMOUNT_COLUMN);
+                    $value['entriesNoCompensate'] = $entriesNoCompensate->count();
+                    $value['amountEntriesNoCompensate'] = $amountEntriesNoCompensate;
+                    $value['amountEntries'] = $this->getAmountByMonthAction->__invoke($value->date);
                     return $value;
                 });
 
@@ -50,7 +64,15 @@ class GetConsolidatedEntriesByStatusAction
         }
         else
         {
-            throw new GeneralExceptions(ReturnMessages::ERROR_GET_CONSOLIDATED_ENTRIES_NOT_FOUND, 404);
+            if(count($consolidatedEntriesByStatus) > 0)
+            {
+                return $consolidatedEntriesByStatus;
+            }
+            else
+            {
+                throw new GeneralExceptions(ReturnMessages::ERROR_GET_CONSOLIDATED_ENTRIES, 404);
+            }
         }
+
     }
 }

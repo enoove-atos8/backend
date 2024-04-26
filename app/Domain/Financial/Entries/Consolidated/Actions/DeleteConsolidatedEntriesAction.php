@@ -2,16 +2,16 @@
 
 namespace App\Domain\Financial\Entries\Consolidated\Actions;
 use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
-use App\Domain\Financial\Entries\Consolidated\Interfaces\MonthlyTargetEntriesRepositoryInterface;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidated\MonthlyTargetEntriesRepository;
+use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class DeleteConsolidatedEntriesAction
 {
-    private MonthlyTargetEntriesRepository $consolidationEntriesRepository;
+    private ConsolidationEntriesRepository $consolidationEntriesRepository;
 
     public function __construct(
-        MonthlyTargetEntriesRepositoryInterface $consolidationEntriesRepositoryInterface
+        ConsolidatedEntriesRepositoryInterface $consolidationEntriesRepositoryInterface
     )
     {
         $this->consolidationEntriesRepository = $consolidationEntriesRepositoryInterface;

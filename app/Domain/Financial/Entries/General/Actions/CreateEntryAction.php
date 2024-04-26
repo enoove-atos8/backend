@@ -5,11 +5,13 @@ namespace App\Domain\Financial\Entries\General\Actions;
 use App\Domain\Financial\Entries\Consolidated\Actions\CreateConsolidatedEntryAction;
 use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\General\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
 
 class CreateEntryAction
@@ -34,20 +36,25 @@ class CreateEntryAction
      */
     public function __invoke(EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): Entry
     {
-        //$countedNotConsolidateEntry = $this->consolidatedEntriesRepository->getEntriesEvolutionConsolidation('0');
+        $dateEntryRegister = $entryData->dateEntryRegister;
+        $dateTransactionCompensation = $entryData->dateTransactionCompensation;
+
+        if($dateTransactionCompensation !== null)
+        {
+            if(substr($dateEntryRegister, 0, 7) !== substr($dateTransactionCompensation, 0, 7))
+                $entryData->dateEntryRegister = substr($dateTransactionCompensation, 0, 7) . '-01';
+        }
 
         $this->createConsolidatedEntryAction->__invoke($consolidationEntriesData);
-        return $this->entryRepository->newEntry($entryData);
+        $entry = $this->entryRepository->newEntry($entryData);
 
-        /*if($countedNotConsolidateEntry->count() == 0)
+        if($entry->id !== null)
         {
-
+            return $entry;
         }
         else
         {
-            throw new GeneralExceptions(
-                    ReturnMessages::ERROR_NOT_ALLOW_NEW_ENTRY_WITH_PREVIOUS_MONTHS_NOT_CONSOLIDATE,
-                    500);
-        }*/
+            throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_ENTRY, 500);
+        }
     }
 }

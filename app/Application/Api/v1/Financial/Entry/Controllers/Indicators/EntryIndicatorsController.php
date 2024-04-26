@@ -24,11 +24,7 @@ class EntryIndicatorsController extends Controller
         try
         {
             $indicator = $request->input('indicator');
-            $monthlyTarget = $handleEntriesIndicatorsAction->__invoke($indicator);
-
-            return [
-               'monthlyTarget'  =>  $monthlyTarget
-            ] ;
+            return $handleEntriesIndicatorsAction->__invoke($indicator);
         }
         catch (GeneralExceptions $e)
         {

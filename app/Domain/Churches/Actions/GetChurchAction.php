@@ -2,19 +2,11 @@
 
 namespace Domain\Churches\Actions;
 
-use App\Domain\Churches\Constants\ReturnMessages;
-use Domain\Churches\DataTransferObjects\ChurchData;
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
 use Domain\Churches\Models\Church;
-use Domain\Churches\Models\Tenant;
-use Domain\Users\DataTransferObjects\UserData;
-use Domain\Users\DataTransferObjects\UserDetailData;
 use Exception;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Artisan;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Church\ChurchRepository;
-use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
 class GetChurchAction

@@ -3,22 +3,24 @@
 namespace Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Actions;
 
 use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
+use App\Domain\Financial\Settings\Actions\GetFinancialSettingsAction;
+use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
-
-use Infrastructure\Repositories\Financial\Entries\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use Throwable;
-use function Webmozart\Assert\Tests\StaticAnalysis\length;
 
 class GetTithesMonthlyTargetEntriesAction
 {
     private TithesMonthlyTargetEntriesRepository $tithesMonthlyTargetEntriesRepository;
+    private GetFinancialSettingsAction $getFinancialSettingsAction;
 
     public function __construct(
-        TithesMonthlyTargetEntriesRepositoryInterface $tithesMonthlyTargetEntriesRepositoryInterface
+        TithesMonthlyTargetEntriesRepositoryInterface $tithesMonthlyTargetEntriesRepositoryInterface,
+        GetFinancialSettingsAction $getFinancialSettingsAction
     )
     {
         $this->tithesMonthlyTargetEntriesRepository = $tithesMonthlyTargetEntriesRepositoryInterface;
+        $this->getFinancialSettingsAction = $getFinancialSettingsAction;
     }
 
     /**
@@ -26,16 +28,17 @@ class GetTithesMonthlyTargetEntriesAction
      */
     public function __invoke(): array
     {
-        $monthlyTarget = 27000;
         $limit = 3;
         $monthlyValues = [];
         $monthlyDates = [];
         $lastConsolidatedTitheEntries = $this->tithesMonthlyTargetEntriesRepository->getLastConsolidatedTitheEntries($limit);
 
-        if($lastConsolidatedTitheEntries->count() > 0)
+        if($lastConsolidatedTitheEntries->count() > 1)
         {
-            $lastEntryConsolidated = $lastConsolidatedTitheEntries[0];
-            $monthlyTarget = floatval($lastEntryConsolidated->tithe_amount) / $monthlyTarget;
+            $financialSettings = $this->getFinancialSettingsAction->__invoke();
+            $monthlyTarget = $financialSettings->monthly_budget_tithes;
+            $lastEntryConsolidated = $lastConsolidatedTitheEntries[$lastConsolidatedTitheEntries->count() - 1];
+            $monthlyTargetPercent = floatval($lastEntryConsolidated->tithe_amount) / $monthlyTarget;
             $lastDate = $lastEntryConsolidated->date;
 
             foreach ($lastConsolidatedTitheEntries as $value)
@@ -45,17 +48,19 @@ class GetTithesMonthlyTargetEntriesAction
             }
 
             return [
-                    'indicators'    =>  [
-                        'target'    =>  $monthlyTarget,
-                        'date'      =>  $lastDate,
-                        'variation' =>  ''
-                    ],
-                    'chart' =>  [
-                        'data'  =>  [
-                            'labels'    =>  $monthlyDates,
-                            'series'    =>  [
-                                'name'  =>  'Alvo mensal',
-                                'data'  =>  $monthlyValues
+                    'monthlyTarget' =>  [
+                        'indicators'    =>  [
+                            'target'    =>  $monthlyTargetPercent,
+                            'date'      =>  $lastDate,
+                            'variation' =>  ''
+                        ],
+                        'chart' =>  [
+                            'data'  =>  [
+                                'labels'    =>  $monthlyDates,
+                                'series'    =>  [
+                                    'name'  =>  'Alvo mensal',
+                                    'data'  =>  $monthlyValues
+                                ]
                             ]
                         ]
                     ]
