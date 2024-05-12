@@ -47,8 +47,8 @@ class EntriesToCompensateResourceCollection extends ResourceCollection
         }
 
         return [
-            'qtdEntries'    =>  $this->resource->count(),
-            'totalAmount'   =>  $this->resource->sum('entries_amount'),
+            'qtdEntries'    =>  $this->collection->count(),
+            'totalAmount'   =>  $this->collection->sum('entries_amount'),
             'entries'       =>  $result
         ];
     }

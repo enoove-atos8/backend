@@ -197,6 +197,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
 
+                    /*
+                     * Action: GET
+                     * EndPoint: /getDevolutionEntries
+                     * Description: Get a list of devolution entries
+                     */
+
+                    Route::get('/getDevolutionEntries', [EntryController::class, 'getDevolutionEntries']);
+
+
+
 
                     /*
                     |--------------------------------------------------------------------------

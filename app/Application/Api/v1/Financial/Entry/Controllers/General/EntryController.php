@@ -4,6 +4,7 @@ namespace App\Application\Api\v1\Financial\Entry\Controllers\General;
 
 use App\Application\Api\v1\Financial\Entry\Requests\EntryRequest;
 use App\Application\Api\v1\Financial\Entry\Requests\ReceiptEntryRequest;
+use App\Application\Api\v1\Financial\Entry\Resources\DevolutionEntriesResourceCollection;
 use App\Application\Api\v1\Financial\Entry\Resources\EntryConsolidatedResourceCollection;
 use App\Application\Api\v1\Financial\Entry\Resources\EntryResource;
 use App\Application\Api\v1\Financial\Entry\Resources\EntryResourceCollection;
@@ -14,6 +15,7 @@ use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages as Consol
 use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\General\Actions\DeleteEntryAction;
 use App\Domain\Financial\Entries\General\Actions\GetAmountByEntryTypeAction;
+use App\Domain\Financial\Entries\General\Actions\GetDevolutionEntriesAction;
 use App\Domain\Financial\Entries\General\Actions\GetEntriesAction;
 use App\Domain\Financial\Entries\General\Actions\GetEntriesToCompensateAction;
 use App\Domain\Financial\Entries\General\Actions\GetEntryByIdAction;
@@ -22,6 +24,7 @@ use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Entry\Resources\AmountByEntryTypeResource;
 use Application\Api\v1\Financial\Entry\Resources\EntriesToCompensateResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Domain\Financial\Entries\Indicators\AmountDevolutions\Actions\GetEntriesDevolutionAmountAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -78,7 +81,9 @@ class EntryController extends Controller
     {
         try
         {
-            $response = $getEntriesAction($request->input('dates'));
+            $dates = $request->input('dates');
+            $filters = $request->except(['dates','page']);
+            $response = $getEntriesAction($dates, $filters);
             return new EntryResourceCollection($response);
 
         }
@@ -285,17 +290,41 @@ class EntryController extends Controller
 
 
     /**
+     * @param Request $request
      * @param GetEntriesToCompensateAction $getEntriesToCompensateAction
      * @return EntriesToCompensateResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getEntriesByTransactionCompensation(GetEntriesToCompensateAction $getEntriesToCompensateAction): EntriesToCompensateResourceCollection
+    public function getEntriesByTransactionCompensation(Request $request, GetEntriesToCompensateAction $getEntriesToCompensateAction): EntriesToCompensateResourceCollection
     {
         try
         {
-            $entries = $getEntriesToCompensateAction();
-            return new EntriesToCompensateResourceCollection($entries);
+            $date = $request->input('date');
+            $entries = $getEntriesToCompensateAction($date);
+            return new EntriesToCompensateResourceCollection($entries->items());
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param GetDevolutionEntriesAction $getDevolutionEntriesAction
+     * @return DevolutionEntriesResourceCollection
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getDevolutionEntries(Request $request, GetDevolutionEntriesAction $getDevolutionEntriesAction): DevolutionEntriesResourceCollection
+    {
+        try
+        {
+            $date = $request->input('date');
+            $entries = $getDevolutionEntriesAction($date);
+            return new DevolutionEntriesResourceCollection($entries);
         }
         catch (GeneralExceptions $e)
         {

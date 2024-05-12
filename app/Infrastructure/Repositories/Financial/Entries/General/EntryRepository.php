@@ -8,11 +8,13 @@ use App\Domain\Financial\Entries\General\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
+use function Webmozart\Assert\Tests\StaticAnalysis\length;
 
 class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 {
@@ -22,10 +24,15 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const DATE_ENTRY_REGISTER_COLUMN_JOINED = 'entries.date_entry_register';
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'entries.date_transaction_compensation';
+    const TRANSACTION_TYPE_COLUMN = 'transaction_type';
+    const TRANSACTION_TYPE_COLUMN_JOINED = 'entries.transaction_type';
+    const RECIPIENT_COLUMN = 'recipient';
+    const RECIPIENT_COLUMN_JOINED = 'entries.recipient';
     const DELETED_COLUMN = 'deleted';
     const DELETED_COLUMN_JOINED = 'entries.deleted';
     const REVIEWER_ID_COLUMN_JOINED = 'entries.reviewer_id';
     const COMPENSATED_COLUMN = 'transaction_compensation';
+    const COMPENSATED_COLUMN_JOINED = 'entries.transaction_compensation';
     const COMPENSATED_VALUE = 'compensated';
     const TO_COMPENSATE_VALUE = 'to_compensate';
     const ID_COLUMN = 'id';
@@ -33,13 +40,26 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const MEMBER_ID_COLUMN = 'member_id';
     const ID_COLUMN_JOINED = 'entries.id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
+    const ENTRY_TYPE_COLUMN_JOINED = 'entries.entry_type';
     const AMOUNT_COLUMN = 'amount';
+    const AMOUNT_COLUMN_JOINED = 'entries.amount';
     const DEVOLUTION_COLUMN = 'devolution';
+    const DEVOLUTION_COLUMN_JOINED = 'entries.devolution';
     const TITHE_VALUE = 'tithe';
     const DESIGNATED_VALUE = 'designated';
     const OFFERS_VALUE = 'offers';
     const REGISTER_INDICATOR = 'register';
     const TRANSACTION_INDICATOR = 'transaction';
+    const PAGINATE_NUMBER = 30;
+    const ENTRY_TYPES_FILTER = 'entryTypes';
+    const AMOUNT_FILTER = 'amount';
+    const MEMBER_ID_FILTER = 'memberId';
+    const RECIPIENT_FILTER = 'recipient';
+    const TRANSACTION_TYPE_FILTER = 'transactionType';
+    const MEMBERS_TYPE_FILTER = 'membersType';
+    const MEMBERS_GENDERS_FILTER = 'membersGenders';
+    const TITHES_NOT_IDENTIFIER_FILTER = 'tithesNotIdentifies';
+
 
     const DISPLAY_SELECT_COLUMNS = [
         'entries.id as entries_id',
@@ -125,12 +145,63 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
     /**
      * @param string|null $rangeMonthlyDate
-     * @param string|null $transactionCompensation
-     * @param string $orderBy
-     * @return Collection
+     * @param bool $devolutionStatus
+     * @param array $orderBy
+     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getAllEntriesWithMembersAndReviewers(string|null $rangeMonthlyDate, string|null $transactionCompensation = 'to_compensate' | 'compensated' | '*', string $orderBy = 'entries.id'): Collection
+    public function getDevolutionEntries(string|null $rangeMonthlyDate, bool $devolutionStatus = true, array $orderBy = [self::ID_COLUMN_JOINED]): Collection | Paginator
+    {
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            MemberRepository::DISPLAY_SELECT_COLUMNS,
+            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
+        );
+
+        $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+
+        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryClausesAndConditions['where_clause']['clause'] = [];
+        $this->queryClausesAndConditions['where_clause']['clause'][] = [
+            'type' => 'and',
+            'condition' => ['field' => self::DELETED_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => false,]
+        ];
+
+        $this->queryClausesAndConditions['where_clause']['clause'][] = [
+            'type' => 'and',
+            'condition' => ['field' => self::DEVOLUTION_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $devolutionStatus,]
+        ];
+
+        if($rangeMonthlyDate !== 'all')
+        {
+            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                'type' => 'andWithOrInside',
+                'condition' => ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
+            ];
+        }
+
+        return $this->qbGetEntriesWithMembersAndReviewers(
+            $this->queryClausesAndConditions,
+            $displayColumnsFromRelationship,
+            $orderBy,
+            false,
+        );
+    }
+
+
+    /**
+     * @param string|null $rangeMonthlyDate
+     * @param array $filters
+     * @param string|null $transactionCompensation
+     * @param array $orderBy
+     * @return Collection|Paginator
+     * @throws BindingResolutionException
+     */
+    public function getAllEntriesWithMembersAndReviewers
+    (
+        string|null $rangeMonthlyDate,
+        string|null $transactionCompensation = 'to_compensate' | 'compensated' | '*',
+        array $filters = [],
+        array $orderBy = [self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, self::ID_COLUMN_JOINED]): Collection | Paginator
     {
         $arrRangeMonthlyDate = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
@@ -153,43 +224,178 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             if($rangeMonthlyDate !== 'all')
             {
                 $this->queryClausesAndConditions['where_clause']['clause'][] = [
-                    'type' => 'and',
-                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::COMPENSATED_VALUE,]
-                ];
-
-                $this->queryClausesAndConditions['where_clause']['clause'][] = [
                     'type' => 'andWithOrInside',
                     'condition' => ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
                 ];
+
+                $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                    'type' => 'and',
+                    'condition' => ['field' => self::COMPENSATED_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => self::COMPENSATED_VALUE,]
+                ];
             }
-            else
+            if ($rangeMonthlyDate == 'all')
             {
                 $this->queryClausesAndConditions['where_clause']['clause'][] = [
                     'type' => 'and',
-                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::COMPENSATED_VALUE,]
+                    'condition' => ['field' => self::COMPENSATED_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::COMPENSATED_VALUE,]
                 ];
+            }
+
+            if(count($filters) > 0)
+            {
+                foreach ($filters as $key => $filter)
+                {
+                    if($key == self::ENTRY_TYPES_FILTER)
+                    {
+                        $entryTypes = explode(',', $filter);
+
+                        if(is_array($entryTypes))
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'andWithOrInside',
+                                'condition' => ['field' => self::ENTRY_TYPE_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $entryTypes,]
+                            ];
+                        }
+                        else
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'and',
+                                'condition' => ['field' => self::ENTRY_TYPE_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $filter,]
+                            ];
+                        }
+                    }
+
+                    if($key == self::RECIPIENT_FILTER)
+                    {
+                        $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                            'type' => 'andWithOrInside',
+                            'condition' => ['field' => self::RECIPIENT_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => [$filter, null],]
+                        ];
+                    }
+
+                    if($key == self::TRANSACTION_TYPE_FILTER)
+                    {
+                        $transactionTypes = explode(',', $filter);
+
+                        if(is_array($transactionTypes))
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'andWithOrInside',
+                                'condition' => ['field' => self::TRANSACTION_TYPE_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $transactionTypes,]
+                            ];
+                        }
+                        else
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'and',
+                                'condition' => ['field' => self::TRANSACTION_TYPE_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $filter,]
+                            ];
+                        }
+
+                    }
+
+                    if($key == self::AMOUNT_FILTER)
+                    {
+                        $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                            'type' => 'and',
+                            'condition' => ['field' => self::AMOUNT_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => floatval($filter),]
+                        ];
+                    }
+
+                    if($key == self::MEMBERS_TYPE_FILTER)
+                    {
+                        $membersTypes = explode(',', $filter);
+
+                        if(is_array($membersTypes))
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'andWithOrInside',
+                                'condition' => ['field' => MemberRepository::MEMBER_TYPE_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $membersTypes,]
+                            ];
+                        }
+                        else
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'and',
+                                'condition' => ['field' => MemberRepository::MEMBER_TYPE_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $filter,]
+                            ];
+                        }
+
+                    }
+
+                    if($key == self::MEMBERS_GENDERS_FILTER)
+                    {
+                        $membersGender = explode(',', $filter);
+
+                        if(is_array($membersGender))
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'andWithOrInside',
+                                'condition' => ['field' => MemberRepository::MEMBER_GENDER_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $membersGender,]
+                            ];
+                        }
+                        else
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'and',
+                                'condition' => ['field' => MemberRepository::MEMBER_GENDER_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $filter,]
+                            ];
+                        }
+
+                    }
+
+                    if($key == self::MEMBER_ID_FILTER)
+                    {
+                        $entryTypes = explode(',', $filters[self::ENTRY_TYPES_FILTER]);
+
+                        if(!array_key_exists(self::TITHES_NOT_IDENTIFIER_FILTER, $filters) and
+                            (!in_array(self::DESIGNATED_VALUE, $entryTypes) and
+                                !in_array(self::OFFERS_VALUE, $entryTypes)))
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'andWithOrInside',
+                                'condition' => ['field' => self::MEMBER_ID_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => [$filter],]
+                            ];
+                        }
+                        else
+                        {
+                            $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                                'type' => 'andWithOrInside',
+                                'condition' => ['field' => self::MEMBER_ID_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => [$filter, null],]
+                            ];
+                        }
+
+                    }
+
+                    if($key == self::TITHES_NOT_IDENTIFIER_FILTER and $filter !== false)
+                    {
+                        $this->queryClausesAndConditions['where_clause']['clause'][] = [
+                            'type' => 'and',
+                            'condition' => ['field' => self::MEMBER_ID_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['IS_NULL']]
+                        ];
+                    }
+                }
             }
         }
         elseif ($transactionCompensation == 'to_compensate')
         {
             if($rangeMonthlyDate !== 'all')
             {
-
                 $this->queryClausesAndConditions['where_clause']['clause'][] = [
                     'type' => 'andWithOrInside',
-                    'condition' => ['field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
+                    'condition' => ['field' => self::DATE_ENTRY_REGISTER_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $arrRangeMonthlyDate,]
                 ];
 
                 $this->queryClausesAndConditions['where_clause']['clause'][] = [
                     'type' => 'and',
-                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::TO_COMPENSATE_VALUE,]
+                    'condition' => ['field' => self::COMPENSATED_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => self::TO_COMPENSATE_VALUE,]
                 ];
             }
             else
             {
                 $this->queryClausesAndConditions['where_clause']['clause'][] = [
                     'type' => 'and',
-                    'condition' => ['field' => self::COMPENSATED_COLUMN, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => self::TO_COMPENSATE_VALUE,]
+                    'condition' => ['field' => self::COMPENSATED_COLUMN_JOINED, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => self::TO_COMPENSATE_VALUE,]
                 ];
             }
         }
@@ -220,7 +426,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                             ]
         ];
 
-        if($dateType == 'register')
+        if($dateType == self::REGISTER_INDICATOR)
         {
             $this->queryClausesAndConditions['where_clause']['clause'][] = [
                 'type' => 'and',
@@ -230,7 +436,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                 ]
             ];
         }
-        elseif($dateType == 'transaction')
+        elseif($dateType == self::TRANSACTION_INDICATOR)
         {
             $this->queryClausesAndConditions['where_clause']['clause'][] = [
                 'type' => 'and',
@@ -370,23 +576,26 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      *
      * @param array $queryClausesAndConditions
      * @param array $selectColumns
-     * @param string $orderBy
+     * @param array $orderBy
+     * @param bool $paginate
      * @param string $sort
-     * @return Collection
+     * @return Collection | Paginator
      * @throws BindingResolutionException
      */
     public function qbGetEntriesWithMembersAndReviewers(
         array $queryClausesAndConditions,
         array $selectColumns,
-        string $orderBy = 'entries.id',
-        string $sort = 'desc'): Collection
+        array $orderBy,
+        bool $paginate = true,
+        string $sort = 'desc'): Collection | Paginator
     {
         $query = function () use (
             $queryClausesAndConditions,
             $selectColumns,
             $orderBy,
-            $sort) {
-            return DB::table(EntryRepository::TABLE_NAME)
+            $sort,
+            $paginate) {
+            $q = DB::table(EntryRepository::TABLE_NAME)
                 ->select($selectColumns)
                 ->leftJoin(
                     MemberRepository::TABLE_NAME,
@@ -403,21 +612,41 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                         count($queryClausesAndConditions['where_clause']['clause']) > 0){
                         foreach ($queryClausesAndConditions['where_clause']['clause'] as $key => $clause) {
                             if($clause['type'] == 'and'){
-                                if($clause['condition']['operator'] == 'LIKE')
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
                                 }
-
-                                else
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                                 }
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
+                                {
+                                    $q->whereNull($clause['condition']['field']);
+                                }
                             }
-                            if($clause['type'] == 'andWithOrInside'){
-                                $q->where(function($query) use($clause){
-                                    if(count($clause['condition']) > 0){
-                                        foreach ($clause['condition']['value'] as $value){
-                                            $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                            if($clause['type'] == 'andWithOrInside')
+                            {
+                                $q->where(function($query) use($clause)
+                                {
+                                    if(count($clause['condition']) > 0)
+                                    {
+                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
+                                        {
+                                            foreach ($clause['condition']['value'] as $value)
+                                            {
+                                                $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], $value);
+                                            }
+                                        }
+                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
+                                        {
+                                            foreach ($clause['condition']['value'] as $value){
+                                                $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                                            }
+                                        }
+                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
+                                        {
+                                            $query->orWhereNull($clause['condition']['field']);
                                         }
                                     }
                                 });
@@ -433,9 +662,16 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                             }
                         }
                     }
-                })
-                ->orderBy($orderBy, $sort)
-                ->get();
+                });
+
+            if(count($orderBy) > 0)
+                foreach ($orderBy as $clause)
+                    $q->orderByDesc($clause);
+
+            if($paginate)
+                return $q->simplePaginate(self::PAGINATE_NUMBER);
+            else
+                return $q->get();
         };
 
         return $this->doQuery($query);

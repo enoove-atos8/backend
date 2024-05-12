@@ -2,15 +2,13 @@
 
 namespace App\Domain\Financial\Entries\General\Actions;
 
-use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
 
-class GetEntriesAction
+class GetDevolutionEntriesAction
 {
     private EntryRepository $entryRepository;
 
@@ -21,20 +19,13 @@ class GetEntriesAction
         $this->entryRepository = $entryRepositoryInterface;
     }
 
+
+
     /**
      * @throws Throwable
      */
-    public function __invoke(string $dates, array $filters): Collection | Paginator
+    public function __invoke(string $date): Collection
     {
-        $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers($dates, 'compensated', $filters);
-
-        if($entries->count() > 0)
-        {
-            return $entries;
-        }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::INFO_NO_ENTRIES_FOUNDED, 404);
-        }
+        return $this->entryRepository->getDevolutionEntries($date);
     }
 }

@@ -2,13 +2,9 @@
 
 namespace App\Infrastructure\Repositories\Financial\Reviewer;
 
-use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
-use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
-use App\Domain\Financial\Entries\General\Models\Entry;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Reviewers\Models\FinancialReviewer;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 use Throwable;
