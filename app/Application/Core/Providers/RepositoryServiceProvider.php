@@ -12,9 +12,11 @@ use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutionEntries\AmountDevolutionEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
+use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
@@ -46,6 +48,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TithesMonthlyTargetEntriesRepositoryInterface::class, TithesMonthlyTargetEntriesRepository::class);
         $this->app->bind(FinancialSettingsRepositoryInterface::class, FinancialSettingsRepository::class);
         $this->app->bind(AmountToCompensateRepositoryInterface::class, AmountToCompensateRepository::class);
+        $this->app->bind(AmountDevolutionRepositoryInterface::class, AmountDevolutionEntriesRepository::class);
     }
 
     /**

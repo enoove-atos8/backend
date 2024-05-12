@@ -32,6 +32,8 @@ abstract class BaseRepository implements BaseRepositoryInterface
       'NOT_IN' => 'NOT IN',
       'IN' => 'IN',
       'NOT_NULL' => 'NOT NULL',
+      'IS_NULL' => 'IS NULL',
+      'IS' => 'IS',
     ];
 
     const ORDERS = [

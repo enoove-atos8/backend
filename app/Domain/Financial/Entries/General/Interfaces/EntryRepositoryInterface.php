@@ -5,6 +5,7 @@ namespace App\Domain\Financial\Entries\General\Interfaces;
 use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\General\Models\Entry;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
 interface EntryRepositoryInterface
@@ -15,8 +16,11 @@ interface EntryRepositoryInterface
 
     public function deleteEntry(int $id): bool;
 
-    public function getAllEntriesWithMembersAndReviewers(string|null $rangeMonthlyDate, string $transactionCompensation = 'to_compensate' | 'compensated' | '*', string $orderBy = 'entries.id'): Collection;
+    public function getAllEntriesWithMembersAndReviewers(string|null $rangeMonthlyDate, string $transactionCompensation = 'to_compensate' | 'compensated' | '*', array $filters = [], array $orderBy = []): Collection | Paginator;
+
     public function getAllEntries(string|null $rangeMonthlyDate): Collection;
+
+    public function getDevolutionEntries(string|null $rangeMonthlyDate, bool $devolutionStatus, array $orderBy): Collection | Paginator;
 
     public function getAllEntriesByDateAndType(string $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection;
 

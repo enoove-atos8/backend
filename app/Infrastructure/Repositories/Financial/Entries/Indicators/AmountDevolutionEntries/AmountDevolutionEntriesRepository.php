@@ -1,16 +1,15 @@
 <?php
 
-namespace Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate;
+namespace App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutionEntries;
 
-use App\Domain\Financial\Entries\Consolidated\Models\ConsolidationEntries;
 use App\Domain\Financial\Entries\General\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
-use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
+use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 
-class AmountToCompensateRepository extends BaseRepository implements AmountToCompensateRepositoryInterface
+class AmountDevolutionEntriesRepository extends BaseRepository implements AmountDevolutionRepositoryInterface
 {
     protected mixed $model = Entry::class;
     const TABLE_NAME = 'entries';
@@ -29,7 +28,7 @@ class AmountToCompensateRepository extends BaseRepository implements AmountToCom
     /**
      * @throws BindingResolutionException
      */
-    public function getEntriesAmountToCompensate(): Collection
+    public function getDevolutionEntriesAmount(): Collection
     {
         $this->queryClausesAndConditions['where_clause']['exists'] = true;
 
@@ -43,9 +42,9 @@ class AmountToCompensateRepository extends BaseRepository implements AmountToCom
 
         $this->queryClausesAndConditions['where_clause']['clause'][] = [
             'type' => 'and',
-            'condition' => ['field' => EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+            'condition' => ['field' => EntryRepository::DEVOLUTION_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => null,
+                'value' => 1,
             ]
         ];
 
