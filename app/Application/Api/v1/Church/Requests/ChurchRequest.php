@@ -2,8 +2,8 @@
 
 namespace Application\Api\v1\Church\Requests;
 
-use App\Domain\Users\User\DataTransferObjects\UserData;
-use App\Domain\Users\User\DataTransferObjects\UserDetailData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserData;
+use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use Domain\Churches\DataTransferObjects\ChurchData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -111,7 +111,7 @@ class ChurchRequest extends FormRequest
     }
 
     /**
-     * @return \App\Domain\Users\User\DataTransferObjects\UserData
+     * @return UserData
      * @throws UnknownProperties
      */
     public function userData(): UserData

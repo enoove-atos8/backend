@@ -24,7 +24,8 @@ class EntryIndicatorsController extends Controller
         try
         {
             $indicator = $request->input('indicator');
-            return $handleEntriesIndicatorsAction->__invoke($indicator);
+            $date = explode(',', $request->input('date'));
+            return $handleEntriesIndicatorsAction->__invoke($indicator, $date);
         }
         catch (GeneralExceptions $e)
         {

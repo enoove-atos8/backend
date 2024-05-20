@@ -1,17 +1,17 @@
-POST https://www.atos8.com/api/v1/church
+POST http://www.atos8.local:8080/api/v1/church
 Content-Type: application/json
 
 {
     "church": {
-        "tenant_id": "iebrd",
+        "tenant_id": "dev",
         "plan_id": 1,
-        "name": "Igreja Evangélica Batista em Rio Doce",
+        "name": "Igreja Desenvolvimento",
         "activated": true,
         "doc_type": "cnpj",
         "doc_number": "24162422000121"
     },
     "user": {
-        "admin_email_tenant": "iebrd@atos8.com",
+        "admin_email_tenant": "dev@atos8.com",
         "pass_admin_email_tenant": "123456",
         "confirm_pass_admin_email_tenant": "123456",
         "user_activated_tenant": true,
