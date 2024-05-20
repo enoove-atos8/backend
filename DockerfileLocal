@@ -2,6 +2,7 @@ FROM php:8.2-fpm
 
 WORKDIR /var/www
 RUN mkdir -p backend/html
+WORKDIR /var/www/backend/html
 
 # Copy composer.lock and composer.json
 COPY composer.lock composer.json ./
@@ -40,7 +41,7 @@ RUN docker-php-ext-install gd
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Copy existing application directory contents
-COPY . ./backend/html
+COPY . .
 
 # Copy existing application directory permissions
 
