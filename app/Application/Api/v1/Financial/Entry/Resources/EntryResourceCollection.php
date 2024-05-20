@@ -26,25 +26,35 @@ class EntryResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return $this->collection->map(function ($item){
+        $result = [];
+        $totalGeneral = 0;
 
-            return [
-                'id'                            =>  $item->resource->entries_id,
-                'entryType'                     =>  $item->resource->entries_entry_type,
-                'transactionType'               =>  $item->resource->entries_transaction_type,
-                'transactionCompensation'       =>  $item->resource->entries_transaction_compensation,
-                'dateTransactionCompensation'   =>  $item->resource->entries_date_transaction_compensation,
-                'dateEntryRegister'             =>  $item->resource->entries_date_entry_register,
-                'amount'                        =>  $item->resource->entries_amount,
-                'devolution'                    =>  $item->resource->entries_devolution,
-                'recipient'                     =>  $item->resource->entries_recipient,
-                'deleted'                       =>  $item->resource->entries_deleted,
-                'comments'                      =>  $item->resource->entries_comments,
-                'receipt'                       =>  $item->resource->entries_receipt_link,
+        foreach ($this->collection as $item)
+        {
+            $result[] = [
+                'id'                            =>  $item->entries_id,
+                'entryType'                     =>  $item->entries_entry_type,
+                'transactionType'               =>  $item->entries_transaction_type,
+                'transactionCompensation'       =>  $item->entries_transaction_compensation,
+                'dateTransactionCompensation'   =>  $item->entries_date_transaction_compensation,
+                'dateEntryRegister'             =>  $item->entries_date_entry_register,
+                'amount'                        =>  $item->entries_amount,
+                'devolution'                    =>  $item->entries_devolution,
+                'recipient'                     =>  $item->entries_recipient,
+                'deleted'                       =>  $item->entries_deleted,
+                'comments'                      =>  $item->entries_comments,
+                'receipt'                       =>  $item->entries_receipt_link,
                 'member'                        =>  $this->getMember($item),
                 'reviewer'                      =>  $this->getReviewer($item),
             ];
-        });
+
+            $totalGeneral += floatval($item->entries_amount);
+        }
+
+        return [
+            'data'          =>  $result,
+            'totalGeneral'  =>  $totalGeneral
+        ];
     }
 
 
@@ -54,42 +64,42 @@ class EntryResourceCollection extends ResourceCollection
      */
     public function getMember(mixed $entry): ?array
     {
-        if(!is_null($entry->resource->entries_member_id))
+        if(!is_null($entry->entries_member_id))
         {
             return [
-                'id'                  =>  $entry->resource->members_id,
-                'activated'           =>  $entry->resource->members_activated,
-                'deleted'             =>  $entry->resource->members_deleted,
+                'id'                  =>  $entry->members_id,
+                'activated'           =>  $entry->members_activated,
+                'deleted'             =>  $entry->members_deleted,
                 'personDataAndIdentification' => [
-                    'avatar'        => $entry->resource->members_avatar,
-                    'fullName'      => $entry->resource->members_full_name,
-                    'gender'        => $entry->resource->members_gender,
-                    'cpf'           => $entry->resource->members_cpf,
-                    'rg'            => $entry->resource->members_rg,
-                    'work'          => $entry->resource->members_work,
-                    'bornDate'      => $entry->resource->members_born_date,
+                    'avatar'        => $entry->members_avatar,
+                    'fullName'      => $entry->members_full_name,
+                    'gender'        => $entry->members_gender,
+                    'cpf'           => $entry->members_cpf,
+                    'rg'            => $entry->members_rg,
+                    'work'          => $entry->members_work,
+                    'bornDate'      => $entry->members_born_date,
                 ],
                 'addressAndContact' => [
-                    'email'         => $entry->resource->members_email,
-                    'phone'         => $entry->resource->members_phone,
-                    'cellPhone'     => $entry->resource->members_cell_phone,
-                    'address'       => $entry->resource->members_address,
-                    'district'      => $entry->resource->members_district,
-                    'city'          => $entry->resource->members_city,
-                    'uf'            => $entry->resource->members_uf,
+                    'email'         => $entry->members_email,
+                    'phone'         => $entry->members_phone,
+                    'cellPhone'     => $entry->members_cell_phone,
+                    'address'       => $entry->members_address,
+                    'district'      => $entry->members_district,
+                    'city'          => $entry->members_city,
+                    'uf'            => $entry->members_uf,
                 ],
                 'parentageAndMaritalStatus' => [
-                    'maritalStatus'  => $entry->resource->members_marital_status,
-                    'spouse'         => $entry->resource->members_spouse,
-                    'father'         => $entry->resource->members_father,
-                    'mother'         => $entry->resource->members_mother,
+                    'maritalStatus'  => $entry->members_marital_status,
+                    'spouse'         => $entry->members_spouse,
+                    'father'         => $entry->members_father,
+                    'mother'         => $entry->members_mother,
                 ],
                 'ecclesiasticalInformation' => [
-                    'baptismDate'               => $entry->resource->members_baptism_date,
+                    'baptismDate'               => $entry->members_baptism_date,
                 ],
                 'otherInformation' => [
-                    'bloodType'         => $entry->resource->members_blood_type,
-                    'education'         => $entry->resource->members_education,
+                    'bloodType'         => $entry->members_blood_type,
+                    'education'         => $entry->members_education,
                 ]
             ];
         }
@@ -106,20 +116,20 @@ class EntryResourceCollection extends ResourceCollection
      */
     public function getReviewer(mixed $entry): ?array
     {
-        if(!is_null($entry->resource->financial_reviewers_id))
+        if(!is_null($entry->financial_reviewers_id))
         {
             return [
-                'id'                 =>  $entry->resource->financial_reviewers_id,
-                'fullName'           =>  $entry->resource->financial_reviewers_full_name,
-                'reviewer_type'      =>  $entry->resource->financial_reviewers_reviewer_type,
-                'avatar'             =>  $entry->resource->financial_reviewers_avatar,
-                'gender'             =>  $entry->resource->financial_reviewers_gender,
-                'cpf'                =>  $entry->resource->financial_reviewers_cpf,
-                'rg'                 =>  $entry->resource->financial_reviewers_rg,
-                'email'              =>  $entry->resource->financial_reviewers_email,
-                'cellPhone'          =>  $entry->resource->financial_reviewers_cell_phone,
-                'activated'          =>  $entry->resource->financial_reviewers_activated,
-                'deleted'            =>  $entry->resource->financial_reviewers_deleted,
+                'id'                 =>  $entry->financial_reviewers_id,
+                'fullName'           =>  $entry->financial_reviewers_full_name,
+                'reviewer_type'      =>  $entry->financial_reviewers_reviewer_type,
+                'avatar'             =>  $entry->financial_reviewers_avatar,
+                'gender'             =>  $entry->financial_reviewers_gender,
+                'cpf'                =>  $entry->financial_reviewers_cpf,
+                'rg'                 =>  $entry->financial_reviewers_rg,
+                'email'              =>  $entry->financial_reviewers_email,
+                'cellPhone'          =>  $entry->financial_reviewers_cell_phone,
+                'activated'          =>  $entry->financial_reviewers_activated,
+                'deleted'            =>  $entry->financial_reviewers_deleted,
             ];
         }
         else
