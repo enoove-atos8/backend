@@ -27,4 +27,6 @@ interface EntryRepositoryInterface
     public function getEntryById(int $id): Model | null;
 
     public function getAmountByEntryType(string $rangeMonthlyDate, string $amountType, string $entryType = null, string $exitType = null): Collection;
+
+    public function applyFilters(array $filters, bool $joinQuery, bool $returnConditions);
 }

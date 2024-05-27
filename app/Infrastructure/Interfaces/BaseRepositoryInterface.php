@@ -153,4 +153,43 @@ interface BaseRepositoryInterface
      * @return bool
      */
     public function deleteByColumn(string $column, string $data): bool;
+
+
+    /**
+     * Where equals clause
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereEqual(string $column, mixed $value, string $whereType): array;
+
+
+    /**
+     * Where like clause
+     *
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereLike(string $column, mixed $value, string $whereType): array;
+
+
+    /**
+     * @param string $column
+     * @param string $whereType
+     * @return array
+     */
+    public function whereIsNull(string $column, string $whereType): array;
+
+
+    /**
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereNotIn(string $column, mixed $value, string $whereType): array;
 }

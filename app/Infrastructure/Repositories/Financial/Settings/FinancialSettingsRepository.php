@@ -21,27 +21,23 @@ class FinancialSettingsRepository extends BaseRepository implements FinancialSet
     const DISPLAY_SELECT_COLUMNS = [
     ];
 
+
+
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
+
+
 
     /**
      * @throws BindingResolutionException
      */
     public function getCurrentFinancialSettingsData(): Model
     {
-        $conditions = [
-            'field' => self::BUDGET_ACTIVATED_COLUMN,
-            'operator' => BaseRepository::OPERATORS['EQUALS'],
-            'value' => true,
-        ];
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::BUDGET_ACTIVATED_COLUMN, true, 'and');
 
-        return $this->getItemWithRelationshipsAndWheres($conditions);
+        return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
     }
 }

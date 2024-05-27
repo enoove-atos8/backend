@@ -16,14 +16,10 @@ class TithesMonthlyTargetEntriesRepository extends BaseRepository implements Tit
 
 
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
+
 
     /**
      * @param int $limit
@@ -33,19 +29,13 @@ class TithesMonthlyTargetEntriesRepository extends BaseRepository implements Tit
     public function getLastConsolidatedTitheEntries(int $limit): Collection
     {
         $selectColumns = ['date', 'tithe_amount'];
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryConditions  = [];
 
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => ConsolidationEntriesRepository::CONSOLIDATED_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => ConsolidationEntriesRepository::CONSOLIDATED_VALUE,
-            ]
-        ];
+        $this->queryConditions [] = $this->whereEqual(ConsolidationEntriesRepository::CONSOLIDATED_COLUMN, ConsolidationEntriesRepository::CONSOLIDATED_VALUE, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres
         (
-            $this->queryClausesAndConditions,
+            $this->queryConditions,
             ConsolidationEntriesRepository::DATE_COLUMN,
             BaseRepository::ORDERS['ASC'],
             $limit,

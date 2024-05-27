@@ -24,14 +24,9 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
     const AMOUNT_TOTAL_COLUMN = 'total_amount';
 
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
 
     /**
      * @param string $date
@@ -63,28 +58,13 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
     public function getConsolidatedEntriesByStatus(string $consolidated = 'all', int $limit = 6, string $orderDirection = 'DESC'): Collection
     {
         $currentYearMonth = date("Y-m");
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryConditions = [];
 
         if($consolidated != 'all')
-        {
-            $this->queryClausesAndConditions['where_clause']['clause'][] = [
-                'type' => 'and',
-                'condition' => ['field' => self::CONSOLIDATED_COLUMN, 'operator' =>
-                    BaseRepository::OPERATORS['EQUALS'], 'value' => $consolidated,]
-            ];
-        }
+            $this->queryConditions [] = $this->whereEqual(self::CONSOLIDATED_COLUMN, $consolidated, 'and');
+            $this->queryConditions [] = $this->whereNotIn(self::DATE_COLUMN, $currentYearMonth, 'not_in');
 
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'not_in',
-            'condition' => ['field' => self::DATE_COLUMN, 'operator' =>
-                BaseRepository::OPERATORS['EQUALS'], 'value' => $currentYearMonth,]
-        ];
-
-        return $this->getItemsWithRelationshipsAndWheres(
-                                $this->queryClausesAndConditions,
-                                self::DATE_COLUMN,
-                                $orderDirection,
-                                $limit);
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions, self::DATE_COLUMN, $orderDirection, $limit);
     }
 
 
@@ -94,23 +74,12 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
      */
     public function getEntriesEvolutionConsolidation(string $consolidatedValues, int $limit = 6): Collection
     {
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryConditions = [];
 
         if($consolidatedValues != '*')
-        {
-            $this->queryClausesAndConditions['where_clause']['clause'][] = [
-                'type' => 'and',
-                'condition' => ['field' => ConsolidationEntriesRepository::CONSOLIDATED_COLUMN,
-                    'operator' => BaseRepository::OPERATORS['EQUALS'],
-                    'value' => $consolidatedValues,]
-            ];
-        }
+            $this->queryConditions [] = $this->whereEqual(self::CONSOLIDATED_COLUMN, $consolidatedValues, 'and');
 
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryClausesAndConditions,
-            self::DATE_COLUMN,
-            BaseRepository::ORDERS['ASC'],
-            $limit);
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions, self::DATE_COLUMN, BaseRepository::ORDERS['ASC'], $limit);
     }
 
 

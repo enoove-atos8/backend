@@ -16,39 +16,20 @@ class AmountDevolutionEntriesRepository extends BaseRepository implements Amount
 
 
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
 
     /**
      * @throws BindingResolutionException
      */
     public function getDevolutionEntriesAmount(): Collection
     {
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
-
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => EntryRepository::DELETED_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => 0,
-            ]
-        ];
-
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => EntryRepository::DEVOLUTION_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => 1,
-            ]
-        ];
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(EntryRepository::DELETED_COLUMN, 0, 'and');
+        $this->queryConditions [] = $this->whereEqual(EntryRepository::DEVOLUTION_COLUMN, 1, 'and');
 
 
-        return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 }

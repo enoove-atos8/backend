@@ -6,6 +6,7 @@ use Domain\Financial\Entries\Indicators\AmountDevolutions\Actions\GetEntriesDevo
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Actions\GetEntriesAmountToCompesateActions;
 use Domain\Financial\Entries\Indicators\TithesBalance\Actions\GetTithesBalanceActions;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Actions\GetTithesMonthlyTargetEntriesAction;
+use Domain\Financial\Entries\Indicators\TotalGeneral\Actions\GetTotalGeneralEntriesAction;
 use Illuminate\Support\Collection;
 use Throwable;
 
@@ -22,25 +23,28 @@ class HandleEntriesIndicatorsAction
     private GetTithesBalanceActions $getTithesBalanceActions;
     private GetEntriesAmountToCompesateActions $getEntriesAmountToCompesateActions;
     private GetEntriesDevolutionAmountAction $getEntriesDevolutionAmountAction;
+    private GetTotalGeneralEntriesAction $getTotalGeneralEntriesAction;
 
     public function __construct(
         GetTithesMonthlyTargetEntriesAction $getTithesMonthlyTargetEntriesAction,
         GetTithesBalanceActions $getTithesBalanceActions,
         GetEntriesAmountToCompesateActions $getEntriesAmountToCompesateActions,
-        GetEntriesDevolutionAmountAction $getEntriesDevolutionAmountAction
+        GetEntriesDevolutionAmountAction $getEntriesDevolutionAmountAction,
+        GetTotalGeneralEntriesAction $getTotalGeneralEntriesAction,
     )
     {
         $this->getTithesMonthlyTargetEntriesAction = $getTithesMonthlyTargetEntriesAction;
         $this->getTithesBalanceActions = $getTithesBalanceActions;
         $this->getEntriesAmountToCompesateActions = $getEntriesAmountToCompesateActions;
         $this->getEntriesDevolutionAmountAction = $getEntriesDevolutionAmountAction;
+        $this->getTotalGeneralEntriesAction = $getTotalGeneralEntriesAction;
     }
 
 
     /**
      * @throws Throwable
      */
-    public function __invoke(string $indicator, array $date): array
+    public function __invoke(string $indicator, string|null $dates, array $filters): array
     {
         if($indicator == self::TITHES_MONTHLY_TARGET_INDICATOR)
             return $this->getTithesMonthlyTargetEntriesAction->__invoke();
@@ -56,12 +60,12 @@ class HandleEntriesIndicatorsAction
 
         if($indicator == self::TOTAL_GENERAL_INDICATOR)
         {
-            //return $this->getEntriesDevolutionAmountAction->__invoke();
+            $entries = $this->getTotalGeneralEntriesAction->__invoke($dates, $filters);
             return [
                 'totalGeneral' =>  [
                     'indicators'    =>  [
-                        'qtdEntries'    =>  321,
-                        'amount'        =>  123.23,
+                        'qtdEntries'    =>  $entries['qtdEntries'],
+                        'amount'        =>  $entries['amountEntries'],
                     ]
                 ]
             ];
