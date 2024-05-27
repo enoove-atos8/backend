@@ -5,6 +5,8 @@ namespace Application\Api\v1\Financial\Entry\Controllers\Indicators;
 
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Entries\Indicators\Actions\HandleEntriesIndicatorsAction;
+use Domain\Financial\Entries\Indicators\TotalGeneral\Actions\GetTotalGeneralEntriesAction;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
@@ -24,8 +26,9 @@ class EntryIndicatorsController extends Controller
         try
         {
             $indicator = $request->input('indicator');
-            $date = explode(',', $request->input('date'));
-            return $handleEntriesIndicatorsAction->__invoke($indicator, $date);
+            $dates = $request->input('dates');
+            $filters = $request->except(['dates','page', 'indicator']);
+            return $handleEntriesIndicatorsAction->__invoke($indicator, $dates, $filters);
         }
         catch (GeneralExceptions $e)
         {

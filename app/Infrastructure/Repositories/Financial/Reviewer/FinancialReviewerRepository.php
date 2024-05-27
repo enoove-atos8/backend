@@ -34,43 +34,20 @@ class FinancialReviewerRepository extends BaseRepository implements FinancialRev
     ];
 
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
+
 
     /**
      * @throws BindingResolutionException
      */
     public function getFinancialReviewers(): Collection
     {
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions [] = $this->whereEqual(self::ACTIVATED_COLUMN, true, 'and');
 
-        $this->queryClausesAndConditions['where_clause']['clause'] = [];
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => self::DELETED_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => false,
-            ]
-        ];
-
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => self::ACTIVATED_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => true,
-            ]
-        ];
-
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryClausesAndConditions,
-            self::FULL_NAME_COLUMN,
-            BaseRepository::ORDERS['ASC']
-        );
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions, self::FULL_NAME_COLUMN, BaseRepository::ORDERS['ASC']);
     }
 }

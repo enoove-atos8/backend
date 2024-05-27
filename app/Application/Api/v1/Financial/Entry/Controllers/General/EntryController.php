@@ -24,7 +24,6 @@ use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Entry\Resources\AmountByEntryTypeResource;
 use Application\Api\v1\Financial\Entry\Resources\EntriesToCompensateResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Financial\Entries\Indicators\AmountDevolutions\Actions\GetEntriesDevolutionAmountAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -289,6 +288,7 @@ class EntryController extends Controller
     }
 
 
+
     /**
      * @param Request $request
      * @param GetEntriesToCompensateAction $getEntriesToCompensateAction
@@ -309,6 +309,7 @@ class EntryController extends Controller
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
+
 
 
     /**

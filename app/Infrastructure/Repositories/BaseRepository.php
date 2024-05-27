@@ -41,7 +41,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
         'DESC' => 'DESC',
     ];
 
+    const ID_COLUMN = 'id';
+    const LIMIT_ENTRIES_DATA = '1000';
+    const ALL_DATA_SELECT = ['entries.id'];
 
+
+    //public array $queryConditions = [];
 
     /**
      * Name of model associated with this repository
@@ -428,31 +433,51 @@ abstract class BaseRepository implements BaseRepositoryInterface
         array $queryClausesAndConditions,
         string $orderBy = 'id',
         string $sort = 'desc',
-        string $limit = '1000',
+        string $limit = '1001',
         array $selectColumns = ['*']): Collection
     {
-        $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $limit) {
+        $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $limit, $selectColumns) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where(function ($q) use($queryClausesAndConditions){
-                    if($queryClausesAndConditions['where_clause']['exists'] and
-                        count($queryClausesAndConditions['where_clause']['clause']) > 0){
-                        foreach ($queryClausesAndConditions['where_clause']['clause'] as $key => $clause) {
+                    if(count($queryClausesAndConditions) > 0){
+                        foreach ($queryClausesAndConditions as $key => $clause) {
                             if($clause['type'] == 'and'){
-                                if($clause['condition']['operator'] == 'LIKE')
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
                                 }
-                                else
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                                 }
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
+                                {
+                                    $q->whereNull($clause['condition']['field']);
+                                }
                             }
-                            if($clause['type'] == 'andWithOrInside'){
-                                $q->where(function($query) use($clause){
-                                    if(count($clause['condition']) > 0){
-                                        foreach ($clause['condition']['value'] as $value){
-                                            $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                            if($clause['type'] == 'andWithOrInside')
+                            {
+                                $q->where(function($query) use($clause)
+                                {
+                                    if(count($clause['condition']) > 0)
+                                    {
+                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
+                                        {
+                                            foreach ($clause['condition']['value'] as $value)
+                                            {
+                                                $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], $value);
+                                            }
+                                        }
+                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
+                                        {
+                                            foreach ($clause['condition']['value'] as $value){
+                                                $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
+                                            }
+                                        }
+                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
+                                        {
+                                            $query->orWhereNull($clause['condition']['field']);
                                         }
                                     }
                                 });
@@ -471,7 +496,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
                 })
                 ->orderBy($orderBy, $sort)
                 ->limit($limit)
-                ->select()
+                ->select($selectColumns)
                 ->get();
         };
 
@@ -500,7 +525,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $query = function () use ($queryClausesAndConditions, $orderByColumn, $orderDirection, $limit, $selectColumns) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where($queryClausesAndConditions['field'], $queryClausesAndConditions['operator'], $queryClausesAndConditions['value'])
+                ->where(function ($q) use($queryClausesAndConditions){
+                    foreach ($queryClausesAndConditions as $condition)
+                    {
+                        $c = $condition['condition'];
+                        $q->where($c['field'], $c['operator'], $c['value']);
+                    }
+                })
                 ->limit($limit)
                 ->select($selectColumns)
                 ->orderBy($orderByColumn, $orderDirection)
@@ -509,8 +540,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
         return $this->doQuery($query);
     }
-
-
 
 
 
@@ -607,5 +636,74 @@ abstract class BaseRepository implements BaseRepositoryInterface
     protected function getUsedTraits(): array
     {
         return $this->uses;
+    }
+
+
+    /*
+    |------------------------------------------------------------------------------------------
+    |
+    | SQL Clauses functions
+    | Description: These functions represents clauses sql as where
+    |
+    |------------------------------------------------------------------------------------------
+    */
+
+
+    /**
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereEqual(string $column, mixed $value, string $whereType): array
+    {
+        return [
+                'type' => $whereType,
+                'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $value,]
+        ];
+    }
+
+
+    /**
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereLike(string $column, mixed $value, string $whereType): array
+    {
+        return [
+            'type' => $whereType,
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $value,]
+        ];
+    }
+
+
+    /**
+     * @param string $column
+     * @param string $whereType
+     * @return array
+     */
+    public function whereIsNull(string $column,  string $whereType): array
+    {
+        return [
+            'type' => $whereType,
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['IS_NULL']]
+        ];
+    }
+
+
+    /**
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereNotIn(string $column, mixed $value, string $whereType): array
+    {
+        return [
+            'type' => $whereType,
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['NOT_IN'], 'value' => $value,]
+        ];
     }
 }

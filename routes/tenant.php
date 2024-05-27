@@ -103,6 +103,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 |   8 - DELETE - /{id} - OK
                 |   9 - POST - /files/uploadReceiptEntry - OK
                 |   10 - GET - /getEntriesByTransactionCompensation - OK
+                |   11 - GET - /getTotalGeneralEntries - OK
                 |------------------------------------------------------------------------------------------
                 */
 

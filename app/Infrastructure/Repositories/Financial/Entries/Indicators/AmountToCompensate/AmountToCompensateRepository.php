@@ -17,39 +17,22 @@ class AmountToCompensateRepository extends BaseRepository implements AmountToCom
 
 
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
+
 
     /**
      * @throws BindingResolutionException
      */
     public function getEntriesAmountToCompensate(): Collection
     {
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
+        $this->queryConditions = [];
 
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => EntryRepository::DELETED_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => 0,
-            ]
-        ];
-
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => null,
-            ]
-        ];
+        $this->queryConditions [] = $this->whereEqual(EntryRepository::DELETED_COLUMN, 0, 'and');
+        $this->queryConditions [] = $this->whereEqual(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN, null, 'and');
 
 
-        return $this->getItemsWithRelationshipsAndWheres($this->queryClausesAndConditions);
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 }

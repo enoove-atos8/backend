@@ -19,7 +19,9 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const TABLE_NAME = 'members';
     const ID_COLUMN_JOINED = 'members.id';
     const MEMBER_TYPE_COLUMN_JOINED = 'members.member_type';
+    const MEMBER_TYPE_COLUMN = 'member_type';
     const MEMBER_GENDER_COLUMN_JOINED = 'members.gender';
+    const MEMBER_GENDER_COLUMN = 'gender';
     const ID_COLUMN = 'id';
     const ACTIVATED_COLUMN = 'activated';
     const ALL_COLUMNS = '*';

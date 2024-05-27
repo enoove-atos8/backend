@@ -16,14 +16,10 @@ class TithesBalanceRepository extends BaseRepository implements TitheBalanceRepo
 
 
     /**
-     * Array of where, between and another clauses that was mounted dynamically
+     * Array of conditions
      */
-    private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
-            'exists' => false,
-            'clause'   =>  [],
-        ]
-    ];
+    private array $queryConditions = [];
+
 
     /**
      * @param int $limit
@@ -32,20 +28,14 @@ class TithesBalanceRepository extends BaseRepository implements TitheBalanceRepo
      */
     public function getLastConsolidatedEntriesTotalAmount(int $limit): Collection
     {
+        $this->queryConditions = [];
         $selectColumns = ['date', 'tithe_amount'];
-        $this->queryClausesAndConditions['where_clause']['exists'] = true;
 
-        $this->queryClausesAndConditions['where_clause']['clause'][] = [
-            'type' => 'and',
-            'condition' => ['field' => ConsolidationEntriesRepository::CONSOLIDATED_COLUMN,
-                'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => ConsolidationEntriesRepository::CONSOLIDATED_VALUE,
-            ]
-        ];
+        $this->queryConditions [] = $this->whereEqual(ConsolidationEntriesRepository::CONSOLIDATED_COLUMN, ConsolidationEntriesRepository::CONSOLIDATED_VALUE, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres
         (
-            $this->queryClausesAndConditions,
+            $this->queryConditions,
             ConsolidationEntriesRepository::DATE_COLUMN,
             BaseRepository::ORDERS['ASC'],
             $limit,
