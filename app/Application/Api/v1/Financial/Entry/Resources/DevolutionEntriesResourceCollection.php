@@ -78,6 +78,7 @@ class DevolutionEntriesResourceCollection extends ResourceCollection
                 'dateEntryRegister'             =>  $value->entries_date_entry_register,
                 'amount'                        =>  $value->entries_amount,
                 'devolution'                    =>  $value->entries_devolution,
+                'residualValues'                =>  $value->entries_residual_value,
                 'recipient'                     =>  $value->entries_recipient,
                 'deleted'                       =>  $value->entries_deleted,
                 'comments'                      =>  $value->entries_comments,

@@ -30,6 +30,7 @@ class EntryResource extends JsonResource
             'dateEntryRegister'             =>  $entry->date_entry_register,
             'amount'                        =>  $entry->amount,
             'devolution'                    =>  $entry->devolution,
+            'residualValue'                 =>  $entry->residual_value,
             'recipient'                     =>  $entry->recipient,
             'deleted'                       =>  $entry->deleted,
             'member'                        =>  $this->getMember($entry),

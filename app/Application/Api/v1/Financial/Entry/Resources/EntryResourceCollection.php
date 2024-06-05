@@ -40,6 +40,7 @@ class EntryResourceCollection extends ResourceCollection
                 'dateEntryRegister'             =>  $item->entries_date_entry_register,
                 'amount'                        =>  $item->entries_amount,
                 'devolution'                    =>  $item->entries_devolution,
+                'residualValue'                 =>  $item->entries_residual_value,
                 'recipient'                     =>  $item->entries_recipient,
                 'deleted'                       =>  $item->entries_deleted,
                 'comments'                      =>  $item->entries_comments,

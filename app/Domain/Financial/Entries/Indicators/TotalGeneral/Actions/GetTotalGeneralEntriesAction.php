@@ -31,7 +31,7 @@ class GetTotalGeneralEntriesAction
 
         return [
             'qtdEntries'    =>  $entries->count(),
-            'amountEntries'  =>  $entries->sum('entries_amount'),
+            'amountEntries'  =>  $entries->sum(EntryRepository::ENTRIES_AMOUNT_COLUMN_ALIAS),
         ];
     }
 

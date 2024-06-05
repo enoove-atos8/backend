@@ -3,6 +3,7 @@
 namespace App\Domain\Financial\Entries\General\Actions;
 
 use App\Domain\Financial\Entries\Consolidated\Actions\CreateConsolidatedEntryAction;
+use App\Domain\Financial\Entries\Consolidated\Actions\DeleteConsolidatedEntriesAction;
 use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
@@ -13,14 +14,14 @@ class DeleteEntryAction
 {
     private EntryRepository $entryRepository;
     private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
-    private \App\Domain\Financial\Entries\Consolidated\Actions\DeleteConsolidatedEntriesAction $deleteConsolidationEntriesAction;
+    private DeleteConsolidatedEntriesAction $deleteConsolidationEntriesAction;
     private GetEntryByIdAction $getEntryByIdAction;
 
     public function __construct(
-        EntryRepositoryInterface                                                           $entryRepositoryInterface,
-        CreateConsolidatedEntryAction                                                      $createConsolidatedEntryAction,
-        \App\Domain\Financial\Entries\Consolidated\Actions\DeleteConsolidatedEntriesAction $deleteConsolidationEntriesAction,
-        GetEntryByIdAction                                                                 $getEntryByIdAction,
+        EntryRepositoryInterface $entryRepositoryInterface,
+        CreateConsolidatedEntryAction $createConsolidatedEntryAction,
+        DeleteConsolidatedEntriesAction $deleteConsolidationEntriesAction,
+        GetEntryByIdAction $getEntryByIdAction,
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
