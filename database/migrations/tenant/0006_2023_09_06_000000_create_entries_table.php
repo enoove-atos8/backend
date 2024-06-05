@@ -18,13 +18,14 @@ return new class extends Migration
             $table->integer('member_id')->nullable();
             $table->integer('reviewer_id')->nullable(false);
             $table->string('entry_type')->nullable(false);
-            $table->string('transaction_type')->nullable(false);
+            $table->string('transaction_type')->nullable();
             $table->string('transaction_compensation')->nullable(false);
             $table->string('date_transaction_compensation')->nullable();
             $table->string('date_entry_register')->nullable(false);
             $table->decimal('amount')->nullable(false);
             $table->string('recipient')->nullable();
-            $table->boolean('devolution')->default(0);
+            $table->boolean('devolution')->default(0)->nullable(false);
+            $table->boolean('residual_value')->default(0)->nullable(false);
             $table->boolean('deleted')->nullable(false)->default(0);
             $table->string('comments')->nullable();
             $table->string('receipt_link')->nullable();

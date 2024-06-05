@@ -77,6 +77,7 @@ class EntriesToCompensateResourceCollection extends ResourceCollection
                 'transactionType'               =>  $value->entries_transaction_type,
                 'deleted'                       =>  $value->entries_deleted,
                 'devolution'                    =>  $value->entries_devolution,
+                'residual_value'                =>  $value->entries_residual_value,
                 'entryType'                     =>  $value->entries_entry_type,
                 'member'                        => $this->getMember($value)
             ];

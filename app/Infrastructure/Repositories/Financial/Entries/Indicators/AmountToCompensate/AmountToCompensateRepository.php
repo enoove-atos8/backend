@@ -30,6 +30,7 @@ class AmountToCompensateRepository extends BaseRepository implements AmountToCom
         $this->queryConditions = [];
 
         $this->queryConditions [] = $this->whereEqual(EntryRepository::DELETED_COLUMN, 0, 'and');
+        $this->queryConditions [] = $this->whereEqual(EntryRepository::COMPENSATED_COLUMN_JOINED, EntryRepository::TO_COMPENSATE_VALUE, 'and');
         $this->queryConditions [] = $this->whereEqual(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN, null, 'and');
 
 

@@ -35,8 +35,8 @@ class EntryRequest extends FormRequest
     {
         return [
             'entryType'                      =>  'required',
-            'transactionType'                =>  'required',
-            'transactionCompensation'        =>  'required',
+            'transactionType'                =>  $this->validatorField('transactionType'),
+            'transactionCompensation'        =>  $this->validatorField('transactionCompensation'),
             'dateTransactionCompensation'    =>  $this->validatorField('dateTransactionCompensation'),
             'dateEntryRegister'              =>  'required',
             'amount'                         =>  'required',
@@ -44,6 +44,7 @@ class EntryRequest extends FormRequest
             'memberId'                       =>  '',
             'reviewerId'                     =>  'required',
             'devolution'                     =>  'integer',
+            'residualValue'                  =>  'integer',
             'deleted'                        =>  'required|integer',
             'comments'                       =>  '',
             'receipt'                        =>  $this->validatorField('receipt'),
@@ -60,20 +61,73 @@ class EntryRequest extends FormRequest
     public function validatorField($field)
     {
         $entryType = $this->input('entryType');
+        $residualValue = $this->input('residualValue');
         $statusCompensation = $this->input('transactionCompensation');
 
         //Validate required to compensation date field
-        if($field === 'dateTransactionCompensation') {
-            if($statusCompensation === 'to_compensate') {return '';}
-            else {return 'required';}
+        if($field === 'dateTransactionCompensation')
+        {
+            if($statusCompensation === 'to_compensate' || $residualValue)
+            {
+                return '';
+            }
+            else
+            {
+                return 'required';
+            }
         }
-        if($field === 'receipt') {
-            if($statusCompensation === 'to_compensate') {return '';}
-            else {return 'required';}
+
+        if($field === 'transactionCompensation')
+        {
+            if($residualValue)
+            {
+                return '';
+            }
+            else
+            {
+                return 'required';
+            }
         }
-        if($field === 'recipient') {
-            if($entryType === self::DESIGNATED) {return 'required';}
-            else {return '';}
+
+        if($field === 'transactionType')
+        {
+            if($residualValue)
+            {
+                return '';
+            }
+            else
+            {
+                return 'required';
+            }
+        }
+
+        if($field === 'receipt')
+        {
+            if($statusCompensation === 'to_compensate' || $residualValue)
+            {
+                return '';
+            }
+            else
+            {
+                return 'required';
+            }
+        }
+
+        if($field === 'recipient')
+        {
+            if($entryType === self::DESIGNATED)
+            {
+                return 'required';
+            }
+            else
+            {
+                return '';
+            }
+        }
+        if($field === 'residualValue')
+        {
+            if($residualValue)
+                return '';
         }
     }
 
@@ -123,6 +177,7 @@ class EntryRequest extends FormRequest
             memberId:                       $this->input('memberId'),
             reviewerId:                     $this->input('reviewerId'),
             devolution:                     $this->input('devolution'),
+            residualValue:                  $this->input('residualValue'),
             deleted:                        $this->input('deleted'),
             comments:                       $this->input('comments'),
             receipt:                        $this->input('receipt'),

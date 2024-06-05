@@ -13,6 +13,7 @@
         "guzzlehttp/guzzle": "^7.2",
         "infureal/artisan-gui": "^2.0",
         "laravel/framework": "^9.0",
+        "laravel/octane": "^1.5",
         "laravel/sanctum": "^2.14",
         "laravel/telescope": "*",
         "laravel/tinker": "^2.7",

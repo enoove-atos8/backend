@@ -31,6 +31,17 @@
       0 => 'Infureal\\Providers\\GuiServiceProvider',
     ),
   ),
+  'laravel/octane' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravel\\Octane\\OctaneServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'Octane' => 'Laravel\\Octane\\Facades\\Octane',
+    ),
+  ),
   'laravel/sail' => 
   array (
     'providers' => 

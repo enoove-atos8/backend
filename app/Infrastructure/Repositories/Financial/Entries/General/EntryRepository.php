@@ -43,6 +43,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const ENTRY_TYPE_COLUMN_JOINED = 'entries.entry_type';
     const AMOUNT_COLUMN = 'amount';
     const AMOUNT_COLUMN_JOINED = 'entries.amount';
+    const ENTRIES_AMOUNT_COLUMN_ALIAS = 'entries_amount';
     const DEVOLUTION_COLUMN = 'devolution';
     const DEVOLUTION_COLUMN_JOINED = 'entries.devolution';
     const TITHE_VALUE = 'tithe';
@@ -73,6 +74,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         'entries.amount as entries_amount',
         'entries.recipient as entries_recipient',
         'entries.devolution as entries_devolution',
+        'entries.residual_value as entries_residual_value',
         'entries.deleted as entries_deleted',
         'entries.comments as entries_comments',
         'entries.receipt_link as entries_receipt_link',
@@ -104,6 +106,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'member_id'                      =>   $entryData->memberId,
             'reviewer_id'                    =>   $entryData->reviewerId,
             'devolution'                     =>   $entryData->devolution,
+            'residualValue'                  =>   $entryData->residualValue,
             'deleted'                        =>   $entryData->deleted,
             'comments'                       =>   $entryData->comments,
             'receipt_link'                   =>   $entryData->receipt,

@@ -12,13 +12,7 @@ trait CacheResults
      * @var array
      */
     protected array $baseCacheableMethods = [
-        'getAll',
-        'getPaginated',
-        'getForSelect',
-        'getById',
-        'getItemByColumn',
-        'getCollectionByColumn',
-        'getActively',
+
     ];
 
     /**

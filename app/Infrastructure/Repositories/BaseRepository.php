@@ -72,7 +72,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     protected array $uses = [];
 
-    protected int $cacheTtl = 1;
+    protected int $cacheTtl = 60;
 
     protected bool $caching = false;
 

@@ -9,11 +9,11 @@ class EntryData extends DataTransferObject
     /** @var string  */
     public string $entryType;
 
-    /** @var string  */
-    public string $transactionType;
+    /** @var string|null  */
+    public string | null $transactionType;
 
-    /** @var string  */
-    public string $transactionCompensation;
+    /** @var string|null  */
+    public string | null $transactionCompensation;
 
     /** @var string|null  */
     public string | null $dateTransactionCompensation;
@@ -35,6 +35,9 @@ class EntryData extends DataTransferObject
 
     /** @var integer  */
     public int $devolution;
+
+    /** @var integer  */
+    public int $residualValue;
 
     /** @var integer  */
     public int $deleted;
