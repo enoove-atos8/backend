@@ -3,9 +3,10 @@
 namespace Application\Core\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
-use Spatie\Permission\Middlewares\RoleMiddleware;
-use Spatie\Permission\Middlewares\PermissionMiddleware;
-use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
+use Spatie\Permission\Middleware\RoleMiddleware;
+use Spatie\Permission\Middleware\PermissionMiddleware;
+use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+//use Fruitcake\Cors\CorsService;
 
 class Kernel extends HttpKernel
 {
@@ -17,10 +18,8 @@ class Kernel extends HttpKernel
      * @var array<int, class-string|string>
      */
     protected $middleware = [
-        \Fruitcake\Cors\HandleCors::class,
-        // \Application\Core\Http\Middleware\TrustHosts::class,
+        //\Fruitcake\Cors\CorsService::class,
         \Application\Core\Http\Middleware\TrustProxies::class,
-        \Fruitcake\Cors\HandleCors::class,
         \Application\Core\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \Application\Core\Http\Middleware\TrimStrings::class,
