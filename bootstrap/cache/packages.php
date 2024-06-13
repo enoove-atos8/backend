@@ -17,20 +17,6 @@
       0 => 'Fedeisas\\LaravelMailCssInliner\\LaravelMailCssInlinerServiceProvider',
     ),
   ),
-  'fruitcake/laravel-cors' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Fruitcake\\Cors\\CorsServiceProvider',
-    ),
-  ),
-  'infureal/artisan-gui' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Infureal\\Providers\\GuiServiceProvider',
-    ),
-  ),
   'laravel/octane' => 
   array (
     'providers' => 
@@ -112,17 +98,6 @@
     'aliases' => 
     array (
       'Sentry' => 'Sentry\\Laravel\\Facade',
-    ),
-  ),
-  'spatie/laravel-ignition' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Spatie\\LaravelIgnition\\IgnitionServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'Flare' => 'Spatie\\LaravelIgnition\\Facades\\Flare',
     ),
   ),
   'spatie/laravel-permission' => 
