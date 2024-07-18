@@ -8,7 +8,6 @@
         "php": "^8.2",
         "darkaonline/l5-swagger": "^8.6",
         "fedeisas/laravel-mail-css-inliner": "^5.3",
-        "fruitcake/php-cors": "^1.3",
         "guzzlehttp/guzzle": "^7.8",
         "laravel/framework": "^11.9",
         "laravel/octane": "^2.4",
