@@ -6,7 +6,6 @@ use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
-//use Fruitcake\Cors\CorsService;
 
 class Kernel extends HttpKernel
 {
@@ -18,7 +17,7 @@ class Kernel extends HttpKernel
      * @var array<int, class-string|string>
      */
     protected $middleware = [
-        //\Fruitcake\Cors\CorsService::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
         \Application\Core\Http\Middleware\TrustProxies::class,
         \Application\Core\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
