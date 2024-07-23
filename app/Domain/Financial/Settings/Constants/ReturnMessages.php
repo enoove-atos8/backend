@@ -4,6 +4,6 @@ namespace App\Domain\Financial\Settings\Constants;
 
 class ReturnMessages
 {
-    // Success messages
-    public const SUCCESS_ENTRY_REGISTERED = "Entrada registrada com sucesso!";
+    // Error messages
+    public const SETTINGS_INFO_NOT_FOUND = "Algumas informações financeiras não foram encontradas!";
 }

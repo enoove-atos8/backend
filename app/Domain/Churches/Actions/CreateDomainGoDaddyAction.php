@@ -32,7 +32,7 @@ class CreateDomainGoDaddyAction
     public function __invoke(string $tenant, $envProd = true): bool
     {
         $domain = config('domain.' . $this->env);
-        $host = config('aws.environments.' . $this->env . '.host' );
+        $host = config('env.environments.' . $this->env . '.host' );
 
         if(App::environment() !== 'local')
         {

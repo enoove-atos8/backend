@@ -10,7 +10,6 @@ use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
-use function Webmozart\Assert\Tests\StaticAnalysis\object;
 
 class GetAmountByEntryTypeAction
 {

@@ -33,7 +33,7 @@ class FinancialSettingsRepository extends BaseRepository implements FinancialSet
     /**
      * @throws BindingResolutionException
      */
-    public function getCurrentFinancialSettingsData(): Model
+    public function getCurrentFinancialSettingsData(): Model | null
     {
         $this->queryConditions = [];
         $this->queryConditions [] = $this->whereEqual(self::BUDGET_ACTIVATED_COLUMN, true, 'and');
