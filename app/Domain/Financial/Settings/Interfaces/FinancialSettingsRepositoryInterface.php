@@ -8,7 +8,7 @@ use Illuminate\Support\Collection;
 interface FinancialSettingsRepositoryInterface
 {
     /**
-     * @return Model
+     * @return Model|null
      */
-    public function getCurrentFinancialSettingsData(): Model;
+    public function getCurrentFinancialSettingsData(): Model | null;
 }

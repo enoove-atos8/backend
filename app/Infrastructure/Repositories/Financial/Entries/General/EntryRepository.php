@@ -14,7 +14,6 @@ use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
-use function Webmozart\Assert\Tests\StaticAnalysis\length;
 
 class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 {

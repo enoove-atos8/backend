@@ -165,6 +165,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         RepositoryServiceProvider::class,
+        Spatie\Permission\PermissionServiceProvider::class,
 
 
         /*

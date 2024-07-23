@@ -15,7 +15,7 @@ class RolesAndPermissionsSeeder extends Seeder
     public function run(): void
     {
         // Reset cached roles and permissions
-        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+        //app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         // create roles and assign created permissions
 

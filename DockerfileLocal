@@ -1,4 +1,4 @@
-FROM php:8.2-cli
+FROM php:8.2-fpm
 
 WORKDIR /var/www
 RUN mkdir -p backend/html
@@ -37,10 +37,6 @@ RUN docker-php-ext-install pdo_mysql exif pcntl
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install gd
 
-# Install Swoole
-RUN pecl install swoole
-RUN docker-php-ext-enable swoole
-
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -51,12 +47,8 @@ COPY . .
 
 RUN chmod -R 777 storage
 RUN composer install --no-interaction --no-ansi
+RUN php artisan optimize
 
-# Expose port 8000
+# Expose port 8000 and start php-fpm server
 EXPOSE 8000
-
-# Start php-fpm server
-#CMD ["php-fpm"]
-
-# Start Octane server
-CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8000"]
+CMD ["php-fpm"]

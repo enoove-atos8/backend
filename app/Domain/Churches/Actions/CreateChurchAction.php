@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Church\ChurchRepository;
+use Infrastructure\Util\Storage\S3\ConnectS3;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
@@ -23,15 +24,19 @@ class CreateChurchAction
     private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
     private CreateUserAction $createUserAction;
 
+    private ConnectS3 $s3;
+
     public function __construct(
         ChurchRepositoryInterface  $churchRepositoryInterface,
         CreateDomainGoDaddyAction $createDomainGoDaddyAction,
         CreateUserAction $createUserAction,
+        ConnectS3 $connectS3
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
         $this->createDomainGoDaddyAction = $createDomainGoDaddyAction;
         $this->createUserAction = $createUserAction;
+        $this->s3 = $connectS3;
     }
 
     /**
@@ -40,11 +45,15 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
-        $awsS3Bucket = config('aws.environments.' . App::environment() . '.s3' ) . $churchData->tenantId;
+        $awsS3Bucket = config('s3.environments.' . App::environment() . '.S3_ENDPOINT_EXTERNAL_ACCESS' ) . '/' . $churchData->tenantId;
         $domain = config('domain.' . App::environment());
+        $s3 = $this->s3->getInstance();
 
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
+
+        if(!$s3->doesBucketExist($churchData->tenantId))
+            $s3->createBucket(['Bucket' => $churchData->tenantId,]);
 
         Artisan::call('tenants:seed', ['--tenants' => [$churchData->tenantId],]);
 
