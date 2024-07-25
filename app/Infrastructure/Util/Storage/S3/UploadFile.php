@@ -33,9 +33,11 @@ class UploadFile
      */
     public function upload(mixed $file, string $tenantS3PathObject, string $tenant): string
     {
+        $timestamp = time();
+        $formattedTime = date("YmdHis", $timestamp);
         $baseUrl = config('s3.environments.' . $this->env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
         $fileExtension = explode('.', $file->getClientOriginalName())[1];
-        $fileName = uniqid().'.'.$fileExtension;
+        $fileName = $formattedTime . '_' . uniqid().'.'.$fileExtension;
         $fullPathFile = $tenantS3PathObject . '/' . $fileName;
 
         try
@@ -43,7 +45,11 @@ class UploadFile
             $s3 = $this->s3->getInstance();
 
             if(!$s3->doesBucketExist($tenant))
+            {
                 $s3->createBucket(['Bucket' => $tenant,]);
+                $this->s3->setBucketAsPublic($tenant, $s3);
+            }
+
 
             $s3->putObject([
                 'Bucket' => $tenant,

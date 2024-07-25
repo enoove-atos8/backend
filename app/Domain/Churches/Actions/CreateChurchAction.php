@@ -53,7 +53,10 @@ class CreateChurchAction
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
 
         if(!$s3->doesBucketExist($churchData->tenantId))
+        {
             $s3->createBucket(['Bucket' => $churchData->tenantId,]);
+            $this->s3->setBucketAsPublic($churchData->tenantId, $s3);
+        }
 
         Artisan::call('tenants:seed', ['--tenants' => [$churchData->tenantId],]);
 
