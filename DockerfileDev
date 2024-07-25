@@ -45,7 +45,7 @@ COPY . .
 
 # Copy existing application directory permissions
 
-RUN chmod -R 777 storage
+RUN chmod -R 755 storage
 RUN composer install --no-interaction --no-ansi
 
 # Expose port 8000

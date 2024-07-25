@@ -42,12 +42,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Copy existing application directory contents
 COPY . .
+COPY ./.env.local ./.env
 
 # Copy existing application directory permissions
 
 RUN chmod -R 777 storage
 RUN composer install --no-interaction --no-ansi
-RUN php artisan optimize
+RUN php artisan optimize:clear
+RUN php artisan config:cache
 
 # Expose port 8000 and start php-fpm server
 EXPOSE 8000

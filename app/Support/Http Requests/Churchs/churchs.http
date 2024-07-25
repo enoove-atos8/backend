@@ -5,15 +5,15 @@ Content-Type: application/json
 
 {
     "church": {
-        "tenant_id": "stage",
+        "tenant_id": "piba",
         "plan_id": 1,
-        "name": "Igreja Staging",
+        "name": "Primeira Igreja Batista em Araripina",
         "activated": true,
         "doc_type": "cnpj",
-        "doc_number": "290837827203126"
+        "doc_number": "296587827203126"
     },
     "user": {
-        "admin_email_tenant": "stage@atos8.com",
+        "admin_email_tenant": "piba@atos8.com",
         "pass_admin_email_tenant": "123456",
         "confirm_pass_admin_email_tenant": "123456",
         "user_activated_tenant": true,
