@@ -19,22 +19,21 @@ use Throwable;
 
 class CreateChurchAction
 {
-    const DOMAIN = '.atos8.com';
     private ChurchRepository $churchRepository;
-    private CreateDomainGoDaddyAction $createDomainGoDaddyAction;
+    private CreateSubDomainAction $createSubDomainAction;
     private CreateUserAction $createUserAction;
 
     private ConnectS3 $s3;
 
     public function __construct(
-        ChurchRepositoryInterface  $churchRepositoryInterface,
-        CreateDomainGoDaddyAction $createDomainGoDaddyAction,
-        CreateUserAction $createUserAction,
-        ConnectS3 $connectS3
+        ChurchRepositoryInterface $churchRepositoryInterface,
+        CreateSubDomainAction     $createSubDomainAction,
+        CreateUserAction          $createUserAction,
+        ConnectS3                 $connectS3
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
-        $this->createDomainGoDaddyAction = $createDomainGoDaddyAction;
+        $this->createSubDomainAction = $createSubDomainAction;
         $this->createUserAction = $createUserAction;
         $this->s3 = $connectS3;
     }
@@ -45,8 +44,9 @@ class CreateChurchAction
      */
     public function __invoke(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
-        $awsS3Bucket = config('s3.environments.' . App::environment() . '.S3_ENDPOINT_EXTERNAL_ACCESS' ) . '/' . $churchData->tenantId;
-        $domain = config('domain.' . App::environment());
+        $env = App::environment();
+        $s3Bucket = config('services-host.services.s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS' ) . '/' . $churchData->tenantId;
+        $domain = config('services-hosts.environments.' . $env . '.domain');
         $s3 = $this->s3->getInstance();
 
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
@@ -63,7 +63,7 @@ class CreateChurchAction
 
         if (is_object($newTenant))
         {
-            $church = $this->churchRepository->newChurch($churchData, $awsS3Bucket);
+            $church = $this->churchRepository->newChurch($churchData, $s3Bucket);
 
             $tenantCreated = Tenant::find($churchData->tenantId);
             tenancy()->initialize($tenantCreated);
@@ -71,9 +71,9 @@ class CreateChurchAction
             if($tenantCreated)
             {
                 $user = $this->createUserAction->__invoke($userData, $userDetailData, $churchData->tenantId, true);
-                $goDaddyDomainCreated = $this->createDomainGoDaddyAction->__invoke($churchData->tenantId);
+                $subDomainActionCreated = $this->createSubDomainAction->__invoke($churchData->tenantId);
 
-                if($goDaddyDomainCreated)
+                if($subDomainActionCreated)
                 {
                     return [
                         'message'   =>  ReturnMessages::SUCCESS_CHURCH_REGISTERED,

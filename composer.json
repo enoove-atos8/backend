@@ -8,7 +8,7 @@
         "php": "^8.2",
         "darkaonline/l5-swagger": "^8.6",
         "fedeisas/laravel-mail-css-inliner": "^5.3",
-        "guzzlehttp/guzzle": "^7.8",
+        "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.9",
         "laravel/octane": "^2.4",
         "laravel/sanctum": "^4.0",
@@ -20,6 +20,8 @@
         "spatie/data-transfer-object": "^3.9",
         "spatie/laravel-permission": "*",
         "stancl/tenancy": "^3.8",
+        "symfony/css-selector": "^7.1",
+        "symfony/dom-crawler": "^7.1",
         "zircote/swagger-php": "^4.10"
     },
     "require-dev": {

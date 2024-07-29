@@ -20,7 +20,18 @@ RUN apt-get update && apt-get install -y \
     git \
     curl \
     nginx \
+    python3-selenium \
+    gnupg \
+    wget \
     nano
+
+#Instalando o Chromium
+RUN apt-get update && apt-get install -y chromium
+
+#Instalando o Chrome
+RUN VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE) && wget https://chromedriver.storage.googleapis.com/${VERSION}/chromedriver_linux64.zip
+RUN unzip chromedriver_linux64.zip
+RUN chmod +x /usr/bin/chromedriver
 
 # Xdebug
 RUN pecl install xdebug-3.3.1
