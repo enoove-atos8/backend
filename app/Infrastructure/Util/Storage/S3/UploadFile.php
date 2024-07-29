@@ -11,16 +11,12 @@ use Aws\S3\S3Client;
 
 class UploadFile
 {
-    const PART_URL_DOWNLOAD_OBJECT = '/objects/download?preview=true&prefix=';
-
     private ConnectS3 $s3;
-    private string $env;
 
 
     public function __construct(ConnectS3 $connectS3)
     {
         $this->s3 = $connectS3;
-        $this->env = App::environment();
     }
 
 
@@ -33,9 +29,10 @@ class UploadFile
      */
     public function upload(mixed $file, string $tenantS3PathObject, string $tenant): string
     {
+        $env = App::environment();
         $timestamp = time();
         $formattedTime = date("YmdHis", $timestamp);
-        $baseUrl = config('s3.environments.' . $this->env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
+        $baseUrl = config('s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
         $fileExtension = explode('.', $file->getClientOriginalName())[1];
         $fileName = $formattedTime . '_' . uniqid().'.'.$fileExtension;
         $fullPathFile = $tenantS3PathObject . '/' . $fileName;
@@ -62,7 +59,7 @@ class UploadFile
         }
         catch (S3Exception $e)
         {
-            throw new GeneralExceptions(ConnectS3::ERROR_S3, 500);
+            throw new GeneralExceptions(ConnectS3::UPLOAD_FILE_ERROR_S3, 500);
         }
     }
 }

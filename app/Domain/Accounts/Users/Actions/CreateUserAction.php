@@ -9,6 +9,7 @@ use App\Domain\Accounts\Users\Models\User;
 use App\Domain\Notifications\Actions\Church\NewChurchUserNotificationAction;
 use App\Domain\Notifications\Actions\User\NewUserNotificationAction;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use Exception;
 use Throwable;
 
 class CreateUserAction
@@ -55,13 +56,17 @@ class CreateUserAction
 
     /**
      * Generate password
+     * @throws Exception
      */
-    public function generatePassword(): string
+    public function generatePassword($length = 6): string
     {
-        $digits    = array_flip(range('0', '9'));
-        $combined  = array_merge($digits);
+        $characters = '0123456789';
+        $charactersLength = strlen($characters);
+        $randomString = '';
 
-        return str_shuffle(array_rand($digits) .
-            implode(array_rand($combined, rand(4, 7))));
+        for ($i = 0; $i < $length; $i++)
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
+
+        return $randomString;
     }
 }

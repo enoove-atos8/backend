@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Util\Storage\S3;
 
+use App\Domain\Churches\Constants\ReturnMessages;
 use Aws\Result;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
@@ -11,23 +12,33 @@ use Infrastructure\Exceptions\GeneralExceptions;
 
 class ConnectS3
 {
-    public const ERROR_S3 = 'Houve um erro ao processar este objeto, tente mais tarde!';
-    private string $env;
+    const GET_INSTANCE_ERROR_S3 = 'Houve um erro ao obter a instância do s3!';
+    const UPLOAD_FILE_ERROR_S3 = 'Houve um erro carregar o arquivo!';
 
+    /**
+     * @throws GeneralExceptions
+     */
     public function getInstance(): S3Client
     {
-        $this->env = App::environment();
+        $env = App::environment();
 
-        return new S3Client([
-            'version' => 'latest',
-            'region'  => config('s3.environments.' . $this->env . '.S3_DEFAULT_REGION'),
-            'endpoint' => config('s3.environments.' . $this->env . '.S3_ENDPOINT'),
-            'use_path_style_endpoint' => true,
-            'credentials' => [
-                'key'    => config('s3.environments.' . $this->env . '.S3_ACCESS_KEY_ID'),
-                'secret' => config('s3.environments.' . $this->env . '.S3_SECRET_ACCESS_KEY'),
-            ],
-        ]);
+        try
+        {
+            return new S3Client([
+                'version' => 'latest',
+                'region'  => config('services-hosts.services.s3.environments.' . $env . '.S3_DEFAULT_REGION'),
+                'endpoint' => config('services-hosts.services.s3.environments.' . $env . '.S3_ENDPOINT'),
+                'use_path_style_endpoint' => true,
+                'credentials' => [
+                    'key'    => config('services-hosts.services.s3.environments.' . $env . '.S3_ACCESS_KEY_ID'),
+                    'secret' => config('services-hosts.services.s3.environments.' . $env . '.S3_SECRET_ACCESS_KEY'),
+                ],
+            ]);
+        }
+        catch (S3Exception $e)
+        {
+            throw new GeneralExceptions(self::GET_INSTANCE_ERROR_S3, 500);
+        }
     }
 
 

@@ -1,0 +1,28 @@
+POST https://api.cloudflare.com/client/v4/zones/e8bce86dd0fb4d4b1b7d037b65e4accd/dns_records
+Content-Type: application/json
+X-Auth-Email: rafaelhenrique10101@gmail.com
+X-Auth-Key: 5ea55f71808f204f0a0fc4a3863c6b379f6ff
+
+{
+    "content": "45.164.244.54",
+    "name": "cloudflare",
+    "proxied": true,
+    "type": "A",
+    "comment": "Criação de subdimínio para testar a API",
+    "id": "023e105f4ecef8ad9ca31a8372d0c353",
+    "ttl": 60
+}
+
+###
+## GET DNS RECORDS
+
+GET https://api.cloudflare.com/client/v4/zones/e8bce86dd0fb4d4b1b7d037b65e4accd/dns_records
+Content-Type: application/json
+X-Auth-Email: rafaelhenrique10101@gmail.com
+X-Auth-Key: 5ea55f71808f204f0a0fc4a3863c6b379f6ff
+
+
+
+
+
+
