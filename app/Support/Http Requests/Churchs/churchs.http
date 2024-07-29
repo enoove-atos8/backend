@@ -1,23 +1,23 @@
-POST http://www.atos8.local:8080/api/v1/church
-#POST https://www.atos8.com/api/v1/church
+#POST http://www.atos8.local:8080/api/v1/church
+POST https://www.atos8.com/api/v1/church
 Content-Type: application/json
 
 
 {
     "church": {
-        "tenant_id": "iebrd2",
+        "tenant_id": "iebrd",
         "plan_id": 1,
-        "name": "Igreja Evangélica Batista em Rio Doce2",
+        "name": "Igreja Evangélica Batista em Rio Doce",
         "activated": true,
         "doc_type": "cnpj",
-        "doc_number": "24162422000000"
+        "doc_number": "24162422000121"
     },
     "user": {
         "admin_email_tenant": "rafaelhenrique10101@gmail.com",
         "pass_admin_email_tenant": "Souza.9559",
         "confirm_pass_admin_email_tenant": "Souza.9559",
         "user_activated_tenant": true,
-        "changed_password": false,
+        "changed_password": true,
         "access_quantity": 0,
         "user_type_tenant": "web",
         "roles": ["admin"]
