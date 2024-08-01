@@ -33,11 +33,11 @@ class EntryData extends DataTransferObject
     /** @var integer  */
     public int $reviewerId;
 
-    /** @var integer  */
-    public int $devolution;
+    /** @var integer|null  */
+    public int | null $devolution;
 
-    /** @var integer  */
-    public int $residualValue;
+    /** @var integer|null  */
+    public int | null $residualValue;
 
     /** @var integer  */
     public int $deleted;

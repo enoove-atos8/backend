@@ -32,7 +32,7 @@ class UploadFile
         $env = App::environment();
         $timestamp = time();
         $formattedTime = date("YmdHis", $timestamp);
-        $baseUrl = config('s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
+        $baseUrl = config('services-hosts.services.s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
         $fileExtension = explode('.', $file->getClientOriginalName())[1];
         $fileName = $formattedTime . '_' . uniqid().'.'.$fileExtension;
         $fullPathFile = $tenantS3PathObject . '/' . $fileName;

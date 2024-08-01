@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'domain' => env('TELESCOPE_DOMAIN'),
+    'domain' => 'telescope',
 
     /*
     |--------------------------------------------------------------------------
@@ -29,7 +29,7 @@ return [
     |
     */
 
-    'path' => env('TELESCOPE_PATH', 'telescope'),
+    'path' => 'telescope',
 
     /*
     |--------------------------------------------------------------------------
@@ -92,7 +92,7 @@ return [
     */
 
     'only_paths' => [
-        // 'api/*'
+        'api/*'
     ],
 
     'ignore_paths' => [
