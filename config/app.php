@@ -2,6 +2,7 @@
 
 use Application\Core\Providers\RepositoryServiceProvider;
 use Illuminate\Support\Facades\Facade;
+use Laravel\Telescope\TelescopeServiceProvider;
 
 return [
 
@@ -166,6 +167,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         RepositoryServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
+        TelescopeServiceProvider::class,
 
 
         /*
