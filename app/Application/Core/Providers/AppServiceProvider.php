@@ -4,6 +4,7 @@ namespace Application\Core\Providers;
 
 
 use App\Providers\TelescopeServiceProvider;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -24,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+        if (config('app.env') !== 'local')
+        {
+            URL::forceScheme('https');
+        }
     }
 }
