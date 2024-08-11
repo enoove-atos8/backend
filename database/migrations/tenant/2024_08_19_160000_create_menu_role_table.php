@@ -13,22 +13,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menu_role', function (Blueprint $table) {
+        if (Schema::hasTable('menu_role'))
+        {
+            Schema::create('menu_role', function (Blueprint $table) {
 
-            $table->integer('id' )->autoIncrement();
-            $table->integer('menu_id' );
-            $table->unsignedBigInteger('role_id');
+                $table->integer('id' )->autoIncrement();
+                $table->integer('menu_id' );
+                $table->unsignedBigInteger('role_id');
 
-            // Relationships
+                // Relationships
 
-            $table->foreign('menu_id')
-                ->references('id')
-                ->on('menu');
+                $table->foreign('menu_id')
+                    ->references('id')
+                    ->on('menu');
 
-            $table->foreign('role_id')
-                ->references('id')
-                ->on('roles');
-        });
+                $table->foreign('role_id')
+                    ->references('id')
+                    ->on('roles');
+            });
+        }
     }
 
     /**
