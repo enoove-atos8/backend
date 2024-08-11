@@ -13,20 +13,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('menu', function (Blueprint $table) {
+        if (Schema::hasTable('menu'))
+        {
+            Schema::create('menu', function (Blueprint $table) {
 
-            $table->integer('id', true)->autoIncrement();
-            $table->integer('parent_id', false)->nullable();
-            $table->string('title')->nullable(false);
-            $table->string('subtitle')->nullable();
-            $table->string('type')->nullable(false);
-            $table->string('icon')->nullable();
-            $table->string('link')->nullable();
+                $table->integer('id', true)->autoIncrement();
+                $table->integer('parent_id', false)->nullable();
+                $table->string('title')->nullable(false);
+                $table->string('subtitle')->nullable();
+                $table->string('type')->nullable(false);
+                $table->string('icon')->nullable();
+                $table->string('link')->nullable();
 
 
-            $table->rememberToken();
-            $table->timestamps();
-        });
+                $table->rememberToken();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

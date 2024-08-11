@@ -13,13 +13,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('financial_settings', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->decimal('monthly_budget_tithes')->nullable(false);
-            $table->boolean('budget_activated')->nullable(false);
+        if (Schema::hasTable('financial_settings'))
+        {
+            Schema::create('financial_settings', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->decimal('monthly_budget_tithes')->nullable(false);
+                $table->boolean('budget_activated')->nullable(false);
 
-            $table->timestamps();
-        });
+                $table->timestamps();
+            });
+        }
     }
 
     /**

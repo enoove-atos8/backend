@@ -13,30 +13,33 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_details', function (Blueprint $table) {
-            $table->integer('id', true);
-            $table->integer('user_id')->nullable(false);
-            $table->string('full_name')->nullable(false);
-            $table->string('avatar')->nullable();
-            $table->string('type')->nullable();
-            $table->string('title')->nullable();
-            $table->string('gender')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('address')->nullable();
-            $table->string('district')->nullable();
-            $table->string('city')->nullable();
-            $table->string('country')->nullable();
-            $table->string('birthday')->nullable();
+        if (Schema::hasTable('user_details'))
+        {
+            Schema::create('user_details', function (Blueprint $table) {
+                $table->integer('id', true);
+                $table->integer('user_id')->nullable(false);
+                $table->string('full_name')->nullable(false);
+                $table->string('avatar')->nullable();
+                $table->string('type')->nullable();
+                $table->string('title')->nullable();
+                $table->string('gender')->nullable();
+                $table->string('phone')->nullable();
+                $table->string('address')->nullable();
+                $table->string('district')->nullable();
+                $table->string('city')->nullable();
+                $table->string('country')->nullable();
+                $table->string('birthday')->nullable();
 
-            // Relationships
+                // Relationships
 
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users');
+                $table->foreign('user_id')
+                    ->references('id')
+                    ->on('users');
 
 
-            $table->timestamps();
-        });
+                $table->timestamps();
+            });
+        }
     }
 
     /**
