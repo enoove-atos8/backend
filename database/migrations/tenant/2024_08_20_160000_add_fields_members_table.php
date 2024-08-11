@@ -14,7 +14,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('members'))
+        if (!Schema::hasTable('members'))
         {
             if (!Schema::hasColumn('members', 'ecclesiastical_divisions_area_id'))
             {

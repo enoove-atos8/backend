@@ -11,16 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('ecclesiastical_divisions', function (Blueprint $table) {
+        if (!Schema::hasTable('ecclesiastical_divisions'))
+        {
+            Schema::create('ecclesiastical_divisions', function (Blueprint $table) {
 
-            $table->integer('id', true)->autoIncrement();
-            $table->string('name')->nullable(false);
-            $table->string('description')->nullable();
-            $table->boolean('enabled')->nullable(false)->default(1);
+                $table->integer('id', true)->autoIncrement();
+                $table->string('name')->nullable(false);
+                $table->string('description')->nullable();
+                $table->boolean('enabled')->nullable(false)->default(1);
 
 
-            $table->timestamps();
-        });
+                $table->timestamps();
+            });
+        }
     }
 
     /**

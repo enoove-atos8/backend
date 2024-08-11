@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('menu_role'))
+        if (!Schema::hasTable('menu_role'))
         {
             Schema::create('menu_role', function (Blueprint $table) {
 

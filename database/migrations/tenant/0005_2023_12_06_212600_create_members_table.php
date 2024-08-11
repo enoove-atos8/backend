@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('members'))
+        if (!Schema::hasTable('members'))
         {
             Schema::create('members', function (Blueprint $table) {
                 $table->integer('id', true)->autoIncrement();

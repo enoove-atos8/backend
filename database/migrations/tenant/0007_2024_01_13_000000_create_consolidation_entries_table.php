@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up()
     {
-        if (Schema::hasTable('consolidation_entries'))
+        if (!Schema::hasTable('consolidation_entries'))
         {
             Schema::create('consolidation_entries', function (Blueprint $table) {
                 $table->integer('id', true);
