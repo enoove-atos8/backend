@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasTable('financial_settings'))
+        if (!Schema::hasTable('financial_settings'))
         {
             Schema::create('financial_settings', function (Blueprint $table) {
                 $table->integer('id', true);

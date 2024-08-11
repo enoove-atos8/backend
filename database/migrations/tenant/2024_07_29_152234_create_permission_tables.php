@@ -24,7 +24,7 @@ return new class extends Migration
             throw new \Exception('Error: team_foreign_key on config/permission.php not loaded. Run [php artisan config:clear] and try again.');
         }
 
-        if (Schema::hasTable('permissions'))
+        if (!Schema::hasTable('permissions'))
         {
             Schema::create($tableNames['permissions'], function (Blueprint $table) {
                 //$table->engine('InnoDB');
@@ -37,7 +37,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('roles'))
+        if (!Schema::hasTable('roles'))
         {
             Schema::create($tableNames['roles'], function (Blueprint $table) use ($teams, $columnNames) {
                 //$table->engine('InnoDB');
@@ -60,7 +60,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('model_has_permissions'))
+        if (!Schema::hasTable('model_has_permissions'))
         {
             Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotPermission, $teams) {
                 $table->unsignedBigInteger($pivotPermission);
@@ -87,7 +87,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('model_has_roles'))
+        if (!Schema::hasTable('model_has_roles'))
         {
             Schema::create($tableNames['model_has_roles'], function (Blueprint $table) use ($tableNames, $columnNames, $pivotRole, $teams) {
                 $table->unsignedBigInteger($pivotRole);
@@ -113,7 +113,7 @@ return new class extends Migration
             });
         }
 
-        if (Schema::hasTable('role_has_permissions'))
+        if (!Schema::hasTable('role_has_permissions'))
         {
             Schema::create($tableNames['role_has_permissions'], function (Blueprint $table) use ($tableNames, $pivotRole, $pivotPermission) {
                 $table->unsignedBigInteger($pivotPermission);
