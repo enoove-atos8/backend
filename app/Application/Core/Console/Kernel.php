@@ -2,6 +2,8 @@
 
 namespace Application\Core\Console;
 
+use Application\Core\Console\Commands\AppMigrate;
+use Illuminate\Console\Application;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -13,7 +15,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-
+        AppMigrate::class
     ];
 
 
@@ -35,8 +37,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
 }
