@@ -37,7 +37,7 @@ class TithesMonthlyTargetEntriesRepository extends BaseRepository implements Tit
         (
             $this->queryConditions,
             ConsolidationEntriesRepository::DATE_COLUMN,
-            BaseRepository::ORDERS['ASC'],
+            BaseRepository::ORDERS['DESC'],
             $limit,
             $selectColumns
         );
