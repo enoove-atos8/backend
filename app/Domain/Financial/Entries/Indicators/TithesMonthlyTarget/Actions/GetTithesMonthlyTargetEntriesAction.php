@@ -37,7 +37,7 @@ class GetTithesMonthlyTargetEntriesAction
         {
             $financialSettings = $this->getFinancialSettingsAction->__invoke();
             $monthlyTarget = $financialSettings->monthly_budget_tithes;
-            $lastEntryConsolidated = $lastConsolidatedTitheEntries[$lastConsolidatedTitheEntries->count() - 1];
+            $lastEntryConsolidated = $lastConsolidatedTitheEntries[0];
             $monthlyTargetPercent = floatval($lastEntryConsolidated->tithe_amount) / $monthlyTarget;
             $lastDate = $lastEntryConsolidated->date;
 
