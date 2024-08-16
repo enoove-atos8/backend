@@ -41,7 +41,7 @@ class GetTithesMonthlyTargetEntriesAction
             $monthlyTargetPercent = floatval($lastEntryConsolidated->tithe_amount) / $monthlyTarget;
             $lastDate = $lastEntryConsolidated->date;
 
-            foreach ($lastConsolidatedTitheEntries as $value)
+            foreach ($lastConsolidatedTitheEntries->reverse() as $value)
             {
                 $monthlyValues [] = $value->tithe_amount;
                 $monthlyDates [] = $value->date;
