@@ -14,31 +14,29 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('members'))
+        if (!Schema::hasColumn('members', 'ecclesiastical_divisions_group_id'))
         {
-            if (!Schema::hasColumn('members', 'ecclesiastical_divisions_area_id'))
+            Schema::table('members', function (Blueprint $table)
             {
-                Schema::table('members', function (Blueprint $table)
-                {
-                    $table->integer('ecclesiastical_divisions_area_id')->nullable()->after('id');
+                $table->integer('ecclesiastical_divisions_group_id')->nullable()->after('id');
 
-                    // Relationships with ecclesiastical divisions areas
-                    $table->foreign('ecclesiastical_divisions_area_id')
-                        ->references('id')
-                        ->on('ecclesiastical_divisions_areas')
-                        ->onDelete('set null');
-                });
-            }
+                // Relationships with ecclesiastical divisions areas
+                $table->foreign('ecclesiastical_divisions_group_id')
+                    ->references('id')
+                    ->on('ecclesiastical_divisions_groups')
+                    ->onDelete('set null');
+            });
+        }
 
-            if (!Schema::hasColumn('members', 'leader'))
+        if (!Schema::hasColumn('members', 'leader'))
+        {
+            Schema::table('members', function (Blueprint $table)
             {
-                Schema::table('members', function (Blueprint $table)
-                {
-                    $table->boolean('leader')->nullable()->default(0)->after('ecclesiastical_divisions_area_id');
-                });
-            }
+                $table->boolean('leader')->nullable()->default(0)->after('ecclesiastical_divisions_group_id');
+            });
         }
     }
+
 
     /**
      * Reverse the migrations.

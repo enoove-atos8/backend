@@ -11,41 +11,28 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('ecclesiastical_divisions_areas'))
+        if (!Schema::hasTable('ecclesiastical_divisions_groups'))
         {
-            Schema::create('ecclesiastical_divisions_areas', function (Blueprint $table) {
+            Schema::create('ecclesiastical_divisions_groups', function (Blueprint $table) {
                 $table->integer('id', true)->autoIncrement();
                 $table->integer('ecclesiastical_division_id')->nullable(false);
-
-
-                // For hierarchically related areas, such as departments in ministries.
-                $table->integer('parent_area_id')->nullable();
-
-                // Basic data
+                $table->integer('parent_group_id')->nullable();
                 $table->string('name')->nullable(false);
                 $table->string('description')->nullable();
-
-                // Common fields
                 $table->boolean('financial_transactions_exists')->nullable(false)->default(0);
-                $table->boolean('departments_exists')->nullable(false)->default(0);
-                $table->boolean('events_exists')->nullable(false)->default(0);
-                $table->boolean('organizations_exists')->nullable(false)->default(0);
                 $table->boolean('enabled')->nullable(false)->default(1);
-
-                // Specified fields of events
-                $table->boolean('ministry_linked')->nullable();
                 $table->boolean('temporary_event')->nullable();
                 $table->date('start_date')->nullable();
                 $table->date('end_date')->nullable();
 
                 // Relationships
-                $table->foreign('ecclesiastical_division_id', 'fk_eda_division')
+                $table->foreign('ecclesiastical_division_id', 'fk_edg_division')
                     ->references('id')
                     ->on('ecclesiastical_divisions');
 
-                $table->foreign('parent_area_id')
+                $table->foreign('parent_group_id')
                     ->references('id')
-                    ->on('ecclesiastical_divisions_areas');
+                    ->on('ecclesiastical_divisions_groups');
 
                 $table->timestamps();
             });
@@ -57,6 +44,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('ecclesiastical_divisions_areas');
+        Schema::dropIfExists('ecclesiastical_divisions_groups');
     }
 };

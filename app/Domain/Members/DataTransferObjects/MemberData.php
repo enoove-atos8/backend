@@ -75,9 +75,6 @@ class MemberData extends DataTransferObject
     /** @var string  */
     public string $memberType;
 
-    /** @var array|null  */
-    public array|null $ministries;
-
     /** @var string|null  */
     public string|null $baptismDate;
 

@@ -71,7 +71,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => 'America/Sao_Paulo',
 
     /*
     |--------------------------------------------------------------------------
@@ -168,7 +168,6 @@ return [
         RepositoryServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         TelescopeServiceProvider::class,
-
 
         /*
          * Package Service Providers...

@@ -26,6 +26,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const ACTIVATED_COLUMN = 'activated';
     const ALL_COLUMNS = '*';
     const FULL_NAME_COLUMN = 'full_name';
+    const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
+    const GROUP_LEADER_COLUMN = 'group_leader';
 
     const DISPLAY_SELECT_COLUMNS = [
         'members.id as members_id',
@@ -51,7 +53,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         'members.mother as members_mother',
         'members.ecclesiastical_function as members_ecclesiastical_function',
         'members.member_type as members_member_type',
-        'members.ministries as members_ministries',
         'members.baptism_date as members_baptism_date',
         'members.blood_type as members_blood_type',
         'members.education as members_education'
@@ -97,7 +98,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'mother'                      =>  $memberData->mother,
             //'ecclesiastical_function'     =>  $memberData->ecclesiasticalFunction,
             'member_type'                 =>  $memberData->memberType,
-            //'ministries'                  =>  $memberData->ministries,
             'baptism_date'                =>  $memberData->baptismDate,
             'blood_type'                  =>  $memberData->bloodType,
             'education'                   =>  $memberData->education,
@@ -119,6 +119,34 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 self::ALL_COLUMNS,
                 self::FULL_NAME_COLUMN,
                 BaseRepository::ORDERS['ASC']);
+    }
+
+
+    /**
+     * @param int $groupId
+     * @param bool $groupLeader
+     * @return Collection|Model
+     * @throws BindingResolutionException
+     */
+    public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Collection|Member
+    {
+        $conditions = [
+            [
+                'field' => self::ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $groupId
+            ],
+            [
+                'field' => self::GROUP_LEADER_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => true
+            ],
+        ];
+
+        return $this->getItemByWhere(
+            ['*'],
+            $conditions
+        );
     }
 
 
@@ -173,7 +201,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'mother'                    =>  $memberData->mother,
             'ecclesiastical_function'   =>  $memberData->ecclesiasticalFunction,
             'member_type'               =>  $memberData->memberType,
-            'ministries'                =>  $memberData->ministries,
+            //'ministries'                =>  $memberData->ministries,
             'baptism_date'              =>  $memberData->baptismDate,
             'blood_type'                =>  $memberData->bloodType,
             'education'                 =>  $memberData->education,
