@@ -8,6 +8,7 @@ use App\Application\Api\v1\Financial\Entry\Controllers\General\EntryController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
+use Application\Api\v1\Ecclesiastical\Groups\Controllers\GroupController;
 use Application\Api\v1\Financial\Entry\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
@@ -488,6 +489,55 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              * Description: Get All users
              */
 
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | Group Ecclesiastical routes
+        |--------------------------------------------------------------------------
+        |
+        */
+
+        Route::prefix('ecclesiastical')->group(function () {
+
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource Group: ecclesiastical
+            | Resource: Divisions
+            | EndPoints: /v1/ecclesiastical/divisions
+            |
+            |   1 - GET - / - OK
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('divisions')->group(function () {
+
+            });
+
+
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource Group: ecclesiastical
+            | Resource: Groups
+            | EndPoints: /v1/ecclesiastical/groups
+            |
+            |   1 - GET - /getGroupsByDivision - OK
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('groups')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get member by id
+                 */
+
+                Route::get('getGroupsByDivision', [GroupController::class, 'getGroupsByDivision']);
+
+            });
 
         });
     });

@@ -2,7 +2,9 @@
 
 namespace Domain\Members\Models;
 
+use Domain\Ecclesiastical\Groups\Models\Group;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Member extends Model
 {
@@ -39,4 +41,10 @@ class Member extends Model
         'blood_type',
         'education',
     ];
+
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'ecclesiastical_division_group_id');
+    }
 }

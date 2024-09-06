@@ -19,8 +19,8 @@ return new class extends Migration
                 $table->integer('id', true)->autoIncrement();
 
                 // Relationships with ecclesiastical divisions (ministry, department, organization, event)
-                $table->integer('ecclesiastical_divisions_area_id')->nullable();
-                $table->boolean('leader')->nullable()->default(0);
+                $table->integer('ecclesiastical_divisions_group_id')->nullable();
+                $table->boolean('group_leader')->nullable()->default(0);
 
                 // Status of the member
                 $table->boolean('activated')->default(0);
@@ -64,9 +64,9 @@ return new class extends Migration
                 $table->timestamps();
 
                 // Relationships with ecclesiastical divisions areas
-                $table->foreign('ecclesiastical_divisions_area_id')
+                $table->foreign('ecclesiastical_divisions_group_id')
                     ->references('id')
-                    ->on('ecclesiastical_divisions_areas')
+                    ->on('ecclesiastical_divisions_groups')
                     ->onDelete('set null');
             });
         }

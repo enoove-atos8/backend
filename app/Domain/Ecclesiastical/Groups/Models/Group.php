@@ -1,0 +1,36 @@
+<?php
+
+namespace Domain\Ecclesiastical\Groups\Models;
+
+use Domain\Members\Models\Member;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
+class Group extends Model
+{
+    protected $table = 'ecclesiastical_divisions_groups';
+
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'ecclesiastical_division_id',
+        'parent_group_id',
+        'name',
+        'description',
+        'financial_transaction_exist',
+        'enabled',
+        'temporary_event',
+        'start_date',
+        'end_date',
+    ];
+
+
+    public function members(): HasMany
+    {
+        return $this->hasMany(Member::class, 'ecclesiastical_division_group_id');
+    }
+}

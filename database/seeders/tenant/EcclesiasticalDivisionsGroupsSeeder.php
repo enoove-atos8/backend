@@ -5,7 +5,7 @@ namespace Database\Seeders\Tenant;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class EcclesiasticalDivisionsAreasSeeder extends Seeder
+class EcclesiasticalDivisionsGroupsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -24,11 +24,11 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
         $organizationId = $divisionIds['Organizações'];
         $eventId = $divisionIds['Eventos'];
 
-        DB::table('ecclesiastical_divisions_areas')->insert([
+        DB::table('ecclesiastical_divisions_groups')->insert([
             // Área de Louvor
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 1,
@@ -43,7 +43,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 1,
@@ -58,7 +58,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 1,
@@ -73,7 +73,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 1,
@@ -88,7 +88,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 0,
                 'events_exists' => 1,
@@ -103,7 +103,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 1,
@@ -118,7 +118,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $ministryId,
-                'parent_area_id' => null,
+                'parent_group_id' => null,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 0,
@@ -134,7 +134,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             // Exemplo de área com subárea
             [
                 'ecclesiastical_division_id' => $departmentId,
-                'parent_area_id' => 6,
+                'parent_group_id' => 6,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 1,
                 'events_exists' => 0,
@@ -149,7 +149,7 @@ class EcclesiasticalDivisionsAreasSeeder extends Seeder
             ],
             [
                 'ecclesiastical_division_id' => $departmentId,
-                'parent_area_id' => 7,
+                'parent_group_id' => 7,
                 'financial_transactions_exists' => 1,
                 'departments_exists' => 0,
                 'events_exists' => 0,

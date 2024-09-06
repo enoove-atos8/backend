@@ -16,6 +16,8 @@ use App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutio
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Domain\Churches\Interfaces\ChurchRepositoryInterface;
+use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
+use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
@@ -25,6 +27,8 @@ use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
+use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
+use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
@@ -52,6 +56,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(AmountToCompensateRepositoryInterface::class, AmountToCompensateRepository::class);
         $this->app->bind(AmountDevolutionRepositoryInterface::class, AmountDevolutionEntriesRepository::class);
         $this->app->bind(TotalGeneralRepositoryInterface::class, TotalGeneralRepository::class);
+        $this->app->bind(DivisionRepositoryInterface::class, DivisionRepository::class);
+        $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
     }
 
     /**

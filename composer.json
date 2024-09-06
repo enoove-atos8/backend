@@ -8,6 +8,7 @@
         "php": "^8.2",
         "darkaonline/l5-swagger": "^8.6",
         "fedeisas/laravel-mail-css-inliner": "^5.3",
+        "google/apiclient": "^2.15.0",
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.9",
         "laravel/octane": "^2.4",
@@ -21,7 +22,8 @@
         "spatie/laravel-permission": "*",
         "stancl/tenancy": "^3.8",
         "symfony/css-selector": "^7.1",
-        "symfony/dom-crawler": "^7.1",
+        "thiagoalessio/tesseract_ocr": "^2.13",
+        "yaza/laravel-google-drive-storage": "^3.0",
         "zircote/swagger-php": "^4.10"
     },
     "require-dev": {
@@ -42,7 +44,8 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Database\\Seeders\\Central\\": "database/seeders/central/",
-            "Database\\Seeders\\Tenant\\": "database/seeders/tenant/"
+            "Database\\Seeders\\Tenant\\": "database/seeders/tenant/",
+            "Application\\Core\\Jobs\\": "app/Application/Core/Jobs/"
         }
     },
     "autoload-dev": {
@@ -69,6 +72,7 @@
         "optimize-autoloader": true,
         "preferred-install": "dist",
         "sort-packages": true,
+        "process-timeout": 1200,
         "allow-plugins": {
             "php-http/discovery": true
         }

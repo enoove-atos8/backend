@@ -21,7 +21,8 @@ RUN apt-get update && apt-get install -y \
     curl \
     nginx \
     wget \
-    nano
+    nano \
+    cron
 
 # Xdebug
 RUN pecl install xdebug-3.3.1
@@ -52,6 +53,17 @@ RUN composer install --no-interaction --no-ansi
 RUN php artisan optimize:clear
 RUN php artisan config:cache
 
+# Copy files of cron and config
+COPY scripts/crons/artisan-cron /etc/cron.d/artisan-cron
+RUN chmod 0644 /etc/cron.d/artisan-cron
+
+# Add cron in crontab
+RUN crontab /etc/cron.d/artisan-cron
+
 # Expose port 8000 and start php-fpm server
 EXPOSE 8000
-CMD ["php-fpm"]
+
+# Start PHP-FPM and cron
+COPY docker/local/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+CMD ["docker-entrypoint.sh"]

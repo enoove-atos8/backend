@@ -33,7 +33,8 @@ class UploadFile
         $timestamp = time();
         $formattedTime = date("YmdHis", $timestamp);
         $baseUrl = config('services-hosts.services.s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
-        $fileExtension = explode('.', $file->getClientOriginalName())[1];
+        $arrFileParts = explode('.', $file->getClientOriginalName());
+        $fileExtension = end($arrFileParts);
         $fileName = $formattedTime . '_' . uniqid().'.'.$fileExtension;
         $fullPathFile = $tenantS3PathObject . '/' . $fileName;
 

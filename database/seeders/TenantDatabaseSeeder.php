@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Database\Seeders\Tenant\EcclesiasticalDivisionsAreasSeeder;
+use Database\Seeders\Tenant\EcclesiasticalDivisionsGroupsSeeder;
 use Database\Seeders\Tenant\EcclesiasticalDivisionsSeeder;
 use Database\Seeders\tenant\RolesAndPermissionsSeeder;
 use Illuminate\Database\Seeder;
@@ -17,9 +17,9 @@ class TenantDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            RolesAndPermissionsSeeder::class,
+            //RolesAndPermissionsSeeder::class,
             EcclesiasticalDivisionsSeeder::class,
-            EcclesiasticalDivisionsAreasSeeder::class,
+            EcclesiasticalDivisionsGroupsSeeder::class,
         ]);
     }
 }

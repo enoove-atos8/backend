@@ -119,4 +119,15 @@
       'GlobalCache' => 'Stancl\\Tenancy\\Facades\\GlobalCache',
     ),
   ),
+  'yaza/laravel-google-drive-storage' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Yaza\\LaravelGoogleDriveStorage\\LaravelGoogleDriveStorageServiceProvider',
+    ),
+    'aliases' => 
+    array (
+      'LaravelGoogleDriveStorage' => 'Yaza\\LaravelGoogleDriveStorage\\Facades\\LaravelGoogleDriveStorage',
+    ),
+  ),
 );

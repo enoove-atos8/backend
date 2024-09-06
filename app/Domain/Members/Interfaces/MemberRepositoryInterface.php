@@ -13,6 +13,8 @@ interface MemberRepositoryInterface
 
     public function getMembers(): Member|Collection;
 
+    public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
+
     public function updateStatus($id, $status): mixed;
 
     public function updateMember($id, MemberData $memberData): mixed;
