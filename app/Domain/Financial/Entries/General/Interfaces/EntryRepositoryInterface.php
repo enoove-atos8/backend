@@ -13,6 +13,9 @@ interface EntryRepositoryInterface
     public function newEntry(EntryData $entryData): Entry;
 
     public function updateEntry(int $id, EntryData $entryData): mixed;
+    public function updateIdentificationPending(int $entryId, int $identificationPending): mixed;
+    public function updateTimestampValueCpf(int $entryId, string $timestampValueCpf): mixed;
+    public function updateReceiptLink(int $entryId, string $receiptLink): mixed;
 
     public function deleteEntry(int $id): bool;
 
@@ -25,6 +28,7 @@ interface EntryRepositoryInterface
     public function getAllEntriesByDateAndType(string $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection;
 
     public function getEntryById(int $id): Model | null;
+    public function getEntryByTimestampValueCpf(string $timestampValueCpf): Model | null;
 
     public function getAmountByEntryType(string $rangeMonthlyDate, string $amountType, string $entryType = null, string $exitType = null): Collection;
 

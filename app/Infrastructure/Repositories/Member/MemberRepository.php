@@ -24,6 +24,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const MEMBER_GENDER_COLUMN = 'gender';
     const ID_COLUMN = 'id';
     const ACTIVATED_COLUMN = 'activated';
+    const MIDDLE_CPF_COLUMN = 'middle_cpf';
+    const CPF_COLUMN = 'cpf';
     const ALL_COLUMNS = '*';
     const FULL_NAME_COLUMN = 'full_name';
     const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
@@ -123,6 +125,45 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
 
     /**
+     * @param string $cpf
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getMembersByMiddleCpf(string $cpf): Model | null
+    {
+        return $this->getItemByColumn(
+            self::MIDDLE_CPF_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            $cpf);
+    }
+
+
+    /**
+     * @param string $cpf
+     * @param bool $middleCpf
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getMembersByCpf(string $cpf, bool $middleCpf = false): Model | null
+    {
+        if(!$middleCpf)
+        {
+            return $this->getItemByColumn(
+                self::CPF_COLUMN,
+                BaseRepository::OPERATORS['EQUALS'],
+                $cpf);
+        }
+        else
+        {
+            return $this->getItemByColumn(
+                self::CPF_COLUMN,
+                BaseRepository::OPERATORS['LIKE'],
+                $cpf);
+        }
+    }
+
+
+    /**
      * @param int $groupId
      * @param bool $groupLeader
      * @return Collection|Model
@@ -165,6 +206,24 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         ];
 
         return $this->update($conditions, ['activated' =>  $status]);
+    }
+
+
+    /**
+     * @param int $memberId
+     * @param string $middleCpf
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function updateMiddleCpf(int $memberId, string $middleCpf): mixed
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $memberId
+        ];
+
+        return $this->update($conditions, [self::MIDDLE_CPF_COLUMN =>  $middleCpf]);
     }
 
 

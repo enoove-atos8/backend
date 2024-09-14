@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Services\OCRExtractDataBankReceipt;
 
+use Illuminate\Support\Facades\Storage;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use thiagoalessio\TesseractOCR\TesseractOcrException;
 
@@ -9,140 +10,121 @@ class OCRExtractDataBankReceiptService
 {
     const SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS = [
         'bb'        => 'SISBB',
-        'cef_app'   => 'SAC CAIXA',
-        'cef_ger'   => 'Via Gerenciador CAIXA',
-        'cef_ib'    => 'Via Internet Banking CAIXA',
+        'cef_app'   => 'CAIXA',
+        'cef_ger'   => 'Gerenciador CAIXA',
+        'cef_ib'    => 'Internet Banking CAIXA',
         'cef_tem'   => 'NSU',
-        'bradesco'  => 'BRADESCO CELULAR',
-        'santander' => 'Central de Atendimento Santander',
-        'itau_1'    => 'App Itaú',
-        'itau_2'    => 'via app itaú',
-        'itau_3'    => 'via app Itaú',
-        'sicredi'   => 'Cooperativa e conta de origem',
-        'nubank'    => 'Nu Pagamentos S.A.',
-        'digio'     => '',
-        'c6'        => '31872495 - Banco C6 S.A.',
+        'bradesco'  => 'BRADESCO',
+        'santander' => 'SANTANDER',
+        'itau_1'    => 'ITAU UNIBANCO',
+        'itau_2'    => '341 Ita',
+        'sicredi'   => 'SICREDI',
+        'nubank'    => 'Nu Pagamentos',
+        //'digio'     => '',
+        'c6'        => 'Banco C6',
         'neon'      => 'NEON PAGAMENTOS',
-        'inter'     => 'Banco Inter S.A.',
-        '99'        => '',
-        'uber'      => '',
-        'picpay'    => 'PicPay Instituição de Pagamentos S.A',
-        'iti'       => '',
+        'inter'     => 'Banco Inter',
+        //'99'        => '',
+        //'uber'      => '',
+        'picpay'    => 'PICPAY',
+        //'iti'       => '',
     ];
 
-    /**
-     * @param $file
-     * @return string|bool
-     * @throws TesseractOcrException
-     */
-    public function getBankingInstitution($file): string | bool
-    {
-        $readText = (new TesseractOCR($file))->run();
-
-        foreach (self::SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS as $template => $term)
-        {
-            if (str_contains($readText, $term))
-            {
-                $this->handleExtractDataByInstitution($template, $readText);
-                return $template;
-            }
-        }
-
-        return false;
-    }
 
     /**
-     * Método principal para a extração de dados do recibo bancário.
+     * Main method for extracting data from bank receipt.
      *
      * @param string $filePath
      * @return array|bool
      * @throws TesseractOcrException
      */
-    public function ocrExtractData(string $filePath): array | bool
+    public function ocrExtractData(string $filePath): array | string
     {
-        $institution = $this->getBankingInstitution($filePath);
-
-        if($institution !== false)
-            return $this->handleExtractDataByInstitution($institution, $filePath);
-        else
-            return false;
+        $dataExtracted = $this->getBankingInstitution($filePath);
+        return (new ReceiptModelByInstitution)->handleDispatchDataFunctionByInstitution($dataExtracted);
     }
 
+
+
     /**
-     * Extrai dados com base na instituição bancária identificada.
-     *
-     * @param string $template
-     * @param string $text
-     * @return array
+     * @param string $file
+     * @return string|bool
+     * @throws TesseractOcrException
      */
-    public function handleExtractDataByInstitution(string $template, string $text): array
+    public function getBankingInstitution(string $file): array | bool
     {
-        $extractedData = [];
+        $adjustedPath = $this->verifyFormatFile($file);
 
-        switch ($template) {
-            case 'bb':
-                $extractedData = $this->extractDataBancoDoBrasil($text);
-                break;
-            case 'cef_app':
-            case 'cef_ger':
-            case 'cef_ib':
-            case 'cef_tem':
-                $extractedData = $this->extractDataCaixaEconomica($text);
-                break;
-            case 'bradesco':
-                $extractedData = $this->extractDataBradesco($text);
-                break;
+        if($adjustedPath != '')
+            $file = $adjustedPath;
 
-            // Outras instituições podem ser adicionadas aqui
 
-            default:
-                echo "Banco não identificado ou não suportado.";
-                break;
+        $ocr = new TesseractOCR($file);
+        $readText = $ocr->run();
+
+        foreach (self::SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS as $templateReceipt => $term)
+        {
+            if($templateReceipt == 'cef_app')
+            {
+                $regex1 = '/Dados do pagador.*?Instituic¢Go.*?([A-Z\w]+)/s';
+                $regex2 = '/Dados do pagador.*?InstituigGo.*?([A-Z\w]+)/s';
+                $regex3 = '/Dados do pagador.*?Instituicdo.*?([A-Z\w]+)/s';
+                $regex4 = '/Dados do pagador.*?Institui¢Go.*?([A-Z\w]+)/s';
+                $regex5 = '/Dados do pagador.*?InstituicGo.*?([A-Z\w]+)/s';
+
+                if((preg_match($regex1, $readText, $matches)) ||
+                    (preg_match($regex2, $readText, $matches)) ||
+                    (preg_match($regex3, $readText, $matches)) ||
+                    (preg_match($regex4, $readText, $matches)) ||
+                    (preg_match($regex5, $readText, $matches)))
+                {
+                    if($matches[1] == $term)
+                    {
+                        return [
+                            'templateReceipt'   =>  $templateReceipt,
+                            'text'              =>  $readText
+                        ];
+                    }
+                }
+            }
+            else if (str_contains($readText, $term))
+            {
+                return [
+                    'templateReceipt'   =>  $templateReceipt,
+                    'text'              =>  $readText
+                ];
+            }
+
         }
 
-        return $extractedData;
-    }
-
-    /**
-     * Exemplo de método de extração de dados para o Banco do Brasil.
-     *
-     * @param string $text
-     * @return array
-     */
-    private function extractDataBancoDoBrasil(string $text): array
-    {
         return [
-            'instituicao' => 'Banco do Brasil',
-            'dados' => 'Exemplo de dados extraídos do Banco do Brasil'
-        ];
-    }
-
-    /**
-     * Exemplo de método de extração de dados para a Caixa Econômica Federal.
-     *
-     * @param string $text
-     * @return array
-     */
-    private function extractDataCaixaEconomica(string $text): array
-    {
-        return [
-            'instituicao' => 'Caixa Econômica Federal',
-            'dados' => 'Exemplo de dados extraídos da Caixa Econômica Federal'
+            'templateReceipt'   =>  'generic',
+            'text'              =>  $readText
         ];
     }
 
 
     /**
-     * Exemplo de método de extração de dados para o Bradesco.
-     *
-     * @param string $text
-     * @return array
+     * Convert PDF to Image
      */
-    private function extractDataBradesco(string $text): array
+    private function verifyFormatFile(string $file): string
     {
-        return [
-            'instituicao' => 'Bradesco',
-            'dados' => 'Exemplo de dados extraídos do Bradesco'
-        ];
+        $resolutionImage = 250;
+
+        if(strpos($file, '.pdf'))
+        {
+            $fileNameToJpg = preg_replace('/\.pdf$/', '', $file);
+            exec("pdftoppm -jpeg -f 1 -l 1 -rx $resolutionImage -ry $resolutionImage $file $fileNameToJpg");
+
+            $fileNameWithNumberSufix = preg_replace('/\.jpg$/', '-1.jpg', $fileNameToJpg . '.jpg');
+
+            rename($fileNameWithNumberSufix, $fileNameToJpg . '.jpg');
+
+            return $fileNameToJpg . '.jpg';
+        }
+        else
+        {
+            return '';
+        }
     }
 }

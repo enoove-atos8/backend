@@ -9,79 +9,82 @@ class MemberData extends DataTransferObject
     /** @var integer  */
     public int $id = 0;
 
-    /** @var bool  */
-    public bool $activated;
+    /** @var bool | null  */
+    public bool | null $activated;
 
-    /** @var bool  */
-    public bool $deleted;
+    /** @var bool | null  */
+    public bool | null $deleted;
 
-    /** @var string|null  */
-    public string|null $avatar;
+    /** @var string | null  */
+    public string | null $avatar;
 
-    /** @var string  */
-    public string $fullName;
+    /** @var string | null  */
+    public string | null $fullName;
 
-    /** @var string  */
-    public string $gender;
-
-    /** @var string|null  */
-    public string|null $cpf;
+    /** @var string | null  */
+    public string | null $gender;
 
     /** @var string|null  */
-    public string|null $rg;
+    public string | null $cpf;
+
+    /** @var string | null  */
+    public string | null $middleCpf;
 
     /** @var string|null  */
-    public string|null $work;
-
-    /** @var string  */
-    public string $bornDate;
+    public string | null $rg;
 
     /** @var string|null  */
-    public string|null $email;
+    public string | null $work;
+
+    /** @var string | null  */
+    public string | null $bornDate;
 
     /** @var string|null  */
-    public string|null $phone;
-
-    /** @var string  */
-    public string $cellPhone;
-
-    /** @var string  */
-    public string $address;
-
-    /** @var string  */
-    public string $district;
-
-    /** @var string  */
-    public string $city;
-
-    /** @var string  */
-    public string $uf;
+    public string | null $email;
 
     /** @var string|null  */
-    public string|null $maritalStatus;
+    public string | null $phone;
+
+    /** @var string | null  */
+    public string | null $cellPhone;
+
+    /** @var string | null  */
+    public string | null $address;
+
+    /** @var string | null  */
+    public string | null $district;
+
+    /** @var string | null  */
+    public string | null $city;
+
+    /** @var string | null  */
+    public string | null $uf;
 
     /** @var string|null  */
-    public string|null $spouse;
+    public string | null $maritalStatus;
 
     /** @var string|null  */
-    public string|null $father;
+    public string | null $spouse;
 
-    /** @var string  */
-    public string $mother;
+    /** @var string|null  */
+    public string | null $father;
+
+    /** @var string | null  */
+    public string | null $mother;
 
     /** @var array|null  */
-    public array|null $ecclesiasticalFunction;
+    public array | null $ecclesiasticalFunction;
 
-    /** @var string  */
-    public string $memberType;
-
-    /** @var string|null  */
-    public string|null $baptismDate;
+    /** @var string | null  */
+    public string | null $memberType;
 
     /** @var string|null  */
-    public string|null $bloodType;
+    public string | null $baptismDate;
 
     /** @var string|null  */
-    public string|null $education;
+    public string | null $bloodType;
+
+    /** @var string|null  */
+    public string | null $education;
 }
 

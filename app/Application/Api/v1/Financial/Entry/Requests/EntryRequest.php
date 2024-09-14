@@ -174,6 +174,7 @@ class EntryRequest extends FormRequest
             dateEntryRegister:              $this->input('dateEntryRegister'),
             amount:                         $this->input('amount'),
             recipient:                      $this->input('recipient'),
+            timestampValueCpf:              $this->input('timestampValueCpf'),
             memberId:                       $this->input('memberId'),
             reviewerId:                     $this->input('reviewerId'),
             devolution:                     $this->input('devolution'),
