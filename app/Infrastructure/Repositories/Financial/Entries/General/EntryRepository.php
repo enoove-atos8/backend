@@ -35,6 +35,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const COMPENSATED_VALUE = 'compensated';
     const TO_COMPENSATE_VALUE = 'to_compensate';
     const ID_COLUMN = 'id';
+
+    const TIMESTAMP_VALUE_CPF_COLUMN = 'timestamp_value_cpf';
     const MEMBER_ID_COLUMN_JOINED = 'entries.member_id';
     const MEMBER_ID_COLUMN = 'member_id';
     const ID_COLUMN_JOINED = 'entries.id';
@@ -350,6 +352,22 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
+    /**
+     * @param string $timestampValueCpf
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getEntryByTimestampValueCpf(string $timestampValueCpf): Model | null
+    {
+        $this->requiredRelationships = ['member'];
+        $this->queryConditions = [];
+
+        $this->queryConditions [] = $this->whereEqual(self::TIMESTAMP_VALUE_CPF_COLUMN, $timestampValueCpf, 'and');
+
+        return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
+    }
+
+
 
     /**
      * @param int $id
@@ -375,6 +393,70 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'deleted'                        =>   $entryData->deleted,
             'comments'                       =>   $entryData->comments,
             'receipt_link'                   =>   $entryData->receipt,
+        ]);
+    }
+
+
+    /**
+     * @param int $entryId
+     * @param int $identificationPending
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function updateIdentificationPending(int $entryId, int $identificationPending): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $entryId,
+            ];
+
+        return $this->update($conditions, [
+            'identification_pending'  =>   $identificationPending,
+        ]);
+    }
+
+
+    /**
+     * @param int $entryId
+     * @param string $timestampValueCpf
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function updateTimestampValueCpf(int $entryId, string $timestampValueCpf): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $entryId,
+            ];
+
+        return $this->update($conditions, [
+            'timestamp_value_cpf'  =>   $timestampValueCpf,
+        ]);
+    }
+
+
+
+    /**
+     * @param int $entryId
+     * @param string $receiptLink
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function updateReceiptLink(int $entryId, string $receiptLink): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $entryId,
+            ];
+
+        return $this->update($conditions, [
+            'receipt_link'  =>   $receiptLink,
         ]);
     }
 

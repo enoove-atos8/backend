@@ -51,6 +51,6 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
      */
     public function getChurch($tenantId): Model
     {
-        return $this->getItemByColumn(self::TENANT_ID_COLUMN, $tenantId);
+        return $this->getItemByColumn(self::TENANT_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $tenantId);
     }
 }

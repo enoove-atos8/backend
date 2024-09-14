@@ -17,7 +17,7 @@ class TenantDatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            //RolesAndPermissionsSeeder::class,
+            RolesAndPermissionsSeeder::class,
             EcclesiasticalDivisionsSeeder::class,
             EcclesiasticalDivisionsGroupsSeeder::class,
         ]);

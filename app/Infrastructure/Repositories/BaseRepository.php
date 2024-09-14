@@ -188,21 +188,30 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
     /**
      * Get instance of model by column
      *
      * @param string $column column to search
+     * @param string $operator
      * @param mixed $term search term
      * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getItemByColumn(string $column, mixed $term): Model|null
+    public function getItemByColumn(string $column, string $operator, mixed $term): Model|null
     {
-        $query = function () use ($column, $term) {
+        $query = function () use ($column, $operator, $term) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where($column, '=', $term)
+                ->where(function ($q) use($column, $operator, $term){
+                    if($operator == BaseRepository::OPERATORS['LIKE'])
+                    {
+                        $q->where($column, $operator, "%{$term}%");
+                    }
+                    if($operator == BaseRepository::OPERATORS['EQUALS'])
+                    {
+                        $q->where($column, $operator, $term);
+                    }
+                })
                 ->first();
         };
 
@@ -258,16 +267,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
     /**
      * Get an item with conditions
      *
      * @param array $columns
      * @param array $conditions
-     * @return Model
+     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model
+    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model | null
     {
         $query = function () use ($columns, $conditions) {
             return DB::table($this->model->getTable())
@@ -295,7 +303,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
             return $this->getById($term);
         }
 
-        return $this->getItemByColumn($term, $column);
+        return $this->getItemByColumn($term, '=', $column);
     }
 
 

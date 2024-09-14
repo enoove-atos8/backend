@@ -23,6 +23,14 @@ return new class extends Migration
                 $table->integer('entry_id')->nullable(false);
                 $table->integer('exit_id')->nullable(false);
 
+                $table->foreign('entry_id')
+                    ->references('id')
+                    ->on('entries');
+
+                $table->foreign('exit_id')
+                    ->references('id')
+                    ->on('exits');
+
             });
         }
     }

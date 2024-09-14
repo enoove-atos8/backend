@@ -36,13 +36,11 @@ return new class extends Migration
 
                 $table->foreign('entry_id')
                     ->references('id')
-                    ->on('entries')
-                    ->onDelete('set null');
+                    ->on('entries');
 
                 $table->foreign('exit_id')
                     ->references('id')
-                    ->on('exits')
-                    ->onDelete('set null');
+                    ->on('exits');
 
             });
         }

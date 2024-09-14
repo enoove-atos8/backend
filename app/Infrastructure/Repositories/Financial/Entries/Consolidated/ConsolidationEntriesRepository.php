@@ -36,7 +36,7 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
     public function getByDate(string $date): Model|null
     {
         $this->requiredRelationships = [];
-        return $this->getItemByColumn(self::DATE_COLUMN, $date);
+        return $this->getItemByColumn(self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date);
     }
 
 

@@ -57,7 +57,7 @@ interface BaseRepositoryInterface
      * @param  mixed $term search term
      * @param string $column column to search
      */
-    public function getItemByColumn(string $column, mixed $term);
+    public function getItemByColumn(string $column, string $operator, mixed $term);
 
 
 
@@ -71,15 +71,14 @@ interface BaseRepositoryInterface
     public function getItemsByWhere(array $columns = ['*'], array $conditions = []): Collection;
 
 
-
     /**
      * Get an item with conditions
      *
      * @param array $columns
      * @param array $conditions
-     * @return Model
+     * @return Model|null
      */
-    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model;
+    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model | null;
 
 
     /**
