@@ -87,7 +87,7 @@ class GoogleDriveService
     {
         $response = $this->instance->files->listFiles([
             'q' => "'{$folderId}' in parents and not name contains 'FILE_READ'",
-            'fields' => 'files(id, name)',
+            'fields' => 'files(id, name, parents)',
         ]);
 
         return $response->files;
@@ -97,40 +97,50 @@ class GoogleDriveService
     /**
      * @param $basePathTemp
      * @param $file
-     * @return string[]
+     * @return array|bool
      * @throws Exception
      */
-    public function download($basePathTemp, $file): array
+    public function download($basePathTemp, $file): array | bool
     {
-        $file = $this->instance->files->get($file->id, ['alt' => 'media']);
-        $physicalFile = $file->getBody()->getContents();
+        $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
 
-        $contentType = $file->getHeaderLine('Content-Type');
+        if ($fileMetadata->mimeType !== 'application/vnd.google-apps.folder')
+        {
+            $file = $this->instance->files->get($file->id, ['alt' => 'media']);
+            $physicalFile = $file->getBody()->getContents();
 
-        if ($contentType == 'image/jpeg')
-            $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.jpg';
-        if ($contentType == 'application/pdf')
-            $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.pdf';
+            $contentType = $file->getHeaderLine('Content-Type');
 
-        if (!file_exists($basePathTemp))
-            mkdir($basePathTemp, 0777, true);
+            if ($contentType == 'image/jpeg')
+                $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.jpg';
+            if ($contentType == 'application/pdf')
+                $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.pdf';
 
-        $destinationPath = $basePathTemp . '/' . $newNameWithExtension;
-        file_put_contents($destinationPath, $physicalFile);
+            if (!file_exists($basePathTemp))
+                mkdir($basePathTemp, 0777, true);
 
-        $uploadedFile = new UploadedFile(
-            $destinationPath,
-            $newNameWithExtension,
-            $contentType,
-            null,
-            true
-        );
+            $destinationPath = $basePathTemp . '/' . $newNameWithExtension;
+            file_put_contents($destinationPath, $physicalFile);
 
-        return [
-            'destinationPath'   =>  $destinationPath,
-            'fileUploaded'      => $uploadedFile
-        ];
+            $uploadedFile = new UploadedFile(
+                $destinationPath,
+                $newNameWithExtension,
+                $contentType,
+                null,
+                true
+            );
+
+            return [
+                'destinationPath'   =>  $destinationPath,
+                'fileUploaded'      => $uploadedFile
+            ];
+        }
+        else
+        {
+            return false;
+        }
     }
+
 
 
     /**

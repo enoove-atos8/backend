@@ -10,6 +10,7 @@ class ReceiptModelByInstitution
         'data'  =>  [
             'amount'                =>  0,
             'date'                  =>  '',
+            'cpf'                   =>  '',
             'middle_cpf'            =>  '',
             'cnpj'                  =>  '',
             'institution'           =>  '',
@@ -136,6 +137,7 @@ class ReceiptModelByInstitution
         {
             $this->errorInExtraction['data']['institution'] = 'CEF';
             $this->errorInExtraction['status'] = 'READING_ERROR';
+            printf($text);
             return  $this->errorInExtraction;
         }
 
@@ -159,8 +161,56 @@ class ReceiptModelByInstitution
      */
     private function extractDataGerenciadorCaixa(string $text): array
     {
-        $this->response['status'] = 'NOT_IMPLEMENTED';
+        //Get amount
+        if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
+            $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
+        else {
+            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
+            $this->errorInExtraction['status'] = 'READING_ERROR';
+            return $this->errorInExtraction;
+        }
+
+
+        //Get date
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4}) as/', $text, $match))
+            $this->response['data']['date'] = $match[1];
+        else
+        {
+            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
+            $this->errorInExtraction['status'] = 'READING_ERROR';
+            return  $this->errorInExtraction;
+        }
+
+        //Get CPF
+        if (preg_match('/CPF:\s?(\d{11})/', $text, $match))
+            $this->response['data']['cpf'] = $match[1];
+        else
+        {
+            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
+            $this->errorInExtraction['status'] = 'READING_ERROR';
+            return  $this->errorInExtraction;
+        }
+
+
+        //Get timestamp
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
+        else
+        {
+            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
+            $this->errorInExtraction['status'] = 'READING_ERROR';
+            printf($text);
+            return  $this->errorInExtraction;
+        }
+
+
+        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+            $this->response['status'] = 'NOT_IMPLEMENTED';
+        else
+            $this->response['status'] = 'SUCCESS';
+
         $this->response['data']['institution'] = 'GER_CEF';
+
         return $this->response;
     }
 
@@ -310,6 +360,7 @@ class ReceiptModelByInstitution
         {
             $this->errorInExtraction['data']['institution'] = 'NUBANK';
             $this->errorInExtraction['status'] = 'READING_ERROR';
+            printf($text);
             return  $this->errorInExtraction;
         }
 
@@ -450,6 +501,7 @@ class ReceiptModelByInstitution
         {
             $this->errorInExtraction['data']['institution'] = 'PICPAY';
             $this->errorInExtraction['status'] = 'READING_ERROR';
+            printf($text);
             return  $this->errorInExtraction;
         }
 
@@ -534,9 +586,13 @@ class ReceiptModelByInstitution
         }
 
 
-        //Get CNPJ
-        if(preg_match('/CNPJ\s*(.*)/', $text, $match))
-            $this->response['data']['cnpj'] = preg_replace('/\D/', '', $match[1]);
+        //Get timestamp
+        if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
             $this->errorInExtraction['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
@@ -545,7 +601,7 @@ class ReceiptModelByInstitution
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['cnpj'] == '')
+        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
             $this->response['status'] = 'error';
         else
             $this->response['status'] = 'SUCCESS';

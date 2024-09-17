@@ -27,6 +27,9 @@ class EntryData extends DataTransferObject
     /** @var string | null  */
     public string | null $recipient;
 
+    /** @var integer | null  */
+    public int | null $ecclesiasticalDivisionsGroupsId;
+
     /** @var string | null  */
     public string | null $timestampValueCpf;
 
@@ -41,6 +44,9 @@ class EntryData extends DataTransferObject
 
     /** @var integer | null  */
     public int | null $devolution;
+
+    /** @var integer | null  */
+    public int | null $ecclesiasticalGroupDevolutionOrigin;
 
     /** @var integer | null  */
     public int | null $residualValue;

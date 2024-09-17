@@ -19,7 +19,7 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             $job = resolve(ProcessGoogleDriveFilesJob::class);
             $job->handle();
-        })->dailyAt('18:14');
+        })->dailyAt('16:30');
     }
 
 
