@@ -14,15 +14,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('google_drive_ecclesiastical_groups_folders'))
+        if (!Schema::hasTable('unidentified_receipts'))
         {
-            Schema::create('google_drive_ecclesiastical_groups_folders', function (Blueprint $table) {
+            Schema::create('unidentified_receipts', function (Blueprint $table) {
 
                 $table->integer('id', true)->autoIncrement();
-                $table->integer('ecclesiastical_divisions_group_id')->nullable();
-                $table->string('folder_id')->nullable(false);
-                $table->string('folder_name')->nullable(false);
                 $table->string('entry_type')->nullable(false);
+                $table->decimal('amount')->nullable(false);
+                $table->integer('deleted')->nullable(false);
+                $table->string('receipt_link')->nullable(false);
 
                 $table->timestamps();
 
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('google_drive_ecclesiastical_groups_folders');
+        Schema::dropIfExists('unidentified_receipts');
     }
 };

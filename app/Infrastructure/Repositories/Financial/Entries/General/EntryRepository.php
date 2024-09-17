@@ -97,20 +97,22 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     public function newEntry(EntryData $entryData): Entry
     {
         return $this->create([
-            'entry_type'                     =>   $entryData->entryType,
-            'transaction_type'               =>   $entryData->transactionType,
-            'transaction_compensation'       =>   $entryData->transactionCompensation,
-            'date_transaction_compensation'  =>   $entryData->dateTransactionCompensation,
-            'date_entry_register'            =>   $entryData->dateEntryRegister,
-            'amount'                         =>   floatval($entryData->amount),
-            'recipient'                      =>   $entryData->recipient,
-            'member_id'                      =>   $entryData->memberId,
-            'reviewer_id'                    =>   $entryData->reviewerId,
-            'devolution'                     =>   $entryData->devolution,
-            'residualValue'                  =>   $entryData->residualValue,
-            'deleted'                        =>   $entryData->deleted,
-            'comments'                       =>   $entryData->comments,
-            'receipt_link'                   =>   $entryData->receipt,
+            'entry_type'                                        =>   $entryData->entryType,
+            'transaction_type'                                  =>   $entryData->transactionType,
+            'transaction_compensation'                          =>   $entryData->transactionCompensation,
+            'date_transaction_compensation'                     =>   $entryData->dateTransactionCompensation,
+            'date_entry_register'                               =>   $entryData->dateEntryRegister,
+            'amount'                                            =>   floatval($entryData->amount),
+            'recipient'                                         =>   $entryData->recipient,
+            'ecclesiastical_divisions_groups_id'                =>   $entryData->ecclesiasticalDivisionsGroupsId,
+            'member_id'                                         =>   $entryData->memberId,
+            'reviewer_id'                                       =>   $entryData->reviewerId,
+            'devolution'                                        =>   $entryData->devolution,
+            'ecclesiastical_divisions_groups_devolution_origin' =>   $entryData->ecclesiasticalGroupDevolutionOrigin,
+            'residual_value'                                    =>   $entryData->residualValue,
+            'deleted'                                           =>   $entryData->deleted,
+            'comments'                                          =>   $entryData->comments,
+            'receipt_link'                                      =>   $entryData->receipt,
         ]);
     }
 

@@ -13,7 +13,7 @@ return [
                     //'designated'    => '1cUz2iRF-nq7rVI4clYzeQzMUiNV5mtXm',
                     //'offer'        => '1cW2n-QI8lAE10BpClE3HV3TstuNzrvzR',
                 ],
-            ]
+            ],
         ]
     ]
 ];
