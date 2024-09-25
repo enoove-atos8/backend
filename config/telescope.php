@@ -16,7 +16,7 @@ return [
     |
     */
 
-    'domain' => 'telescope.atos8.com',
+    'domain' => config('telescope.domain'),
 
     /*
     |--------------------------------------------------------------------------

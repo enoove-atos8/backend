@@ -21,7 +21,7 @@ return new class extends Migration
                 $table->integer('id', true)->autoIncrement();
                 $table->string('entry_type')->nullable(false);
                 $table->decimal('amount')->nullable(false);
-                $table->integer('deleted')->nullable(false);
+                $table->integer('deleted')->nullable(false)->default(0);
                 $table->string('receipt_link')->nullable(false);
 
                 $table->timestamps();
