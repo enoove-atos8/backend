@@ -8,6 +8,7 @@ use thiagoalessio\TesseractOCR\TesseractOcrException;
 
 class OCRExtractDataBankReceiptService
 {
+    private ReceiptModelByInstitution $receiptModelByInstitution;
     const SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS = [
         'bb'        => 'SISBB',
         'cef_app'   => 'CAIXA',
@@ -20,7 +21,7 @@ class OCRExtractDataBankReceiptService
         'itau_2'    => '341 Ita',
         'sicredi'   => 'SICREDI',
         'nubank'    => 'Nu Pagamentos',
-        //'digio'     => '',
+        'digio'     => 'Digio',
         'c6'        => 'Banco C6',
         'neon'      => 'NEON PAGAMENTOS',
         'inter'     => 'Banco Inter',
@@ -28,7 +29,14 @@ class OCRExtractDataBankReceiptService
         //'uber'      => '',
         'picpay'    => 'PICPAY',
         //'iti'       => '',
+        'efi'       => 'EFI',
+        'next'      => 'Next',
     ];
+
+    public function __construct(ReceiptModelByInstitution $receiptModelByInstitution)
+    {
+        $this->receiptModelByInstitution = $receiptModelByInstitution;
+    }
 
 
     /**
@@ -41,7 +49,7 @@ class OCRExtractDataBankReceiptService
     public function ocrExtractData(string $filePath): array | string
     {
         $dataExtracted = $this->getBankingInstitution($filePath);
-        return (new ReceiptModelByInstitution)->handleDispatchDataFunctionByInstitution($dataExtracted);
+        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted);
     }
 
 

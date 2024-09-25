@@ -19,9 +19,12 @@ return new class extends Migration
             Schema::create('google_tokens', function (Blueprint $table) {
 
                 $table->integer('id', true)->autoIncrement();
+                $table->string('tenant')->nullable(false)->unique();
                 $table->string('api')->unique();
                 $table->text('access_token');
                 $table->text('refresh_token');
+                $table->integer('expires_in');
+                $table->bigInteger('created');
 
                 $table->timestamps();
 

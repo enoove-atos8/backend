@@ -15,6 +15,8 @@ use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
 use DateTime;
 use Domain\Ecclesiastical\Folders\Actions\GetEcclesiasticalGroupsFoldersAction;
 use Domain\Ecclesiastical\Folders\DataTransferObjects\FolderData;
+use Domain\Financial\Receipts\Entries\Unidentified\Actions\CreateUnidentifiedReceiptAction;
+use Domain\Financial\Receipts\Entries\Unidentified\DataTransferObjects\UnidentifiedReceiptData;
 use Domain\Members\DataTransferObjects\MemberData;
 use Google\Service\Drive;
 use Google\Service\Exception;
@@ -30,7 +32,7 @@ use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use thiagoalessio\TesseractOCR\TesseractOcrException;
 use Throwable;
 
-class ProcessGoogleDriveFilesJob
+class ProcessingEntriesByBankTransfer
 {
     private GoogleDriveService $googleDriveService;
     private CreateEntryAction $createEntryAction;
@@ -38,13 +40,16 @@ class ProcessGoogleDriveFilesJob
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
     private GetEcclesiasticalGroupsFoldersAction $getEcclesiasticalGroupsFoldersAction;
     private UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction;
+    private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
     private UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction;
     private UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction;
+    private CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction;
     private GetMemberByCPFAction $getMemberByCPFAction;
     private UploadFile $uploadFile;
     private ConsolidationEntriesData $consolidationEntriesData;
     private EntryData $entryData;
+    private UnidentifiedReceiptData $unidentifiedReceiptData;
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
@@ -73,8 +78,11 @@ class ProcessGoogleDriveFilesJob
         UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction,
         UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction,
         EntryData $entryData,
+        UnidentifiedReceiptData $unidentifiedReceiptData,
         MemberData $memberData,
+        OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
         ConsolidationEntriesData $consolidationEntriesData,
+        CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction,
     )
     {
         $this->googleDriveService = $googleDriveService;
@@ -87,10 +95,13 @@ class ProcessGoogleDriveFilesJob
         $this->updateTimestampValueCPFEntryAction = $updateTimestampValueCPFEntryAction;
         $this->getEntryByTimestampValueCpfAction = $getEntryByTimestampValueCpfAction;
         $this->getMemberByCPFAction = $getMemberByCPFAction;
+        $this->unidentifiedReceiptData = $unidentifiedReceiptData;
         $this->uploadFile = $uploadFile;
         $this->entryData = $entryData;
         $this->memberData = $memberData;
         $this->consolidationEntriesData = $consolidationEntriesData;
+        $this->OCRExtractDataBankReceiptService = $OCRExtractDataBankReceiptService;
+        $this->createUnidentifiedReceiptAction = $createUnidentifiedReceiptAction;
     }
 
 
@@ -105,8 +116,6 @@ class ProcessGoogleDriveFilesJob
      */
     public function handle(): void
     {
-        //$tenantsAllowed = config('google.drive');
-
         foreach ($this->allowedTenants as $tenant)
         {
             tenancy()->initialize($tenant);
@@ -127,59 +136,45 @@ class ProcessGoogleDriveFilesJob
                     $this->googleDriveService->deleteFilesInLocalDirectory($basePathTemp);
                     $downloadedFile = $this->googleDriveService->download($basePathTemp, $file);
 
-                    if($downloadedFile != false)
+                    if(is_array($downloadedFile))
                     {
-                        $extractedData = (new OCRExtractDataBankReceiptService)->ocrExtractData($downloadedFile['destinationPath']);
+                        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile['destinationPath']);
 
                         if(count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
                         {
                             $middleCpf = $extractedData['data']['middle_cpf'];
                             $cpf = $extractedData['data']['cpf'];
+                            $member = null;
 
                             if($middleCpf != '')
                                 $member = $this->getMemberByMiddleCPFAction->__invoke($middleCpf);
-                            elseif ($cpf != '')
+                            if ($middleCpf != '' && $member == null)
+                            {
+                                $member = $this->getMemberByCPFAction->__invoke($middleCpf, true);
+                                if(!is_null($member))
+                                    $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
+                            }
+                            if ($cpf != '' && $member == null)
                                 $member = $this->getMemberByCPFAction->__invoke($cpf);
+
+                            //Localizar o membro pelo seu nome e se encontrar apenas 1 registro atualizar o middle_cpf/cpf dele
 
                             if(is_null($member))
                             {
-                                $member = $this->getMemberByCPFAction->__invoke($middleCpf, true);
+                                $this->setEntryData($extractedData, $member, $folderData);
 
-                                if(!is_null($member))
+                                $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($extractedData['data']['timestamp_value_cpf']);
+
+                                if($entryByTimestampValueCpf != null)
                                 {
-                                    $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
-                                    $this->setEntryData($extractedData, $member, $folderData);
-
-                                    $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($extractedData['data']['timestamp_value_cpf']);
-
-                                    if($entryByTimestampValueCpf != null)
-                                    {
-                                        $this->googleDriveService->deleteFile($file->id);
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-                                        $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
-                                    }
+                                    $this->googleDriveService->deleteFile($file->id);
+                                    continue;
                                 }
                                 else
                                 {
-                                    $this->setEntryData($extractedData, $member, $folderData);
-
-                                    $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($extractedData['data']['timestamp_value_cpf']);
-
-                                    if($entryByTimestampValueCpf != null)
-                                    {
-                                        $this->googleDriveService->deleteFile($file->id);
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-                                        $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
-                                        $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
-                                    }
+                                    $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
+                                    $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
+                                    $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
                                 }
                             }
                             else
@@ -208,13 +203,13 @@ class ProcessGoogleDriveFilesJob
                                 $this->googleDriveService->renameFile($file->id, $fileUploaded, 'FILE_READ', $extractedData['data']['institution']);
                             }
 
-                            print_r(response()->json($extractedData));
+                            json_encode($extractedData);
                         }
                         else if(count($extractedData) > 0 && $extractedData['status'] == 'NOT_IMPLEMENTED')
                         {
                             $this->googleDriveService->renameFile($file->id, null, 'NOT_IMPLEMENTED', $extractedData['data']['institution']);
 
-                            print_r([
+                            json_encode([
                                 'status' =>  $extractedData['status'],
                                 'data' =>  $extractedData,
                             ]) ;
@@ -222,21 +217,15 @@ class ProcessGoogleDriveFilesJob
                         else if(count($extractedData) > 0 && $extractedData['status'] == 'READING_ERROR')
                         {
                             $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH, $tenant);
-                            // Incluir registro do comprovante em uma tabela de comprovantes sem identificação
+
+                            $this->setUnidentifiedReceiptData($this->entryType, $fileUploaded, $extractedData['data']);
+                            $this->createUnidentifiedReceiptAction->__invoke($this->unidentifiedReceiptData);
+
                             $this->googleDriveService->renameFile($file->id, null, 'READING_ERROR', $extractedData['data']['institution']);
 
-                            print_r([
+                            json_encode([
                                 'status' =>  $extractedData['status'],
                                 'data' =>  $extractedData,
-                            ]) ;
-                        }
-                        else
-                        {
-                            $this->googleDriveService->renameFile($file->id, null, 'NOT_RECOGNIZED');
-
-                            print_r([
-                                'status'    =>  $extractedData['status'],
-                                'msg'       =>  'Não foi possível identificar a instituição!',
                             ]) ;
                         }
                     }
@@ -283,6 +272,15 @@ class ProcessGoogleDriveFilesJob
 
         $this->consolidationEntriesData->date = $extractedData['data']['date'];
 
+    }
+
+
+    public function setUnidentifiedReceiptData(string $entryType, string $receiptLink, array $data): void
+    {
+        $this->unidentifiedReceiptData->entryType = $entryType;
+        $this->unidentifiedReceiptData->receiptLink = $receiptLink;
+        $this->unidentifiedReceiptData->deleted = 0;
+        $this->unidentifiedReceiptData->amount = array_key_exists('amount', $data) ? floatval($data['amount']) / 100 : null;
     }
 
     /**

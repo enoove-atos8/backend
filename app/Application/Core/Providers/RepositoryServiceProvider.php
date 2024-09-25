@@ -23,6 +23,7 @@ use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevol
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepositoryInterface;
+use Domain\Financial\Receipts\Entries\Unidentified\Interfaces\UnidentifiedReceiptRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
@@ -33,6 +34,7 @@ use Infrastructure\Repositories\Ecclesiastical\Folders\FoldersRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
+use Infrastructure\Repositories\Financial\Receipts\UnidentifiedReceiptsRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 
@@ -61,6 +63,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DivisionRepositoryInterface::class, DivisionRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(FoldersRepositoryInterface::class, FoldersRepository::class);
+        $this->app->bind(UnidentifiedReceiptRepositoryInterface::class, UnidentifiedReceiptsRepository::class);
     }
 
     /**

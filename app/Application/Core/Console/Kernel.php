@@ -2,7 +2,7 @@
 
 namespace Application\Core\Console;
 
-use Application\Core\Jobs\ProcessGoogleDriveFilesJob;
+use Application\Core\Jobs\ProcessingEntriesByBankTransfer;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -17,9 +17,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         $schedule->call(function () {
-            $job = resolve(ProcessGoogleDriveFilesJob::class);
-            $job->handle();
-        })->dailyAt('16:30');
+            resolve(ProcessingEntriesByBankTransfer::class)->handle();
+        })->dailyAt('16:36');
     }
 
 

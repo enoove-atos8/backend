@@ -6,6 +6,7 @@ use Google\Service\Drive\DriveFile;
 use Google\Service\Exception;
 use Google\Client;
 use Google\Service\Drive;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -19,7 +20,7 @@ class GoogleDriveService
     private DriveFile $driveFile;
     private Drive $driveService;
 
-    const TEMP_FILE_PREFIX_NAME = 'tempfile';
+    const TEMP_FILE_PREFIX_NAME = 'tempfile-job';
 
 
 
@@ -37,7 +38,6 @@ class GoogleDriveService
     {
         $clientId = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_CLIENT_ID');
         $clientSecret = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_CLIENT_SECRET');
-        $refreshToken = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_REFRESH_TOKEN');
 
         $this->client = new Client();
 
@@ -46,6 +46,7 @@ class GoogleDriveService
         $this->client->addScope(Drive::DRIVE);
 
         $tokens = DB::table('google_tokens')
+                    ->where('tenant', $tenant)
                     ->where('api', 'drive')
                     ->first();
 
@@ -55,21 +56,38 @@ class GoogleDriveService
 
             if ($this->client->isAccessTokenExpired())
             {
-                $newTokens = $this->client->fetchAccessTokenWithRefreshToken($tokens->refresh_token);
+                try {
+                    $newTokens = $this->client->fetchAccessTokenWithRefreshToken($tokens->refresh_token);
 
-                DB::table('google_tokens')
-                    ->where('api', 'drive')->update([
-                    'access_token' => $newTokens['access_token'],
-                    'refresh_token' => $tokens->refresh_token,
-                    'updated_at' => now(),
-                ]);
+                    if (!isset($newTokens['access_token']))
+                    {
 
-                $this->client->setAccessToken($newTokens['access_token']);
+                        Log::error('Erro ao renovar o access token: ' . json_encode($newTokens));
+                        throw new Exception('Não foi possível obter um novo access token.');
+                    }
+
+
+                    DB::table('google_tokens')
+                        ->where('api', 'drive')->update([
+                            'access_token' => $newTokens['access_token'],
+                            'expires_in' => $newTokens['expires_in'],
+                            'created' => time(),
+                            'refresh_token' => $tokens->refresh_token,
+                            'updated_at' => now(),
+                        ]);
+
+                    $this->client->setAccessToken($newTokens['access_token']);
+
+                } catch (Exception $e)
+                {
+                    Log::error('Erro ao tentar renovar o access token: ' . $e->getMessage());
+                    throw new Exception('Erro ao tentar renovar o access token.');
+                }
             }
         }
         else
         {
-            throw new \Exception('No tokens found for the specified tenant.');
+            throw new Exception('No tokens found for the specified tenant.');
         }
 
         $this->instance = new Drive($this->client);
@@ -199,11 +217,14 @@ class GoogleDriveService
         {
             $files = array_diff(scandir($dir), ['.', '..']);
             foreach ($files as $file)
-                $this->deleteFilesInLocalDirectory("$dir/$file");
-        }
-        else
-        {
-            unlink($dir);
+            {
+                $filePath = "$dir/$file";
+
+                if (is_dir($filePath))
+                    $this->deleteFilesInLocalDirectory($filePath);
+                elseif (is_file($filePath) && str_starts_with($file, self::TEMP_FILE_PREFIX_NAME))
+                    unlink($filePath);
+            }
         }
     }
 }

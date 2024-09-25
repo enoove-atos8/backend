@@ -8,6 +8,7 @@ class ReceiptModelByInstitution
         'status'    =>  '',
         'msg'       =>  '',
         'data'  =>  [
+            'name'                  =>  '',
             'amount'                =>  0,
             'date'                  =>  '',
             'cpf'                   =>  '',
@@ -15,14 +16,6 @@ class ReceiptModelByInstitution
             'cnpj'                  =>  '',
             'institution'           =>  '',
             'timestamp_value_cpf'   =>  '',
-        ]
-    ];
-
-    private array $errorInExtraction = [
-        'status'    =>  '',
-        'msg'       =>  'Não foi possível extrair todos os dados',
-        'data'  =>  [
-            'institution'   =>  '',
         ]
     ];
 
@@ -64,6 +57,7 @@ class ReceiptModelByInstitution
                 'uber' => $this->extractDataUber($text),
                 'picpay' => $this->extractDataPicpay($text),
                 'iti' => $this->extractDataIti($text),
+                'next' => $this->extractDataNext($text),
 
                 default => [
                     'institution' => 'Instituição não identificada',
@@ -95,13 +89,32 @@ class ReceiptModelByInstitution
      */
     private function extractDataCaixaEconomicaAPP(string $text): array
     {
+        printf('=========================================');
+        printf('EXTRACTING CEF DATA');
+        printf('=========================================');
+
+        //Get name
+        if ((preg_match('/Dados do pagador\s+Nome\s+([^\n]+)/', $text, $match)))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else {
-            $this->errorInExtraction['data']['institution'] = 'CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return $this->errorInExtraction;
+            $this->response['data']['institution'] = 'CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
         }
 
 
@@ -110,9 +123,12 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get CPF
@@ -124,9 +140,12 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -135,10 +154,12 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
+            $this->response['data']['institution'] = 'CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
             printf($text);
-            return  $this->errorInExtraction;
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -161,13 +182,32 @@ class ReceiptModelByInstitution
      */
     private function extractDataGerenciadorCaixa(string $text): array
     {
+        printf('=========================================');
+        printf('EXTRACTING GER_CEF DATA');
+        printf('=========================================');
+
+        //Get name
+        if (preg_match('/Origem\s+Nome:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else {
-            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return $this->errorInExtraction;
+            $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
         }
 
 
@@ -176,9 +216,12 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get CPF
@@ -186,9 +229,12 @@ class ReceiptModelByInstitution
             $this->response['data']['cpf'] = $match[1];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -197,10 +243,12 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'GER_CEF';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
+            $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
             printf($text);
-            return  $this->errorInExtraction;
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -251,8 +299,83 @@ class ReceiptModelByInstitution
      */
     private function extractDataBradesco(string $text): array
     {
-        $this->response['status'] = 'NOT_IMPLEMENTED';
+        printf('=========================================');
+        printf('EXTRACTING BRADESCO DATA');
+        printf('=========================================');
+
+        //Get name
+        if (preg_match('/Dados de quem pagou\s+Nome:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+        //Get amount
+        if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
+            $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
+        else {
+            $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+
+        //Get date
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
+            $this->response['data']['date'] = $match[0];
+        else
+        {
+            $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+        //Get CPF
+        if (preg_match('/CPF:\s*([\*\.0-9\-]+)/', $text, $match))
+            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+        else
+        {
+            $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        //Get timestamp
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        else
+        {
+            $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+            $this->response['status'] = 'NOT_IMPLEMENTED';
+        else
+            $this->response['status'] = 'SUCCESS';
+
         $this->response['data']['institution'] = 'BRADESCO';
+
         return $this->response;
     }
 
@@ -265,8 +388,83 @@ class ReceiptModelByInstitution
      */
     private function extractDataSantander(string $text): array
     {
-        $this->response['status'] = 'NOT_IMPLEMENTED';
+        printf('=========================================');
+        printf('EXTRACTING SANTANDER DATA');
+        printf('=========================================');
+
+        //Get name
+        if (preg_match('/^De:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+        //Get amount
+        if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
+            $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
+        else {
+            $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+
+        //Get date
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
+            $this->response['data']['date'] = $match[1];
+        else
+        {
+            $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+        //Get CPF
+        if (preg_match('/CPF\s*([\*\,\.\d\-]+)/', $text, $match))
+            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+        else
+        {
+            $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        //Get timestamp
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        else
+        {
+            $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+            $this->response['status'] = 'NOT_IMPLEMENTED';
+        else
+            $this->response['status'] = 'SUCCESS';
+
         $this->response['data']['institution'] = 'SANTANDER';
+
         return $this->response;
     }
 
@@ -307,8 +505,82 @@ class ReceiptModelByInstitution
      */
     private function extractDataSicredi(string $text): array
     {
-        $this->response['status'] = 'NOT_IMPLEMENTED';
+        printf('=========================================');
+        printf('EXTRACTING SICREDI DATA');
+        printf('=========================================');
+
+        //Get name
+        if (preg_match('/^Solicitante:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'SICREDI';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+        //Get amount
+        if (preg_match('/RS\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
+            $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
+        else {
+            $this->response['data']['institution'] = 'SICREDI';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+        //Get date
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
+            $this->response['data']['date'] = $match[0];
+        else
+        {
+            $this->response['data']['institution'] = 'SICREDI';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+        //Get CPF
+        if (preg_match('/CPF\s+do\s+pagador:\s+([\d\*\.]+)/', $text, $match))
+            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+        else
+        {
+            $this->response['data']['institution'] = 'SICREDI';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        //Get timestamp
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        else
+        {
+            $this->response['data']['institution'] = 'SICREDI';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+            $this->response['status'] = 'NOT_IMPLEMENTED';
+        else
+            $this->response['status'] = 'SUCCESS';
+
         $this->response['data']['institution'] = 'SICREDI';
+
         return $this->response;
     }
 
@@ -321,13 +593,33 @@ class ReceiptModelByInstitution
      */
     private function extractDataNubank(string $text): array
     {
+        printf('=========================================');
+        printf('EXTRACTING NUBANK DATA');
+        printf('=========================================');
+
+        //Get name
+        if ((preg_match('/Origem\s+Nome\s+([^\n]+)/', $text, $match)))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'NUBANK';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+
         //Get amount
         if ((preg_match('/R\$.(\d.*)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else {
-            $this->errorInExtraction['data']['institution'] = 'NUBANK';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return $this->errorInExtraction;
+            $this->response['data']['institution'] = 'NUBANK';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
         }
 
 
@@ -336,9 +628,12 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'NUBANK';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'NUBANK';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get CPF
@@ -348,9 +643,12 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'NUBANK';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'NUBANK';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get timestamp
@@ -358,10 +656,12 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'NUBANK';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
+            $this->response['data']['institution'] = 'NUBANK';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
             printf($text);
-            return  $this->errorInExtraction;
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -468,6 +768,24 @@ class ReceiptModelByInstitution
      */
     private function extractDataPicpay(string $text): array
     {
+        printf('========================================= \n');
+        printf('EXTRACTING PICPAY DATA \n');
+        printf('========================================= \n');
+
+        //Get name
+        if ((preg_match('/De\s+([A-Z\s]+)/', $text, $match)))
+            $this->response['data']['name'] =  str_replace("\n", ' ', $match[1]);
+        else
+        {
+            $this->response['data']['institution'] = 'PICPAY';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
         //Get amount
         if ((preg_match('/R\$\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
@@ -475,9 +793,12 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'PICPAY';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'PICPAY';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get date
@@ -485,9 +806,12 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'PICPAY';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'PICPAY';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get CPF
@@ -497,12 +821,16 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else if(preg_match('/GPF\s*(.*)/', $text, $match))
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+        else if(preg_match('/(\d{3})[,](\d{3})/', $text, $match))
+            $this->response['data']['middle_cpf'] = $match[1] . $match[2];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'PICPAY';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
+            $this->response['data']['institution'] = 'PICPAY';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
             printf($text);
-            return  $this->errorInExtraction;
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -511,9 +839,12 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'PICPAY';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'PICPAY';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -544,6 +875,96 @@ class ReceiptModelByInstitution
 
 
     /**
+     * Example of data extraction method for Bradesco.
+     *
+     * @param string $text
+     * @return array
+     */
+    private function extractDataNext(string $text): array
+    {
+        printf('=========================================');
+        printf('EXTRACTING NEXT DATA');
+        printf('=========================================');
+
+        //Get name
+        if ((preg_match('/Dados do pagador\s+Nome:\s*(.+)$/', $text, $match)))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'NEXT';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+        //Get amount
+        if ((preg_match('/Valor:\s*R\$ ([\d.,]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
+            $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
+        else {
+            $this->response['data']['institution'] = 'NEXT';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return $this->response;
+        }
+
+
+        //Get date
+        if (preg_match('/Data:\s*(\d{2}\/\d{2}\/\d{4})/', $text, $match))
+            $this->response['data']['date'] = $match[1];
+        else
+        {
+            $this->response['data']['institution'] = 'NEXT';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+        //Get CPF
+        if (preg_match('/CPF:.*?(\d[ .]?\d{2})\.(\d{3})/', $text, $match))
+            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
+        else
+        {
+            $this->response['data']['institution'] = 'NEXT';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        //Get timestamp
+        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        else
+        {
+            $this->response['data']['institution'] = 'NEXT';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
+        }
+
+
+        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+            $this->response['status'] = 'NOT_IMPLEMENTED';
+        else
+            $this->response['status'] = 'SUCCESS';
+
+        $this->response['data']['institution'] = 'NEXT';
+
+        return $this->response;
+    }
+
+
+
+    /**
      * Example of data extraction method for Banco do Brasil.
      *
      * @param string $text
@@ -551,14 +972,21 @@ class ReceiptModelByInstitution
      */
     private function extractDataGenericReceipt(string $text): array
     {
+        printf('=========================================');
+        printf('EXTRACTING UNIDENTIFIED INSTITUTION DATA');
+        printf('=========================================');
+
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET AMOUNT DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get date
@@ -566,9 +994,12 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET DATE DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
         //Get CPF
@@ -580,9 +1011,12 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET CPF DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
@@ -595,9 +1029,12 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            $this->errorInExtraction['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
-            $this->errorInExtraction['status'] = 'READING_ERROR';
-            return  $this->errorInExtraction;
+            $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET TIMESTAMP DATA');
+            printf($text);
+            json_encode($this->response['data']);
+            return  $this->response;
         }
 
 
