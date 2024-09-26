@@ -91,21 +91,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataCaixaEconomicaAPP(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING CEF DATA\n');
-        printf('=========================================\n');
-
-        //Get name
-        if ((preg_match('/Dados do pagador\s+Nome\s+([^\n]+)/', $text, $match)))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'CEF';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING CEF DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
@@ -113,12 +101,23 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
 
+        //Get name
+        if ((preg_match('/Dados do pagador\s+Nome\s+([^\n]+)/', $text, $match)))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
@@ -127,8 +126,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -144,8 +143,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -158,8 +157,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -184,21 +183,11 @@ class ReceiptModelByInstitution
      */
     private function extractDataGerenciadorCaixa(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING GER_CEF DATA\n');
-        printf('=========================================\n');
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING GER_CEF DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
-        //Get name
-        if (preg_match('/Origem\s+Nome:\s*(.+)$/', $text, $match))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'GER_CEF';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+
 
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
@@ -206,8 +195,21 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'GER_CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
+
+
+        //Get name
+        if (preg_match('/Origem\s+Nome:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
@@ -220,8 +222,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'GER_CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -233,8 +235,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'GER_CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -247,8 +249,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'GER_CEF';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -301,21 +303,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataBradesco(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING BRADESCO DATA\n');
-        printf('=========================================\n');
-
-        //Get name
-        if (preg_match('/Dados de quem pagou\s+Nome:\s*(.+)$/', $text, $match))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'BRADESCO';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING BRADESCO DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
@@ -323,8 +313,21 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'BRADESCO';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
+
+
+        //Get name
+        if (preg_match('/Dados de quem pagou\s+Nome:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
@@ -337,8 +340,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'BRADESCO';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -350,8 +353,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'BRADESCO';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -364,8 +367,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'BRADESCO';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -390,21 +393,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataSantander(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING SANTANDER DATA\n');
-        printf('=========================================\n');
-
-        //Get name
-        if (preg_match('/^De:\s*(.+)$/', $text, $match))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'SANTANDER';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING SANTANDER DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
@@ -412,12 +403,24 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'SANTANDER';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
 
+
+        //Get name
+        if (preg_match('/^De:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
@@ -426,8 +429,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'SANTANDER';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -439,8 +442,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'SANTANDER';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -453,8 +456,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'SANTANDER';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -507,21 +510,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataSicredi(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING SICREDI DATA\n');
-        printf('=========================================\n');
-
-        //Get name
-        if (preg_match('/^Solicitante:\s*(.+)$/', $text, $match))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'SICREDI';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING SICREDI DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
         //Get amount
         if (preg_match('/RS\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
@@ -529,8 +520,21 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'SICREDI';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
+
+
+        //Get name
+        if (preg_match('/^Solicitante:\s*(.+)$/', $text, $match))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'SICREDI';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
@@ -542,8 +546,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'SICREDI';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -555,8 +559,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'SICREDI';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -569,8 +573,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'SICREDI';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -595,21 +599,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataNubank(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING NUBANK DATA\n');
-        printf('=========================================\n');
-
-        //Get name
-        if ((preg_match('/Origem\s+Nome\s+([^\n]+)/', $text, $match)))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'NUBANK';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING NUBANK DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
 
         //Get amount
@@ -618,8 +610,20 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'NUBANK';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
+
+        //Get name
+        if ((preg_match('/Origem\s+Nome\s+([^\n]+)/', $text, $match)))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'NUBANK';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
@@ -632,8 +636,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'NUBANK';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -647,8 +651,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'NUBANK';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -660,8 +664,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'NUBANK';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -770,23 +774,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataPicpay(string $text): array
     {
-        printf('========================================= \n');
-        printf('EXTRACTING PICPAY DATA \n');
-        printf('========================================= \n');
-
-        //Get name
-        if ((preg_match('/De\s+([A-Z\s]+)/', $text, $match)))
-            $this->response['data']['name'] =  str_replace("\n", ' ', $match[1]);
-        else
-        {
-            $this->response['data']['institution'] = 'PICPAY';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return  $this->response;
-        }
-
+        printf('========================================= ' . PHP_EOL);
+        printf('EXTRACTING PICPAY DATA ' . PHP_EOL);
+        printf('========================================= ' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/R\$\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
@@ -797,8 +787,22 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'PICPAY';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return  $this->response;
+        }
+
+
+        //Get name
+        if ((preg_match('/De\s+([A-Z\s]+)/', $text, $match)))
+            $this->response['data']['name'] =  str_replace("\n", ' ', $match[1]);
+        else
+        {
+            $this->response['data']['institution'] = 'PICPAY';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -810,8 +814,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'PICPAY';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -829,8 +833,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'PICPAY';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -843,8 +847,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'PICPAY';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -884,21 +888,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataNext(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING NEXT DATA\n');
-        printf('=========================================\n');
-
-        //Get name
-        if ((preg_match('/Dados do pagador\s+Nome:\s*(.+)$/', $text, $match)))
-            $this->response['data']['name'] = $match[1];
-        else {
-            $this->response['data']['institution'] = 'NEXT';
-            $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET NAME DATA\n');
-            printf($text . '\n');
-            print(json_encode($this->response['data']));
-            return $this->response;
-        }
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING NEXT DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/Valor:\s*R\$ ([\d.,]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
@@ -906,12 +898,24 @@ class ReceiptModelByInstitution
         else {
             $this->response['data']['institution'] = 'NEXT';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return $this->response;
         }
 
+
+        //Get name
+        if ((preg_match('/Dados do pagador\s+Nome:\s*(.+)$/', $text, $match)))
+            $this->response['data']['name'] = $match[1];
+        else {
+            $this->response['data']['institution'] = 'NEXT';
+            $this->response['status'] = 'READING_ERROR';
+            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
+            print(json_encode($this->response['data']));
+            return $this->response;
+        }
 
         //Get date
         if (preg_match('/Data:\s*(\d{2}\/\d{2}\/\d{4})/', $text, $match))
@@ -920,8 +924,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'NEXT';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -933,8 +937,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'NEXT';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -947,8 +951,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'NEXT';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -974,9 +978,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataGenericReceipt(string $text): array
     {
-        printf('=========================================\n');
-        printf('EXTRACTING UNIDENTIFIED INSTITUTION DATA\n');
-        printf('=========================================\n');
+        printf('=========================================' . PHP_EOL);
+        printf('EXTRACTING UNIDENTIFIED INSTITUTION DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
@@ -985,8 +989,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET AMOUNT DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -998,8 +1002,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET DATE DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -1015,8 +1019,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET CPF DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
@@ -1033,8 +1037,8 @@ class ReceiptModelByInstitution
         {
             $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
             $this->response['status'] = 'READING_ERROR';
-            printf('ERROR IN GET TIMESTAMP DATA\n');
-            printf($text . '\n');
+            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf($text . PHP_EOL);
             print(json_encode($this->response['data']));
             return  $this->response;
         }
