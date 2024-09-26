@@ -75,12 +75,10 @@ RUN crontab /etc/cron.d/artisan-cron
 EXPOSE 8000
 
 # Start PHP-FPM and cron
-#COPY docker/dev/docker-entrypoint.sh /usr/local/bin/
-#RUN chmod +x /usr/local/bin/docker-entrypoint.sh
-#CMD ["docker-entrypoint.sh"]
+COPY docker/dev/docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+CMD ["docker-entrypoint.sh"]
 
-# Start Octane server directly
-#CMD ["sh", "-c", "php artisan octane:start --server=swoole --host=0.0.0.0 --port=8000 & tail -f /dev/null"]
 
 # Start Octane server
-CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8000"]
+#CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8000"]
