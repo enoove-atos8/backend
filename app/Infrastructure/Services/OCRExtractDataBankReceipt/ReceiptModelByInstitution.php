@@ -27,6 +27,8 @@ class ReceiptModelByInstitution
      */
     public function handleDispatchDataFunctionByInstitution($dataExtracted): array
     {
+        $this->resetResponseArray();
+
         if($dataExtracted['templateReceipt'] == 'generic' && $dataExtracted['templateReceipt'] != '')
         {
             return $this->extractDataGenericReceipt($dataExtracted['text']);
@@ -1072,5 +1074,25 @@ class ReceiptModelByInstitution
         $year = $arrDateParts[2];
 
         return $day . '/' . $monthNumber . '/' . $year;
+    }
+
+
+
+    /**
+     * Reset response data
+     */
+    private function resetResponseArray(): void
+    {
+        $this->response['status'] = '';
+        $this->response['msg'] = '';
+        $this->response['data']['name'] = '';
+        $this->response['data']['amount'] = 0;
+        $this->response['data']['date'] = '';
+        $this->response['data']['cpf'] = '';
+        $this->response['data']['middle_cpf'] = '';
+        $this->response['data']['cnpj'] = '';
+        $this->response['data']['institution'] = '';
+        $this->response['data']['timestamp_value_cpf'] = '';
+
     }
 }
