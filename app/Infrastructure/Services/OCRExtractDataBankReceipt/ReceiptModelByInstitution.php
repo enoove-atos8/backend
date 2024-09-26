@@ -103,7 +103,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -115,7 +115,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -129,7 +129,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -146,7 +146,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -160,7 +160,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -196,7 +196,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -208,7 +208,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -222,7 +222,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -235,7 +235,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -249,7 +249,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -313,7 +313,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -325,7 +325,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -339,7 +339,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -352,7 +352,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -366,7 +366,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -402,7 +402,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -414,7 +414,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -428,7 +428,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -441,7 +441,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -455,7 +455,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -519,7 +519,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -531,7 +531,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -544,7 +544,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -557,7 +557,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -571,7 +571,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -607,7 +607,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -620,7 +620,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -634,7 +634,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -649,7 +649,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -662,7 +662,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -783,7 +783,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -799,7 +799,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -812,7 +812,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -831,7 +831,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -845,7 +845,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -896,7 +896,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET NAME DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -908,7 +908,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return $this->response;
         }
 
@@ -922,7 +922,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -935,7 +935,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -949,7 +949,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -987,7 +987,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET AMOUNT DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -1000,7 +1000,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET DATE DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -1017,7 +1017,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET CPF DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
@@ -1035,7 +1035,7 @@ class ReceiptModelByInstitution
             $this->response['status'] = 'READING_ERROR';
             printf('ERROR IN GET TIMESTAMP DATA\n');
             printf($text . '\n');
-            json_encode($this->response['data']);
+            print(json_encode($this->response['data']));
             return  $this->response;
         }
 
