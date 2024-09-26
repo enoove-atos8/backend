@@ -80,4 +80,4 @@ EXPOSE 8000
 #CMD ["docker-entrypoint.sh"]
 
 # Start Octane server directly
-CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8000 & tail -f /dev/null"]
+CMD ["sh", "-c", "php artisan octane:start --server=swoole --host=0.0.0.0 --port=8000 & tail -f /dev/null"]
