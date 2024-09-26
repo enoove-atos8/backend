@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->dailyAt('16:36');
+        })->hourly();
     }
 
 
