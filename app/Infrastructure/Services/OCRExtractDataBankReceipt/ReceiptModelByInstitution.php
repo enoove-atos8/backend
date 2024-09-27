@@ -99,7 +99,7 @@ class ReceiptModelByInstitution
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -108,7 +108,7 @@ class ReceiptModelByInstitution
         if ((preg_match('/Dados do pagador\s+Nome\s+([^\n]+)/', $text, $match)))
             $this->response['data']['name'] = $match[1];
         else {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -118,7 +118,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -132,7 +132,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -143,7 +143,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -177,7 +177,7 @@ class ReceiptModelByInstitution
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -188,7 +188,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -199,7 +199,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -209,7 +209,7 @@ class ReceiptModelByInstitution
             $this->response['data']['cpf'] = $match[1];
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -220,7 +220,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -282,7 +282,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -293,7 +293,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -304,7 +304,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[0];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -314,7 +314,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -325,7 +325,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -359,7 +359,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -370,7 +370,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -380,7 +380,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -390,7 +390,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -401,7 +401,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -463,7 +463,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -474,7 +474,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -484,7 +484,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[0];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -494,7 +494,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -505,7 +505,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -540,7 +540,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -550,7 +550,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -561,7 +561,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -573,7 +573,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -583,7 +583,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -703,7 +703,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -714,7 +714,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] =  str_replace("\n", ' ', $match[1]);
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -724,7 +724,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -740,7 +740,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = $match[1] . $match[2];
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -751,7 +751,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -800,7 +800,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -811,7 +811,7 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf('ERROR IN GET NAME DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -821,7 +821,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -831,7 +831,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -842,7 +842,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -877,7 +877,7 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -887,7 +887,7 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf('ERROR IN GET DATE DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -901,7 +901,7 @@ class ReceiptModelByInstitution
             $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
         else
         {
-            printf('ERROR IN GET CPF DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
@@ -916,7 +916,7 @@ class ReceiptModelByInstitution
             $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
         else
         {
-            printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
