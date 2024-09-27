@@ -91,7 +91,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataCaixaEconomicaAPP(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING CEF DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -168,7 +168,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataGerenciadorCaixa(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING GER_CEF DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -273,7 +273,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataBradesco(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING BRADESCO DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -350,7 +350,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataSantander(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING SANTANDER DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -454,7 +454,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataSicredi(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING SICREDI DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -530,7 +530,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataNubank(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING NUBANK DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -692,7 +692,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataPicpay(string $text): array
     {
-        printf('========================================= ' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING PICPAY DATA ' . PHP_EOL);
         printf('========================================= ' . PHP_EOL);
 
@@ -791,7 +791,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataNext(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING NEXT DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
@@ -868,7 +868,7 @@ class ReceiptModelByInstitution
      */
     private function extractDataGenericReceipt(string $text): array
     {
-        printf('=========================================' . PHP_EOL);
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING UNIDENTIFIED INSTITUTION DATA' . PHP_EOL);
         printf('=========================================' . PHP_EOL);
 
