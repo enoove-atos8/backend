@@ -101,7 +101,7 @@ class ReceiptModelByInstitution
         else {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get name
@@ -110,7 +110,7 @@ class ReceiptModelByInstitution
         else {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get date
@@ -120,7 +120,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -134,7 +134,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -145,7 +145,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -179,7 +179,7 @@ class ReceiptModelByInstitution
         else {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -190,7 +190,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -201,7 +201,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -211,7 +211,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -222,7 +222,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -284,7 +284,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -295,7 +295,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -306,7 +306,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -316,7 +316,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -327,7 +327,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -361,7 +361,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -372,7 +372,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get date
@@ -382,7 +382,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -392,7 +392,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -403,7 +403,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -465,7 +465,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -476,7 +476,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get date
@@ -486,7 +486,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -496,7 +496,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -507,7 +507,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -542,7 +542,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get name
@@ -552,7 +552,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -563,7 +563,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -575,7 +575,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get timestamp
@@ -585,7 +585,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -705,7 +705,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -716,7 +716,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get date
@@ -726,7 +726,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -742,7 +742,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -753,7 +753,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -802,7 +802,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -813,7 +813,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET NAME DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get date
@@ -823,7 +823,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -833,7 +833,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -844,7 +844,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -879,7 +879,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET AMOUNT DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get date
@@ -889,7 +889,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET DATE DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
         //Get CPF
@@ -903,7 +903,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET CPF DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
 
@@ -918,7 +918,7 @@ class ReceiptModelByInstitution
         {
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
-            print(json_encode($this->response['data']));
+            printf(json_encode($this->response['data']) . PHP_EOL);
             return  $this->response;
         }
 
