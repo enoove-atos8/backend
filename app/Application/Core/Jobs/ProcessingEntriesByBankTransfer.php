@@ -203,16 +203,16 @@ class ProcessingEntriesByBankTransfer
                                 $this->googleDriveService->renameFile($file->id, $fileUploaded, 'FILE_READ', $extractedData['data']['institution']);
                             }
 
-                            printf(json_encode($extractedData));
+                            //printf(json_encode($extractedData));
                         }
                         else if(count($extractedData) > 0 && $extractedData['status'] == 'NOT_IMPLEMENTED')
                         {
                             $this->googleDriveService->renameFile($file->id, null, 'NOT_IMPLEMENTED', $extractedData['data']['institution']);
 
-                            printf(json_encode([
-                                'status' =>  $extractedData['status'],
-                                'data' =>  $extractedData,
-                            ]));
+                            //printf(json_encode([
+                            //    'status' =>  $extractedData['status'],
+                            //    'data' =>  $extractedData,
+                            //]));
                         }
                         else if(count($extractedData) > 0 && $extractedData['status'] == 'READING_ERROR')
                         {
@@ -223,10 +223,10 @@ class ProcessingEntriesByBankTransfer
 
                             $this->googleDriveService->renameFile($file->id, null, 'READING_ERROR', $extractedData['data']['institution']);
 
-                            printf(json_encode([
-                                'status' =>  $extractedData['status'],
-                                'data' =>  $extractedData,
-                            ]));
+                            //printf(json_encode([
+                            //    'status' =>  $extractedData['status'],
+                            //    'data' =>  $extractedData,
+                            //]));
                         }
                     }
                 }
