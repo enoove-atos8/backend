@@ -46,10 +46,10 @@ class OCRExtractDataBankReceiptService
      * @return array|bool
      * @throws TesseractOcrException
      */
-    public function ocrExtractData(string $filePath): array | string
+    public function ocrExtractData(string $filePath, string $entryType): array | string
     {
         $dataExtracted = $this->getBankingInstitution($filePath);
-        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted);
+        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted, $entryType);
     }
 
 

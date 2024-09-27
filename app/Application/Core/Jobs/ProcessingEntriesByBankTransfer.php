@@ -138,7 +138,7 @@ class ProcessingEntriesByBankTransfer
 
                     if(is_array($downloadedFile))
                     {
-                        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile['destinationPath']);
+                        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile['destinationPath'], $this->entryType);
 
                         if(count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
                         {
