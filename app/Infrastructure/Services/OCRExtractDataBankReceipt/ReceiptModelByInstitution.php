@@ -25,13 +25,13 @@ class ReceiptModelByInstitution
      * Function redirects to another
      * that will read the receipts according to the institution informed
      */
-    public function handleDispatchDataFunctionByInstitution($dataExtracted): array
+    public function handleDispatchDataFunctionByInstitution(array $dataExtracted, string $entryType): array
     {
         $this->resetResponseArray();
 
         if($dataExtracted['templateReceipt'] == 'generic' && $dataExtracted['templateReceipt'] != '')
         {
-            return $this->extractDataGenericReceipt($dataExtracted['text']);
+            return $this->extractDataGenericReceipt($dataExtracted['text'], $entryType);
         }
         else if($dataExtracted['templateReceipt'] != 'generic' && $dataExtracted['templateReceipt'] != '')
         {
@@ -40,26 +40,26 @@ class ReceiptModelByInstitution
 
             return match ($templateReceipt)
             {
-                'bb' => $this->extractDataBancoDoBrasil($text),
-                'cef_app' => $this->extractDataCaixaEconomicaAPP($text),
-                'cef_ger' => $this->extractDataGerenciadorCaixa($text),
-                'cef_ib' => $this->extractDataCaixaEconomicaIB($text),
-                'cef_tem' => $this->extractDataCaixaTEM($text),
-                'bradesco' => $this->extractDataBradesco($text),
-                'santander' => $this->extractDataSantander($text),
-                'itau_1' => $this->extractDataItau1($text),
-                'itau_2' => $this->extractDataItau2($text),
-                'sicredi' => $this->extractDataSicredi($text),
-                'nubank' => $this->extractDataNubank($text),
-                'digio' => $this->extractDataDigio($text),
-                'c6' => $this->extractDataC6($text),
-                'neon' => $this->extractDataNeon($text),
-                'inter' => $this->extractDataInter($text),
-                '99' => $this->extractData99($text),
-                'uber' => $this->extractDataUber($text),
-                'picpay' => $this->extractDataPicpay($text),
-                'iti' => $this->extractDataIti($text),
-                'next' => $this->extractDataNext($text),
+                'bb' => $this->extractDataBancoDoBrasil($text, $entryType),
+                'cef_app' => $this->extractDataCaixaEconomicaAPP($text, $entryType),
+                'cef_ger' => $this->extractDataGerenciadorCaixa($text, $entryType),
+                'cef_ib' => $this->extractDataCaixaEconomicaIB($text, $entryType),
+                'cef_tem' => $this->extractDataCaixaTEM($text, $entryType),
+                'bradesco' => $this->extractDataBradesco($text, $entryType),
+                'santander' => $this->extractDataSantander($text, $entryType),
+                'itau_1' => $this->extractDataItau1($text, $entryType),
+                'itau_2' => $this->extractDataItau2($text, $entryType),
+                'sicredi' => $this->extractDataSicredi($text, $entryType),
+                'nubank' => $this->extractDataNubank($text, $entryType),
+                'digio' => $this->extractDataDigio($text, $entryType),
+                'c6' => $this->extractDataC6($text, $entryType),
+                'neon' => $this->extractDataNeon($text, $entryType),
+                'inter' => $this->extractDataInter($text, $entryType),
+                '99' => $this->extractData99($text, $entryType),
+                'uber' => $this->extractDataUber($text, $entryType),
+                'picpay' => $this->extractDataPicpay($text, $entryType),
+                'iti' => $this->extractDataIti($text, $entryType),
+                'next' => $this->extractDataNext($text, $entryType),
 
                 default => [
                     'institution' => 'Instituição não identificada',
@@ -73,9 +73,10 @@ class ReceiptModelByInstitution
      * Example of data extraction method for Banco do Brasil.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataBancoDoBrasil(string $text): array
+    private function extractDataBancoDoBrasil(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'BB';
@@ -84,12 +85,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Banco do Brasil.
+     * Example of data extraction method for CEF
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataCaixaEconomicaAPP(string $text): array
+    private function extractDataCaixaEconomicaAPP(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING CEF DATA' . PHP_EOL);
@@ -161,12 +163,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Banco do Brasil.
+     * Example of data extraction method for GER_CEF
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataGerenciadorCaixa(string $text): array
+    private function extractDataGerenciadorCaixa(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING GER_CEF DATA' . PHP_EOL);
@@ -238,12 +241,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Banco do Brasil.
+     * Example of data extraction method for CEF_IB
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataCaixaEconomicaIB(string $text): array
+    private function extractDataCaixaEconomicaIB(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'CEF_IB';
@@ -252,12 +256,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Banco do Brasil.
+     * Example of data extraction method for CAIXA_TEM
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataCaixaTEM(string $text): array
+    private function extractDataCaixaTEM(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'CAIXA_TEM';
@@ -269,9 +274,10 @@ class ReceiptModelByInstitution
      * Example of data extraction method for Bradesco.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataBradesco(string $text): array
+    private function extractDataBradesco(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING BRADESCO DATA' . PHP_EOL);
@@ -343,12 +349,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Sandander.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataSantander(string $text): array
+    private function extractDataSantander(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING SANTANDER DATA' . PHP_EOL);
@@ -419,12 +426,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Itau_1.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataItau1(string $text): array
+    private function extractDataItau1(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'ITAU1';
@@ -433,12 +441,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Itau_2.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataItau2(string $text): array
+    private function extractDataItau2(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'ITAU2';
@@ -447,12 +456,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Sicredi.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataSicredi(string $text): array
+    private function extractDataSicredi(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING SICREDI DATA' . PHP_EOL);
@@ -523,12 +533,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Nubank.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataNubank(string $text): array
+    private function extractDataNubank(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING NUBANK DATA' . PHP_EOL);
@@ -601,12 +612,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Digio.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataDigio(string $text): array
+    private function extractDataDigio(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'DIGIO';
@@ -615,12 +627,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for C6.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataC6(string $text): array
+    private function extractDataC6(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'C6';
@@ -629,12 +642,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for NEON.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataNeon(string $text): array
+    private function extractDataNeon(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'NEON';
@@ -643,12 +657,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Inter.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataInter(string $text): array
+    private function extractDataInter(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'INTER';
@@ -657,12 +672,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for 99.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractData99(string $text): array
+    private function extractData99(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = '99';
@@ -671,12 +687,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Uber.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataUber(string $text): array
+    private function extractDataUber(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'UBER';
@@ -685,12 +702,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for Picpay.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataPicpay(string $text): array
+    private function extractDataPicpay(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING PICPAY DATA ' . PHP_EOL);
@@ -769,12 +787,13 @@ class ReceiptModelByInstitution
 
 
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for ITI.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataIti(string $text): array
+    private function extractDataIti(string $text, string $entryType): array
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'ITI';
@@ -782,14 +801,14 @@ class ReceiptModelByInstitution
     }
 
 
-
     /**
-     * Example of data extraction method for Bradesco.
+     * Example of data extraction method for NEXT.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataNext(string $text): array
+    private function extractDataNext(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING NEXT DATA' . PHP_EOL);
@@ -859,14 +878,14 @@ class ReceiptModelByInstitution
     }
 
 
-
     /**
-     * Example of data extraction method for Banco do Brasil.
+     * Example of data extraction method for Banco do Generic.
      *
      * @param string $text
+     * @param string $entryType
      * @return array
      */
-    private function extractDataGenericReceipt(string $text): array
+    private function extractDataGenericReceipt(string $text, string $entryType): array
     {
         printf(PHP_EOL . '=========================================' . PHP_EOL);
         printf('EXTRACTING UNIDENTIFIED INSTITUTION DATA' . PHP_EOL);

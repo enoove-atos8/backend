@@ -27,7 +27,7 @@ return new class extends Migration
                 $table->decimal('amount')->nullable(false);
                 $table->string('recipient')->nullable();
                 $table->boolean('devolution')->default(0)->nullable();
-                $table->boolean('residual_value')->default(0)->nullable(false);
+                $table->boolean('residual_value')->default(0)->nullable();
                 $table->boolean('deleted')->nullable(false)->default(0);
                 $table->string('comments')->nullable();
                 $table->string('receipt_link')->nullable();
