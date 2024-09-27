@@ -919,7 +919,6 @@ class ReceiptModelByInstitution
             printf('ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
             printf($text . PHP_EOL);
             printf(json_encode($this->response['data']) . PHP_EOL);
-            return  $this->response;
         }
 
 
