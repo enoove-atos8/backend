@@ -6,6 +6,7 @@ use Google\Service\Drive\DriveFile;
 use Google\Service\Exception;
 use Google\Client;
 use Google\Service\Drive;
+use Google\Service\Sheets;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -34,7 +35,7 @@ class GoogleDriveService
     /**
      * @throws \Exception
      */
-    public function getInstanceGoogleDrive(string $tenant): Drive
+    public function defineInstanceGoogleDrive(string $tenant): Client
     {
         $clientId = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_CLIENT_ID');
         $clientSecret = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_CLIENT_SECRET');
@@ -44,6 +45,7 @@ class GoogleDriveService
         $this->client->setClientId($clientId);
         $this->client->setClientSecret($clientSecret);
         $this->client->addScope(Drive::DRIVE);
+        $this->client->addScope(Sheets::SPREADSHEETS);
 
         $tokens = DB::table('google_tokens')
                     ->where('tenant', $tenant)
@@ -92,7 +94,7 @@ class GoogleDriveService
 
         $this->instance = new Drive($this->client);
 
-        return $this->instance;
+        return $this->client;
     }
 
 

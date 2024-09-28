@@ -16,6 +16,8 @@ class FoldersRepository extends BaseRepository implements FoldersRepositoryInter
     protected mixed $model = Folder::class;
 
     const TABLE_NAME = 'google_drive_ecclesiastical_groups_folders';
+    const ENTRY_TYPE_COLUMN = 'entry_type';
+    const ENTRIES_IN_CULT_VALUE = 'entries_in_cult';
 
 
     /**
@@ -25,10 +27,30 @@ class FoldersRepository extends BaseRepository implements FoldersRepositoryInter
 
 
     /**
+     * @param bool $cashTithes
+     * @return Collection
      * @throws BindingResolutionException
      */
-    public function getFolders(): Collection
+    public function getFolders(bool $cashTithes): Collection
     {
-        return $this->getItemsByWhere();
+        if(!$cashTithes)
+            $folders =  $this->getItemsByWhere();
+        else
+        {
+            $conditions = [
+                [
+                    'field' => self::ENTRY_TYPE_COLUMN,
+                    'operator' => BaseRepository::OPERATORS['EQUALS'],
+                    'value' => self::ENTRIES_IN_CULT_VALUE
+                ]
+            ];
+
+            $folders =  $this->getItemsByWhere(
+                ['*'],
+                $conditions
+            );
+        }
+
+        return $folders;
     }
 }

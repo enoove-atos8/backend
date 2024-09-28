@@ -275,11 +275,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getItemByWhere(array $columns = ['*'], array $conditions = []): Model | null
+    public function getItemByWhere(array $columns = ['*'], array $conditions = []): ?Model
     {
         $query = function () use ($columns, $conditions) {
-            return DB::table($this->model->getTable())
-                ->select($columns)
+            return $this->model->select($columns)
                 ->where($conditions)
                 ->first();
         };

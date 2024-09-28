@@ -2,6 +2,7 @@
 
 namespace Application\Core\Console;
 
+use App\Application\Core\Jobs\ProcessingEntriesByCollectionWorship;
 use Application\Core\Jobs\ProcessingEntriesByBankTransfer;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -18,7 +19,11 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->everyTenMinutes();
+        })->hourly();
+
+        $schedule->call(function () {
+            resolve(ProcessingEntriesByCollectionWorship::class)->handle();
+        })->dailyAt('16:44');
     }
 
 
