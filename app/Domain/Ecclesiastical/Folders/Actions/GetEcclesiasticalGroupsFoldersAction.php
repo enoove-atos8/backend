@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Folders\Actions;
 
 use Domain\Ecclesiastical\Folders\Interfaces\FoldersRepositoryInterface;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\Ecclesiastical\Folders\FoldersRepository;
 use Throwable;
@@ -22,17 +23,13 @@ class GetEcclesiasticalGroupsFoldersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Collection | null
+    public function __invoke(bool $cashTithes = false): Collection | null
     {
-        $folders = $this->foldersRepository->getFolders();
+        $folders = $this->foldersRepository->getFolders($cashTithes);
 
-        if(count($folders) > 0)
-        {
+        if ($folders->isNotEmpty())
             return $folders;
-        }
-        else
-        {
-            return null;
-        }
+
+        return null;
     }
 }

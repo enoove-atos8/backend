@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 interface FoldersRepositoryInterface
 {
     /**
+     * @param bool $cashTithes
      * @return Collection
      */
-    public function getFolders(): Collection;
+    public function getFolders(bool $cashTithes): Collection;
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Core\Jobs;
+namespace App\Application\Core\Jobs;
 
 use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
@@ -18,6 +18,7 @@ use Domain\Ecclesiastical\Folders\DataTransferObjects\FolderData;
 use Domain\Financial\Receipts\Entries\Unidentified\Actions\CreateUnidentifiedReceiptAction;
 use Domain\Financial\Receipts\Entries\Unidentified\DataTransferObjects\UnidentifiedReceiptData;
 use Domain\Members\DataTransferObjects\MemberData;
+use Google\Client;
 use Google\Service\Drive;
 use Google\Service\Exception;
 use Google\Service\Drive\DriveFile;
@@ -26,15 +27,17 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Services\GoogleDrive\GoogleDriveService;
+use Infrastructure\Services\GoogleSheets\GoogleSheetsService;
 use Infrastructure\Services\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
 use Infrastructure\Util\Storage\S3\UploadFile;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use thiagoalessio\TesseractOCR\TesseractOcrException;
 use Throwable;
 
-class ProcessingEntriesByBankTransfer
+class ProcessingEntriesByCollectionWorship
 {
     private GoogleDriveService $googleDriveService;
+    private GoogleSheetsService $googleSheetsService;
     private CreateEntryAction $createEntryAction;
     private GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction;
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
@@ -53,9 +56,10 @@ class ProcessingEntriesByBankTransfer
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
     protected Collection $foldersData;
+    protected Client $client;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
     const IDENTIFICATION_PENDING_1 = 1;
@@ -66,6 +70,7 @@ class ProcessingEntriesByBankTransfer
 
     public function __construct(
         GoogleDriveService $googleDriveService,
+        GoogleSheetsService $googleSheetsService,
         CreateEntryAction $createEntryAction,
         GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction,
         GetMemberByCPFAction $getMemberByCPFAction,
@@ -85,6 +90,7 @@ class ProcessingEntriesByBankTransfer
     )
     {
         $this->googleDriveService = $googleDriveService;
+        $this->googleSheetsService = $googleSheetsService;
         $this->createEntryAction = $createEntryAction;
         $this->getMemberByMiddleCPFAction = $getMemberByMiddleCPFAction;
         $this->getEcclesiasticalGroupsFoldersAction = $getEcclesiasticalGroupsFoldersAction;
@@ -119,115 +125,20 @@ class ProcessingEntriesByBankTransfer
         {
             tenancy()->initialize($tenant);
 
-            $this->googleDriveService->defineInstanceGoogleDrive($tenant);
-            $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke();
-
+            $this->client = $this->googleDriveService->defineInstanceGoogleDrive($tenant);
+            $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke(true);
 
             foreach ($this->foldersData as $key => $folderData)
             {
-                $this->entryType = $folderData->entry_type;
-
                 $files = $this->googleDriveService->listFiles($folderData->folder_id);
 
                 foreach ($files as $file)
                 {
-                    $basePathTemp = self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/temp';
-                    $this->googleDriveService->deleteFilesInLocalDirectory($basePathTemp);
-                    $downloadedFile = $this->googleDriveService->download($basePathTemp, $file);
+                    $tithesBlock = $this->googleSheetsService->readTithesBlock($this->client, $file->id);
+                    $designatedBlock = $this->googleSheetsService->readDesignatedBlock($this->client, $file->id);
+                    $offersBlock = $this->googleSheetsService->readOffersBlock($this->client, $file->id);
 
-                    if(is_array($downloadedFile))
-                    {
-                        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile['destinationPath'], $this->entryType);
-
-                        if(count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
-                        {
-                            $middleCpf = $extractedData['data']['middle_cpf'];
-                            $cpf = $extractedData['data']['cpf'];
-                            $member = null;
-
-                            if($middleCpf != '')
-                                $member = $this->getMemberByMiddleCPFAction->__invoke($middleCpf);
-                            if ($middleCpf != '' && $member == null)
-                            {
-                                $member = $this->getMemberByCPFAction->__invoke($middleCpf, true);
-                                if(!is_null($member))
-                                    $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
-                            }
-                            if ($cpf != '' && $member == null)
-                                $member = $this->getMemberByCPFAction->__invoke($cpf);
-
-                            //Localizar o membro pelo seu nome e se encontrar apenas 1 registro atualizar o middle_cpf/cpf dele
-
-                            if(is_null($member))
-                            {
-                                $this->setEntryData($extractedData, $member, $folderData);
-
-                                $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($extractedData['data']['timestamp_value_cpf']);
-
-                                if($entryByTimestampValueCpf != null)
-                                {
-                                    $this->googleDriveService->deleteFile($file->id);
-                                    continue;
-                                }
-                                else
-                                {
-                                    $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-                                    $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
-                                    $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
-                                }
-                            }
-                            else
-                            {
-                                $this->setEntryData($extractedData, $member, $folderData);
-
-                                $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($extractedData['data']['timestamp_value_cpf']);
-
-                                if($entryByTimestampValueCpf != null)
-                                {
-                                    $this->googleDriveService->deleteFile($file->id);
-                                    continue;
-                                }
-                                else
-                                {
-                                    $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-                                    $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
-                                }
-                            }
-
-
-                            $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_PATH, $tenant);
-                            if($fileUploaded != '')
-                            {
-                                $this->updateReceiptLinkEntryAction->__invoke($entry->id, $fileUploaded);
-                                $this->googleDriveService->renameFile($file->id, $fileUploaded, 'FILE_READ', $extractedData['data']['institution']);
-                            }
-
-                            //printf(json_encode($extractedData));
-                        }
-                        else if(count($extractedData) > 0 && $extractedData['status'] == 'NOT_IMPLEMENTED')
-                        {
-                            $this->googleDriveService->renameFile($file->id, null, 'NOT_IMPLEMENTED', $extractedData['data']['institution']);
-
-                            //printf(json_encode([
-                            //    'status' =>  $extractedData['status'],
-                            //    'data' =>  $extractedData,
-                            //]));
-                        }
-                        else if(count($extractedData) > 0 && $extractedData['status'] == 'READING_ERROR')
-                        {
-                            $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH, $tenant);
-
-                            $this->setUnidentifiedReceiptData($this->entryType, $fileUploaded, $extractedData['data']);
-                            $this->createUnidentifiedReceiptAction->__invoke($this->unidentifiedReceiptData);
-
-                            $this->googleDriveService->renameFile($file->id, null, 'READING_ERROR', $extractedData['data']['institution']);
-
-                            //printf(json_encode([
-                            //    'status' =>  $extractedData['status'],
-                            //    'data' =>  $extractedData,
-                            //]));
-                        }
-                    }
+                    //Cadastrar a entrada na base
                 }
             }
         }
