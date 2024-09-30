@@ -129,38 +129,68 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF\s*\n(?:ees\s*)([0-9\s\.]+)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]);
-        else if(preg_match('/CPF\s*(.*)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else if(preg_match('/GPF\s*(.*)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+        if($entryType == 'tithe')
+        {
+            //Get CPF
+            if (preg_match('/CPF\s*\n(?:ees\s*)([0-9\s\.]+)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]);
+            else if(preg_match('/CPF\s*(.*)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else if(preg_match('/GPF\s*(.*)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
+
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'CEF';
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'CEF';
         }
 
-
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
-
-        $this->response['data']['institution'] = 'CEF';
 
         return $this->response;
     }
@@ -211,34 +241,64 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF:\s?(\d{11})/', $text, $match))
-            $this->response['data']['cpf'] = $match[1];
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF:\s?(\d{11})/', $text, $match))
+                $this->response['data']['cpf'] = $match[1];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'GER_CEF';
+            $this->response['data']['institution'] = 'GER_CEF';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'GER_CEF';
+        }
 
         return $this->response;
     }
@@ -319,34 +379,65 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF:\s*([\*\.0-9\-]+)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF:\s*([\*\.0-9\-]+)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'BRADESCO';
+            $this->response['data']['institution'] = 'BRADESCO';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'BRADESCO';
+        }
+
 
         return $this->response;
     }
@@ -396,34 +487,65 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF\s*([\*\,\.\d\-]+)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF\s*([\*\,\.\d\-]+)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'SANTANDER';
+            $this->response['data']['institution'] = 'SANTANDER';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'SANTANDER';
+        }
+
 
         return $this->response;
     }
@@ -503,34 +625,64 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF\s+do\s+pagador:\s+([\d\*\.]+)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF\s+do\s+pagador:\s+([\d\*\.]+)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'SICREDI';
+            $this->response['data']['institution'] = 'SICREDI';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'SICREDI';
+        }
 
         return $this->response;
     }
@@ -581,35 +733,66 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF.*?(\d{3})[ .]*\d?[ .]*([\d][ ]?\d[ ]?\d)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]) . preg_replace('/[\s\.]/', '', $match[2]);
-        else if(preg_match('/.*?(\d{3})[,](\d{3})/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF.*?(\d{3})[ .]*\d?[ .]*([\d][ ]?\d[ ]?\d)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]) . preg_replace('/[\s\.]/', '', $match[2]);
+            else if(preg_match('/.*?(\d{3})[,](\d{3})/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
-        //Get timestamp
-        if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'NUBANK';
+            $this->response['data']['institution'] = 'NUBANK';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'NUBANK';
+        }
+
 
         return $this->response;
     }
@@ -751,40 +934,71 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/\*\*\*\s*([\d.]+)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]);
-        else if(preg_match('/CPF\s*(.*)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else if(preg_match('/GPF\s*(.*)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else if(preg_match('/(\d{3})[,](\d{3})/', $text, $match))
-            $this->response['data']['middle_cpf'] = $match[1] . $match[2];
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/\*\*\*\s*([\d.]+)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]);
+            else if(preg_match('/CPF\s*(.*)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else if(preg_match('/GPF\s*(.*)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else if(preg_match('/(\d{3})[,](\d{3})/', $text, $match))
+                $this->response['data']['middle_cpf'] = $match[1] . $match[2];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'PICPAY';
+            $this->response['data']['institution'] = 'PICPAY';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'PICPAY';
+        }
+
 
         return $this->response;
     }
@@ -865,34 +1079,65 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF:.*?(\d[ .]?\d{2})\.(\d{3})/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF:.*?(\d[ .]?\d{2})\.(\d{3})/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
-        else
-            $this->response['status'] = 'SUCCESS';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
-        $this->response['data']['institution'] = 'NEXT';
+            $this->response['data']['institution'] = 'NEXT';
+        }
+        else
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'NEXT';
+        }
+
 
         return $this->response;
     }
@@ -931,43 +1176,77 @@ class ReceiptModelByInstitution
             printf(json_encode($this->response['data']) . PHP_EOL);
         }
 
-        //Get CPF
-        if (preg_match('/CPF\s*\n(?:ees\s*)([0-9\s\.]+)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]);
-        else if(preg_match('/CPF\s*(.*)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else if(preg_match('/GPF\s*(.*)/', $text, $match))
-            $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-        else
+        if($entryType == 'tithe')
         {
-            printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get CPF
+            if (preg_match('/CPF\s*\n(?:ees\s*)([0-9\s\.]+)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]);
+            else if(preg_match('/CPF\s*(.*)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else if(preg_match('/GPF\s*(.*)/', $text, $match))
+                $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        //Get timestamp
-        if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-        if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-        if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
-            $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+        if($entryType == 'tithe')
+        {
+            //Get timestamp
+            if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
+        }
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            //Get timestamp
+            if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
+                $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
+            else
+            {
+                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
+                printf(PHP_EOL . $text . PHP_EOL);
+                printf(json_encode($this->response['data']) . PHP_EOL);
+            }
         }
 
 
-        if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
-            $this->response['status'] = 'READING_ERROR';
+        if($entryType == 'tithe')
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['middle_cpf'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
+
+            $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
+        }
         else
-            $this->response['status'] = 'SUCCESS';
+        {
+            if($this->response['data']['amount'] == 0 || $this->response['data']['date'] == '' || $this->response['data']['timestamp_value_cpf'] == '')
+                $this->response['status'] = 'READING_ERROR';
+            else
+                $this->response['status'] = 'SUCCESS';
 
+            $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
+        }
 
-        $this->response['data']['institution'] = 'UNIDENTIFIED_INSTITUTION';
         return $this->response;
     }
 
