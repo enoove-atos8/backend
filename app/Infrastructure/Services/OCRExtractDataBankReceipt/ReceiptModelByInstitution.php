@@ -60,14 +60,15 @@ class ReceiptModelByInstitution
                 'picpay' => $this->extractDataPicpay($text, $entryType),
                 'iti' => $this->extractDataIti($text, $entryType),
                 'next' => $this->extractDataNext($text, $entryType),
+                'efi' => $this->extractDataEFI($text, $entryType),
 
                 default => [
-                    'institution' => 'Instituição não identificada',
+                    'status'    =>  'NOT_IMPLEMENTED',
+                    'msg'       =>  '',
                 ],
             };
         }
     }
-
 
     /**
      * Example of data extraction method for Banco do Brasil.
@@ -797,6 +798,22 @@ class ReceiptModelByInstitution
     {
         $this->response['status'] = 'NOT_IMPLEMENTED';
         $this->response['data']['institution'] = 'ITI';
+        return $this->response;
+    }
+
+
+
+    /**
+     * Example of data extraction method for ITI.
+     *
+     * @param string $text
+     * @param string $entryType
+     * @return array
+     */
+    private function extractDataEFI(string $text, string $entryType): array
+    {
+        $this->response['status'] = 'NOT_IMPLEMENTED';
+        $this->response['data']['institution'] = 'EFI';
         return $this->response;
     }
 
