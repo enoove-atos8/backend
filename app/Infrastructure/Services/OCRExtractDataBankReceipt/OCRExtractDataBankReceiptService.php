@@ -43,6 +43,7 @@ class OCRExtractDataBankReceiptService
      * Main method for extracting data from bank receipt.
      *
      * @param string $filePath
+     * @param string $entryType
      * @return array|bool
      * @throws TesseractOcrException
      */
