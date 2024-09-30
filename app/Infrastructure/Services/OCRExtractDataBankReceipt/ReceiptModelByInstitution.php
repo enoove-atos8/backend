@@ -65,6 +65,9 @@ class ReceiptModelByInstitution
                 default => [
                     'status'    =>  'NOT_IMPLEMENTED',
                     'msg'       =>  '',
+                    'data'  =>  [
+                        'institution'           =>  'NOT_MAPPED',
+                    ]
                 ],
             };
         }
