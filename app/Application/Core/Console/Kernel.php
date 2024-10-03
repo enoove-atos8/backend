@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->call(function () {
             resolve(ProcessingEntriesByCollectionWorship::class)->handle();
-        })->dailyAt('17:12');
+        })->dailyAt('17:57');
     }
 
 
