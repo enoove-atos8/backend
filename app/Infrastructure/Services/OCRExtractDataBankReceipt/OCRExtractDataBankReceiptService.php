@@ -43,24 +43,26 @@ class OCRExtractDataBankReceiptService
      * Main method for extracting data from bank receipt.
      *
      * @param string $filePath
-     * @param string $entryType
-     * @return array|bool
+     * @param string|null $entryType
+     * @param string $totalAmount
+     * @param string $depositDate
+     * @return array|string|bool
      * @throws TesseractOcrException
      */
-    public function ocrExtractData(string $filePath, string $entryType): array | string
+    public function ocrExtractData(string $filePath, string | null $entryType, string $totalAmount = '', string $depositDate = ''): array | string | bool
     {
-        $dataExtracted = $this->getBankingInstitution($filePath);
-        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted, $entryType);
+        $dataExtracted = $this->getBankingInstitution($filePath, $totalAmount);
+        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted, $entryType, $depositDate);
     }
-
 
 
     /**
      * @param string $file
+     * @param string $totalAmount
      * @return string|bool
      * @throws TesseractOcrException
      */
-    public function getBankingInstitution(string $file): array | bool
+    public function getBankingInstitution(string $file, string $totalAmount = ''): array | bool
     {
         $adjustedPath = $this->verifyFormatFile($file);
 
@@ -71,45 +73,56 @@ class OCRExtractDataBankReceiptService
         $ocr = new TesseractOCR($file);
         $readText = $ocr->run();
 
-        foreach (self::SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS as $templateReceipt => $term)
+        if($totalAmount == '')
         {
-            if($templateReceipt == 'cef_app')
+            foreach (self::SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS as $templateReceipt => $term)
             {
-                $regex1 = '/Dados do pagador.*?Instituic¢Go.*?([A-Z\w]+)/s';
-                $regex2 = '/Dados do pagador.*?InstituigGo.*?([A-Z\w]+)/s';
-                $regex3 = '/Dados do pagador.*?Instituicdo.*?([A-Z\w]+)/s';
-                $regex4 = '/Dados do pagador.*?Institui¢Go.*?([A-Z\w]+)/s';
-                $regex5 = '/Dados do pagador.*?InstituicGo.*?([A-Z\w]+)/s';
-
-                if((preg_match($regex1, $readText, $matches)) ||
-                    (preg_match($regex2, $readText, $matches)) ||
-                    (preg_match($regex3, $readText, $matches)) ||
-                    (preg_match($regex4, $readText, $matches)) ||
-                    (preg_match($regex5, $readText, $matches)))
+                if($templateReceipt == 'cef_app')
                 {
-                    if($matches[1] == $term)
+                    $regex1 = '/Dados do pagador.*?Instituic¢Go.*?([A-Z\w]+)/s';
+                    $regex2 = '/Dados do pagador.*?InstituigGo.*?([A-Z\w]+)/s';
+                    $regex3 = '/Dados do pagador.*?Instituicdo.*?([A-Z\w]+)/s';
+                    $regex4 = '/Dados do pagador.*?Institui¢Go.*?([A-Z\w]+)/s';
+                    $regex5 = '/Dados do pagador.*?InstituicGo.*?([A-Z\w]+)/s';
+
+                    if((preg_match($regex1, $readText, $matches)) ||
+                        (preg_match($regex2, $readText, $matches)) ||
+                        (preg_match($regex3, $readText, $matches)) ||
+                        (preg_match($regex4, $readText, $matches)) ||
+                        (preg_match($regex5, $readText, $matches)))
                     {
-                        return [
-                            'templateReceipt'   =>  $templateReceipt,
-                            'text'              =>  $readText
-                        ];
+                        if($matches[1] == $term)
+                        {
+                            return [
+                                'templateReceipt'   =>  $templateReceipt,
+                                'text'              =>  $readText
+                            ];
+                        }
                     }
                 }
-            }
-            else if (str_contains($readText, $term))
-            {
-                return [
-                    'templateReceipt'   =>  $templateReceipt,
-                    'text'              =>  $readText
-                ];
+                else if (str_contains($readText, $term))
+                {
+                    return [
+                        'templateReceipt'   =>  $templateReceipt,
+                        'text'              =>  $readText
+                    ];
+                }
+
             }
 
+            return [
+                'templateReceipt'   =>  'generic',
+                'text'              =>  $readText
+            ];
         }
-
-        return [
-            'templateReceipt'   =>  'generic',
-            'text'              =>  $readText
-        ];
+        else
+        {
+            return [
+                'templateReceipt'   =>  'receiptDeposit',
+                'text'              =>  $readText,
+                'amount'            => $totalAmount
+            ];
+        }
     }
 
 

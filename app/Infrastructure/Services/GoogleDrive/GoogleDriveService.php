@@ -35,66 +35,16 @@ class GoogleDriveService
     /**
      * @throws \Exception
      */
-    public function defineInstanceGoogleDrive(string $tenant): Client
+    public function defineInstanceGoogleDrive(string $tenant): Drive
     {
-        $clientId = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_CLIENT_ID');
-        $clientSecret = config('google.drive.tenants.' . $tenant . '.GOOGLE_DRIVE_CLIENT_SECRET');
+        $apiKey = config('google.drive.tenants.'. $tenant. '.api_key');
 
         $this->client = new Client();
-
-        $this->client->setClientId($clientId);
-        $this->client->setClientSecret($clientSecret);
-        $this->client->addScope(Drive::DRIVE);
-        $this->client->addScope(Sheets::SPREADSHEETS);
-
-        $tokens = DB::table('google_tokens')
-                    ->where('tenant', $tenant)
-                    ->where('api', 'drive')
-                    ->first();
-
-        if($tokens)
-        {
-            $this->client->setAccessToken($tokens->access_token);
-
-            if ($this->client->isAccessTokenExpired())
-            {
-                try {
-                    $newTokens = $this->client->fetchAccessTokenWithRefreshToken($tokens->refresh_token);
-
-                    if (!isset($newTokens['access_token']))
-                    {
-
-                        Log::error('Erro ao renovar o access token: ' . json_encode($newTokens));
-                        throw new Exception('Não foi possível obter um novo access token.');
-                    }
-
-
-                    DB::table('google_tokens')
-                        ->where('api', 'drive')->update([
-                            'access_token' => $newTokens['access_token'],
-                            'expires_in' => $newTokens['expires_in'],
-                            'created' => time(),
-                            'refresh_token' => $tokens->refresh_token,
-                            'updated_at' => now(),
-                        ]);
-
-                    $this->client->setAccessToken($newTokens['access_token']);
-
-                } catch (Exception $e)
-                {
-                    Log::error('Erro ao tentar renovar o access token: ' . $e->getMessage());
-                    throw new Exception('Erro ao tentar renovar o access token.');
-                }
-            }
-        }
-        else
-        {
-            throw new Exception('No tokens found for the specified tenant.');
-        }
+        $this->client->setDeveloperKey($apiKey);
 
         $this->instance = new Drive($this->client);
 
-        return $this->client;
+        return $this->instance;
     }
 
 

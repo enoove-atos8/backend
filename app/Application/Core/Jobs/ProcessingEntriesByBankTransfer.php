@@ -53,7 +53,7 @@ class ProcessingEntriesByBankTransfer
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
     protected Collection $foldersData;
 
@@ -62,6 +62,7 @@ class ProcessingEntriesByBankTransfer
     const IDENTIFICATION_PENDING_0 = 0;
     const S3_ENTRIES_RECEIPT_PATH = 'entries/assets/receipts';
     const S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH = 'entries/assets/receipts/unidentified';
+    const SUFIX_TIMEZONE = 'T03:00:00.000Z';
 
 
     public function __construct(
@@ -246,7 +247,7 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->amount = floatval($extractedData['data']['amount']) / 100;
         $this->entryData->comments = 'Entrada registrada automaticamente!';
         $this->entryData->dateEntryRegister = $currentDate;
-        $this->entryData->dateTransactionCompensation = $this->getNextBusinessDay($extractedDate);
+        $this->entryData->dateTransactionCompensation = $this->getNextBusinessDay($extractedDate) . self::SUFIX_TIMEZONE;
         $this->entryData->deleted = 0;
         $this->entryData->entryType = $folderData->entry_type;
         $this->entryData->memberId = $member?->id;

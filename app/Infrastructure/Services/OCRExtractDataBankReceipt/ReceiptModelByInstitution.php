@@ -25,13 +25,20 @@ class ReceiptModelByInstitution
      * Function redirects to another
      * that will read the receipts according to the institution informed
      */
-    public function handleDispatchDataFunctionByInstitution(array $dataExtracted, string $entryType): array
+    public function handleDispatchDataFunctionByInstitution(array $dataExtracted, string | null $entryType, string $depositDate = ''): array | bool
     {
         $this->resetResponseArray();
 
         if($dataExtracted['templateReceipt'] == 'generic' && $dataExtracted['templateReceipt'] != '')
         {
             return $this->extractDataGenericReceipt($dataExtracted['text'], $entryType);
+        }
+        else if($dataExtracted['templateReceipt'] != '' && $dataExtracted['templateReceipt'] == 'receiptDeposit')
+        {
+            $text = $dataExtracted['text'];
+            $amount = $dataExtracted['amount'];
+
+            return $this->extractDataBankDeposit($text, $amount, $depositDate);
         }
         else if($dataExtracted['templateReceipt'] != 'generic' && $dataExtracted['templateReceipt'] != '')
         {
@@ -66,7 +73,7 @@ class ReceiptModelByInstitution
                     'status'    =>  'NOT_IMPLEMENTED',
                     'msg'       =>  '',
                     'data'  =>  [
-                        'institution'           =>  'NOT_MAPPED',
+                        'institution'  =>  'NOT_MAPPED',
                     ]
                 ],
             };
@@ -736,7 +743,7 @@ class ReceiptModelByInstitution
         if($entryType == 'tithe')
         {
             //Get CPF
-            if (preg_match('/CPF.*?(\d{3})[ .]*\d?[ .]*([\d][ ]?\d[ ]?\d)/', $text, $match))
+            if (preg_match('/CPF.*?(\d{3})[,.]*\d?[,.]*([\d][ ]?\d[ ]?\d)/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]) . preg_replace('/[\s\.]/', '', $match[2]);
             else if(preg_match('/.*?(\d{3})[,](\d{3})/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
@@ -1251,6 +1258,46 @@ class ReceiptModelByInstitution
     }
 
 
+
+
+    /**
+     * Example of data extraction method for Banco do Generic.
+     *
+     * @param string $text
+     * @param string $amount
+     * @param string $depositDate
+     * @return bool
+     */
+    private function extractDataBankDeposit(string $text, string $amount, string $depositDate): bool
+    {
+        printf(PHP_EOL . '=========================================' . PHP_EOL);
+        printf('EXTRACTING RECEIPT BANK DATA' . PHP_EOL);
+        printf('=========================================' . PHP_EOL);
+
+        $amountFounded = false;
+        $dateFounded = false;
+        $amountValue = null;
+        $dateValue = null;
+
+        if((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
+            $amountValue = $match[1];
+
+        if (str_contains($amountValue, $amount))
+            $amountFounded = true;
+
+
+        if(preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
+            $dateValue = $match[1];
+
+        if (str_contains($dateValue, $depositDate))
+            $dateFounded = true;
+
+
+        if($amountFounded && $dateFounded)
+            return true;
+        else
+            return false;
+    }
 
     /**
      * Transform 00/abc/0000 format date in 00/00/0000
