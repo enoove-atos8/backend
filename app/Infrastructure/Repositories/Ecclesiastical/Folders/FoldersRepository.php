@@ -17,7 +17,8 @@ class FoldersRepository extends BaseRepository implements FoldersRepositoryInter
 
     const TABLE_NAME = 'google_drive_ecclesiastical_groups_folders';
     const ENTRY_TYPE_COLUMN = 'entry_type';
-    const ENTRIES_IN_CULT_VALUE = 'entries_in_cult';
+    const ENTRIES_IN_CULT_VALUE = 'cult';
+    const DEPOSIT_RECEIPTS_IN_CULT_VALUE = 'deposit';
 
 
     /**
@@ -27,21 +28,40 @@ class FoldersRepository extends BaseRepository implements FoldersRepositoryInter
 
 
     /**
-     * @param bool $cashTithes
+     * @param bool $cultEntries
+     * @param bool $depositReceipt
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getFolders(bool $cashTithes): Collection
+    public function getFolders(bool $cultEntries, bool $depositReceipt): Collection
     {
-        if(!$cashTithes)
+        $folders = null;
+
+        if(!$cultEntries && !$depositReceipt)
             $folders =  $this->getItemsByWhere();
-        else
+
+        else if($cultEntries && !$depositReceipt)
         {
             $conditions = [
                 [
                     'field' => self::ENTRY_TYPE_COLUMN,
                     'operator' => BaseRepository::OPERATORS['EQUALS'],
                     'value' => self::ENTRIES_IN_CULT_VALUE
+                ]
+            ];
+
+            $folders =  $this->getItemsByWhere(
+                ['*'],
+                $conditions
+            );
+        }
+        else if(!$cultEntries && $depositReceipt)
+        {
+            $conditions = [
+                [
+                    'field' => self::ENTRY_TYPE_COLUMN,
+                    'operator' => BaseRepository::OPERATORS['EQUALS'],
+                    'value' => self::DEPOSIT_RECEIPTS_IN_CULT_VALUE
                 ]
             ];
 

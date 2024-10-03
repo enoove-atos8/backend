@@ -23,9 +23,9 @@ class GetEcclesiasticalGroupsFoldersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(bool $cashTithes = false): Collection | null
+    public function __invoke(bool $cultEntries = false, bool $depositReceipt = false): Collection | null
     {
-        $folders = $this->foldersRepository->getFolders($cashTithes);
+        $folders = $this->foldersRepository->getFolders($cultEntries, $depositReceipt);
 
         if ($folders->isNotEmpty())
             return $folders;

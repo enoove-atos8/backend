@@ -55,17 +55,26 @@ class ProcessingEntriesByCollectionWorship
     private UnidentifiedReceiptData $unidentifiedReceiptData;
     private  MemberData $memberData;
     private string $entryType;
+    private array $entriesBlock = [
+        'tithe'         =>  null,
+        'designated'    =>  null,
+        'offers'        =>  null,
+    ];
+
     private array $allowedTenants = [
         'iebrd'
     ];
+
+    private array $arrReceiptsFounded = [];
     protected Collection $foldersData;
-    protected Client $client;
+    protected Drive $client;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
     const IDENTIFICATION_PENDING_1 = 1;
     const IDENTIFICATION_PENDING_0 = 0;
     const S3_ENTRIES_RECEIPT_PATH = 'entries/assets/receipts';
     const S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH = 'entries/assets/receipts/unidentified';
+    const SUFIX_TIMEZONE = 'T03:00:00.000Z';
 
 
     public function __construct(
@@ -134,11 +143,29 @@ class ProcessingEntriesByCollectionWorship
 
                 foreach ($files as $file)
                 {
-                    $tithesBlock = $this->googleSheetsService->readTithesBlock($this->client, $file->id);
-                    $designatedBlock = $this->googleSheetsService->readDesignatedBlock($this->client, $file->id);
-                    $offersBlock = $this->googleSheetsService->readOffersBlock($this->client, $file->id);
+                    $depositDate = $this->googleSheetsService->getDepositDate($this->client, $file->id);
+                    $linkReceipts = $this->getReceiptByAmount($tenant, $file->id, $depositDate[0][0]);
+                    $entry = null;
 
-                    //Cadastrar a entrada na base
+                    $this->entriesBlock['tithe'] = $this->googleSheetsService->readTithesBlock($this->client, $file->id);
+                    $this->entriesBlock['designated'] = $this->googleSheetsService->readDesignatedBlock($this->client, $file->id);
+                    $this->entriesBlock['offers'] = $this->googleSheetsService->readOffersBlock($this->client, $file->id);
+
+                    foreach ($this->entriesBlock as $key => $entries)
+                    {
+                        if(count($entries) != 0)
+                        {
+                            $this->setEntryData(array_values($entries), $key, $depositDate);
+                            $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
+
+                            if(count($linkReceipts) == 1)
+                                $this->updateReceiptLinkEntryAction->__invoke($entry->id, $linkReceipts[0]);
+
+                            else if (count($linkReceipts) > 1)
+                                foreach ($linkReceipts as $receipt)
+                                    $this->updateReceiptLinkEntryAction->__invoke($entry->id, $receipt);
+                        }
+                    }
                 }
             }
         }
@@ -146,42 +173,93 @@ class ProcessingEntriesByCollectionWorship
 
 
     /**
+     * @throws Throwable
+     * @throws TesseractOcrException
+     * @throws Exception
+     */
+    public function getReceiptByAmount(string $tenant, string $fileId, string $depositDate): array
+    {
+        $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke(false, true);
+        $depositList = $this->googleSheetsService->getReceiptsCountsValues($this->client, $fileId);
+
+        foreach ($depositList as $deposit)
+        {
+            foreach ($this->foldersData as $key => $folderData)
+            {
+                $bankReceipts = $this->googleDriveService->listFiles($folderData->folder_id);
+
+                foreach ($bankReceipts as $receipt)
+                {
+                    $basePathTemp = self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/temp';
+                    $this->googleDriveService->deleteFilesInLocalDirectory($basePathTemp);
+                    $downloadedFile = $this->googleDriveService->download($basePathTemp, $receipt);
+
+                    $foundReceipt = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile['destinationPath'], null, $deposit[0], $depositDate);
+
+                    if($foundReceipt)
+                        $this->arrReceiptsFounded [] = $this->uploadReceipt($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_PATH, $tenant);
+                }
+            }
+        }
+
+        return $this->arrReceiptsFounded;
+    }
+
+
+
+    /**
+     * @param string $filePath
+     * @param string $destinationDir
+     * @param string $tenant
+     * @return string
+     * @throws GeneralExceptions
+     */
+    public function uploadReceipt(string $filePath, string $destinationDir, string $tenant): string
+    {
+        return $this->uploadFile->upload($filePath, $destinationDir, $tenant);
+    }
+
+
+
+    /**
      *
      * @throws \Exception
      */
-    public function setEntryData(array $extractedData, mixed $member, $folderData): void
+    public function setEntryData(array $extractedData, string $entryType, array $depositDate): void
     {
         $currentDate = date('Y-m-d');
-        $extractedDate = $extractedData['data']['date'];
+        $amount = $this->convertStringAmountToFloat($extractedData[1]);
+        $depositDate = date('Y-m-d', strtotime(str_replace('/', '-', $depositDate[0][0])));
 
-        $this->entryData->amount = floatval($extractedData['data']['amount']) / 100;
+        $this->entryData->amount = $amount;
         $this->entryData->comments = 'Entrada registrada automaticamente!';
         $this->entryData->dateEntryRegister = $currentDate;
-        $this->entryData->dateTransactionCompensation = $this->getNextBusinessDay($extractedDate);
+        $this->entryData->dateTransactionCompensation = $depositDate . self::SUFIX_TIMEZONE;
         $this->entryData->deleted = 0;
-        $this->entryData->entryType = $folderData->entry_type;
-        $this->entryData->memberId = $member?->id;
+        $this->entryData->entryType = $entryType;
+        $this->entryData->memberId = null;
         $this->entryData->receipt = null;
         $this->entryData->devolution = 0;
         $this->entryData->residualValue = 0;
 
-        if($folderData->entry_type == 'designated')
-        {
-            $this->entryData->ecclesiasticalDivisionsGroupsId = $folderData->ecclesiastical_divisions_group_id;
-
-            if($folderData->folder_devolution == 1)
-            {
-                $this->entryData->devolution = 1;
-                $this->entryData->ecclesiasticalGroupDevolutionOrigin = $folderData->ecclesiastical_divisions_group_id;
-            }
-        }
 
         $this->entryData->reviewerId = 18;
         $this->entryData->transactionCompensation = 'compensated';
-        $this->entryData->transactionType = 'pix';
+        $this->entryData->transactionType = 'cash';
 
-        $this->consolidationEntriesData->date = $extractedData['data']['date'];
+        $this->consolidationEntriesData->date = $depositDate;
 
+    }
+
+
+    /**
+     * @param string $amount
+     * @return float
+     */
+    public function convertStringAmountToFloat(string $amount): float
+    {
+        $stringAmountCleaned = str_replace(['R$', ' ', ','], ['', '', '.'], $amount);
+        return (float) $stringAmountCleaned;
     }
 
 
@@ -191,47 +269,5 @@ class ProcessingEntriesByCollectionWorship
         $this->unidentifiedReceiptData->receiptLink = $receiptLink;
         $this->unidentifiedReceiptData->deleted = 0;
         $this->unidentifiedReceiptData->amount = array_key_exists('amount', $data) ? floatval($data['amount']) / 100 : null;
-    }
-
-    /**
-     *
-     * @throws \Exception
-     */
-    function getNextBusinessDay($date): string
-    {
-        $holidays = [
-            '01-01', // Confraternização Universal (Ano Novo)
-            '02-12', // Carnaval (segunda-feira)
-            '02-13', // Carnaval (terça-feira)
-            '02-14', // Quarta-feira de Cinzas (ponto facultativo até 14h)
-            '03-29', // Sexta-feira Santa
-            '04-21', // Tiradentes
-            '05-01', // Dia do Trabalho
-            '05-30', // Corpus Christi
-            '09-07', // Independência do Brasil
-            '10-12', // Nossa Senhora Aparecida
-            '11-02', // Finados
-            '11-15', // Proclamação da República
-            '12-25', // Natal
-        ];
-
-        $currentDate = DateTime::createFromFormat('d/m/Y', $date);
-        $dayOfWeek = $currentDate->format('N');
-        $monthDay = $currentDate->format('m-d');
-
-
-        if (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays)) {
-            do
-            {
-                $currentDate->modify('+1 day');
-                $dayOfWeek = $currentDate->format('N');
-                $monthDay = $currentDate->format('m-d');
-            }
-            while (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays));
-
-            return $currentDate->format('Y-m-d');
-        }
-
-        return $currentDate->format('Y-m-d');
     }
 }
