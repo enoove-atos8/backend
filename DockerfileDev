@@ -27,14 +27,7 @@ RUN apt-get update && apt-get upgrade && apt-get install -y \
     software-properties-common \
     tesseract-ocr \
     tesseract-ocr-por \
-    poppler-utils \
-    libssl-dev \
-    libcurl4-openssl-dev
-
-
-# Xdebug
-#RUN pecl install xdebug-3.3.1
-#ADD docker/dev/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+    poppler-utils
 
 # Configure nginx
 COPY docker/dev/app.conf /etc/nginx/sites-enabled/default
@@ -57,6 +50,9 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 COPY ./.env.dev ./.env
 
+# Copy existing application directory contents
+COPY storage/google/iebrd-atos8-78e8d185cbe0.json storage/google/iebrd-atos8-78e8d185cbe0.json
+
 # Copy existing application directory permissions
 
 RUN chmod -R 777 storage
@@ -78,7 +74,3 @@ EXPOSE 8000
 COPY docker/dev/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 CMD ["docker-entrypoint.sh"]
-
-
-# Start Octane server
-#CMD ["php", "artisan", "octane:start", "--server=swoole", "--host=0.0.0.0", "--port=8000"]
