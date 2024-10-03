@@ -38,29 +38,29 @@ class GoogleDriveService
      */
     public function defineInstanceGoogleDrive(string $tenant): Drive
     {
-        $credentialsPath = config('google.drive.tenants.'. $tenant. '.json_path');
+        $client = $this->getInstanceGoogleClient($tenant);
 
-        $this->client = new \Google_Client();
-
-        $this->client->setAuthConfig($credentialsPath);
-
-        $this->client->addScope(\Google_Service_Drive::DRIVE);
-        $this->client->addScope(\Google_Service_Sheets::SPREADSHEETS);
-
-        // Inicializando o serviço do Google Drive
-        $this->instance = new \Google_Service_Drive($this->client);
+        $this->instance = new Drive($client);
 
         return $this->instance;
+    }
 
-        /*$this->client = new Client();
+
+    /**
+     *
+     * @throws \Google\Exception
+     */
+    public function getInstanceGoogleClient(string $tenant): Client
+    {
+        $credentialsPath = config('google.drive.tenants.'. $tenant. '.json_path');
+
+        $this->client = new Client();
 
         $this->client->setAuthConfig($credentialsPath);
         $this->client->addScope(Drive::DRIVE);
         $this->client->addScope(Sheets::SPREADSHEETS);
 
-        $this->instance = new Drive($this->client);
-
-        return $this->instance;*/
+        return $this->client;
     }
 
 

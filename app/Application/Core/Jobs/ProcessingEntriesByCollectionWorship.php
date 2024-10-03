@@ -67,7 +67,8 @@ class ProcessingEntriesByCollectionWorship
 
     private array $arrReceiptsFounded = [];
     protected Collection $foldersData;
-    protected Drive $client;
+    protected Drive $drive;
+    protected Client $client;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
     const IDENTIFICATION_PENDING_1 = 1;
@@ -134,7 +135,9 @@ class ProcessingEntriesByCollectionWorship
         {
             tenancy()->initialize($tenant);
 
-            $this->client = $this->googleDriveService->defineInstanceGoogleDrive($tenant);
+            $this->drive = $this->googleDriveService->defineInstanceGoogleDrive($tenant);
+            $this->client = $this->googleDriveService->getInstanceGoogleClient($tenant);
+
             $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke(true);
 
             foreach ($this->foldersData as $key => $folderData)
