@@ -4,10 +4,10 @@ return [
     'drive' =>  [
         'tenants'    =>  [
             'stage' =>  [
-                'api_key'    =>  'AIzaSyD7Et1IGdcD2lJoA1BXDRsc88UvQ6jQ-PE',
+                'json_path'    =>  '/var/www/backend/html/storage/google/iebrd-atos8-78e8d185cbe0.json',
             ],
             'iebrd' =>  [
-                'api_key'    =>  'AIzaSyD7Et1IGdcD2lJoA1BXDRsc88UvQ6jQ-PE',
+                'json_path'    =>  '/var/www/backend/html/storage/google/iebrd-atos8-78e8d185cbe0.json',
             ],
         ]
     ]

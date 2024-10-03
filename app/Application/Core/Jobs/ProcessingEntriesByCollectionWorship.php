@@ -62,7 +62,7 @@ class ProcessingEntriesByCollectionWorship
     ];
 
     private array $allowedTenants = [
-        'iebrd'
+        'stage'
     ];
 
     private array $arrReceiptsFounded = [];
