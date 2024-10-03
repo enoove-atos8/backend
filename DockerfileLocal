@@ -51,9 +51,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 COPY . .
 COPY ./.env.local ./.env
 
-# Copy existing application directory contents
-COPY storage/google/iebrd-atos8-78e8d185cbe0.json storage/google/iebrd-atos8-78e8d185cbe0.json
-
 # Copy existing application directory permissions
 
 RUN chmod -R 777 storage
