@@ -52,7 +52,7 @@ class GoogleDriveService
      */
     public function getInstanceGoogleClient(string $tenant): Client
     {
-        $credentialsPath = config('google_old.drive.tenants.'. $tenant. '.json_path');
+        $credentialsPath = config('google.drive.tenants.'. $tenant. '.json_path');
 
         $this->client = new Client();
 
