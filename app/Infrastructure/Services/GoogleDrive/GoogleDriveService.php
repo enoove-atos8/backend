@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Services\GoogleDrive;
 
+use Google\Service;
 use Google\Service\Drive\DriveFile;
 use Google\Service\Exception;
 use Google\Client;
@@ -37,14 +38,29 @@ class GoogleDriveService
      */
     public function defineInstanceGoogleDrive(string $tenant): Drive
     {
-        $apiKey = config('google.drive.tenants.'. $tenant. '.api_key');
+        $credentialsPath = config('google.drive.tenants.'. $tenant. '.json_path');
 
-        $this->client = new Client();
-        $this->client->setDeveloperKey($apiKey);
+        $this->client = new \Google_Client();
+
+        $this->client->setAuthConfig($credentialsPath);
+
+        $this->client->addScope(\Google_Service_Drive::DRIVE);
+        $this->client->addScope(\Google_Service_Sheets::SPREADSHEETS);
+
+        // Inicializando o serviço do Google Drive
+        $this->instance = new \Google_Service_Drive($this->client);
+
+        return $this->instance;
+
+        /*$this->client = new Client();
+
+        $this->client->setAuthConfig($credentialsPath);
+        $this->client->addScope(Drive::DRIVE);
+        $this->client->addScope(Sheets::SPREADSHEETS);
 
         $this->instance = new Drive($this->client);
 
-        return $this->instance;
+        return $this->instance;*/
     }
 
 
