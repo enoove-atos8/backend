@@ -17,13 +17,13 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        /*$schedule->call(function () {
-            resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->hourly();*/
-
         $schedule->call(function () {
+            resolve(ProcessingEntriesByBankTransfer::class)->handle();
+        })->hourly();
+
+        /*$schedule->call(function () {
             resolve(ProcessingEntriesByCollectionWorship::class)->handle();
-        })->dailyAt('17:57');
+        })->dailyAt('17:57');*/
     }
 
 
