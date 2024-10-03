@@ -52,7 +52,7 @@ class GoogleDriveService
      */
     public function getInstanceGoogleClient(string $tenant): Client
     {
-        $credentialsPath = config('google.drive.tenants.'. $tenant. '.json_path');
+        $credentialsPath = config('google_old.drive.tenants.'. $tenant. '.json_path');
 
         $this->client = new Client();
 
@@ -90,7 +90,7 @@ class GoogleDriveService
     {
         $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
 
-        if ($fileMetadata->mimeType !== 'application/vnd.google-apps.folder')
+        if ($fileMetadata->mimeType !== 'application/vnd.google_old-apps.folder')
         {
             $file = $this->instance->files->get($file->id, ['alt' => 'media']);
             $physicalFile = $file->getBody()->getContents();

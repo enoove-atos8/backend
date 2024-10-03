@@ -1,131 +1,131 @@
 <?php return array (
-  'darkaonline/l5-swagger' => 
+  'darkaonline/l5-swagger' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'L5Swagger\\L5SwaggerServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'L5Swagger' => 'L5Swagger\\L5SwaggerFacade',
     ),
   ),
-  'fedeisas/laravel-mail-css-inliner' => 
+  'fedeisas/laravel-mail-css-inliner' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Fedeisas\\LaravelMailCssInliner\\LaravelMailCssInlinerServiceProvider',
     ),
   ),
-  'laravel/octane' => 
+  'laravel/octane' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Octane\\OctaneServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'Octane' => 'Laravel\\Octane\\Facades\\Octane',
     ),
   ),
-  'laravel/sail' => 
+  'laravel/sail' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Sail\\SailServiceProvider',
     ),
   ),
-  'laravel/sanctum' => 
+  'laravel/sanctum' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Sanctum\\SanctumServiceProvider',
     ),
   ),
-  'laravel/telescope' => 
+  'laravel/telescope' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Telescope\\TelescopeServiceProvider',
     ),
   ),
-  'laravel/tinker' => 
+  'laravel/tinker' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
-  'mailersend/laravel-driver' => 
+  'mailersend/laravel-driver' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'MailerSend\\LaravelDriver\\LaravelDriverServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'LaravelDriver' => 'MailerSend\\LaravelDriver\\LaravelDriverFacade',
     ),
   ),
-  'nesbot/carbon' => 
+  'nesbot/carbon' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Carbon\\Laravel\\ServiceProvider',
     ),
   ),
-  'nunomaduro/collision' => 
+  'nunomaduro/collision' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     ),
   ),
-  'nunomaduro/termwind' => 
+  'nunomaduro/termwind' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
     ),
   ),
-  'sentry/sentry-laravel' => 
+  'sentry/sentry-laravel' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Sentry\\Laravel\\ServiceProvider',
       1 => 'Sentry\\Laravel\\Tracing\\ServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'Sentry' => 'Sentry\\Laravel\\Facade',
     ),
   ),
-  'spatie/laravel-permission' => 
+  'spatie/laravel-permission' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Spatie\\Permission\\PermissionServiceProvider',
     ),
   ),
-  'stancl/tenancy' => 
+  'stancl/tenancy' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Stancl\\Tenancy\\TenancyServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'Tenancy' => 'Stancl\\Tenancy\\Facades\\Tenancy',
       'GlobalCache' => 'Stancl\\Tenancy\\Facades\\GlobalCache',
     ),
   ),
-  'yaza/laravel-google-drive-storage' => 
+  'yaza/laravel-google_old-drive-storage' =>
   array (
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Yaza\\LaravelGoogleDriveStorage\\LaravelGoogleDriveStorageServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'LaravelGoogleDriveStorage' => 'Yaza\\LaravelGoogleDriveStorage\\Facades\\LaravelGoogleDriveStorage',
     ),
