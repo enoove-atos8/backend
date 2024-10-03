@@ -8,7 +8,7 @@ WORKDIR /var/www/backend/html
 COPY composer.lock composer.json ./
 
 # Install dependencies
-RUN apt-get update && apt-get upgrade && apt-get install -y \
+RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
     build-essential \
     libpng-dev \
     libjpeg62-turbo-dev \
