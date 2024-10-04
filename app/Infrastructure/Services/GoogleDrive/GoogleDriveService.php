@@ -90,7 +90,7 @@ class GoogleDriveService
     {
         $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
 
-        if ($fileMetadata->mimeType !== 'application/vnd.google_old-apps.folder')
+        if ($fileMetadata->mimeType !== 'application/vnd.google-apps.folder')
         {
             $file = $this->instance->files->get($file->id, ['alt' => 'media']);
             $physicalFile = $file->getBody()->getContents();
