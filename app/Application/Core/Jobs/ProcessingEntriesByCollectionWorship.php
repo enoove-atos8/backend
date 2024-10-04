@@ -62,7 +62,7 @@ class ProcessingEntriesByCollectionWorship
     ];
 
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
 
     private array $arrReceiptsFounded = [];
@@ -165,8 +165,7 @@ class ProcessingEntriesByCollectionWorship
                                 $this->updateReceiptLinkEntryAction->__invoke($entry->id, $linkReceipts[0]);
 
                             else if (count($linkReceipts) > 1)
-                                foreach ($linkReceipts as $receipt)
-                                    $this->updateReceiptLinkEntryAction->__invoke($entry->id, $receipt);
+                                $this->updateReceiptLinkEntryAction->__invoke($entry->id, json_encode($linkReceipts));
                         }
                     }
                 }
@@ -184,10 +183,11 @@ class ProcessingEntriesByCollectionWorship
     {
         $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke(false, true);
         $depositList = $this->googleSheetsService->getReceiptsCountsValues($this->client, $fileId);
+        $cultDate = $this->googleSheetsService->getCultDate($this->client, $fileId);
 
-        foreach ($depositList as $deposit)
+        foreach ($this->foldersData as $key => $folderData)
         {
-            foreach ($this->foldersData as $key => $folderData)
+            foreach ($depositList as $deposit)
             {
                 $bankReceipts = $this->googleDriveService->listFiles($folderData->folder_id);
 
@@ -200,7 +200,11 @@ class ProcessingEntriesByCollectionWorship
                     $foundReceipt = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile['destinationPath'], null, $deposit[0], $depositDate);
 
                     if($foundReceipt)
+                    {
                         $this->arrReceiptsFounded [] = $this->uploadReceipt($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_PATH, $tenant);
+                        $this->googleDriveService->renameFile($receipt->id, null, 'FILE_READ', null, $cultDate[0][0]);
+                        break;
+                    }
                 }
             }
         }

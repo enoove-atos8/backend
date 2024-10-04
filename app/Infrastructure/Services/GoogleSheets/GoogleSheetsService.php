@@ -100,6 +100,19 @@ class GoogleSheetsService
     }
 
 
+
+    /**
+     * @param $client
+     * @param $spreadSheetId
+     * @return array|null
+     * @throws Exception
+     */
+    public function getCultDate($client, $spreadSheetId): array | null
+    {
+        return $this->readSheet($client, $spreadSheetId, self::CULT_DATE_RANGE);
+    }
+
+
     /**
      * @param $client
      * @param $spreadSheetId
