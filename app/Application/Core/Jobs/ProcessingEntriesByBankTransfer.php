@@ -53,7 +53,7 @@ class ProcessingEntriesByBankTransfer
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
     protected Collection $foldersData;
 
@@ -185,7 +185,7 @@ class ProcessingEntriesByBankTransfer
 
                                 if($entryByTimestampValueCpf != null)
                                 {
-                                    $this->googleDriveService->deleteFile($file->id);
+                                    $this->googleDriveService->renameFile($file->id, null, 'DUPLICATED');
                                     continue;
                                 }
                                 else

@@ -19,11 +19,11 @@ class Kernel extends ConsoleKernel
     {
         $schedule->call(function () {
             resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->hourly();
+        })->dailyAt('11:36');
 
         /*$schedule->call(function () {
             resolve(ProcessingEntriesByCollectionWorship::class)->handle();
-        })->dailyAt('17:57');*/
+        })->dailyAt('18:30');*/
     }
 
 
