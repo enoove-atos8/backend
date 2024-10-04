@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Services\GoogleDrive;
 
+use DateTime;
 use Google\Service;
 use Google\Service\Drive\DriveFile;
 use Google\Service\Exception;
@@ -129,28 +130,37 @@ class GoogleDriveService
     }
 
 
-
     /**
      * @param $fileId
-     * @param null $url
+     * @param string|null $url
      * @param string $readingType
-     * @param string $institution
+     * @param string|null $institution
+     * @param string $dateCult
      * @return void
      * @throws Exception
      */
     public function renameFile(
         $fileId,
-        $url = null,
+        string | null $url = null,
         string $readingType = 'FILE_READ' | 'NOT_IMPLEMENTED' | 'NOT_RECOGNIZED' | 'READING_ERROR' | 'DUPLICATED',
-        string $institution = 'GENERIC'): void
+        string | null $institution = 'GENERIC',
+        string $dateCult = ''): void
     {
         $newName = '';
 
         if($readingType == 'FILE_READ')
         {
-            $parsedUrl = parse_url($url);
-            $path = $parsedUrl['path'];
-            $newName = $readingType . '_' . $institution . '_' . basename($path);
+            if(!is_null($url))
+            {
+                $parsedUrl = parse_url($url);
+                $path = $parsedUrl['path'];
+                $newName = $readingType . '_' . $institution . '_' . basename($path);
+            }
+            else
+            {
+                $dateCultFormatted = DateTime::createFromFormat('d/m/Y', $dateCult)->format('Ymd');
+                $newName = $readingType . '_' . $dateCultFormatted . '_' . Str::uuid();
+            }
         }
         elseif ($readingType == 'NOT_IMPLEMENTED' || $readingType == 'NOT_RECOGNIZED' || $readingType == 'READING_ERROR')
         {
