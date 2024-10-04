@@ -4,10 +4,12 @@ namespace Infrastructure\Util\Storage\S3;
 
 use Aws\S3\Exception\S3Exception;
 use Exception;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Storage;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Aws\S3\S3Client;
+use PhpParser\Node\Scalar\String_;
 
 class UploadFile
 {
@@ -27,8 +29,11 @@ class UploadFile
      * @return string
      * @throws GeneralExceptions
      */
-    public function upload(mixed $file, string $tenantS3PathObject, string $tenant): string
+    public function upload($file, string $tenantS3PathObject, string $tenant): string
     {
+        if(is_string($file))
+            $file = new UploadedFile($file, basename($file), null, null, true);
+
         $env = App::environment();
         $timestamp = time();
         $formattedTime = date("YmdHis", $timestamp);

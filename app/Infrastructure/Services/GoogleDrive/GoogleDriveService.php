@@ -58,6 +58,7 @@ class GoogleDriveService
 
         $this->client->setAuthConfig($credentialsPath);
         $this->client->addScope(Drive::DRIVE);
+        $this->client->addScope(Drive::DRIVE_FILE);
         $this->client->addScope(Sheets::SPREADSHEETS);
 
         return $this->client;
@@ -90,7 +91,7 @@ class GoogleDriveService
     {
         $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
 
-        if ($fileMetadata->mimeType !== 'application/vnd.google_old-apps.folder')
+        if ($fileMetadata->mimeType !== 'application/vnd.google-apps.folder')
         {
             $file = $this->instance->files->get($file->id, ['alt' => 'media']);
             $physicalFile = $file->getBody()->getContents();
@@ -140,7 +141,7 @@ class GoogleDriveService
     public function renameFile(
         $fileId,
         $url = null,
-        string $readingType = 'FILE_READ' | 'NOT_IMPLEMENTED' | 'NOT_RECOGNIZED' | 'READING_ERROR',
+        string $readingType = 'FILE_READ' | 'NOT_IMPLEMENTED' | 'NOT_RECOGNIZED' | 'READING_ERROR' | 'DUPLICATED',
         string $institution = 'GENERIC'): void
     {
         $newName = '';
@@ -151,9 +152,13 @@ class GoogleDriveService
             $path = $parsedUrl['path'];
             $newName = $readingType . '_' . $institution . '_' . basename($path);
         }
-        elseif ($readingType == 'NOT_IMPLEMENTED' || 'NOT_RECOGNIZED' || 'READING_ERROR')
+        elseif ($readingType == 'NOT_IMPLEMENTED' || $readingType == 'NOT_RECOGNIZED' || $readingType == 'READING_ERROR')
         {
             $newName = 'FILE_READ_'. $institution . '_' . $readingType;
+        }
+        elseif ($readingType == 'DUPLICATED')
+        {
+            $newName = 'FILE_READ_' . $readingType;
         }
 
         $this->driveFile->setName($newName);

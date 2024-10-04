@@ -1286,14 +1286,14 @@ class ReceiptModelByInstitution
             $amountFounded = true;
 
 
-        if(preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
+        if(preg_match('/(\d{2}\/\d{2}\/\d{4})\sas\s(\d{2}:\d{2}:\d{2})/', $text, $match))
             $dateValue = $match[1];
 
         if (str_contains($depositDate, $dateValue))
             $dateFounded = true;
 
 
-        if($amountFounded && $dateFounded)
+        if($amountFounded)
             return true;
         else
             return false;
