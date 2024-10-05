@@ -17,9 +17,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->dailyAt('11:36');*/
+        })->hourly();
 
         $schedule->call(function () {
             resolve(ProcessingEntriesByCollectionWorship::class)->handle();
