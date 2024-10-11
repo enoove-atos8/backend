@@ -9,4 +9,6 @@ use Illuminate\Support\Collection;
 interface GroupRepositoryInterface
 {
     public function getGroupsByDivision(int $divisionId): Collection;
+
+    public function newGroup(GroupData $groupData): Group;
 }

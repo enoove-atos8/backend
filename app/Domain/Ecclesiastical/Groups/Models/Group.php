@@ -19,11 +19,13 @@ class Group extends Model
     protected $fillable = [
         'ecclesiastical_division_id',
         'parent_group_id',
+        'leader_id',
         'name',
         'description',
-        'financial_transaction_exist',
+        'financial_transactions_exists',
         'enabled',
         'temporary_event',
+        'return_values',
         'start_date',
         'end_date',
     ];

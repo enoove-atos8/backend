@@ -9,31 +9,39 @@ class GroupData extends DataTransferObject
     /** @var integer  */
     public int $id = 0;
 
-    /** @var string  */
-    public string $ecclesiasticalDivisionId;
+    /** @var null | string  */
+    public null | string $groupName;
 
-    /** @var integer  */
-    public int $parentGroupId;
+    /** @var null | boolean  */
+    public null | bool $financialMovement;
 
-    /** @var string  */
-    public string $name;
+    /** @var null | boolean  */
+    public null | bool $returnValues;
 
-    /** @var string  */
-    public string $description;
+    /** @var null | string  */
+    public null | string $divisionId;
 
-    /** @var boolean  */
-    public bool $financialTransactionExist;
+    /** @var null | integer  */
+    public null | int $parentGroupId;
 
-    /** @var boolean  */
-    public bool $enabled;
+    /** @var null | integer */
+    public null | int $leaderId;
 
-    /** @var boolean  */
-    public bool $temporaryEvent;
 
-    /** @var string  */
-    public string $startDate;
+    /** @var null | string  */
+    public null | string $description;
 
-    /** @var string  */
-    public string $endDate;
+
+    /** @var null | boolean  */
+    public null | bool $enabled;
+
+    /** @var null | boolean  */
+    public null | bool $temporaryEvent;
+
+    /** @var null | string  */
+    public null | string $startDate;
+
+    /** @var null | string  */
+    public null | string $endDate;
 
 }

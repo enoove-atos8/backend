@@ -14,19 +14,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('entries', 'cult_entries'))
+        if (Schema::hasColumn('entries', 'cult_financial_data_id'))
         {
-            Schema::table('entries', function (Blueprint $table)
-            {
-                $table->boolean('cult_entries')->default(0)->after('identification_pending');
-            });
-        }
-
-        if (!Schema::hasColumn('entries', 'pending_receipt'))
-        {
-            Schema::table('entries', function (Blueprint $table)
-            {
-                $table->boolean('pending_receipt')->default(0)->after('reviewer_id');
+            Schema::table('entries', function (Blueprint $table){
+                $table->foreign('cult_financial_data_id')
+                        ->references('id')
+                        ->on('cult_financial_data');
             });
         }
     }

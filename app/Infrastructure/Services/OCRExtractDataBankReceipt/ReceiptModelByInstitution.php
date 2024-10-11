@@ -19,6 +19,8 @@ class ReceiptModelByInstitution
         ]
     ];
 
+    const CRON_LOG_PATH = 'logs/cron.log';
+
 
 
     /**
@@ -104,26 +106,27 @@ class ReceiptModelByInstitution
      */
     private function extractDataCaixaEconomicaAPP(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING CEF DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING CEF DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get name
         if ((preg_match('/Dados do pagador\s+Nome\s+([^\n]+)/', $text, $match)))
             $this->response['data']['name'] = $match[1];
         else {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
+
         }
 
         //Get date
@@ -131,9 +134,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -147,9 +150,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -160,9 +163,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -172,9 +175,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -212,18 +215,18 @@ class ReceiptModelByInstitution
      */
     private function extractDataGerenciadorCaixa(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING GER_CEF DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING GER_CEF DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
 
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -232,9 +235,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -243,9 +246,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -255,9 +258,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['cpf'] = $match[1];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -269,9 +272,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -281,9 +284,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -350,18 +353,18 @@ class ReceiptModelByInstitution
      */
     private function extractDataBradesco(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING BRADESCO DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING BRADESCO DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -370,9 +373,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -381,9 +384,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[0];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -393,9 +396,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -407,9 +410,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -419,9 +422,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -459,18 +462,18 @@ class ReceiptModelByInstitution
      */
     private function extractDataSantander(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING SANTANDER DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING SANTANDER DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -479,9 +482,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get date
@@ -489,9 +492,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -501,9 +504,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -515,9 +518,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -527,9 +530,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -597,18 +600,18 @@ class ReceiptModelByInstitution
      */
     private function extractDataSicredi(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING SICREDI DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING SICREDI DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         //Get amount
         if (preg_match('/RS\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -617,9 +620,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get date
@@ -627,9 +630,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[0];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -639,9 +642,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -653,9 +656,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -665,9 +668,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -704,9 +707,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataNubank(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING NUBANK DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING NUBANK DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
 
         //Get amount
@@ -714,9 +717,9 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get name
@@ -724,9 +727,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -735,9 +738,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -749,9 +752,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -762,9 +765,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -774,9 +777,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -904,9 +907,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataPicpay(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING PICPAY DATA ' . PHP_EOL);
-        printf('========================================= ' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING PICPAY DATA ' . PHP_EOL);
+        echo('========================================= ' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/R\$\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
@@ -915,9 +918,9 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -926,9 +929,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] =  str_replace("\n", ' ', $match[1]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get date
@@ -936,9 +939,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -954,9 +957,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = $match[1] . $match[2];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -968,9 +971,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -980,9 +983,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -1051,18 +1054,18 @@ class ReceiptModelByInstitution
      */
     private function extractDataNext(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING NEXT DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING NEXT DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/Valor:\s*R\$ ([\d.,]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
 
@@ -1071,9 +1074,9 @@ class ReceiptModelByInstitution
             $this->response['data']['name'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET NAME DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get date
@@ -1081,9 +1084,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -1093,9 +1096,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -1107,9 +1110,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -1119,9 +1122,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -1159,18 +1162,18 @@ class ReceiptModelByInstitution
      */
     private function extractDataGenericReceipt(string $text, string $entryType): array
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING UNIDENTIFIED INSTITUTION DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING UNIDENTIFIED INSTITUTION DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET AMOUNT DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         //Get date
@@ -1178,9 +1181,9 @@ class ReceiptModelByInstitution
             $this->response['data']['date'] = $match[1];
         else
         {
-            printf(PHP_EOL . 'ERROR IN GET DATE DATA' . PHP_EOL);
-            printf(PHP_EOL . $text . PHP_EOL);
-            printf(json_encode($this->response['data']) . PHP_EOL);
+            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
+            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
         }
 
         if($entryType == 'tithe')
@@ -1194,9 +1197,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET CPF DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -1212,9 +1215,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
         else
@@ -1228,9 +1231,9 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             else
             {
-                printf(PHP_EOL . 'ERROR IN GET TIMESTAMP DATA' . PHP_EOL);
-                printf(PHP_EOL . $text . PHP_EOL);
-                printf(json_encode($this->response['data']) . PHP_EOL);
+                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
+                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
+                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
             }
         }
 
@@ -1270,9 +1273,9 @@ class ReceiptModelByInstitution
      */
     private function extractDataBankDeposit(string $text, string $amount, string $depositDate): bool
     {
-        printf(PHP_EOL . '=========================================' . PHP_EOL);
-        printf('EXTRACTING RECEIPT BANK DATA' . PHP_EOL);
-        printf('=========================================' . PHP_EOL);
+        echo(PHP_EOL . '=========================================' . PHP_EOL);
+        echo('EXTRACTING RECEIPT BANK DATA' . PHP_EOL);
+        echo('=========================================' . PHP_EOL);
 
         $amountFounded = false;
         $dateFounded = false;

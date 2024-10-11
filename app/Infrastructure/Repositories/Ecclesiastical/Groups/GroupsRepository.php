@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Repositories\Ecclesiastical\Groups;
 
+use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Models\Group;
@@ -9,6 +10,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\Member\MemberRepository;
 use function Laravel\Prompts\table;
 
 class GroupsRepository extends BaseRepository implements GroupRepositoryInterface
@@ -19,8 +21,27 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
+    const LEADER_ID_COLUMN = 'ecclesiastical_divisions_groups.leader_id';
     const MEMBER_ECCLESIASTICAL_DIVISION_GROUPS_ID_COLUMN = 'members.ecclesiastical_divisions_group_id';
+    const MEMBER_ID_COLUMN = 'members.id';
     const MEMBER_GROUP_LEADER_COLUMN = 'members.group_leader';
+    const NAME_GROUP_COLUMN = 'name';
+
+    const DISPLAY_SELECT_COLUMNS = [
+        'ecclesiastical_divisions_groups.id as groups_id',
+        'ecclesiastical_divisions_groups.ecclesiastical_division_id  as groups_division_id',
+        'ecclesiastical_divisions_groups.parent_group_id as groups_parent_group_id',
+        'ecclesiastical_divisions_groups.leader_id as groups_leader_id',
+        'ecclesiastical_divisions_groups.name as groups_name',
+        'ecclesiastical_divisions_groups.description as groups_description',
+        'ecclesiastical_divisions_groups.financial_transactions_exists as groups_transactions_exists',
+        'ecclesiastical_divisions_groups.enabled as groups_enabled',
+        'ecclesiastical_divisions_groups.temporary_event as groups_temporary_event',
+        'ecclesiastical_divisions_groups.return_values as groups_return_values',
+        'ecclesiastical_divisions_groups.start_date as groups_return_values',
+        'ecclesiastical_divisions_groups.end_date as groups_end_date',
+        'ecclesiastical_divisions_groups.updated_at as groups_updated_at',
+    ];
 
     /**
      * Array of conditions
@@ -44,13 +65,43 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     public function getGroupsWithLeaderMember(int $divisionId): Collection
     {
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            self::DISPLAY_SELECT_COLUMNS,
+            MemberRepository::DISPLAY_SELECT_COLUMNS
+        );
+
         return DB::table(self::TABLE_NAME)
             ->join(
-                self::MEMBER_TABLE_NAME, self::ID_TABLE_COLUMN,
+                self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
                 BaseRepository::OPERATORS['EQUALS'],
-                self::MEMBER_ECCLESIASTICAL_DIVISION_GROUPS_ID_COLUMN)
+                self::MEMBER_ID_COLUMN)
             ->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionId)
-            ->where(self::MEMBER_GROUP_LEADER_COLUMN, true)
+            ->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
+            ->select($displayColumnsFromRelationship)
             ->get();
+    }
+
+
+
+
+    /**
+     * @param GroupData $groupData
+     * @return Group
+     */
+    public function newGroup(GroupData $groupData): Group
+    {
+        return $this->create([
+            'ecclesiastical_division_id'    =>   $groupData->divisionId,
+            'parent_group_id'               =>   $groupData->parentGroupId,
+            'leader_id'                     =>   $groupData->leaderId,
+            'name'                          =>   $groupData->groupName,
+            'description'                   =>   $groupData->description,
+            'financial_transactions_exists' =>   $groupData->financialMovement,
+            'enabled'                       =>   $groupData->enabled,
+            'temporary_event'               =>   $groupData->temporaryEvent,
+            'return_values'                 =>   $groupData->returnValues,
+            'start_date'                    =>   $groupData->startDate,
+            'end_date'                      =>   $groupData->endDate,
+        ]);
     }
 }

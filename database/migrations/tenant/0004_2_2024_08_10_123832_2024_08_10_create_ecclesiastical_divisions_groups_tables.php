@@ -17,11 +17,13 @@ return new class extends Migration
                 $table->integer('id', true)->autoIncrement();
                 $table->integer('ecclesiastical_division_id')->nullable(false);
                 $table->integer('parent_group_id')->nullable();
+                $table->integer('leader_id')->nullable();
                 $table->string('name')->nullable(false);
                 $table->string('description')->nullable();
                 $table->boolean('financial_transactions_exists')->nullable(false)->default(0);
                 $table->boolean('enabled')->nullable(false)->default(1);
                 $table->boolean('temporary_event')->nullable();
+                $table->boolean('return_values')->nullable()->default(0);
                 $table->date('start_date')->nullable();
                 $table->date('end_date')->nullable();
 
