@@ -19,23 +19,20 @@ class GetGroupsByDivisionAction
 
     private GroupsRepository $groupsRepository;
     private GetDivisionByNameAction $getDivisionByNameAction;
-    private GetMemberLeaderAction $getMemberLeaderAction;
 
     public function __construct(
         GroupRepositoryInterface  $groupsRepositoryInterface,
         GetDivisionByNameAction  $getDivisionByNameAction,
-        GetMemberLeaderAction  $getMemberLeaderAction,
     )
     {
         $this->groupsRepository = $groupsRepositoryInterface;
         $this->getDivisionByNameAction = $getDivisionByNameAction;
-        $this->getMemberLeaderAction = $getMemberLeaderAction;
     }
 
     /**
      * @throws Throwable
      */
-    public function __invoke(string $division): Collection | Paginator
+    public function __invoke(string $division): Collection | Paginator | array
     {
         $division = $this->getDivisionByNameAction->__invoke($division);
         $groups = $this->groupsRepository->getGroupsByDivision($division->id);
@@ -46,7 +43,7 @@ class GetGroupsByDivisionAction
         }
         else
         {
-            throw new GeneralExceptions('', 404);
+            return [];
         }
     }
 }

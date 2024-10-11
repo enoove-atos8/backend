@@ -62,7 +62,7 @@ class ProcessingEntriesByCollectionWorship
     ];
 
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
 
     private array $arrReceiptsFounded = [];
@@ -146,26 +146,32 @@ class ProcessingEntriesByCollectionWorship
 
                 foreach ($files as $file)
                 {
-                    $depositDate = $this->googleSheetsService->getDepositDate($this->client, $file->id);
-                    $linkReceipts = $this->getReceiptByAmount($tenant, $file->id, $depositDate[0][0]);
-                    $entry = null;
-
-                    $this->entriesBlock['tithe'] = $this->googleSheetsService->readTithesBlock($this->client, $file->id);
-                    $this->entriesBlock['designated'] = $this->googleSheetsService->readDesignatedBlock($this->client, $file->id);
-                    $this->entriesBlock['offers'] = $this->googleSheetsService->readOffersBlock($this->client, $file->id);
-
-                    foreach ($this->entriesBlock as $key => $entries)
+                    if($this->googleDriveService->isFile($file))
                     {
-                        if(count($entries) != 0)
+                        $depositDate = $this->googleSheetsService->getDepositDate($this->client, $file->id);
+                        $cultDate = $this->googleSheetsService->getCultDate($this->client, $file->id);
+                        $entry = null;
+
+                        $this->entriesBlock['tithe'] = $this->googleSheetsService->readTithesBlock($this->client, $file->id);
+                        $this->entriesBlock['designated'] = $this->googleSheetsService->readDesignatedBlock($this->client, $file->id);
+                        $this->entriesBlock['offers'] = $this->googleSheetsService->readOffersBlock($this->client, $file->id);
+
+                        if(count($this->entriesBlock['tithe']) > 0 || count($this->entriesBlock['designated']) > 0 || count($this->entriesBlock['offers']) > 0)
                         {
-                            $this->setEntryData(array_values($entries), $key, $depositDate);
-                            $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
+                            $linkReceipts = $this->getReceiptByAmountAndProcess($tenant, $file->id, $depositDate[0][0]);
 
-                            if(count($linkReceipts) == 1)
-                                $this->updateReceiptLinkEntryAction->__invoke($entry->id, $linkReceipts[0]);
+                            foreach ($this->entriesBlock as $key => $entries)
+                            {
+                                if(count($entries) != 0)
+                                {
+                                    $this->setEntryData(array_values($entries), $key, $depositDate);
+                                    $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
+                                    $this->googleDriveService->renameFile($file->id, null, 'FILE_READ', null, $cultDate[0][0]);
 
-                            else if (count($linkReceipts) > 1)
-                                $this->updateReceiptLinkEntryAction->__invoke($entry->id, json_encode($linkReceipts));
+                                    if (count($linkReceipts) > 0)
+                                        $this->updateReceiptLinkEntryAction->__invoke($entry->id, json_encode($linkReceipts));
+                                }
+                            }
                         }
                     }
                 }
@@ -179,7 +185,7 @@ class ProcessingEntriesByCollectionWorship
      * @throws TesseractOcrException
      * @throws Exception
      */
-    public function getReceiptByAmount(string $tenant, string $fileId, string $depositDate): array
+    public function getReceiptByAmountAndProcess(string $tenant, string $fileId, string $depositDate): array
     {
         $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke(false, true);
         $depositList = $this->googleSheetsService->getReceiptsCountsValues($this->client, $fileId);

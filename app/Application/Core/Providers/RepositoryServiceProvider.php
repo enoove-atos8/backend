@@ -64,6 +64,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(FoldersRepositoryInterface::class, FoldersRepository::class);
         $this->app->bind(UnidentifiedReceiptRepositoryInterface::class, UnidentifiedReceiptsRepository::class);
+        $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
     }
 
     /**

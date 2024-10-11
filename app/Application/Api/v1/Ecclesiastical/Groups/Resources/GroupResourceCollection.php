@@ -3,6 +3,7 @@
 namespace Application\Api\v1\Ecclesiastical\Groups\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use JsonSerializable;
@@ -16,6 +17,15 @@ class GroupResourceCollection extends ResourceCollection
      */
     public static $wrap = 'groups';
 
+    private Model $division;
+
+
+    public function __construct($resource, $division)
+    {
+        parent::__construct($resource);
+        $this->division = $division;
+    }
+
 
     /**
      * Transform the resource collection into an array.
@@ -25,22 +35,27 @@ class GroupResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $result = [];
+        $result = [
+            'divisionId'    =>  $this->division->id,
+            'requireLeader' =>  $this->division->require_leader,
+            'data'          =>  []
+        ];
 
         foreach ($this->collection as $item)
         {
-            $result[] = [
-                'id'            =>  $item->id,
-                'name'          =>  $item->name,
-                'enabled'       =>  $item->enabled,
+            $result['data'][] = [
+                'id'            =>  $item->groups_id,
+                'divisionId'    =>  $item->groups_division_id,
+                'name'          =>  $item->groups_name,
+                'enabled'       =>  $item->groups_enabled,
                 'leader'    =>  [
-                    //'id'        =>  $item->member_id,
-                    'fullName'  =>  $item->full_name,
-                    'avatar'  =>  $item->avatar,
-                    'contact' =>  $item->cell_phone,
-                    'email'   =>  $item->email,
+                    'id'        =>  $item->members_id,
+                    'fullName'  =>  $item->members_full_name,
+                    'avatar'    =>  $item->members_avatar,
+                    'cellPhone' =>  $item->members_cell_phone,
+                    'email'     =>  $item->members_email,
                 ],
-                'updatedAt'     =>  $item->updated_at
+                'updatedAt'     =>  $item->groups_updated_at
             ];
         }
 

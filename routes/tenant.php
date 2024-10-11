@@ -8,6 +8,7 @@ use App\Application\Api\v1\Financial\Entry\Controllers\General\EntryController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
+use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Ecclesiastical\Groups\Controllers\GroupController;
 use Application\Api\v1\Financial\Entry\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Members\Controllers\MemberController;
@@ -514,6 +515,23 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             Route::prefix('divisions')->group(function () {
 
+                /*
+                 * Action: GET
+                 * EndPoint: /{enabled}
+                 * Description: Get divisions enabled
+                 */
+
+                Route::get('getDivisions', [DivisionsController::class, 'getDivisions']);
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{enabled}
+                 * Description: Get division id by name
+                 */
+
+                Route::get('getDivisionIdByName', [DivisionsController::class, 'getDivisionIdByName']);
+
             });
 
 
@@ -536,6 +554,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::get('getGroupsByDivision', [GroupController::class, 'getGroupsByDivision']);
+
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Create a group
+                 */
+
+                Route::post('/', [GroupController::class, 'createGroup']);
 
             });
 

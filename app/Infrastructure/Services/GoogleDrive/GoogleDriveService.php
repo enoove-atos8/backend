@@ -82,6 +82,22 @@ class GoogleDriveService
     }
 
 
+
+    /**
+     *
+     */
+    public function isFile($file): bool
+    {
+        $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
+
+        if ($fileMetadata->mimeType == 'application/vnd.google-apps.file')
+            return true;
+        else
+            return false;
+    }
+
+
+
     /**
      * @param $basePathTemp
      * @param $file
