@@ -48,13 +48,13 @@ class GroupResourceCollection extends ResourceCollection
                 'divisionId'    =>  $item->groups_division_id,
                 'name'          =>  $item->groups_name,
                 'enabled'       =>  $item->groups_enabled,
-                'leader'    =>  [
+                'leader'        =>  $this->division->require_leader == 1 ? [
                     'id'        =>  $item->members_id,
                     'fullName'  =>  $item->members_full_name,
                     'avatar'    =>  $item->members_avatar,
                     'cellPhone' =>  $item->members_cell_phone,
                     'email'     =>  $item->members_email,
-                ],
+                ] : null,
                 'updatedAt'     =>  $item->groups_updated_at
             ];
         }

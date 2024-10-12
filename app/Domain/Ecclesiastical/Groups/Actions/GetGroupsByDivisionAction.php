@@ -35,7 +35,7 @@ class GetGroupsByDivisionAction
     public function __invoke(string $division): Collection | Paginator | array
     {
         $division = $this->getDivisionByNameAction->__invoke($division);
-        $groups = $this->groupsRepository->getGroupsByDivision($division->id);
+        $groups = $this->groupsRepository->getGroupsByDivision($division);
 
         if($groups->count() > 0)
         {
