@@ -113,31 +113,14 @@ class ReceiptModelByInstitution
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
-        else {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get name
         if ((preg_match('/Dados do pagador\s+Nome\s+([^\n]+)/', $text, $match)))
             $this->response['data']['name'] = $match[1];
-        else {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-
-        }
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
             $this->response['data']['date'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
@@ -148,12 +131,6 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else if(preg_match('/GPF\s*(.*)/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
         if($entryType == 'tithe')
@@ -161,24 +138,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -223,45 +188,22 @@ class ReceiptModelByInstitution
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
-        else {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get name
         if (preg_match('/Origem\s+Nome:\s*(.+)$/', $text, $match))
             $this->response['data']['name'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4}) as/', $text, $match))
             $this->response['data']['date'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
             //Get CPF
             if (preg_match('/CPF:\s?(\d{11})/', $text, $match))
                 $this->response['data']['cpf'] = $match[1];
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -270,24 +212,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -360,46 +290,22 @@ class ReceiptModelByInstitution
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get name
         if (preg_match('/Dados de quem pagou\s+Nome:\s*(.+)$/', $text, $match))
             $this->response['data']['name'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
             $this->response['data']['date'] = $match[0];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
             //Get CPF
             if (preg_match('/CPF:\s*([\*\.0-9\-]+)/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -408,24 +314,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -469,45 +363,21 @@ class ReceiptModelByInstitution
         //Get amount
         if (preg_match('/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get name
         if (preg_match('/^De:\s*(.+)$/', $text, $match))
             $this->response['data']['name'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
             $this->response['data']['date'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
             //Get CPF
             if (preg_match('/CPF\s*([\*\,\.\d\-]+)/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -516,24 +386,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -607,45 +465,21 @@ class ReceiptModelByInstitution
         //Get amount
         if (preg_match('/RS\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/', $text, $match))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[0]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get name
         if (preg_match('/^Solicitante:\s*(.+)$/', $text, $match))
             $this->response['data']['name'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
             $this->response['data']['date'] = $match[0];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
             //Get CPF
             if (preg_match('/CPF\s+do\s+pagador:\s+([\d\*\.]+)/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -654,24 +488,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -715,33 +537,15 @@ class ReceiptModelByInstitution
         //Get amount
         if ((preg_match('/R\$.(\d.*)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get name
         if ((preg_match('/Origem\s+Nome\s+([^\n]+)/', $text, $match)))
             $this->response['data']['name'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get date
         if (preg_match('/\d{2} [A-Z]{3} \d{4}\b/', $text, $match))
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
@@ -750,12 +554,6 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/[\s\.]/', '', $match[1]) . preg_replace('/[\s\.]/', '', $match[2]);
             else if(preg_match('/.*?(\d{3})[,](\d{3})/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
         if($entryType == 'tithe')
@@ -763,24 +561,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2} \w{3} \d{4}) - (\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -916,33 +702,15 @@ class ReceiptModelByInstitution
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get name
         if ((preg_match('/De\s+([A-Z\s]+)/', $text, $match)))
             $this->response['data']['name'] =  str_replace("\n", ' ', $match[1]);
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get date
         if (preg_match('/\d{2}\/[a-z]{3}\/\d{4}/', $text, $match))
             $this->response['data']['date'] = $this->formatDateWithTextMonth($match[0]);
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
@@ -955,12 +723,6 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else if(preg_match('/(\d{3})[,](\d{3})/', $text, $match))
                 $this->response['data']['middle_cpf'] = $match[1] . $match[2];
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -969,24 +731,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -1061,45 +811,21 @@ class ReceiptModelByInstitution
         //Get amount
         if ((preg_match('/Valor:\s*R\$ ([\d.,]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
 
         //Get name
         if ((preg_match('/Dados do pagador\s+Nome:\s*(.+)$/', $text, $match)))
             $this->response['data']['name'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET NAME DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get date
         if (preg_match('/Data:\s*(\d{2}\/\d{2}\/\d{4})/', $text, $match))
             $this->response['data']['date'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
             //Get CPF
             if (preg_match('/CPF:.*?(\d[ .]?\d{2})\.(\d{3})/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -1108,24 +834,12 @@ class ReceiptModelByInstitution
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
             //Get timestamp
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -1169,22 +883,10 @@ class ReceiptModelByInstitution
         //Get amount
         if ((preg_match('/RS\s*([\d,.]+)/', $text, $match)) || (preg_match('/R\$\s*([\d,.]+)/', $text, $match)))
             $this->response['data']['amount'] = preg_replace('/[^\d]/', '', $match[1]);
-        else
-        {
-            error_log('ERROR IN GET AMOUNT DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         //Get date
         if (preg_match('/(\d{2}\/\d{2}\/\d{4})/', $text, $match))
             $this->response['data']['date'] = $match[1];
-        else
-        {
-            error_log('ERROR IN GET DATE DATA', 3, storage_path(self::CRON_LOG_PATH));
-            error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-            error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-        }
 
         if($entryType == 'tithe')
         {
@@ -1195,12 +897,6 @@ class ReceiptModelByInstitution
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
             else if(preg_match('/GPF\s*(.*)/', $text, $match))
                 $this->response['data']['middle_cpf'] = preg_replace('/\D/', '', $match[1]);
-            else
-            {
-                error_log('ERROR IN GET CPF DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
@@ -1213,12 +909,6 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'] . '_' . $this->response['data']['middle_cpf'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
         else
         {
@@ -1229,12 +919,6 @@ class ReceiptModelByInstitution
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
             if (preg_match('/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/', $text, $match))
                 $this->response['data']['timestamp_value_cpf'] = preg_replace('/\D/', '', $match[1]) . preg_replace('/\D/', '', $match[2]) . '_' . $this->response['data']['amount'];
-            else
-            {
-                error_log('ERROR IN GET TIMESTAMP DATA', 3, storage_path(self::CRON_LOG_PATH));
-                error_log($text, 3, storage_path(self::CRON_LOG_PATH));
-                error_log(json_encode($this->response['data']), 3, storage_path(self::CRON_LOG_PATH));
-            }
         }
 
 
