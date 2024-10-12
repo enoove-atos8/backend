@@ -31,7 +31,7 @@ class GroupRequest extends FormRequest
     {
         return [
             'groupName'             =>  'required',
-            'groupLeaderId'         =>  'required',
+            'groupLeaderId'         =>  '',
             'financialMovement'     =>  '',
             'returnValues'          =>  '',
             'divisionId'            =>  'required',
@@ -56,7 +56,6 @@ class GroupRequest extends FormRequest
     {
         return [
             'groupName.required'          =>  "O preenchimento do nome do grupo é obrigatório!",
-            'groupLeaderId.required'      =>  "O preenchimento do líder ou responsável é obrigatório!",
             'divisionId.required'         =>  "É necessário informar uma divisão eclesiástica!",
         ];
     }

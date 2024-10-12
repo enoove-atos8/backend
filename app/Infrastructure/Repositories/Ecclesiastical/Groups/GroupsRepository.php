@@ -3,6 +3,7 @@
 namespace Infrastructure\Repositories\Ecclesiastical\Groups;
 
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
+use Domain\Ecclesiastical\Divisions\Models\Division;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Models\Group;
@@ -53,31 +54,43 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      * @param int $divisionId
      * @return Collection
      */
-    public function getGroupsByDivision(int $divisionId): Collection
+    public function getGroupsByDivision(Division $division): Collection
     {
-        return $this->getGroupsWithLeaderMember($divisionId);
+        return $this->getGroups($division);
     }
 
 
-
+    /**
+     *
+     * self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
+     * BaseRepository::OPERATORS['EQUALS'],
+     * self::MEMBER_ID_COLUMN
+     */
     /**
      * Get Groups and leaders members data
      */
-    public function getGroupsWithLeaderMember(int $divisionId): Collection
+    public function getGroups(Division $division): Collection
     {
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
-            self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        return DB::table(self::TABLE_NAME)
-            ->join(
-                self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
-                BaseRepository::OPERATORS['EQUALS'],
-                self::MEMBER_ID_COLUMN)
-            ->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionId)
+        if($division->require_leader == 1)
+        {
+            $q = DB::table(self::TABLE_NAME)
+                ->join(self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
+                        BaseRepository::OPERATORS['EQUALS'],
+                        self::MEMBER_ID_COLUMN)
+                ->select($displayColumnsFromRelationship);
+        }
+        else
+        {
+            $q = DB::table(self::TABLE_NAME)
+                ->select(self::DISPLAY_SELECT_COLUMNS);
+        }
+
+        return $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $division->id)
             ->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
-            ->select($displayColumnsFromRelationship)
             ->get();
     }
 
