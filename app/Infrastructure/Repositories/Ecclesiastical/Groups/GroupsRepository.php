@@ -80,6 +80,11 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
                         self::MEMBER_ID_COLUMN)
                     ->select($displayColumnsFromRelationship);
             }
+            else
+            {
+                $q = DB::table(self::TABLE_NAME)
+                    ->select(self::DISPLAY_SELECT_COLUMNS);
+            }
         }
         else
         {
