@@ -25,7 +25,7 @@ class GetDivisionsAction
     /**
      * @throws Throwable
      */
-    public function __invoke(int $enabled): Collection
+    public function __invoke(int $enabled = 1): Collection
     {
         $divisions = $this->divisionRepository->getDivisions($enabled);
 

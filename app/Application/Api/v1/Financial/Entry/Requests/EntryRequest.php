@@ -34,20 +34,25 @@ class EntryRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'entryType'                      =>  'required',
-            'transactionType'                =>  $this->validatorField('transactionType'),
-            'transactionCompensation'        =>  $this->validatorField('transactionCompensation'),
-            'dateTransactionCompensation'    =>  $this->validatorField('dateTransactionCompensation'),
-            'dateEntryRegister'              =>  'required',
-            'amount'                         =>  'required',
-            'recipient'                      =>  $this->validatorField('recipient'),
-            'memberId'                       =>  '',
-            'reviewerId'                     =>  'required',
-            'devolution'                     =>  'integer',
-            'residualValue'                  =>  'integer',
-            'deleted'                        =>  'required|integer',
-            'comments'                       =>  '',
-            'receipt'                        =>  $this->validatorField('receipt'),
+            'memberId'                      =>  '',
+            'reviewerId'                    =>  'required',
+            'cultFinancialDataId'           =>  '',
+            'groupReturnedId'               =>  '',
+            'groupReceivedId'               =>  '',
+            'identificationPending'         =>  '',
+            'entryType'                     =>  'required',
+            'transactionType'               =>  $this->validatorField('transactionType'),
+            'transactionCompensation'       =>  $this->validatorField('transactionCompensation'),
+            'dateTransactionCompensation'   =>  $this->validatorField('dateTransactionCompensation'),
+            'dateEntryRegister'             =>  'required',
+            'amount'                        =>  'required',
+            'recipient'                     =>  $this->validatorField('recipient'),
+            'timestampValueCpf'             =>  '',
+            'devolution'                    =>  '',
+            'residualValue'                 =>  '',
+            'deleted'                       =>  '',
+            'comments'                      =>  '',
+            'receipt'                       =>  $this->validatorField('receipt'),
         ];
     }
 
@@ -124,11 +129,6 @@ class EntryRequest extends FormRequest
                 return '';
             }
         }
-        if($field === 'residualValue')
-        {
-            if($residualValue)
-                return '';
-        }
     }
 
 
@@ -148,10 +148,8 @@ class EntryRequest extends FormRequest
             'dateEntryRegister.required'        =>  "A informação de 'Data de registro' é obrigatória!",
             'amount.required'                   =>  "O preenchimento do campo 'Valor' é obrigatório!",
             'reviewerId.required'               =>  "O preenchimento do campo 'Revisor' é obrigatório!",
-            'devolution.integer'                =>  "O valor do campo 'Devolução' deve ser um valor inteiro, 0 ou 1",
             'deleted.required'                  =>  "A informação de 'deleted' é obrigatória para a entrada!",
-            'deleted.integer'                   =>  "O valor da informação 'deleted' deve ser um valor inteiro, 0 ou 1",
-            'receipt.required'              =>  "O cadastro do comprovante é obrigatório, verifique!",
+            'receipt.required'                  =>  "O cadastro do comprovante é obrigatório, verifique!",
         ];
     }
 
@@ -167,6 +165,12 @@ class EntryRequest extends FormRequest
     public function entryData(): EntryData
     {
         return new EntryData(
+            memberId:                       $this->input('memberId'),
+            reviewerId:                     $this->input('reviewerId'),
+            cultFinancialDataId:            $this->input('cultFinancialDataId'),
+            groupReturnedId:                $this->input('groupReturnedId'),
+            groupReceivedId:                $this->input('groupReceivedId'),
+            identificationPending:          $this->input('identificationPending'),
             entryType:                      $this->input('entryType'),
             transactionType:                $this->input('transactionType'),
             transactionCompensation:        $this->input('transactionCompensation'),
@@ -175,8 +179,6 @@ class EntryRequest extends FormRequest
             amount:                         $this->input('amount'),
             recipient:                      $this->input('recipient'),
             timestampValueCpf:              $this->input('timestampValueCpf'),
-            memberId:                       $this->input('memberId'),
-            reviewerId:                     $this->input('reviewerId'),
             devolution:                     $this->input('devolution'),
             residualValue:                  $this->input('residualValue'),
             deleted:                        $this->input('deleted'),

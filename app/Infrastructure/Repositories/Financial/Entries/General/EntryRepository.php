@@ -12,6 +12,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
 
@@ -44,6 +45,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const ENTRY_TYPE_COLUMN_JOINED = 'entries.entry_type';
     const AMOUNT_COLUMN = 'amount';
     const AMOUNT_COLUMN_JOINED = 'entries.amount';
+    const GROUP_RECEIVED_ID_COLUMN_JOINED = 'entries.group_received_id';
     const ENTRIES_AMOUNT_COLUMN_ALIAS = 'entries_amount';
     const DEVOLUTION_COLUMN = 'devolution';
     const DEVOLUTION_COLUMN_JOINED = 'entries.devolution';
@@ -67,12 +69,17 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         'entries.id as entries_id',
         'entries.member_id as entries_member_id',
         'entries.reviewer_id as entries_reviewer_id',
+        'entries.cult_financial_data_id as entries_cult_financial_data_id',
+        'entries.group_returned_id as entries_group_returned_id',
+        'entries.group_received_id as entries_group_received_id',
+        'entries.identification_pending as entries_identification_pending',
         'entries.entry_type as entries_entry_type',
         'entries.transaction_type as entries_transaction_type',
         'entries.transaction_compensation as entries_transaction_compensation',
         'entries.date_transaction_compensation as entries_date_transaction_compensation',
         'entries.date_entry_register as entries_date_entry_register',
         'entries.amount as entries_amount',
+        'entries.timestamp_value_cpf as entries_timestamp_value_cpf',
         'entries.recipient as entries_recipient',
         'entries.devolution as entries_devolution',
         'entries.residual_value as entries_residual_value',
@@ -97,6 +104,12 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     public function newEntry(EntryData $entryData): Entry
     {
         return $this->create([
+            'member_id'                                         =>   $entryData->memberId,
+            'reviewer_id'                                       =>   $entryData->reviewerId,
+            'cult_financial_data_id'                            =>   $entryData->cultFinancialDataId,
+            'group_returned_id'                                 =>   $entryData->groupReturnedId,
+            'group_received_id'                                 =>   $entryData->groupReceivedId,
+            'identification_pending'                            =>   $entryData->identificationPending,
             'entry_type'                                        =>   $entryData->entryType,
             'transaction_type'                                  =>   $entryData->transactionType,
             'transaction_compensation'                          =>   $entryData->transactionCompensation,
@@ -104,11 +117,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'date_entry_register'                               =>   $entryData->dateEntryRegister,
             'amount'                                            =>   floatval($entryData->amount),
             'recipient'                                         =>   $entryData->recipient,
-            'ecclesiastical_divisions_groups_id'                =>   $entryData->ecclesiasticalDivisionsGroupsId,
-            'member_id'                                         =>   $entryData->memberId,
-            'reviewer_id'                                       =>   $entryData->reviewerId,
+            'timestamp_value_cpf'                               =>   $entryData->timestampValueCpf,
             'devolution'                                        =>   $entryData->devolution,
-            'ecclesiastical_divisions_groups_devolution_origin' =>   $entryData->ecclesiasticalGroupDevolutionOrigin,
             'residual_value'                                    =>   $entryData->residualValue,
             'deleted'                                           =>   $entryData->deleted,
             'comments'                                          =>   $entryData->comments,
@@ -186,7 +196,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS,
-            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
+            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS,
+            GroupsRepository::DISPLAY_SELECT_COLUMNS
         );
 
         if($rangeMonthlyDate !== 'all')
@@ -482,22 +493,21 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
-
     /**
      * @param string $rangeMonthlyDate
-     * @param string $amountType
-     * @param string|null $entryType
-     * @param string|null $exitType
+     * @param string $entryType
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAmountByEntryType(string $rangeMonthlyDate, string $amountType, string $entryType = null, string $exitType = null): Collection
+    public function getAmountByEntryType(string $rangeMonthlyDate, string $entryType = 'all'): mixed
     {
         $this->queryConditions = [];
         $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
 
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
+
+        if($entryType != 'all')
+            $this->queryConditions [] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
 
         if($rangeMonthlyDate !== 'all')
             $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrRangeMonthlyDate, 'andWithOrInside');
@@ -544,6 +554,11 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     EntryRepository::MEMBER_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     MemberRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    GroupsRepository::TABLE_NAME,
+                    EntryRepository::GROUP_RECEIVED_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    GroupsRepository::ID_TABLE_COLUMN)
                 ->leftJoin(
                     FinancialReviewerRepository::TABLE_NAME,
                     EntryRepository::REVIEWER_ID_COLUMN_JOINED,

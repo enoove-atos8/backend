@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Repositories\Ecclesiastical\Divisions;
 
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Models\Division;
 use Faker\Provider\Base;
@@ -13,10 +14,19 @@ use Infrastructure\Repositories\BaseRepository;
 class DivisionRepository extends BaseRepository implements DivisionRepositoryInterface
 {
     protected mixed $model = Division::class;
-    const TABLE_NAME = 'ecclesiastical_division';
+    const TABLE_NAME = 'ecclesiastical_divisions';
     const ROUTE_RESOURCE_COLUMN = 'route_resource';
     const ENABLED_COLUMN = 'enabled';
-    const ID_COLUMN = 'id';
+    const ID_COLUMN = 'ecclesiastical_divisions.id';
+    const NAME_COLUMN = 'ecclesiastical_divisions.name';
+
+    const DISPLAY_SELECT_COLUMNS = [
+        'ecclesiastical_divisions.id as division_id',
+        'ecclesiastical_divisions.route_resource  as division_route_resource',
+        'ecclesiastical_divisions.name as division_name',
+        'ecclesiastical_divisions.description as division_description',
+        'ecclesiastical_divisions.enabled as division_enabled',
+    ];
 
 
     /**
@@ -68,5 +78,22 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
         return $this->getItemWithRelationshipsAndWheres(
             $this->queryConditions
         );
+    }
+
+
+
+    /**
+     * @param DivisionData $divisionData
+     * @return Division
+     */
+    public function createDivision(DivisionData $divisionData): Division
+    {
+        return $this->create([
+            'route_resource'    =>   $divisionData->routeResource,
+            'name'              =>   $divisionData->name,
+            'description'       =>   $divisionData->description,
+            'enabled'           =>   $divisionData->enabled,
+            'require_leader'    =>   $divisionData->requireLeader,
+        ]);
     }
 }

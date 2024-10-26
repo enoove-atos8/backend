@@ -2,7 +2,6 @@
 
 namespace Infrastructure\Repositories\Ecclesiastical\Groups;
 
-use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Domain\Ecclesiastical\Divisions\Models\Division;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
@@ -11,14 +10,16 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
-use function Laravel\Prompts\table;
+use Illuminate\Database\Eloquent\Model;
 
 class GroupsRepository extends BaseRepository implements GroupRepositoryInterface
 {
     protected mixed $model = Group::class;
     const TABLE_NAME = 'ecclesiastical_divisions_groups';
     const MEMBER_TABLE_NAME = 'members';
+    const ENABLED_TABLE_COLUMN = 'enabled';
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
@@ -39,7 +40,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'ecclesiastical_divisions_groups.enabled as groups_enabled',
         'ecclesiastical_divisions_groups.temporary_event as groups_temporary_event',
         'ecclesiastical_divisions_groups.return_values as groups_return_values',
-        'ecclesiastical_divisions_groups.start_date as groups_return_values',
+        'ecclesiastical_divisions_groups.start_date as groups_start_date',
         'ecclesiastical_divisions_groups.end_date as groups_end_date',
         'ecclesiastical_divisions_groups.updated_at as groups_updated_at',
     ];
@@ -51,37 +52,34 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
 
     /**
-     * @param int $divisionId
+     * @param Division $division
      * @return Collection
      */
-    public function getGroupsByDivision(Division $division): Collection
+    public function getGroupsByDivision(Model $division): Collection
     {
         return $this->getGroups($division);
     }
 
 
     /**
-     *
-     * self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
-     * BaseRepository::OPERATORS['EQUALS'],
-     * self::MEMBER_ID_COLUMN
-     */
-    /**
      * Get Groups and leaders members data
      */
-    public function getGroups(Division $division): Collection
+    public function getGroups(Division $division = null): Collection
     {
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($division->require_leader == 1)
+        if($division != null)
         {
-            $q = DB::table(self::TABLE_NAME)
-                ->join(self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
+            if($division->require_leader == 1)
+            {
+                $q = DB::table(self::TABLE_NAME)
+                    ->join(self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
                         BaseRepository::OPERATORS['EQUALS'],
                         self::MEMBER_ID_COLUMN)
-                ->select($displayColumnsFromRelationship);
+                    ->select($displayColumnsFromRelationship);
+            }
         }
         else
         {
@@ -89,9 +87,30 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
                 ->select(self::DISPLAY_SELECT_COLUMNS);
         }
 
-        return $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $division->id)
-            ->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
+        if($division != null)
+            $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $division->id);
+
+
+        return $q->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
             ->get();
+    }
+
+
+
+    /**
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getAllGroups(): Collection
+    {
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::ENABLED_TABLE_COLUMN, 1, 'and');
+
+        return $this->getItemsWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::ID_COLUMN,
+            BaseRepository::ORDERS['ASC']
+        );
     }
 
 

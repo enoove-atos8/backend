@@ -6,6 +6,24 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class EntryData extends DataTransferObject
 {
+    /** @var integer | null  */
+    public int | null $memberId;
+
+    /** @var integer | null  */
+    public int | null $reviewerId;
+
+    /** @var integer | null  */
+    public int | null $cultFinancialDataId;
+
+    /** @var integer | null  */
+    public int | null $groupReturnedId;
+
+    /** @var integer | null  */
+    public int | null $groupReceivedId;
+
+    /** @var integer|null  */
+    public int | null $identificationPending;
+
     /** @var string | null  */
     public string | null $entryType;
 
@@ -27,26 +45,11 @@ class EntryData extends DataTransferObject
     /** @var string | null  */
     public string | null $recipient;
 
-    /** @var integer | null  */
-    public int | null $ecclesiasticalDivisionsGroupsId;
-
     /** @var string | null  */
     public string | null $timestampValueCpf;
 
     /** @var integer | null  */
-    public int | null $memberId;
-
-    /** @var integer | null  */
-    public int | null $reviewerId;
-
-    /** @var integer|null  */
-    public int | null $identificationPending;
-
-    /** @var integer | null  */
     public int | null $devolution;
-
-    /** @var integer | null  */
-    public int | null $ecclesiasticalGroupDevolutionOrigin;
 
     /** @var integer | null  */
     public int | null $residualValue;

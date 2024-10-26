@@ -33,20 +33,24 @@ class EntryResourceCollection extends ResourceCollection
         {
             $result[] = [
                 'id'                            =>  $item->entries_id,
+                'member'                        =>  $this->getMember($item),
+                'reviewer'                      =>  $this->getReviewer($item),
+                'cultFinancialDataId'           =>  $item->entries_cult_financial_data_id,
+                'groupReturned'                 =>  $this->getGroup($item, $item->entries_group_returned_id),
+                'groupReceived'                 =>  $this->getGroup($item, $item->entries_group_received_id),
+                'identificationPending'         =>  $item->entries_identification_pending,
                 'entryType'                     =>  $item->entries_entry_type,
                 'transactionType'               =>  $item->entries_transaction_type,
                 'transactionCompensation'       =>  $item->entries_transaction_compensation,
                 'dateTransactionCompensation'   =>  $item->entries_date_transaction_compensation,
                 'dateEntryRegister'             =>  $item->entries_date_entry_register,
                 'amount'                        =>  $item->entries_amount,
+                'timestampValueCpf'             =>  $item->entries_timestamp_value_cpf,
                 'devolution'                    =>  $item->entries_devolution,
                 'residualValue'                 =>  $item->entries_residual_value,
-                'recipient'                     =>  $item->entries_recipient,
                 'deleted'                       =>  $item->entries_deleted,
                 'comments'                      =>  $item->entries_comments,
                 'receipt'                       =>  $item->entries_receipt_link,
-                'member'                        =>  $this->getMember($item),
-                'reviewer'                      =>  $this->getReviewer($item),
             ];
 
             $totalGeneral += floatval($item->entries_amount);
@@ -132,6 +136,30 @@ class EntryResourceCollection extends ResourceCollection
                 'activated'          =>  $entry->financial_reviewers_activated,
                 'deleted'            =>  $entry->financial_reviewers_deleted,
             ];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+    /**
+     * @param mixed $entry
+     * @param $groupId
+     * @return array|null
+     */
+    public function getGroup(mixed $entry, $groupId): ?array
+    {
+        if(!is_null($groupId))
+        {
+            return [
+                'id'            =>  $entry->groups_id,
+                'divisionId'    =>  $entry->groups_division_id,
+                'name'          =>  $entry->groups_name,
+                'enabled'       =>  $entry->groups_enabled,
+            ];
+
         }
         else
         {

@@ -532,6 +532,15 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getDivisionIdByName', [DivisionsController::class, 'getDivisionIdByName']);
 
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Create a division
+                 */
+
+                Route::post('/', [DivisionsController::class, 'createDivision']);
+
             });
 
 
@@ -542,6 +551,8 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             | EndPoints: /v1/ecclesiastical/groups
             |
             |   1 - GET - /getGroupsByDivision - OK
+            |   2 - GET - /getAllGroups - OK
+            |   3 - GET - /getAllGroupsWithDivisions - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -550,10 +561,29 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 /*
                  * Action: GET
                  * EndPoint: /{id}
-                 * Description: Get member by id
+                 * Description: Get groups by division
                  */
 
                 Route::get('getGroupsByDivision', [GroupController::class, 'getGroupsByDivision']);
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get all groups
+                 */
+
+                Route::get('getAllGroups', [GroupController::class, 'getAllGroups']);
+
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get all groups with division
+                 */
+
+                Route::get('getAllGroupsWithDivisions', [GroupController::class, 'getAllGroupsWithDivisions']);
 
 
 

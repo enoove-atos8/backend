@@ -30,7 +30,7 @@ interface EntryRepositoryInterface
     public function getEntryById(int $id): Model | null;
     public function getEntryByTimestampValueCpf(string $timestampValueCpf): Model | null;
 
-    public function getAmountByEntryType(string $rangeMonthlyDate, string $amountType, string $entryType = null, string $exitType = null): Collection;
+    public function getAmountByEntryType(string $rangeMonthlyDate, string $entryType = '*'): mixed;
 
     public function applyFilters(array $filters, bool $joinQuery, bool $returnConditions);
 }

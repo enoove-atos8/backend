@@ -4,9 +4,12 @@ namespace Application\Api\v1\Ecclesiastical\Groups\Controllers;
 
 use Application\Api\v1\Ecclesiastical\Groups\Requests\GroupRequest;
 use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupResourceCollection;
+use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupsWithDivisionsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionIdByName;
 use Domain\Ecclesiastical\Groups\Actions\CreateNewGroupAction;
+use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
+use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\Models\Group;
@@ -63,6 +66,51 @@ class GroupController extends Controller
             $response = $getGroupsByDivisionAction($divisionParam);
 
             return new GroupResourceCollection($response, $division);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param GetAllGroupsAction $getAllGroupsAction
+     * @return GroupResourceCollection
+     * @throws GeneralExceptions|Throwable
+     */
+    public function getAllGroups(Request $request, GetAllGroupsAction $getAllGroupsAction): GroupResourceCollection
+    {
+        try
+        {
+            $response = $getAllGroupsAction();
+
+            return new GroupResourceCollection($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param GetAllGroupsWithDivisionsAction $getAllGroupsWithDivisionsAction
+     * @return GroupsWithDivisionsResourceCollection
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getAllGroupsWithDivisions(Request $request, GetAllGroupsWithDivisionsAction $getAllGroupsWithDivisionsAction): GroupsWithDivisionsResourceCollection
+    {
+        try
+        {
+            $response = $getAllGroupsWithDivisionsAction();
+
+            return new GroupsWithDivisionsResourceCollection($response);
 
         }
         catch (GeneralExceptions $e)

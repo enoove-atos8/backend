@@ -257,7 +257,7 @@ class ProcessingEntriesByBankTransfer
 
         if($folderData->entry_type == 'designated')
         {
-            $this->entryData->ecclesiasticalDivisionsGroupsId = $folderData->ecclesiastical_divisions_group_id;
+            $this->entryData->ecclesiasticalGroupId = $folderData->ecclesiasticala_group_id;
 
             if($folderData->folder_devolution == 1)
             {

@@ -15,8 +15,11 @@ class DivisionData extends DataTransferObject
     /** @var string  */
     public string $name;
 
-    /** @var string  */
-    public string $description;
+    /** @var null | string  */
+    public null | string $description;
+
+    /** @var boolean  */
+    public bool $requireLeader;
 
     /** @var boolean  */
     public bool $enabled;

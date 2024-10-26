@@ -230,24 +230,28 @@ class EntryController extends Controller
     }
 
 
-
     /**
      * @param Request $request
      * @param GetAmountByEntryTypeAction $getAmountByEntryTypeAction
-     * @return AmountByEntryTypeResource
+     * @return ResponseFactory|\Illuminate\Foundation\Application|Response|AmountByEntryTypeResource
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getAmountByEntryType(Request $request, GetAmountByEntryTypeAction $getAmountByEntryTypeAction): AmountByEntryTypeResource
+    public function getAmountByEntryType(Request $request, GetAmountByEntryTypeAction $getAmountByEntryTypeAction): ResponseFactory|\Illuminate\Foundation\Application|Response | AmountByEntryTypeResource
     {
         try
         {
             $rangeMonthlyDate = $request->input('rangeMonthlyDate');
-            $amountType = $request->input('amountType');
             $entryType = $request->input('entryType');
 
-            $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $amountType, $entryType);
-            return new AmountByEntryTypeResource($response);
+            $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $entryType);
+
+            if(is_array($response))
+                return new AmountByEntryTypeResource($response);
+            else
+                return response([
+                    'message'   => ReturnMessages::INFO_NO_ENTRIES_FOUNDED,
+                ], 404);
 
         }
         catch (GeneralExceptions $e)

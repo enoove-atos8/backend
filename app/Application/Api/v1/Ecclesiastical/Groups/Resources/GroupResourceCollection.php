@@ -17,10 +17,10 @@ class GroupResourceCollection extends ResourceCollection
      */
     public static $wrap = 'groups';
 
-    private Model $division;
+    private null | Model $division;
 
 
-    public function __construct($resource, $division)
+    public function __construct($resource, $division = null)
     {
         parent::__construct($resource);
         $this->division = $division;
@@ -35,29 +35,50 @@ class GroupResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $result = [
-            'divisionId'    =>  $this->division->id,
-            'requireLeader' =>  $this->division->require_leader,
-            'data'          =>  []
-        ];
-
-        foreach ($this->collection as $item)
+        if($this->division != null)
         {
-            $result['data'][] = [
-                'id'            =>  $item->groups_id,
-                'divisionId'    =>  $item->groups_division_id,
-                'name'          =>  $item->groups_name,
-                'enabled'       =>  $item->groups_enabled,
-                'leader'        =>  $this->division->require_leader == 1 ? [
-                    'id'        =>  $item->members_id,
-                    'fullName'  =>  $item->members_full_name,
-                    'avatar'    =>  $item->members_avatar,
-                    'cellPhone' =>  $item->members_cell_phone,
-                    'email'     =>  $item->members_email,
-                ] : null,
-                'updatedAt'     =>  $item->groups_updated_at
+            $result = [
+                'divisionId'    =>  $this->division->id,
+                'requireLeader' =>  $this->division->require_leader,
+                'data'          =>  []
             ];
+
+            foreach ($this->collection as $item)
+            {
+                $result['data'][] = [
+                    'id'            =>  $item->groups_id,
+                    'divisionId'    =>  $item->groups_division_id,
+                    'name'          =>  $item->groups_name,
+                    'enabled'       =>  $item->groups_enabled,
+                    'leader'        =>  $this->division->require_leader == 1 ? [
+                        'id'        =>  $item->members_id,
+                        'fullName'  =>  $item->members_full_name,
+                        'avatar'    =>  $item->members_avatar,
+                        'cellPhone' =>  $item->members_cell_phone,
+                        'email'     =>  $item->members_email,
+                    ] : null,
+                    'updatedAt'     =>  $item->groups_updated_at
+                ];
+            }
         }
+        else
+        {
+            $result = [
+                'data'          =>  []
+            ];
+
+            foreach ($this->collection as $item)
+            {
+                $result['data'][] = [
+                    'id'            =>  $item->groups_id,
+                    'divisionId'    =>  $item->groups_division_id,
+                    'name'          =>  $item->groups_name,
+                    'enabled'       =>  $item->groups_enabled,
+                    'updatedAt'     =>  $item->groups_updated_at
+                ];
+            }
+        }
+
 
         return $result;
     }

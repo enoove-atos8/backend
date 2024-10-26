@@ -15,6 +15,12 @@ class Entry extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'member_id',
+        'reviewer_id',
+        'cult_financial_data_id',
+        'group_returned_id',
+        'group_received_id',
+        'identification_pending',
         'entry_type',
         'transaction_type',
         'transaction_compensation',
@@ -22,11 +28,8 @@ class Entry extends Model
         'date_entry_register',
         'amount',
         'recipient',
-        'ecclesiastical_divisions_groups_id',
-        'member_id',
-        'reviewer_id',
+        'timestamp_value_cpf',
         'devolution',
-        'ecclesiastical_divisions_groups_devolution_origin',
         'residual_value',
         'deleted',
         'comments',
