@@ -11,5 +11,9 @@ interface GroupRepositoryInterface
 {
     public function getGroupsByDivision(Division $division): Collection;
 
+    public function getGroups(Division $division = null): Collection;
+
+    public function getAllGroups(): Collection;
+
     public function newGroup(GroupData $groupData): Group;
 }

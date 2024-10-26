@@ -14,25 +14,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('entries', 'ecclesiastical_divisions_groups_id'))
+        if (!Schema::hasColumn('entries', 'group_received_id'))
         {
             Schema::table('entries', function (Blueprint $table)
             {
-                $table->integer('ecclesiastical_divisions_groups_id')->nullable()->after('recipient');
+                $table->integer('group_received_id')->nullable()->after('cult_financial_data_id');
 
-                $table->foreign('ecclesiastical_divisions_groups_id')
+                $table->foreign('group_received_id')
                     ->references('id')
                     ->on('ecclesiastical_divisions_groups');
             });
         }
 
-        if (!Schema::hasColumn('entries', 'ecclesiastical_divisions_groups_devolution_origin'))
+        if (!Schema::hasColumn('entries', 'group_returned_id'))
         {
             Schema::table('entries', function (Blueprint $table)
             {
-                $table->integer('ecclesiastical_divisions_groups_devolution_origin')->nullable()->after('devolution');
+                $table->integer('group_returned_id')->nullable()->after('cult_financial_data_id');
 
-                $table->foreign('ecclesiastical_divisions_groups_devolution_origin', 'fgk_ecclesiastical_divisions_groups_devolution_origin')
+                $table->foreign('group_returned_id')
                     ->references('id')
                     ->on('ecclesiastical_divisions_groups');
             });

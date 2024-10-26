@@ -22,7 +22,7 @@ class GetDivisionByNameAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $division): Model
+    public function __invoke($division): Model
     {
         $division = $this->divisionRepository->getDivisionByName($division);
 
