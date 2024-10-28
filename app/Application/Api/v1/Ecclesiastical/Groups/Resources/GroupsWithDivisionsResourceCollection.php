@@ -62,16 +62,17 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
             if($group->ecclesiastical_division_id == $divisionId)
             {
                 $result[] = [
-                     'id'                            => $group->id,
-                     'ecclesiasticalDivisionId'      => $group->ecclesiastical_division_id,
-                     'parentGroupId'                 => $group->parent_group_id,
+                     'id'                           => $group->id,
+                     'ecclesiasticalDivisionId'     => $group->ecclesiastical_division_id,
+                     'parentGroupId'                => $group->parent_group_id,
                      'leaderId'                     => $group->leader_id,
-                     'name'                          => $group->name,
-                     'description'                   => $group->description,
-                     'financialTransactionsExists' => $group->transactions_exists,
-                     'enabled'                       => $group->enabled,
+                     'name'                         => $group->name,
+                     'description'                  => $group->description,
+                     'financialTransactionsExists'  => $group->transactions_exists,
+                     'enabled'                      => $group->enabled,
                      'temporaryEvent'               => $group->temporary_event,
                      'returnValues'                 => $group->return_values,
+                     'returnReceivingGroup'         => $group->return_receiving,
                      'startDate'                    => $group->start_date,
                      'endDate'                      => $group->end_date,
 

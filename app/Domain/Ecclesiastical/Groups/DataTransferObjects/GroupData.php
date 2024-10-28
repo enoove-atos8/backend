@@ -18,6 +18,9 @@ class GroupData extends DataTransferObject
     /** @var null | boolean  */
     public null | bool $returnValues;
 
+    /** @var null | boolean  */
+    public null | bool $returnReceivingGroup;
+
     /** @var null | string  */
     public null | string $divisionId;
 

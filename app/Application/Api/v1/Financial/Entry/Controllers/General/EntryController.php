@@ -24,6 +24,7 @@ use App\Domain\Financial\Entries\General\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Entry\Resources\AmountByEntryTypeResource;
 use Application\Api\v1\Financial\Entry\Resources\EntriesToCompensateResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -76,14 +77,15 @@ class EntryController extends Controller
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getEntriesByMonthlyRange(Request $request, GetEntriesAction $getEntriesAction): EntryResourceCollection
+    public function getEntriesByMonthlyRange(Request $request, GetEntriesAction $getEntriesAction, GetAllGroupsAction $getAllGroupsAction): EntryResourceCollection
     {
         try
         {
             $dates = $request->input('dates');
             $filters = $request->except(['dates','page']);
-            $response = $getEntriesAction($dates, $filters);
-            return new EntryResourceCollection($response);
+            $entries = $getEntriesAction($dates, $filters);
+            $groups = $getAllGroupsAction();
+            return new EntryResourceCollection($entries, $groups);
 
         }
         catch (GeneralExceptions $e)

@@ -15,6 +15,7 @@ use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
 use DateTime;
 use Domain\Ecclesiastical\Folders\Actions\GetEcclesiasticalGroupsFoldersAction;
 use Domain\Ecclesiastical\Folders\DataTransferObjects\FolderData;
+use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
 use Domain\Financial\Receipts\Entries\Unidentified\Actions\CreateUnidentifiedReceiptAction;
 use Domain\Financial\Receipts\Entries\Unidentified\DataTransferObjects\UnidentifiedReceiptData;
 use Domain\Members\DataTransferObjects\MemberData;
@@ -45,6 +46,7 @@ class ProcessingEntriesByBankTransfer
     private UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction;
     private UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction;
     private CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction;
+    private GetReturnReceivingGroupAction $getReturnReceivingGroupAction;
     private GetMemberByCPFAction $getMemberByCPFAction;
     private UploadFile $uploadFile;
     private ConsolidationEntriesData $consolidationEntriesData;
@@ -53,7 +55,7 @@ class ProcessingEntriesByBankTransfer
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
     protected Collection $foldersData;
 
@@ -73,6 +75,7 @@ class ProcessingEntriesByBankTransfer
         UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction,
         GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction,
         GetEcclesiasticalGroupsFoldersAction $getEcclesiasticalGroupsFoldersAction,
+        GetReturnReceivingGroupAction $getReturnReceivingGroupAction,
         UploadFile $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,
         UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction,
@@ -91,6 +94,7 @@ class ProcessingEntriesByBankTransfer
         $this->getEcclesiasticalGroupsFoldersAction = $getEcclesiasticalGroupsFoldersAction;
         $this->updateMiddleCpfMemberAction = $updateMiddleCpfMemberAction;
         $this->updateIdentificationPendingEntryAction = $updateIdentificationPendingEntryAction;
+        $this->getReturnReceivingGroupAction = $getReturnReceivingGroupAction;
         $this->updateReceiptLinkEntryAction = $updateReceiptLinkEntryAction;
         $this->updateTimestampValueCPFEntryAction = $updateTimestampValueCPFEntryAction;
         $this->getEntryByTimestampValueCpfAction = $getEntryByTimestampValueCpfAction;
@@ -156,8 +160,6 @@ class ProcessingEntriesByBankTransfer
                             }
                             if ($cpf != '' && $member == null)
                                 $member = $this->getMemberByCPFAction->__invoke($cpf);
-
-                            //Localizar o membro pelo seu nome e se encontrar apenas 1 registro atualizar o middle_cpf/cpf dele
 
                             if(is_null($member))
                             {
@@ -238,6 +240,7 @@ class ProcessingEntriesByBankTransfer
     /**
      *
      * @throws \Exception
+     * @throws Throwable
      */
     public function setEntryData(array $extractedData, mixed $member, $folderData): void
     {
@@ -254,15 +257,19 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->receipt = null;
         $this->entryData->devolution = 0;
         $this->entryData->residualValue = 0;
+        $this->entryData->identificationPending = 0;
+        $this->entryData->cultFinancialDataId = null;
+        $this->entryData->timestampValueCpf = null;
 
         if($folderData->entry_type == 'designated')
         {
-            $this->entryData->ecclesiasticalGroupId = $folderData->ecclesiasticala_group_id;
+            $this->entryData->groupReceivedId = $folderData->ecclesiastical_divisions_group_id;
 
             if($folderData->folder_devolution == 1)
             {
                 $this->entryData->devolution = 1;
-                $this->entryData->ecclesiasticalGroupDevolutionOrigin = $folderData->ecclesiastical_divisions_group_id;
+                $this->entryData->groupReceivedId = $this->getReturnReceivingGroup();
+                $this->entryData->groupReturnedId = $folderData->ecclesiastical_divisions_group_id;
             }
         }
 
@@ -271,6 +278,27 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->transactionType = 'pix';
 
         $this->consolidationEntriesData->date = $extractedData['data']['date'];
+
+    }
+
+
+    /**
+     * @return int|null
+     * @throws BindingResolutionException
+     * @throws Throwable
+     */
+    public function getReturnReceivingGroup(): int | null
+    {
+        $group = $this->getReturnReceivingGroupAction->__invoke();
+
+        if(!is_null($group))
+        {
+            return $group->id;
+        }
+        else
+        {
+            return null;
+        }
 
     }
 

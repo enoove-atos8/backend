@@ -196,8 +196,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS,
-            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS,
-            GroupsRepository::DISPLAY_SELECT_COLUMNS
+            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
 
         if($rangeMonthlyDate !== 'all')
@@ -554,11 +553,6 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     EntryRepository::MEMBER_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     MemberRepository::ID_COLUMN_JOINED)
-                ->leftJoin(
-                    GroupsRepository::TABLE_NAME,
-                    EntryRepository::GROUP_RECEIVED_ID_COLUMN_JOINED,
-                    BaseRepository::OPERATORS['EQUALS'],
-                    GroupsRepository::ID_TABLE_COLUMN)
                 ->leftJoin(
                     FinancialReviewerRepository::TABLE_NAME,
                     EntryRepository::REVIEWER_ID_COLUMN_JOINED,
