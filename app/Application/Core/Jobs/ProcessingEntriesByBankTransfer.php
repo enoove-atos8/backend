@@ -55,7 +55,7 @@ class ProcessingEntriesByBankTransfer
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
-        'iebrd'
+        'stage'
     ];
     protected Collection $foldersData;
 
