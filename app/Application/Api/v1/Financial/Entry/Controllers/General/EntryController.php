@@ -69,10 +69,10 @@ class EntryController extends Controller
     }
 
 
-
     /**
      * @param Request $request
      * @param GetEntriesAction $getEntriesAction
+     * @param GetAllGroupsAction $getAllGroupsAction
      * @return EntryResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
