@@ -392,19 +392,25 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id,];
 
         return $this->update($conditions, [
-            'entry_type'                     =>   $entryData->entryType,
-            'transaction_type'               =>   $entryData->transactionType,
-            'transaction_compensation'       =>   $entryData->transactionCompensation,
-            'date_transaction_compensation'  =>   $entryData->dateTransactionCompensation,
-            'date_entry_register'            =>   $entryData->dateEntryRegister,
-            'amount'                         =>   floatval($entryData->amount),
-            'recipient'                      =>   $entryData->recipient,
-            'member_id'                      =>   $entryData->memberId,
-            'reviewer_id'                    =>   $entryData->reviewerId,
-            'devolution'                     =>   $entryData->devolution,
-            'deleted'                        =>   $entryData->deleted,
-            'comments'                       =>   $entryData->comments,
-            'receipt_link'                   =>   $entryData->receipt,
+            'member_id'                                         =>   $entryData->memberId,
+            'reviewer_id'                                       =>   $entryData->reviewerId,
+            'cult_financial_data_id'                            =>   $entryData->cultFinancialDataId,
+            'group_returned_id'                                 =>   $entryData->groupReturnedId,
+            'group_received_id'                                 =>   $entryData->groupReceivedId,
+            'identification_pending'                            =>   $entryData->identificationPending,
+            'entry_type'                                        =>   $entryData->entryType,
+            'transaction_type'                                  =>   $entryData->transactionType,
+            'transaction_compensation'                          =>   $entryData->transactionCompensation,
+            'date_transaction_compensation'                     =>   $entryData->dateTransactionCompensation,
+            'date_entry_register'                               =>   $entryData->dateEntryRegister,
+            'amount'                                            =>   floatval($entryData->amount),
+            'recipient'                                         =>   $entryData->recipient,
+            'timestamp_value_cpf'                               =>   $entryData->timestampValueCpf,
+            'devolution'                                        =>   $entryData->devolution,
+            'residual_value'                                    =>   $entryData->residualValue,
+            'deleted'                                           =>   $entryData->deleted,
+            'comments'                                          =>   $entryData->comments,
+            'receipt_link'                                      =>   $entryData->receipt,
         ]);
     }
 
