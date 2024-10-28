@@ -46,7 +46,6 @@ class EntryRequest extends FormRequest
             'dateTransactionCompensation'   =>  $this->validatorField('dateTransactionCompensation'),
             'dateEntryRegister'             =>  'required',
             'amount'                        =>  'required',
-            'recipient'                     =>  $this->validatorField('recipient'),
             'timestampValueCpf'             =>  '',
             'devolution'                    =>  '',
             'residualValue'                 =>  '',
@@ -117,18 +116,6 @@ class EntryRequest extends FormRequest
                 return 'required';
             }
         }
-
-        if($field === 'recipient')
-        {
-            if($entryType === self::DESIGNATED)
-            {
-                return 'required';
-            }
-            else
-            {
-                return '';
-            }
-        }
     }
 
 
@@ -177,7 +164,6 @@ class EntryRequest extends FormRequest
             dateTransactionCompensation:    $this->input('dateTransactionCompensation'),
             dateEntryRegister:              $this->input('dateEntryRegister'),
             amount:                         $this->input('amount'),
-            recipient:                      $this->input('recipient'),
             timestampValueCpf:              $this->input('timestampValueCpf'),
             devolution:                     $this->input('devolution'),
             residualValue:                  $this->input('residualValue'),
