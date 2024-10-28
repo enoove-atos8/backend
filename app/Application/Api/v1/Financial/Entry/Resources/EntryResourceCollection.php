@@ -6,6 +6,7 @@ use Domain\Members\Models\Member;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Collection;
 use JsonSerializable;
 
 class EntryResourceCollection extends ResourceCollection
@@ -16,6 +17,14 @@ class EntryResourceCollection extends ResourceCollection
      * @var string
      */
     public static $wrap = 'entries';
+    private null | Collection $groups;
+
+
+    public function __construct($resource, $groups = null)
+    {
+        parent::__construct($resource);
+        $this->groups = $groups;
+    }
 
 
     /**
@@ -28,16 +37,17 @@ class EntryResourceCollection extends ResourceCollection
     {
         $result = [];
         $totalGeneral = 0;
+        $entries = $this->collection;
 
-        foreach ($this->collection as $item)
+        foreach ($entries as $item)
         {
             $result[] = [
                 'id'                            =>  $item->entries_id,
                 'member'                        =>  $this->getMember($item),
                 'reviewer'                      =>  $this->getReviewer($item),
                 'cultFinancialDataId'           =>  $item->entries_cult_financial_data_id,
-                'groupReturned'                 =>  $this->getGroup($item, $item->entries_group_returned_id),
-                'groupReceived'                 =>  $this->getGroup($item, $item->entries_group_received_id),
+                'groupReturned'                 =>  $this->getGroup($this->groups, $item->entries_group_returned_id),
+                'groupReceived'                 =>  $this->getGroup($this->groups, $item->entries_group_received_id),
                 'identificationPending'         =>  $item->entries_identification_pending,
                 'entryType'                     =>  $item->entries_entry_type,
                 'transactionType'               =>  $item->entries_transaction_type,
@@ -145,21 +155,31 @@ class EntryResourceCollection extends ResourceCollection
 
 
     /**
-     * @param mixed $entry
+     * @param mixed $groups
      * @param $groupId
      * @return array|null
      */
-    public function getGroup(mixed $entry, $groupId): ?array
+    public function getGroup(mixed $groups, $groupId): ?array
     {
+        $result = [];
+
         if(!is_null($groupId))
         {
-            return [
-                'id'            =>  $entry->groups_id,
-                'divisionId'    =>  $entry->groups_division_id,
-                'name'          =>  $entry->groups_name,
-                'enabled'       =>  $entry->groups_enabled,
-            ];
+            $filtered = $groups->filter(function ($item) use ($groupId) {
+                if($item->groups_id === $groupId)
+                    return $item;
+            })->toArray();
 
+            foreach ($filtered as $group)
+            {
+                $result = [
+                    'id'        =>  $group->groups_id,
+                    'name'      =>  $group->groups_name,
+                    'enabled'   =>  $group->groups_enabled,
+                ];
+            }
+
+            return $result;
         }
         else
         {

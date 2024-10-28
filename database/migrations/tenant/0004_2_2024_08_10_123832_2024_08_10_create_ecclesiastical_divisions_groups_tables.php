@@ -24,6 +24,7 @@ return new class extends Migration
                 $table->boolean('enabled')->nullable(false)->default(1);
                 $table->boolean('temporary_event')->nullable();
                 $table->boolean('return_values')->nullable()->default(0);
+                $table->boolean('return_receiving')->default(0);
                 $table->date('start_date')->nullable();
                 $table->date('end_date')->nullable();
 

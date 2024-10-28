@@ -61,8 +61,10 @@ class ConsolidationEntriesRepository extends BaseRepository implements Consolida
         $this->queryConditions = [];
 
         if($consolidated != 'all')
+        {
             $this->queryConditions [] = $this->whereEqual(self::CONSOLIDATED_COLUMN, $consolidated, 'and');
             $this->queryConditions [] = $this->whereNotIn(self::DATE_COLUMN, $currentYearMonth, 'not_in');
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions, self::DATE_COLUMN, $orderDirection, $limit);
     }

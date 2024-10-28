@@ -20,6 +20,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     const TABLE_NAME = 'ecclesiastical_divisions_groups';
     const MEMBER_TABLE_NAME = 'members';
     const ENABLED_TABLE_COLUMN = 'enabled';
+    const RETURN_RECEIVING_TABLE_COLUMN = 'return_receiving';
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
@@ -95,6 +96,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         if($division != null)
             $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $division->id);
 
+        $q->where(self::ENABLED_TABLE_COLUMN, 1);
+
 
         return $q->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
             ->get();
@@ -110,6 +113,24 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     {
         $this->queryConditions = [];
         $this->queryConditions [] = $this->whereEqual(self::ENABLED_TABLE_COLUMN, 1, 'and');
+
+        return $this->getItemsWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::ID_COLUMN,
+            BaseRepository::ORDERS['ASC']
+        );
+    }
+
+
+    /**
+     * @param array $ids
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getGroupsById(array $ids = []): Collection
+    {
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereIn(self::ENABLED_TABLE_COLUMN, $ids, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
@@ -140,5 +161,24 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             'start_date'                    =>   $groupData->startDate,
             'end_date'                      =>   $groupData->endDate,
         ]);
+    }
+
+
+    /**
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getReturnReceivingGroup(): Model | null
+    {
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::RETURN_RECEIVING_TABLE_COLUMN, 1, 'and');
+
+        return $this->getItemWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::NAME_GROUP_COLUMN,
+            ['*'],
+            1000,
+            BaseRepository::ORDERS['ASC']
+        );
     }
 }

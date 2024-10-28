@@ -713,4 +713,19 @@ abstract class BaseRepository implements BaseRepositoryInterface
             'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['NOT_IN'], 'value' => $value,]
         ];
     }
+
+
+    /**
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereIn(string $column, mixed $value, string $whereType): array
+    {
+        return [
+            'type' => $whereType,
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['IN'], 'value' => $value,]
+        ];
+    }
 }
