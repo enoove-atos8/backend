@@ -29,7 +29,7 @@ class GetEntriesAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $dates, array $filters): Collection | Paginator
+    public function __invoke(null | string $dates, array $filters): Collection | Paginator
     {
         $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers($dates, 'compensated', $filters);
 

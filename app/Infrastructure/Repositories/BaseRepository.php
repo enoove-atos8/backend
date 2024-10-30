@@ -671,6 +671,22 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
+
+    /**
+     * @param string $column
+     * @param mixed $value
+     * @param string $whereType
+     * @return array
+     */
+    public function whereBetween(string $column, mixed $value, string $whereType): array
+    {
+        return [
+            'type' => $whereType,
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['BETWEEN'], 'value' => $value,]
+        ];
+    }
+
+
     /**
      * @param string $column
      * @param mixed $value

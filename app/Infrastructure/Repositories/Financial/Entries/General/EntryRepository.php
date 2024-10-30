@@ -26,8 +26,6 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'entries.date_transaction_compensation';
     const TRANSACTION_TYPE_COLUMN = 'transaction_type';
     const TRANSACTION_TYPE_COLUMN_JOINED = 'entries.transaction_type';
-    const RECIPIENT_COLUMN = 'recipient';
-    const RECIPIENT_COLUMN_JOINED = 'entries.recipient';
     const DELETED_COLUMN = 'deleted';
     const DELETED_COLUMN_JOINED = 'entries.deleted';
     const REVIEWER_ID_COLUMN_JOINED = 'entries.reviewer_id';
@@ -46,6 +44,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const AMOUNT_COLUMN = 'amount';
     const AMOUNT_COLUMN_JOINED = 'entries.amount';
     const GROUP_RECEIVED_ID_COLUMN_JOINED = 'entries.group_received_id';
+    const GROUP_RECEIVED_ID_COLUMN = 'group_received_id';
     const ENTRIES_AMOUNT_COLUMN_ALIAS = 'entries_amount';
     const DEVOLUTION_COLUMN = 'devolution';
     const DEVOLUTION_COLUMN_JOINED = 'entries.devolution';
@@ -59,6 +58,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const AMOUNT_FILTER = 'amount';
     const MEMBER_ID_FILTER = 'memberId';
     const RECIPIENT_FILTER = 'recipient';
+    const GROUP_RECEIVED_ID_FILTER = 'groupReceivedId';
+    const CUSTOM_DATES_FILTER = 'customDates';
     const TRANSACTION_TYPE_FILTER = 'transactionType';
     const MEMBERS_TYPE_FILTER = 'membersType';
     const MEMBERS_GENDERS_FILTER = 'membersGenders';
@@ -199,16 +200,17 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($rangeMonthlyDate !== 'all')
+        if($rangeMonthlyDate != 'all' && $rangeMonthlyDate != null)
             $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
 
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
 
         if($transactionCompensation == 'compensated')
         {
-            if($rangeMonthlyDate !== 'all')
+            $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
+
+            if($rangeMonthlyDate !== 'all' && $rangeMonthlyDate != null)
                 $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
-                $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
 
             if ($rangeMonthlyDate == 'all')
                 $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
@@ -251,10 +253,16 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     $this->queryConditions [] = $this->whereEqual($column, $filter, 'and');
             }
 
-            if($key == self::RECIPIENT_FILTER)
+            if($key == self::GROUP_RECEIVED_ID_FILTER)
             {
-                $column = $joinQuery ? self::RECIPIENT_COLUMN_JOINED : self::RECIPIENT_COLUMN;
+                $column = $joinQuery ? self::GROUP_RECEIVED_ID_COLUMN_JOINED : self::GROUP_RECEIVED_ID_COLUMN;
                 $this->queryConditions [] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+            }
+
+            if($key == self::CUSTOM_DATES_FILTER)
+            {
+                $column = $joinQuery ? self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED : self::DATE_TRANSACTIONS_COMPENSATION_COLUMN;
+                $this->queryConditions [] = $this->whereBetween($column, [$filter], 'and');
             }
 
             if($key == self::TRANSACTION_TYPE_FILTER)
@@ -567,7 +575,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                 ->where(function ($q) use($queryClausesAndConditions){
                     if(count($queryClausesAndConditions) > 0){
                         foreach ($queryClausesAndConditions as $key => $clause) {
-                            if($clause['type'] == 'and'){
+                            if($clause['type'] == 'and')
+                            {
                                 if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
                                 {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
@@ -579,6 +588,11 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                                 if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
                                 {
                                     $q->whereNull($clause['condition']['field']);
+                                }
+                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['BETWEEN'])
+                                {
+                                    $arrDates = explode(',', $clause['condition']['value'][0]);
+                                    $q->whereBetween($clause['condition']['field'], $arrDates);
                                 }
                             }
                             if($clause['type'] == 'andWithOrInside')
