@@ -27,7 +27,7 @@ class EntryIndicatorsController extends Controller
         {
             $indicator = $request->input('indicator');
             $dates = $request->input('dates');
-            $filters = $request->except(['dates','page', 'indicator']);
+            $filters = $request->except(['dates', 'page', 'indicator']);
             return $handleEntriesIndicatorsAction->__invoke($indicator, $dates, $filters);
         }
         catch (GeneralExceptions $e)
