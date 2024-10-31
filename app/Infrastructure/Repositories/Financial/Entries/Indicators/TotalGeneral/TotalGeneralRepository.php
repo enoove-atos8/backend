@@ -43,8 +43,14 @@ class TotalGeneralRepository extends BaseRepository implements TotalGeneralRepos
         $arrRangeMonthlyDate = [];
         $this->requiredRelationships = [];
 
-        if ($rangeMonthlyDate !== 'all')
+        if ($rangeMonthlyDate !== 'all' && $filters == null)
             $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+
+        if ($rangeMonthlyDate == null && $filters != null)
+        {
+            if($filters['customDates'] != null)
+                $arrRangeMonthlyDate = explode(',', $filters['customDates']);
+        }
 
         $this->queryConditions[] = $this->whereEqual(EntryRepository::DELETED_COLUMN_JOINED, false, 'and');
 
