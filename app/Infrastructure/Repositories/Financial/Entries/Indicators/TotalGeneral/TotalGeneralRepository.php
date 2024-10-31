@@ -55,7 +55,7 @@ class TotalGeneralRepository extends BaseRepository implements TotalGeneralRepos
         $this->queryConditions[] = $this->whereEqual(EntryRepository::DELETED_COLUMN_JOINED, false, 'and');
 
 
-        if ($rangeMonthlyDate !== 'all')
+        if ($rangeMonthlyDate !== 'all' && $filters['customDates'] == null)
         {
             $this->queryConditions[] = $this->whereLike(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
             $this->queryConditions[] = $this->whereEqual(EntryRepository::COMPENSATED_COLUMN_JOINED, EntryRepository::COMPENSATED_VALUE, 'and');
