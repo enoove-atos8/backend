@@ -129,35 +129,35 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
 
     /**
-     * @param string|null $rangeMonthlyDate
+     * @param string|null $dates
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAllEntries(string|null $rangeMonthlyDate): Collection
+    public function getAllEntries(string|null $dates): Collection
     {
         $this->queryConditions = [];
-        $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+        $arrDates = explode(',', $dates);
 
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
 
-        if($rangeMonthlyDate !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrRangeMonthlyDate, 'andWithOrInside');
+        if($dates !== 'all')
+            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 
 
     /**
-     * @param string|null $rangeMonthlyDate
+     * @param string|null $dates
      * @param bool $devolutionStatus
      * @param array $orderBy
      * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getDevolutionEntries(string|null $rangeMonthlyDate, bool $devolutionStatus = true, array $orderBy = [self::ID_COLUMN_JOINED]): Collection | Paginator
+    public function getDevolutionEntries(string|null $dates, bool $devolutionStatus = true, array $orderBy = [self::ID_COLUMN_JOINED]): Collection | Paginator
     {
         $this->queryConditions = [];
-        $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+        $arrDates = explode(',', $dates);
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS,
             FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
@@ -166,8 +166,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
         $this->queryConditions [] = $this->whereEqual(self::DEVOLUTION_COLUMN_JOINED, $devolutionStatus, 'and');
 
-        if($rangeMonthlyDate !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
+        if($dates !== 'all')
+            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
 
         return $this->qbGetEntriesWithMembersAndReviewers(
             $this->queryConditions,
@@ -179,7 +179,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
 
     /**
-     * @param string|null $rangeMonthlyDate
+     * @param string|null $dates
      * @param array $filters
      * @param string|null $transactionCompensation
      * @param array $orderBy
@@ -188,20 +188,20 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      */
     public function getAllEntriesWithMembersAndReviewers
     (
-        string|null $rangeMonthlyDate,
+        string|null $dates,
         string|null $transactionCompensation = 'to_compensate' | 'compensated' | '*',
         array $filters = [],
         array $orderBy = [self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, self::ID_COLUMN_JOINED]): Collection | Paginator
     {
-        $arrRangeMonthlyDate = [];
+        $arrDates = [];
         $this->queryConditions = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS,
             FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($rangeMonthlyDate != 'all' && $rangeMonthlyDate != null)
-            $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+        if($dates != 'all' && $dates != null)
+            $arrDates = explode(',', $dates);
 
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
 
@@ -209,10 +209,10 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         {
             $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
 
-            if($rangeMonthlyDate !== 'all' && $rangeMonthlyDate != null)
-                $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
+            if($dates !== 'all' && $dates != null)
+                $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
 
-            if ($rangeMonthlyDate == 'all')
+            if ($dates == 'all')
                 $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
 
             if(count($filters) > 0)
@@ -221,9 +221,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         }
         elseif ($transactionCompensation == 'to_compensate')
         {
-            if($rangeMonthlyDate !== 'all')
+            if($dates !== 'all')
             {
-                $this->queryConditions [] = $this->whereLike(self::DATE_ENTRY_REGISTER_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
+                $this->queryConditions [] = $this->whereLike(self::DATE_ENTRY_REGISTER_COLUMN_JOINED, $arrDates, 'andWithOrInside');
                 $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::TO_COMPENSATE_VALUE, 'andWithOrInside');
             }
             else
@@ -507,23 +507,23 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
 
     /**
-     * @param string $rangeMonthlyDate
+     * @param string $dates
      * @param string $entryType
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAmountByEntryType(string $rangeMonthlyDate, string $entryType = 'all'): mixed
+    public function getAmountByEntryType(string $dates, string $entryType = 'all'): mixed
     {
         $this->queryConditions = [];
-        $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+        $arrDates = explode(',', $dates);
 
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
 
         if($entryType != 'all')
             $this->queryConditions [] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
 
-        if($rangeMonthlyDate !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrRangeMonthlyDate, 'andWithOrInside');
+        if($dates !== 'all')
+            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }

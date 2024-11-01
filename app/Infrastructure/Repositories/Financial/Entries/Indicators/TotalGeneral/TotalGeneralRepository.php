@@ -33,44 +33,53 @@ class TotalGeneralRepository extends BaseRepository implements TotalGeneralRepos
     }
 
     /**
-     * @param string|null $rangeMonthlyDate
+     * @param string|null $dates
      * @param array $filters
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getTotalGeneralEntries(string|null $rangeMonthlyDate, array $filters): Collection
+    public function getTotalGeneralEntries(string|null $dates, array $filters): Collection
     {
-        $arrRangeMonthlyDate = [];
+        $arrDates = [];
         $this->requiredRelationships = [];
 
-        if ($rangeMonthlyDate !== 'all' && $filters == null)
-            $arrRangeMonthlyDate = explode(',', $rangeMonthlyDate);
+        if ($dates !== 'all' && $dates !== null && $filters == null)
+            $arrDates = explode(',', $dates);
 
-        if ($rangeMonthlyDate == null && $filters != null)
+        if ($dates !== 'all' && $dates !== null && $filters != null)
         {
-            if($filters['customDates'] != null)
-                $arrRangeMonthlyDate = explode(',', $filters['customDates']);
+            if(!array_key_exists('customDates', $filters))
+                $arrDates = explode(',', $dates);
+        }
+
+        if ($dates == null && $filters != null)
+        {
+            if(array_key_exists('customDates', $filters))
+            {
+                if($filters['customDates'] != null)
+                    $arrDates = explode(',', $filters['customDates']);
+            }
         }
 
         $this->queryConditions[] = $this->whereEqual(EntryRepository::DELETED_COLUMN_JOINED, false, 'and');
 
 
-        if ($rangeMonthlyDate !== 'all' && $filters == null)
+        if ($dates !== 'all' && $dates != null && $filters == null)
         {
-            $this->queryConditions[] = $this->whereLike(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
+            $this->queryConditions[] = $this->whereLike(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
             $this->queryConditions[] = $this->whereEqual(EntryRepository::COMPENSATED_COLUMN_JOINED, EntryRepository::COMPENSATED_VALUE, 'and');
         }
 
-        if ($rangeMonthlyDate !== 'all' && $filters != null)
+        if ($dates != 'all' && $dates != null && $filters != null)
         {
             if(!array_key_exists('customDates', $filters))
             {
-                $this->queryConditions[] = $this->whereLike(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrRangeMonthlyDate, 'andWithOrInside');
+                $this->queryConditions[] = $this->whereLike(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
                 $this->queryConditions[] = $this->whereEqual(EntryRepository::COMPENSATED_COLUMN_JOINED, EntryRepository::COMPENSATED_VALUE, 'and');
             }
         }
 
-        if ($rangeMonthlyDate == 'all')
+        if ($dates == 'all')
             $this->queryConditions[] = $this->whereLike(EntryRepository::COMPENSATED_COLUMN_JOINED, EntryRepository::COMPENSATED_VALUE, 'and');
 
         if (count($filters) > 0)
