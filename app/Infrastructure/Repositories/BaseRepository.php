@@ -502,7 +502,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
                     }
                 })
                 ->orderBy($orderBy, $sort)
-                ->limit($limit)
                 ->select($selectColumns)
                 ->get();
         };
@@ -539,7 +538,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
                         $q->where($c['field'], $c['operator'], $c['value']);
                     }
                 })
-                ->limit($limit)
                 ->select($selectColumns)
                 ->orderBy($orderByColumn, $orderDirection)
                 ->first();

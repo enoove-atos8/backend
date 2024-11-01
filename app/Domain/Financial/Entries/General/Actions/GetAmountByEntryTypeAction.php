@@ -52,18 +52,11 @@ class GetAmountByEntryTypeAction
                 1)->sum(EntryRepository::AMOUNT_COLUMN);
 
 
-        if(count($entries) > 0)
-        {
-            return [
-                'tithes'        =>  $totalTithesAmount,
-                'offers'        =>  $totalOffersAmount,
-                'designated'    =>  $totalDesignatedAmount,
-                'devolution'    =>  $totalDevolutionAmount,
-            ];
-        }
-        else
-        {
-            return null;
-        }
+        return [
+            'tithes'        =>  $totalTithesAmount,
+            'offers'        =>  $totalOffersAmount,
+            'designated'    =>  $totalDesignatedAmount,
+            'devolution'    =>  $totalDevolutionAmount,
+        ];
     }
 }
