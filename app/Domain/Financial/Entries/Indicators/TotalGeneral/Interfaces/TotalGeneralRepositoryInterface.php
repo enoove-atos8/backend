@@ -6,5 +6,5 @@ use Illuminate\Support\Collection;
 
 interface TotalGeneralRepositoryInterface
 {
-    public function getTotalGeneralEntries(string|null $rangeMonthlyDate, array $filters): Collection;
+    public function getTotalGeneralEntries(string|null $dates, array $filters): Collection;
 }
