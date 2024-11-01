@@ -248,13 +248,7 @@ class EntryController extends Controller
 
             $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $entryType);
 
-            if(is_array($response))
-                return new AmountByEntryTypeResource($response);
-            else
-                return response([
-                    'message'   => ReturnMessages::INFO_NO_ENTRIES_FOUNDED,
-                ], 404);
-
+            return new AmountByEntryTypeResource($response);
         }
         catch (GeneralExceptions $e)
         {
