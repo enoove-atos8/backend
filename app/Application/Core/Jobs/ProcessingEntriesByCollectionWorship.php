@@ -15,8 +15,8 @@ use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
 use DateTime;
 use Domain\Ecclesiastical\Folders\Actions\GetEcclesiasticalGroupsFoldersAction;
 use Domain\Ecclesiastical\Folders\DataTransferObjects\FolderData;
-use Domain\Financial\Receipts\Entries\Unidentified\Actions\CreateUnidentifiedReceiptAction;
-use Domain\Financial\Receipts\Entries\Unidentified\DataTransferObjects\UnidentifiedReceiptData;
+use Domain\Financial\Receipts\Entries\Unidentified\Actions\CreateReadingErrorReceiptAction;
+use Domain\Financial\Receipts\Entries\Unidentified\DataTransferObjects\ReadingErrorReceipt;
 use Domain\Members\DataTransferObjects\MemberData;
 use Google\Client;
 use Google\Service\Drive;
@@ -47,12 +47,12 @@ class ProcessingEntriesByCollectionWorship
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
     private UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction;
     private UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction;
-    private CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction;
+    private CreateReadingErrorReceiptAction $createUnidentifiedReceiptAction;
     private GetMemberByCPFAction $getMemberByCPFAction;
     private UploadFile $uploadFile;
     private ConsolidationEntriesData $consolidationEntriesData;
     private EntryData $entryData;
-    private UnidentifiedReceiptData $unidentifiedReceiptData;
+    private ReadingErrorReceipt $unidentifiedReceiptData;
     private  MemberData $memberData;
     private string $entryType;
     private array $entriesBlock = [
@@ -82,21 +82,21 @@ class ProcessingEntriesByCollectionWorship
         GoogleDriveService $googleDriveService,
         GoogleSheetsService $googleSheetsService,
         CreateEntryAction $createEntryAction,
-        GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction,
-        GetMemberByCPFAction $getMemberByCPFAction,
-        UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction,
-        GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction,
-        GetEcclesiasticalGroupsFoldersAction $getEcclesiasticalGroupsFoldersAction,
-        UploadFile $uploadFile,
+        GetMemberByMiddleCPFAction             $getMemberByMiddleCPFAction,
+        GetMemberByCPFAction                   $getMemberByCPFAction,
+        UpdateMiddleCpfMemberAction            $updateMiddleCpfMemberAction,
+        GetEntryByTimestampValueCpfAction      $getEntryByTimestampValueCpfAction,
+        GetEcclesiasticalGroupsFoldersAction   $getEcclesiasticalGroupsFoldersAction,
+        UploadFile                             $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,
-        UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction,
-        UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction,
-        EntryData $entryData,
-        UnidentifiedReceiptData $unidentifiedReceiptData,
-        MemberData $memberData,
-        OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
-        ConsolidationEntriesData $consolidationEntriesData,
-        CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction,
+        UpdateReceiptLinkEntryAction           $updateReceiptLinkEntryAction,
+        UpdateTimestampValueCPFEntryAction     $updateTimestampValueCPFEntryAction,
+        EntryData                              $entryData,
+        ReadingErrorReceipt                    $unidentifiedReceiptData,
+        MemberData                             $memberData,
+        OCRExtractDataBankReceiptService       $OCRExtractDataBankReceiptService,
+        ConsolidationEntriesData               $consolidationEntriesData,
+        CreateReadingErrorReceiptAction        $createUnidentifiedReceiptAction,
     )
     {
         $this->googleDriveService = $googleDriveService;

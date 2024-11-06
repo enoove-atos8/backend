@@ -16,8 +16,9 @@ use DateTime;
 use Domain\Ecclesiastical\Folders\Actions\GetEcclesiasticalGroupsFoldersAction;
 use Domain\Ecclesiastical\Folders\DataTransferObjects\FolderData;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
-use Domain\Financial\Receipts\Entries\Unidentified\Actions\CreateUnidentifiedReceiptAction;
-use Domain\Financial\Receipts\Entries\Unidentified\DataTransferObjects\UnidentifiedReceiptData;
+use Domain\Financial\Receipts\Entries\ReadingError\Actions\CreateReadingErrorReceiptAction;
+use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
+use Domain\Financial\Receipts\Entries\ReadingError\Models\ReadingErrorReceipt;
 use Domain\Members\DataTransferObjects\MemberData;
 use Google\Service\Drive;
 use Google\Service\Exception;
@@ -45,19 +46,27 @@ class ProcessingEntriesByBankTransfer
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
     private UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction;
     private UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction;
-    private CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction;
+    private CreateReadingErrorReceiptAction $createReadingErrorReceiptAction;
     private GetReturnReceivingGroupAction $getReturnReceivingGroupAction;
     private GetMemberByCPFAction $getMemberByCPFAction;
     private UploadFile $uploadFile;
     private ConsolidationEntriesData $consolidationEntriesData;
     private EntryData $entryData;
-    private UnidentifiedReceiptData $unidentifiedReceiptData;
+    private ReadingErrorReceiptData $readingErrorReceiptData;
     private  MemberData $memberData;
     private string $entryType;
     private array $allowedTenants = [
-        'stage'
+        'iebrd'
     ];
     protected Collection $foldersData;
+
+    private bool $devolution = false;
+    private int $amount = 0;
+    private string $institution;
+    private string $reason;
+
+    private ?int $groupReturnedId = null;
+    private ?int $groupReceivedId = null;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
     const IDENTIFICATION_PENDING_1 = 1;
@@ -71,21 +80,21 @@ class ProcessingEntriesByBankTransfer
         GoogleDriveService $googleDriveService,
         CreateEntryAction $createEntryAction,
         GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction,
-        GetMemberByCPFAction $getMemberByCPFAction,
-        UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction,
-        GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction,
-        GetEcclesiasticalGroupsFoldersAction $getEcclesiasticalGroupsFoldersAction,
-        GetReturnReceivingGroupAction $getReturnReceivingGroupAction,
-        UploadFile $uploadFile,
+        GetMemberByCPFAction                   $getMemberByCPFAction,
+        UpdateMiddleCpfMemberAction            $updateMiddleCpfMemberAction,
+        GetEntryByTimestampValueCpfAction      $getEntryByTimestampValueCpfAction,
+        GetEcclesiasticalGroupsFoldersAction   $getEcclesiasticalGroupsFoldersAction,
+        GetReturnReceivingGroupAction          $getReturnReceivingGroupAction,
+        UploadFile                             $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,
-        UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction,
-        UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction,
-        EntryData $entryData,
-        UnidentifiedReceiptData $unidentifiedReceiptData,
-        MemberData $memberData,
-        OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
-        ConsolidationEntriesData $consolidationEntriesData,
-        CreateUnidentifiedReceiptAction $createUnidentifiedReceiptAction,
+        UpdateReceiptLinkEntryAction           $updateReceiptLinkEntryAction,
+        UpdateTimestampValueCPFEntryAction     $updateTimestampValueCPFEntryAction,
+        EntryData                              $entryData,
+        ReadingErrorReceiptData                $readingErrorReceiptData,
+        MemberData                             $memberData,
+        OCRExtractDataBankReceiptService       $OCRExtractDataBankReceiptService,
+        ConsolidationEntriesData               $consolidationEntriesData,
+        CreateReadingErrorReceiptAction        $createReadingErrorReceiptAction,
     )
     {
         $this->googleDriveService = $googleDriveService;
@@ -99,13 +108,13 @@ class ProcessingEntriesByBankTransfer
         $this->updateTimestampValueCPFEntryAction = $updateTimestampValueCPFEntryAction;
         $this->getEntryByTimestampValueCpfAction = $getEntryByTimestampValueCpfAction;
         $this->getMemberByCPFAction = $getMemberByCPFAction;
-        $this->unidentifiedReceiptData = $unidentifiedReceiptData;
+        $this->readingErrorReceiptData = $readingErrorReceiptData;
         $this->uploadFile = $uploadFile;
         $this->entryData = $entryData;
         $this->memberData = $memberData;
         $this->consolidationEntriesData = $consolidationEntriesData;
         $this->OCRExtractDataBankReceiptService = $OCRExtractDataBankReceiptService;
-        $this->createUnidentifiedReceiptAction = $createUnidentifiedReceiptAction;
+        $this->createReadingErrorReceiptAction = $createReadingErrorReceiptAction;
     }
 
 
@@ -127,11 +136,9 @@ class ProcessingEntriesByBankTransfer
             $this->googleDriveService->defineInstanceGoogleDrive($tenant);
             $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke();
 
-
             foreach ($this->foldersData as $key => $folderData)
             {
                 $this->entryType = $folderData->entry_type;
-
                 $files = $this->googleDriveService->listFiles($folderData->folder_id);
 
                 foreach ($files as $file)
@@ -152,12 +159,15 @@ class ProcessingEntriesByBankTransfer
 
                             if($middleCpf != '')
                                 $member = $this->getMemberByMiddleCPFAction->__invoke($middleCpf);
+
                             if ($middleCpf != '' && $member == null)
                             {
                                 $member = $this->getMemberByCPFAction->__invoke($middleCpf, true);
+
                                 if(!is_null($member))
                                     $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
                             }
+
                             if ($cpf != '' && $member == null)
                                 $member = $this->getMemberByCPFAction->__invoke($cpf);
 
@@ -207,28 +217,25 @@ class ProcessingEntriesByBankTransfer
 
                             //printf(json_encode($extractedData));
                         }
-                        else if(count($extractedData) > 0 && $extractedData['status'] == 'NOT_IMPLEMENTED')
-                        {
-                            $this->googleDriveService->renameFile($file->id, null, 'NOT_IMPLEMENTED', $extractedData['data']['institution']);
-
-                            //printf(json_encode([
-                            //    'status' =>  $extractedData['status'],
-                            //    'data' =>  $extractedData,
-                            //]));
-                        }
-                        else if(count($extractedData) > 0 && $extractedData['status'] == 'READING_ERROR')
+                        else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
                         {
                             $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH, $tenant);
 
-                            $this->setUnidentifiedReceiptData($this->entryType, $fileUploaded, $extractedData['data']);
-                            $this->createUnidentifiedReceiptAction->__invoke($this->unidentifiedReceiptData);
+                            $this->configReadingErrorReceiptData($extractedData, $folderData);
 
-                            $this->googleDriveService->renameFile($file->id, null, 'READING_ERROR', $extractedData['data']['institution']);
+                            $this->setReadingErrorReceiptData(
+                                $this->groupReturnedId,
+                                $this->groupReceivedId,
+                                $this->entryType,
+                                $this->amount,
+                                $this->institution,
+                                $this->reason,
+                                $this->devolution,
+                                $fileUploaded);
 
-                            //printf(json_encode([
-                            //    'status' =>  $extractedData['status'],
-                            //    'data' =>  $extractedData,
-                            //]));
+                            $this->createReadingErrorReceiptAction->__invoke($this->readingErrorReceiptData);
+
+                            $this->googleDriveService->renameFile($file->id, null, $extractedData['status'], $extractedData['data']['institution']);
                         }
                     }
                 }
@@ -303,12 +310,62 @@ class ProcessingEntriesByBankTransfer
     }
 
 
-    public function setUnidentifiedReceiptData(string $entryType, string $receiptLink, array $data): void
+    /**
+     * @param $extractedData
+     * @param mixed $folderData
+     * @return void
+     */
+    public function configReadingErrorReceiptData($extractedData, mixed $folderData): void
     {
-        $this->unidentifiedReceiptData->entryType = $entryType;
-        $this->unidentifiedReceiptData->receiptLink = $receiptLink;
-        $this->unidentifiedReceiptData->deleted = 0;
-        $this->unidentifiedReceiptData->amount = array_key_exists('amount', $data) ? floatval($data['amount']) / 100 : null;
+        $this->devolution = $folderData->folder_devolution == 1;
+        $this->reason = $extractedData['status'];
+        $this->amount = $extractedData['data']['amount'] != 0 ? $extractedData['data']['amount'] : 0;
+        $this->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
+
+        if($this->devolution)
+        {
+            $this->groupReceivedId = 16; //Id do grupo de Patrimonio e financas
+            $this->groupReturnedId = $folderData->ecclesiastical_divisions_group_id;
+        }
+        else
+        {
+            $this->groupReceivedId = $folderData->ecclesiastical_divisions_group_id;
+            $this->groupReturnedId = null;
+        }
+    }
+
+
+
+    /**
+     * @param string|null $groupReturnedId
+     * @param string|null $groupReceivedId
+     * @param string $entryType
+     * @param string|null $amount
+     * @param string|null $institution
+     * @param string|null $reason
+     * @param bool $devolution
+     * @param string|null $receiptLink
+     * @return void
+     */
+    public function setReadingErrorReceiptData(
+        string | null $groupReturnedId,
+        string | null $groupReceivedId,
+        string $entryType,
+        string | null $amount,
+        string | null $institution,
+        string | null $reason,
+        bool $devolution,
+        string | null $receiptLink): void
+    {
+        $this->readingErrorReceiptData->groupReturnedId = $groupReturnedId;
+        $this->readingErrorReceiptData->groupReceivedId = $groupReceivedId;
+        $this->readingErrorReceiptData->entryType = $entryType;
+        $this->readingErrorReceiptData->amount = $amount != null ? floatval($amount) / 100 : null;
+        $this->readingErrorReceiptData->institution = $institution;
+        $this->readingErrorReceiptData->reason = $reason;
+        $this->readingErrorReceiptData->devolution = $devolution;
+        $this->readingErrorReceiptData->deleted = 0;
+        $this->readingErrorReceiptData->receiptLink = $receiptLink;
     }
 
     /**

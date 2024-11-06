@@ -1,12 +1,12 @@
 <?php
 
-namespace Domain\Financial\Receipts\Entries\Unidentified\Models;
+namespace Domain\Financial\Receipts\Entries\ReadingError\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class UnidentifiedReceipts extends Model
+class ReadingErrorReceipt extends Model
 {
-    protected $table = 'unidentified_receipts';
+    protected $table = 'reading_error_receipt';
 
 
     /**
@@ -15,8 +15,13 @@ class UnidentifiedReceipts extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'group_returned_id',
+        'group_received_id',
         'entry_type',
         'amount',
+        'institution',
+        'reason',
+        'devolution',
         'deleted',
         'receipt_link',
     ];
