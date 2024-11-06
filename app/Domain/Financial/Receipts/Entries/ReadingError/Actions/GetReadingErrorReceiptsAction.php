@@ -5,6 +5,7 @@ namespace Domain\Financial\Receipts\Entries\ReadingError\Actions;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
 
 class GetReadingErrorReceiptsAction
@@ -24,6 +25,7 @@ class GetReadingErrorReceiptsAction
      * @param string $reason
      * @return Collection|null
      * @throws BindingResolutionException
+     * @throws GeneralExceptions
      */
     public function __invoke(string $reason): Collection | null
     {
@@ -35,7 +37,7 @@ class GetReadingErrorReceiptsAction
         }
         else
         {
-            return null;
+            throw new GeneralExceptions('Não existem comprovantes por aqui...', 404);
         }
     }
 }

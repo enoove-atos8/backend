@@ -18,21 +18,18 @@ class ReadingErrorReceiptsController extends Controller
     /**
      * @param Request $request
      * @param GetReadingErrorReceiptsAction $readingErrorReceiptsAction
-     * @return ReadingErrorReceiptsResourceCollection|ResponseFactory|Application|Response
+     * @return ReadingErrorReceiptsResourceCollection
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function getReadingErrorReceipts(Request $request, GetReadingErrorReceiptsAction $readingErrorReceiptsAction): ReadingErrorReceiptsResourceCollection|ResponseFactory|Application|Response
+    public function getReadingErrorReceipts(Request $request, GetReadingErrorReceiptsAction $readingErrorReceiptsAction): ReadingErrorReceiptsResourceCollection
     {
         try
         {
             $reason = strtoupper($request->input('reason'));
             $receipts = $readingErrorReceiptsAction($reason);
 
-            if(!is_null($receipts))
-                return new ReadingErrorReceiptsResourceCollection($receipts);
-            else
-                return response(['message' => '', 404]);
+            return new ReadingErrorReceiptsResourceCollection($receipts);
 
         }
         catch (GeneralExceptions $e)
