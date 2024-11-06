@@ -97,34 +97,42 @@ class GoogleDriveService
     }
 
 
-
     /**
-     * @param $basePathTemp
+     * @param $localFile
      * @param $file
      * @return array|bool
      * @throws Exception
      */
-    public function download($basePathTemp, $file): array | bool
+    public function download($localFile, $file): array | bool
     {
         $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
 
         if ($fileMetadata->mimeType !== 'application/vnd.google-apps.folder')
         {
             $file = $this->instance->files->get($file->id, ['alt' => 'media']);
-            $physicalFile = $file->getBody()->getContents();
+            $driveFile = $file->getBody()->getContents();
 
             $contentType = $file->getHeaderLine('Content-Type');
 
             if ($contentType == 'image/jpeg')
                 $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.jpg';
+
             if ($contentType == 'application/pdf')
                 $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.pdf';
 
-            if (!file_exists($basePathTemp))
-                mkdir($basePathTemp, 0777, true);
+            if (!file_exists($localFile))
+                mkdir($localFile, 0777, true);
 
-            $destinationPath = $basePathTemp . '/' . $newNameWithExtension;
-            file_put_contents($destinationPath, $physicalFile);
+            $destinationPath = $localFile . '/' . $newNameWithExtension;
+            file_put_contents($destinationPath, $driveFile);
+
+
+            if ($contentType == 'application/pdf')
+            {
+                $newNameWithExtension = $this->convertPdfToJpg($destinationPath);
+                $destinationPath = $newNameWithExtension;
+            }
+
 
             $uploadedFile = new UploadedFile(
                 $destinationPath,
@@ -225,5 +233,28 @@ class GoogleDriveService
                     unlink($filePath);
             }
         }
+    }
+
+
+
+    /**
+     * Convert pdf to jg
+     */
+    private function convertPdfToJpg(string $file): string
+    {
+        $resolutionImage = 250;
+        $fileNameToJpg = '';
+
+        if(strpos($file, '.pdf'))
+        {
+            $fileNameToJpg = preg_replace('/\.pdf$/', '', $file);
+            exec("pdftoppm -jpeg -f 1 -l 1 -rx $resolutionImage -ry $resolutionImage $file $fileNameToJpg");
+
+            $fileNameWithNumberSufix = preg_replace('/\.jpg$/', '-1.jpg', $fileNameToJpg . '.jpg');
+
+            rename($fileNameWithNumberSufix, $fileNameToJpg . '.jpg');
+        }
+
+        return $fileNameToJpg . '.jpg';
     }
 }

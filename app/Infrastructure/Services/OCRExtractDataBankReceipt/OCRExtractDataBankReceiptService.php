@@ -64,10 +64,10 @@ class OCRExtractDataBankReceiptService
      */
     public function getBankingInstitution(string $file, string $totalAmount = ''): array | bool
     {
-        $adjustedPath = $this->verifyFormatFile($file);
+        //$adjustedPath = $this->verifyFormatFile($file);
 
-        if($adjustedPath != '')
-            $file = $adjustedPath;
+        //if($adjustedPath != '')
+        //    $file = $adjustedPath;
 
 
         $ocr = new TesseractOCR($file);

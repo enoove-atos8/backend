@@ -11,6 +11,7 @@ use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Ecclesiastical\Groups\Controllers\GroupController;
 use Application\Api\v1\Financial\Entry\Controllers\Indicators\EntryIndicatorsController;
+use Application\Api\v1\Financial\ReadingErrorReceipts\Controllers\ReadingErrorReceiptsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -226,6 +227,26 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
+
+                    });
+
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Automation Financial routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('automation')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getReadingErrorReceipts
+                         * Description: Get reading error receipts
+                         */
+
+                        Route::get('/getReadingErrorReceipts', [ReadingErrorReceiptsController::class, 'getReadingErrorReceipts']);
 
                     });
 
