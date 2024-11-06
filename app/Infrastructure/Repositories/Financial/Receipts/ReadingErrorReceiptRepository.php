@@ -57,7 +57,9 @@ class ReadingErrorReceiptRepository extends BaseRepository implements ReadingErr
         $this->queryConditions = [];
 
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::REASON_COLUMN, $reason, 'and');
+
+        if($reason !== 'all')
+            $this->queryConditions [] = $this->whereEqual(self::REASON_COLUMN, $reason, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
