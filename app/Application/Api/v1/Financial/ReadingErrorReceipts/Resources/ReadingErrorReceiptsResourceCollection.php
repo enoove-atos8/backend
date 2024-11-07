@@ -27,21 +27,43 @@ class ReadingErrorReceiptsResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return  $this->collection->map(function ($item){
+        $result = [
+            'notProcessed'     =>  [],
+            'notMapped'        =>  [],
+        ];
 
-            return [
-                'id'                 =>  $item->id,
-                'groupReturnedId'    =>  $item->group_returned_id,
-                'groupReceivedId'    =>  $item->group_received_id,
-                'entryType'          =>  $item->entry_type,
-                'amount'             =>  $item->amount,
-                'institution'        =>  $item->institution,
-                'reason'             =>  $item->reason,
-                'devolution'         =>  $item->devolution,
-                'deleted'            =>  $item->deleted,
-                'receiptLink'        =>  $item->receipt_link,
-            ];
-        });
+        foreach ($this->collection as $entry)
+        {
+            if($entry->reason == 'READING_ERROR')
+                $result['notProcessed'][] = $this->mount($entry);
+
+            if($entry->reason == 'NOT_IMPLEMENTED')
+                $result['notMapped'][] = $this->mount($entry);
+        }
+
+        return $result;
+    }
+
+
+
+    /**
+     * @param $data
+     * @return array
+     */
+    public function mount($data): array
+    {
+        return [
+            'id'                 =>  $data->id,
+            'groupReturnedId'    =>  $data->group_returned_id,
+            'groupReceivedId'    =>  $data->group_received_id,
+            'entryType'          =>  $data->entry_type,
+            'amount'             =>  $data->amount,
+            'institution'        =>  $data->institution,
+            'reason'             =>  $data->reason,
+            'devolution'         =>  $data->devolution,
+            'deleted'            =>  $data->deleted,
+            'receiptLink'        =>  $data->receipt_link,
+        ];
     }
 
 
