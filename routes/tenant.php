@@ -248,6 +248,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::get('/getReadingErrorReceipts', [ReadingErrorReceiptsController::class, 'getReadingErrorReceipts']);
 
+
+
+                        /*
+                         * Action: DELETE
+                         * EndPoint: /deleteReadingErrorReceipt
+                         * Description: Delete reading error receipts
+                         */
+
+                        Route::delete('/deleteReadingErrorReceipt', [ReadingErrorReceiptsController::class, 'deleteReadingErrorReceipt']);
+
                     });
 
                 });

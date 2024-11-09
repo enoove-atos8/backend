@@ -18,6 +18,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 {
     protected mixed $model = Group::class;
     const TABLE_NAME = 'ecclesiastical_divisions_groups';
+    const GROUP_RECEIVED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_received';
+    const GROUP_RETURNED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_returned';
     const MEMBER_TABLE_NAME = 'members';
     const ENABLED_TABLE_COLUMN = 'enabled';
     const RETURN_RECEIVING_TABLE_COLUMN = 'return_receiving';
@@ -44,6 +46,38 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'ecclesiastical_divisions_groups.start_date as groups_start_date',
         'ecclesiastical_divisions_groups.end_date as groups_end_date',
         'ecclesiastical_divisions_groups.updated_at as groups_updated_at',
+    ];
+
+    const DISPLAY_SELECT_GROUP_WITH_RECEIVED_ALIAS = [
+        'g_received.id AS g_received_id',
+        'g_received.ecclesiastical_division_id AS g_received_division_id',
+        'g_received.parent_group_id AS g_received_parent_group_id',
+        'g_received.leader_id AS g_received_leader_id',
+        'g_received.name AS g_received_name',
+        'g_received.description AS g_received_description',
+        'g_received.financial_transactions_exists AS g_received_transactions_exists',
+        'g_received.enabled AS g_received_enabled',
+        'g_received.temporary_event AS g_received_temporary_event',
+        'g_received.return_values AS g_received_return_values',
+        'g_received.start_date AS g_received_start_date',
+        'g_received.end_date AS g_received_end_date',
+        'g_received.updated_at AS g_received_updated_at',
+    ];
+
+    const DISPLAY_SELECT_GROUP_WITH_RETURNED_ALIAS = [
+        'g_returned.id AS g_returned_id',
+        'g_returned.ecclesiastical_division_id AS g_returned_division_id',
+        'g_returned.parent_group_id AS g_returned_parent_group_id',
+        'g_returned.leader_id AS g_returned_leader_id',
+        'g_returned.name AS g_returned_name',
+        'g_returned.description AS g_returned_description',
+        'g_returned.financial_transactions_exists AS g_returned_transactions_exists',
+        'g_returned.enabled AS g_returned_enabled',
+        'g_returned.temporary_event AS g_returned_temporary_event',
+        'g_returned.return_values AS g_returned_return_values',
+        'g_returned.start_date AS g_returned_start_date',
+        'g_returned.end_date AS g_returned_end_date',
+        'g_returned.updated_at AS g_returned_updated_at',
     ];
 
     /**

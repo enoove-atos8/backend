@@ -24,7 +24,6 @@ class GetReadingErrorReceiptsAction
      *
      * @param string $reason
      * @return Collection|null
-     * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
     public function __invoke(string $reason): Collection | null
