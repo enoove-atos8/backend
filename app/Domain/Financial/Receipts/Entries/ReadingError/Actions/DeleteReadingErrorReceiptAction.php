@@ -5,10 +5,10 @@ namespace Domain\Financial\Receipts\Entries\ReadingError\Actions;
 use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
 use Domain\Financial\Receipts\Entries\ReadingError\Models\ReadingErrorReceipt;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
 
-class CreateReadingErrorReceiptAction
+class DeleteReadingErrorReceiptAction
 {
     private ReadingErrorReceiptRepository $readingErrorReceiptRepository;
 
@@ -18,14 +18,16 @@ class CreateReadingErrorReceiptAction
     }
 
 
-
-    public function __invoke(ReadingErrorReceiptData $readingErrorReceiptData): ReadingErrorReceipt | bool
+    /**
+     * @throws BindingResolutionException
+     */
+    public function __invoke(int $id): bool
     {
-        $readingErrorReceipt = $this->readingErrorReceiptRepository->createReadingErrorReceipt($readingErrorReceiptData);
+        $deleted = $this->readingErrorReceiptRepository->deleteReceipt($id);
 
-        if(!is_null($readingErrorReceipt->id))
+        if($deleted)
         {
-            return $readingErrorReceipt;
+            return true;
         }
         else
         {

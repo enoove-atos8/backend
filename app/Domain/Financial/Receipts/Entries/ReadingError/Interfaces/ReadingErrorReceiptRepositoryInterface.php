@@ -11,6 +11,5 @@ interface ReadingErrorReceiptRepositoryInterface
 {
     public function createReadingErrorReceipt(ReadingErrorReceiptData $readingErrorReceiptData): ReadingErrorReceipt;
     public function getReadingErrorReceipts(string $reason): Collection;
-
-
+    public function deleteReceipt(int $id): mixed;
 }

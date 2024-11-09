@@ -17,15 +17,17 @@ class ReadingErrorReceiptsResourceCollection extends ResourceCollection
      * @var string
      */
     public static $wrap = 'receipts';
+    private mixed $resultGroupReceived = null;
+    private mixed $resultGroupReturned = null;
 
 
     /**
      * Transform the resource collection into an array.
      *
-     * @param  Request  $request
+     * @param Request $request
      * @return array|Arrayable|JsonSerializable
      */
-    public function toArray($request): array|JsonSerializable|Arrayable
+    public function toArray(Request $request): array|JsonSerializable|Arrayable
     {
         $result = [
             'notProcessed'     =>  [],
@@ -34,11 +36,17 @@ class ReadingErrorReceiptsResourceCollection extends ResourceCollection
 
         foreach ($this->collection as $entry)
         {
-            if($entry->reason == 'READING_ERROR')
-                $result['notProcessed'][] = $this->mount($entry);
+            $this->getReceivedAndReturnedGroups($entry);
 
-            if($entry->reason == 'NOT_IMPLEMENTED')
-                $result['notMapped'][] = $this->mount($entry);
+            if($entry->reading_error_receipt_reason == 'READING_ERROR')
+                $result['notProcessed'][] = $this->jsonResponse($entry);
+
+            if($entry->reading_error_receipt_reason == 'NOT_IMPLEMENTED')
+                $result['notMapped'][] = $this->jsonResponse($entry);
+
+
+            $this->resultGroupReceived = null;
+            $this->resultGroupReturned = null;
         }
 
         return $result;
@@ -47,23 +55,48 @@ class ReadingErrorReceiptsResourceCollection extends ResourceCollection
 
 
     /**
-     * @param $data
+     * @param $entry
      * @return array
      */
-    public function mount($data): array
+    public function jsonResponse($entry): array
     {
         return [
-            'id'                 =>  $data->id,
-            'groupReturnedId'    =>  $data->group_returned_id,
-            'groupReceivedId'    =>  $data->group_received_id,
-            'entryType'          =>  $data->entry_type,
-            'amount'             =>  $data->amount,
-            'institution'        =>  $data->institution,
-            'reason'             =>  $data->reason,
-            'devolution'         =>  $data->devolution,
-            'deleted'            =>  $data->deleted,
-            'receiptLink'        =>  $data->receipt_link,
+            'id'                 =>  $entry->reading_error_receipt_id,
+            'groupReturned'      =>  $this->resultGroupReturned,
+            'groupReceived'      =>  $this->resultGroupReceived,
+            'entryType'          =>  $entry->reading_error_receipt_entry_type,
+            'amount'             =>  $entry->reading_error_receipt_amount,
+            'institution'        =>  $entry->reading_error_receipt_institution,
+            'reason'             =>  $entry->reading_error_receipt_reason,
+            'devolution'         =>  $entry->reading_error_receipt_devolution,
+            'deleted'            =>  $entry->reading_error_receipt_deleted,
+            'receiptLink'        =>  $entry->reading_error_receipt_receipt_link,
         ];
+    }
+
+
+
+    /**
+     * @param $data
+     * @return void
+     */
+    public function getReceivedAndReturnedGroups($data): void
+    {
+        if($data->g_received_id != null && is_null($this->resultGroupReceived))
+        {
+            $this->resultGroupReceived = [
+                'id'      =>  $data->g_received_id,
+                'name'    =>  $data->g_received_name,
+            ];
+        }
+
+        if($data->reading_error_receipt_devolution == 1)
+        {
+            $this->resultGroupReturned = [
+                'id'      =>  $data->g_returned_id,
+                'name'    =>  $data->g_returned_name,
+            ];
+        }
     }
 
 
