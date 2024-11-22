@@ -66,6 +66,10 @@ class CreateCultAction
                 $cultData->amountDesignated += $designated['amount'];
             }
         }
+
+        if (!is_null($cultData->offers)) {
+            $cultData->amountOffers = $cultData->offers;
+        }
     }
 
 
