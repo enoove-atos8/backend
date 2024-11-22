@@ -36,7 +36,7 @@ class EntryRequest extends FormRequest
         return [
             'memberId'                      =>  '',
             'reviewerId'                    =>  'required',
-            'cultFinancialDataId'           =>  '',
+            'cultId'                        =>  '',
             'groupReturnedId'               =>  '',
             'groupReceivedId'               =>  '',
             'identificationPending'         =>  '',

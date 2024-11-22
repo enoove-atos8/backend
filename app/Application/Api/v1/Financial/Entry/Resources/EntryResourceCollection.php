@@ -45,7 +45,7 @@ class EntryResourceCollection extends ResourceCollection
                 'id'                            =>  $item->entries_id,
                 'member'                        =>  $this->getMember($item),
                 'reviewer'                      =>  $this->getReviewer($item),
-                'cultFinancialDataId'           =>  $item->entries_cult_financial_data_id,
+                'cultId'                        =>  $item->entries_cult_id,
                 'groupReturned'                 =>  $this->getGroup($this->groups, $item->entries_group_returned_id),
                 'groupReceived'                 =>  $this->getGroup($this->groups, $item->entries_group_received_id),
                 'identificationPending'         =>  $item->entries_identification_pending,

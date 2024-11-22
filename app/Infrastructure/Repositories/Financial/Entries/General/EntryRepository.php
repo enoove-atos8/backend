@@ -70,7 +70,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         'entries.id as entries_id',
         'entries.member_id as entries_member_id',
         'entries.reviewer_id as entries_reviewer_id',
-        'entries.cult_financial_data_id as entries_cult_financial_data_id',
+        'entries.cult_id as entries_cult_id',
         'entries.group_returned_id as entries_group_returned_id',
         'entries.group_received_id as entries_group_received_id',
         'entries.identification_pending as entries_identification_pending',
