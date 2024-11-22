@@ -10,10 +10,10 @@ class EntryData extends DataTransferObject
     public int | null $memberId;
 
     /** @var integer | null  */
-    public int | null $reviewerId;
+    public int | null $cultId;
 
     /** @var integer | null  */
-    public int | null $cultFinancialDataId;
+    public int | null $reviewerId;
 
     /** @var integer | null  */
     public int | null $groupReturnedId;

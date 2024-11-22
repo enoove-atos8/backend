@@ -17,7 +17,7 @@ class Entry extends Model
     protected $fillable = [
         'member_id',
         'reviewer_id',
-        'cult_financial_data_id',
+        'cult_id',
         'group_returned_id',
         'group_received_id',
         'identification_pending',

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
+use App\Application\Api\v1\Financial\Cults\Controllers\CultController;
 use App\Application\Api\v1\Financial\Entry\Controllers\Consolidated\EntriesConsolidatedController;
 use App\Application\Api\v1\Financial\Entry\Controllers\General\EntryController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
@@ -257,6 +258,26 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::delete('/deleteReadingErrorReceipt', [ReadingErrorReceiptsController::class, 'deleteReadingErrorReceipt']);
+
+                    });
+
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Cults Financial routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('cults')->group(function () {
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /createCult
+                         * Description: Create a new cult
+                         */
+
+                        Route::post('/createCult', [CultController::class, 'createCult']);
 
                     });
 

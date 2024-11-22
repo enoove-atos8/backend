@@ -107,7 +107,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         return $this->create([
             'member_id'                                         =>   $entryData->memberId,
             'reviewer_id'                                       =>   $entryData->reviewerId,
-            'cult_financial_data_id'                            =>   $entryData->cultFinancialDataId,
+            'cult_id'                                           =>   $entryData->cultId,
             'group_returned_id'                                 =>   $entryData->groupReturnedId,
             'group_received_id'                                 =>   $entryData->groupReceivedId,
             'identification_pending'                            =>   $entryData->identificationPending,
@@ -402,7 +402,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         return $this->update($conditions, [
             'member_id'                                         =>   $entryData->memberId,
             'reviewer_id'                                       =>   $entryData->reviewerId,
-            'cult_financial_data_id'                            =>   $entryData->cultFinancialDataId,
+            'cult_id'                                           =>   $entryData->cultId,
             'group_returned_id'                                 =>   $entryData->groupReturnedId,
             'group_received_id'                                 =>   $entryData->groupReceivedId,
             'identification_pending'                            =>   $entryData->identificationPending,
