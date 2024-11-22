@@ -5,6 +5,7 @@ namespace Application\Core\Providers;
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
@@ -32,6 +33,7 @@ use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Folders\FoldersRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
 use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
@@ -65,6 +67,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(FoldersRepositoryInterface::class, FoldersRepository::class);
         $this->app->bind(ReadingErrorReceiptRepositoryInterface::class, ReadingErrorReceiptRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
+        $this->app->bind(CultRepositoryInterface::class, CultRepository::class);
     }
 
     /**

@@ -154,7 +154,7 @@ class EntryRequest extends FormRequest
         return new EntryData(
             memberId:                       $this->input('memberId'),
             reviewerId:                     $this->input('reviewerId'),
-            cultFinancialDataId:            $this->input('cultFinancialDataId'),
+            cultId:                         $this->input('cultId'),
             groupReturnedId:                $this->input('groupReturnedId'),
             groupReceivedId:                $this->input('groupReceivedId'),
             identificationPending:          $this->input('identificationPending'),

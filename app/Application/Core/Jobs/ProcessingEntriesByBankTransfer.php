@@ -265,7 +265,7 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->devolution = 0;
         $this->entryData->residualValue = 0;
         $this->entryData->identificationPending = 0;
-        $this->entryData->cultFinancialDataId = null;
+        $this->entryData->cultId = null;
         $this->entryData->timestampValueCpf = null;
 
         if($folderData->entry_type == 'designated')
