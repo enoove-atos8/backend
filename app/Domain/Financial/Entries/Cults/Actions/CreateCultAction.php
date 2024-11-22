@@ -8,6 +8,7 @@ use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Models\Cult;
 use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
+use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Throwable;
 
@@ -16,6 +17,7 @@ class CreateCultAction
     private CultRepository $cultRepository;
     private CreateEntryAction $createEntryAction;
     private EntryData $entryData;
+
 
     public function __construct(
         CultRepositoryInterface $cultRepositoryInterface,
@@ -99,8 +101,7 @@ class CreateCultAction
         }
 
         if(!is_null($cultData->offers)){
-            $this->entryData->entryType = 'offers';
-            $this->entryData->amount = $cultData->offers;
+            $this->prepareEntryData($cultData);
             $this->transferCultDataToEntryData($cultData);
 
             $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
@@ -110,18 +111,33 @@ class CreateCultAction
 
 
     /**
-     * @param array $entry
+     * @param array|CultData $entry
      * @return void
      */
-    private function prepareEntryData(array $entry): void
+    private function prepareEntryData(array | CultData $entry): void
     {
-        if($entry['entryType'] == 'designated')
-            $this->entryData->groupReceivedId = $entry['groupReceivedId'];
-        else if($entry['entryType'] == 'tithe')
-            $this->entryData->memberId = $entry['memberId'];
+        if($entry instanceof CultData)
+            $this->entryData->entryType = EntryRepository::OFFERS_VALUE;
+        else
+            $this->entryData->entryType = $entry['entryType'];
 
-        $this->entryData->entryType = $entry['entryType'];
-        $this->entryData->amount = $entry['amount'];
+
+        if($this->entryData->entryType == 'designated'){
+            $this->entryData->groupReceivedId = $entry['groupReceivedId'];
+            $this->entryData->amount = $entry['amount'];
+        }
+        else if($this->entryData->entryType == 'tithe'){
+            $this->entryData->memberId = $entry['memberId'];
+            $this->entryData->amount = $entry['amount'];
+        }
+        else if($this->entryData->entryType == 'offers'){
+            $this->entryData->memberId = null;
+            $this->entryData->groupReceivedId = null;
+            $this->entryData->amount = $entry->offers;
+        }
+
+
+
     }
 
 
@@ -139,5 +155,6 @@ class CreateCultAction
         $this->entryData->dateEntryRegister = $cultData->cultDay;
         $this->entryData->deleted = $cultData->deleted;
         $this->entryData->receipt = $cultData->receipt;
+        $this->entryData->devolution = 0;
     }
 }
