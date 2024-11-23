@@ -272,6 +272,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     Route::prefix('cults')->group(function () {
 
                         /*
+                         * Action: GET
+                         * EndPoint: /getCults
+                         * Description: Get all cults
+                         */
+
+                        Route::get('/getCults', [CultController::class, 'getCults']);
+
+
+
+                        /*
                          * Action: POST
                          * EndPoint: /createCult
                          * Description: Create a new cult
