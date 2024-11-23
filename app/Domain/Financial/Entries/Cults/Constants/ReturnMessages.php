@@ -10,6 +10,8 @@ class ReturnMessages
 
     // Error messages
 
+    const NO_CULTS_FOUNDED = 'Não encontramos cultos cadastrados...';
+
 
     // Info messages
 

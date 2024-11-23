@@ -3,10 +3,12 @@
 namespace App\Application\Api\v1\Financial\Cults\Controllers;
 
 
+use App\Application\Api\v1\Financial\Cults\Resources\CultsResourceCollection;
 use App\Domain\Financial\Entries\Cults\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Cults\Requests\CultRequest;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Entries\Cults\Actions\CreateCultAction;
+use Domain\Financial\Entries\Cults\Actions\GetCultsAction;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,9 +22,19 @@ class CultController extends Controller
     /**
      * @throws Throwable
      */
-    public function getCults()
+    public function getCults(Request $request, GetCultsAction $getCultsAction): CultsResourceCollection
     {
-        /** TODO implementar listagem de cultos */
+        try
+        {
+            $response = $getCultsAction();
+
+            return new CultsResourceCollection($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
     }
 
 

@@ -5,6 +5,7 @@ namespace Infrastructure\Repositories\Financial\Entries\Cults;
 use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Models\Cult;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
@@ -14,6 +15,13 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
     protected mixed $model = Cult::class;
 
     const TABLE_NAME = 'cults';
+    const DELETED_COLUMN = 'deleted';
+
+
+    /**
+     * Array of conditions
+     */
+    private array $queryConditions = [];
 
 
 
@@ -40,9 +48,17 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
 
     /**
      * @return Collection
+     * @throws BindingResolutionException
      */
     public function getCults(): Collection
     {
-        // TODO: Implement getCults() method.
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
+
+        return $this->getItemsWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::ID_COLUMN,
+            BaseRepository::ORDERS['DESC']
+        );
     }
 }

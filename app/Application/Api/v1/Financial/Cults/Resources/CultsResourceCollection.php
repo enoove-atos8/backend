@@ -14,7 +14,7 @@ class CultsResourceCollection extends ResourceCollection
      * with the one declared in the 'wrap' variable
      * @var string
      */
-    public static $wrap = 'reviewers';
+    public static $wrap = 'cults';
 
 
 
@@ -26,10 +26,26 @@ class CultsResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return $this->collection->map(function ($item){
-            return [
+        $result = [];
 
+        foreach ($this->collection as $item)
+        {
+            $tithesAmount = $item->tithes_amount;
+            $designatedAmount = $item->designated_amount;
+            $offersAmount = $item->offers_amount;
+
+            $result[] = [
+                'id'                    =>  $item->id,
+                'cultDay'               =>  $item->cult_day,
+                'cultDate'              =>  $item->cult_date,
+                'amountTithes'          =>  $tithesAmount,
+                'amountDesignated'      =>  $designatedAmount,
+                'amountOffers'          =>  $offersAmount,
+                'totalAmount'           =>  $tithesAmount + $designatedAmount + $offersAmount,
+                'receipt'               =>  $item->receipt,
             ];
-        });
+        }
+
+        return $result;
     }
 }
