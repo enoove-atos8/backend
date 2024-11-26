@@ -3,12 +3,14 @@
 namespace Domain\Financial\Entries\Cults\Actions;
 
 use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
+use App\Domain\Financial\Entries\Cults\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Models\Cult;
 use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
 use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Throwable;
 
@@ -37,15 +39,23 @@ class CreateCultAction
      */
     public function __invoke(CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): Cult
     {
-        $this->calculateTotalTithesAndDesignated($cultData);
+        if(is_null($cultData->offers) && count($cultData->tithes) == 0 && count($cultData->designated) == 0)
+        {
+            throw new GeneralExceptions(ReturnMessages::AT_LEAST_ONE_ENTRY, 500);
+        }
+        else
+        {
+            $this->calculateTotalTithesAndDesignated($cultData);
 
-        $cult = $this->createCult($cultData);
+            $cult = $this->createCult($cultData);
 
-        if ($cult->id) {
-            $this->createEntries($cult, $cultData, $consolidationEntriesData);
+            if ($cult->id) {
+                $this->createEntries($cult, $cultData, $consolidationEntriesData);
+            }
+
+            return $cult;
         }
 
-        return $cult;
     }
 
 
