@@ -35,9 +35,10 @@ class CultRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'worshipWithoutEntries'         =>  'required',
             'cultDay'                       =>  'required',
             'cultDate'                      =>  'required',
-            'dateTransactionCompensation'   =>  'required',
+            'dateTransactionCompensation'   =>  '',
             'transactionType'               =>  'required',
             'transactionCompensation'       =>  'required',
             'tithe'                         =>  '',
@@ -46,7 +47,7 @@ class CultRequest extends FormRequest
             'devolution'                    =>  '',
             'deleted'                       =>  'required',
             'reviewerId'                    =>  'required',
-            'receipt'                       =>  'required'
+            'receipt'                       =>  $this->input('worshipWithoutEntries') == false ? 'required' : 'nullable'
         ];
     }
 
@@ -61,6 +62,7 @@ class CultRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'worshipWithoutEntries.required'            =>  "É necessário informar existem valores obtidos neste culto ou não!",
             'cultDay.required'                          =>  "Informe o dia do culto!",
             'cultDate.required'                         =>  "O preenchimento do campo 'Data do culto' é obrigatório!",
             'dateTransactionCompensation.required'      =>  "O preenchimento do campo 'Data de depósito' é obrigatório!",
@@ -82,6 +84,7 @@ class CultRequest extends FormRequest
     public function cultData(): CultData
     {
         return new CultData(
+            worshipWithoutEntries:         $this->input('worshipWithoutEntries'),
             cultDay:                       $this->input('cultDay'),
             cultDate:                      $this->input('cultDate'),
             dateTransactionCompensation:   $this->input('dateTransactionCompensation'),

@@ -19,16 +19,16 @@ return new class extends Migration
             Schema::create('cults', function (Blueprint $table) {
 
                 $table->integer('id', true);
-                $table->integer('reviewer_id')->nullable(false);
-                $table->string('cult_day')->nullable(false);
-                $table->string('cult_date')->nullable(false);
-                $table->string('date_transaction_compensation')->nullable(false);
-                $table->string('transaction_type')->nullable(false);
+                $table->integer('reviewer_id')->nullable();
+                $table->string('cult_day')->nullable();
+                $table->string('cult_date')->nullable();
+                $table->string('date_transaction_compensation')->nullable();
+                $table->string('transaction_type')->nullable();
                 $table->decimal('tithes_amount')->nullable()->default(0);
                 $table->decimal('designated_amount')->nullable()->default(0);
                 $table->decimal('offers_amount')->nullable()->default(0);
-                $table->boolean('deleted')->nullable(false)->default(0);
-                $table->string('receipt')->nullable(false);
+                $table->boolean('deleted')->nullable()->default(0);
+                $table->string('receipt')->nullable();
                 $table->string('comments')->nullable();
 
                 $table->timestamps();

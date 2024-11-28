@@ -39,22 +39,15 @@ class CreateCultAction
      */
     public function __invoke(CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): Cult
     {
-        if(is_null($cultData->offers) && count($cultData->tithes) == 0 && count($cultData->designated) == 0)
-        {
-            throw new GeneralExceptions(ReturnMessages::AT_LEAST_ONE_ENTRY, 500);
+        $this->calculateTotalTithesAndDesignated($cultData);
+
+        $cult = $this->createCult($cultData);
+
+        if ($cult->id && !$cultData->worshipWithoutEntries) {
+            $this->createEntries($cult, $cultData, $consolidationEntriesData);
         }
-        else
-        {
-            $this->calculateTotalTithesAndDesignated($cultData);
 
-            $cult = $this->createCult($cultData);
-
-            if ($cult->id) {
-                $this->createEntries($cult, $cultData, $consolidationEntriesData);
-            }
-
-            return $cult;
-        }
+        return $cult;
 
     }
 
