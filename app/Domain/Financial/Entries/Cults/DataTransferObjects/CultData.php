@@ -9,7 +9,10 @@ class CultData extends DataTransferObject
     /** @var integer */
     public int $id = 0;
 
-    /** @var string|null */
+    /** @var bool|null */
+    public bool|null $worshipWithoutEntries;
+
+ /** @var string|null */
     public string|null $cultDay;
 
     /** @var string|null */
