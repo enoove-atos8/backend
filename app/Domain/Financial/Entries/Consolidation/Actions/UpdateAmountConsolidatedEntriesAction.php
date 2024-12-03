@@ -78,9 +78,14 @@ class UpdateAmountConsolidatedEntriesAction
             ->updateTotalValueConsolidation($date, $totalAmount, ConsolidationRepository::AMOUNT_TOTAL_COLUMN);
 
         if($amountUpdated)
+        {
+
             return true;
+        }
         else
+        {
             throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_ENTRIES_CONSOLIDATED, 500);
+        }
     }
 
 }

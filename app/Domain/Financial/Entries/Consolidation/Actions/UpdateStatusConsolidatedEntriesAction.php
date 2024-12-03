@@ -36,45 +36,17 @@ class UpdateStatusConsolidatedEntriesAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(array $dates, string $status): bool
+    public function __invoke(string $date, string $status): bool
     {
-        $arrCountedNotCompensateEntry = [];
+        $response = $this->consolidationEntriesRepository->updateConsolidationStatus($date, $status);
 
-        foreach ($dates as $date)
+        if($response)
         {
-            $countedNotCompensateEntry = $this->entryRepository->getAllEntriesByDateAndType($date, 'register')
-                ->where(
-                    EntryRepository::COMPENSATED_COLUMN,
-                    BaseRepository::OPERATORS['EQUALS'],
-                    EntryRepository::TO_COMPENSATE_VALUE)
-                ->count();
-
-            if($countedNotCompensateEntry > 0)
-                $arrCountedNotCompensateEntry[] = $date;
-
-        }
-
-
-        if(count($arrCountedNotCompensateEntry) < 1)
-        {
-            $response = $this->consolidationEntriesRepository->updateConsolidationStatus($dates, $status);
-
-            if($status == '1')
-            {
-                foreach ($dates as $date)
-                {
-                    $this->updateAmountConsolidationEntriesAction->__invoke($date);
-                }
-            }
-
-            if($response)
-                return true;
-            else
-                throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_ENTRIES_CONSOLIDATED, 500);
+            return true;
         }
         else
         {
-            throw new GeneralExceptions(ReturnMessages::ERROR_NOT_COMPENSATED_ENTRIES_FOUNDED, 500);
+            throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_ENTRIES_CONSOLIDATED, 500);
         }
 
     }

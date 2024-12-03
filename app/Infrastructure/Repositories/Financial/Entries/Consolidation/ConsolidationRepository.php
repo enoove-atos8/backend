@@ -79,23 +79,18 @@ class ConsolidationRepository extends BaseRepository implements ConsolidatedEntr
 
 
     /**
-     * @param array $dates
+     * @param string $date
      * @param string $status
      * @return bool
      * @throws BindingResolutionException
      */
-    public function updateConsolidationStatus(array $dates, string $status): bool
+    public function updateConsolidationStatus(string $date, string $status): bool
     {
-        foreach ($dates as $date)
-        {
-            $this->update([
-                'field' =>  'date',
-                'operator'  =>  '=',
-                'value' =>  $date
-            ], ['consolidated'  =>  $status]);
-        }
-
-        return true;
+        return $this->update([
+            'field' =>  'date',
+            'operator'  =>  '=',
+            'value' =>  $date
+        ], ['consolidated'  =>  $status]);
     }
 
 

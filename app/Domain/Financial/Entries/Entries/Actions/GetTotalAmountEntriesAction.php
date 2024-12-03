@@ -30,9 +30,9 @@ class GetTotalAmountEntriesAction
     {
         $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers($dates, 'compensated');
 
-        $amountTithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, EntryRepository::TITHE_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
-        $amountOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
-        $amountDesignated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, EntryRepository::DESIGNATED_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
+        $amountTithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::TITHE_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
+        $amountOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
+        $amountDesignated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::DESIGNATED_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
 
         if($entries->count() > 0)
         {
