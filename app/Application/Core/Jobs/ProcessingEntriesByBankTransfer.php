@@ -284,7 +284,7 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->transactionCompensation = 'compensated';
         $this->entryData->transactionType = 'pix';
 
-        $this->consolidationEntriesData->date = $extractedData['data']['date'];
+        $this->consolidationEntriesData->date = date('Y-m-d', $extractedData['data']['date']);
 
     }
 
