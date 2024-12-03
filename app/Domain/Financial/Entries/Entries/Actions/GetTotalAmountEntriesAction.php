@@ -1,0 +1,52 @@
+<?php
+
+namespace Domain\Financial\Entries\Entries\Actions;
+
+use App\Domain\Financial\Entries\Entries\Constants\ReturnMessages;
+use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Throwable;
+
+class GetTotalAmountEntriesAction
+{
+    private EntryRepository $entryRepository;
+
+    public function __construct(
+        EntryRepositoryInterface $entryRepositoryInterface,
+    )
+    {
+        $this->entryRepository = $entryRepositoryInterface;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(null | string $dates): array
+    {
+        $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers($dates, 'compensated');
+
+        $amountTithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, EntryRepository::TITHE_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
+        $amountOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
+        $amountDesignated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, EntryRepository::DESIGNATED_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
+
+        if($entries->count() > 0)
+        {
+            return [
+                'totalAmount'   =>  [
+                    'titheAmount'       =>  $amountTithes,
+                    'offersAmount'      =>  $amountOffers,
+                    'designatedAmount'  =>  $amountDesignated,
+                ]
+            ];
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::INFO_NO_ENTRIES_FOUNDED, 404);
+        }
+    }
+}
