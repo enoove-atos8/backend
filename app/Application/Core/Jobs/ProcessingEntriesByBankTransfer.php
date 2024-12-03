@@ -2,13 +2,13 @@
 
 namespace Application\Core\Jobs;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
-use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
-use App\Domain\Financial\Entries\General\Actions\GetEntryByTimestampValueCpfAction;
-use App\Domain\Financial\Entries\General\Actions\UpdateIdentificationPendingEntryAction;
-use App\Domain\Financial\Entries\General\Actions\UpdateReceiptLinkEntryAction;
-use App\Domain\Financial\Entries\General\Actions\UpdateTimestampValueCPFEntryAction;
-use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
+use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
+use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
+use App\Domain\Financial\Entries\Entries\Actions\GetEntryByTimestampValueCpfAction;
+use App\Domain\Financial\Entries\Entries\Actions\UpdateIdentificationPendingEntryAction;
+use App\Domain\Financial\Entries\Entries\Actions\UpdateReceiptLinkEntryAction;
+use App\Domain\Financial\Entries\Entries\Actions\UpdateTimestampValueCPFEntryAction;
+use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Members\Actions\GetMemberByCPFAction;
 use App\Domain\Members\Actions\GetMemberByMiddleCPFAction;
 use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
@@ -280,7 +280,7 @@ class ProcessingEntriesByBankTransfer
             }
         }
 
-        $this->entryData->reviewerId = 18;
+        $this->entryData->reviewerId = 18; //TODO recuperar o reviewId através de consulta na base, por exemplo, o first()
         $this->entryData->transactionCompensation = 'compensated';
         $this->entryData->transactionType = 'pix';
 

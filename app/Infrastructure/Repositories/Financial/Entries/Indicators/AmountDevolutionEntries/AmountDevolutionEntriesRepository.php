@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutionEntries;
 
-use App\Domain\Financial\Entries\General\Models\Entry;
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Domain\Financial\Entries\Entries\Models\Entry;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;

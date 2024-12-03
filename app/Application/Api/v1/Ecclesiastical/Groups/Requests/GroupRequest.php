@@ -3,7 +3,7 @@
 namespace Application\Api\v1\Ecclesiastical\Groups\Requests;
 
 use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
-use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
+use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

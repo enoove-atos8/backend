@@ -24,6 +24,7 @@ class GoogleDriveService
     private Drive $driveService;
 
     const TEMP_FILE_PREFIX_NAME = 'tempfile-job';
+    const PROCESSED_FILES_FOLDER_ID = '18lcW-LgHwKzS71IS8N9uzV98PmIKE9oO';
 
 
 
@@ -197,6 +198,16 @@ class GoogleDriveService
 
         $this->driveFile->setName($newName);
         $this->instance->files->update($fileId, $this->driveFile);
+
+        $file = $this->instance->files->get($fileId, ['fields' => 'parents']);
+        $previousParents = join(',', $file->parents);
+
+        $this->instance->files->update($fileId, $this->driveFile, [
+            'addParents' => self::PROCESSED_FILES_FOLDER_ID,
+            'removeParents' => $previousParents,
+            'fields' => 'id, parents',
+        ]);
+
     }
 
 
@@ -207,7 +218,7 @@ class GoogleDriveService
      */
     public function deleteFile($fileId): void
     {
-        $this->instance->files->delete($fileId);
+        $this->instance->files->update($fileId, new DriveFile(['trashed' => true]));
     }
 
 

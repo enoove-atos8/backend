@@ -2,8 +2,8 @@
 
 namespace Domain\Financial\Entries\Indicators\TotalGeneral\Actions;
 
-use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;

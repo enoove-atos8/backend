@@ -2,7 +2,7 @@
 
 namespace Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Actions;
 
-use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
+use App\Domain\Financial\Entries\Consolidation\Constants\ReturnMessages;
 use App\Domain\Financial\Settings\Actions\GetFinancialSettingsAction;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;

@@ -2,7 +2,7 @@
 
 namespace Infrastructure\Repositories;
 
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Query\Builder;
@@ -440,7 +440,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
         array $queryClausesAndConditions,
         string $orderBy = 'id',
         string $sort = 'desc',
-        string $limit = '1001',
+        string $limit = '999999',
         array $selectColumns = ['*']): Collection
     {
         $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $limit, $selectColumns) {
