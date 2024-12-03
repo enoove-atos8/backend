@@ -314,6 +314,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::put('/reopenMonth', [ConsolidationController::class, 'reopenMonth']);
 
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getTotalAmountEntries
+                         * Description: Get all entries amount for a month
+                         */
+
+                        Route::get('/getTotalAmountEntries', [ConsolidationController::class, 'getTotalAmountEntries']);
+
                     });
 
                 });
