@@ -2,15 +2,14 @@
 
 namespace Domain\Financial\Receipts\Entries\ReadingError\Actions;
 
+use App\Infrastructure\Repositories\Financial\Entries\Automation\AutomationRepository;
 use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
 use Domain\Financial\Receipts\Entries\ReadingError\Models\ReadingErrorReceipt;
-use Illuminate\Database\Eloquent\Model;
-use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
 
 class CreateReadingErrorReceiptAction
 {
-    private ReadingErrorReceiptRepository $readingErrorReceiptRepository;
+    private AutomationRepository $readingErrorReceiptRepository;
 
     public function __construct(ReadingErrorReceiptRepositoryInterface $readingErrorReceiptRepositoryInterface)
     {

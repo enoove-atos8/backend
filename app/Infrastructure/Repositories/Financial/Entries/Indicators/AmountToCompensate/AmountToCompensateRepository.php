@@ -2,9 +2,9 @@
 
 namespace Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate;
 
-use App\Domain\Financial\Entries\Consolidated\Models\ConsolidationEntries;
-use App\Domain\Financial\Entries\General\Models\Entry;
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Domain\Financial\Entries\Consolidation\Models\Consolidation;
+use App\Domain\Financial\Entries\Entries\Models\Entry;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;

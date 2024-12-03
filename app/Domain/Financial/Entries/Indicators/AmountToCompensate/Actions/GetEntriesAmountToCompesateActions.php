@@ -2,7 +2,7 @@
 
 namespace Domain\Financial\Entries\Indicators\AmountToCompensate\Actions;
 
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;

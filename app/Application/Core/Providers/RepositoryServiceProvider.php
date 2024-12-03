@@ -4,15 +4,16 @@ namespace Application\Core\Providers;
 
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
-use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
-use App\Domain\Financial\Entries\General\Interfaces\EntryRepositoryInterface;
+use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
 use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Automation\AutomationRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutionEntries\AmountDevolutionEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
@@ -36,7 +37,6 @@ use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
-use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 
@@ -55,7 +55,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ChurchRepositoryInterface::class, ChurchRepository::class);
         $this->app->bind(EntryRepositoryInterface::class, EntryRepository::class);
         $this->app->bind(MemberRepositoryInterface::class, MemberRepository::class);
-        $this->app->bind(ConsolidatedEntriesRepositoryInterface::class, ConsolidationEntriesRepository::class);
+        $this->app->bind(ConsolidatedEntriesRepositoryInterface::class, ConsolidationRepository::class);
         $this->app->bind(FinancialReviewerRepositoryInterface::class, FinancialReviewerRepository::class);
         $this->app->bind(TithesMonthlyTargetEntriesRepositoryInterface::class, TithesMonthlyTargetEntriesRepository::class);
         $this->app->bind(FinancialSettingsRepositoryInterface::class, FinancialSettingsRepository::class);
@@ -65,7 +65,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(DivisionRepositoryInterface::class, DivisionRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(FoldersRepositoryInterface::class, FoldersRepository::class);
-        $this->app->bind(ReadingErrorReceiptRepositoryInterface::class, ReadingErrorReceiptRepository::class);
+        $this->app->bind(ReadingErrorReceiptRepositoryInterface::class, AutomationRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(CultRepositoryInterface::class, CultRepository::class);
     }

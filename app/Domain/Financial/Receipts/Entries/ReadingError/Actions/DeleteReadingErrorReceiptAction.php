@@ -2,15 +2,13 @@
 
 namespace Domain\Financial\Receipts\Entries\ReadingError\Actions;
 
-use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
+use App\Infrastructure\Repositories\Financial\Entries\Automation\AutomationRepository;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
-use Domain\Financial\Receipts\Entries\ReadingError\Models\ReadingErrorReceipt;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
 
 class DeleteReadingErrorReceiptAction
 {
-    private ReadingErrorReceiptRepository $readingErrorReceiptRepository;
+    private AutomationRepository $readingErrorReceiptRepository;
 
     public function __construct(ReadingErrorReceiptRepositoryInterface $readingErrorReceiptRepositoryInterface)
     {

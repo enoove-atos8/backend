@@ -19,10 +19,10 @@ return new class extends Migration
                 $table->integer('id', true);
                 $table->string('date')->nullable(false);
                 $table->boolean('consolidated')->nullable(false)->default(false);
-                $table->decimal('designated_amount')->nullable(false)->default(0);
-                $table->decimal('offers_amount')->nullable(false)->default(0);
-                $table->decimal('tithe_amount')->nullable(false)->default(0);
-                $table->decimal('total_amount')->nullable(false)->default(0);
+                $table->decimal('designated_amount')->nullable()->default(0);
+                $table->decimal('offers_amount')->nullable()->default(0);
+                $table->decimal('tithe_amount')->nullable()->default(0);
+                $table->decimal('total_amount')->nullable()->default(0);
                 $table->decimal('monthly_target')->nullable(false)->default(0);
 
                 $table->timestamps();

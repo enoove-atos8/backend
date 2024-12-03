@@ -3,16 +3,17 @@
 declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
-use App\Application\Api\v1\Financial\Cults\Controllers\CultController;
-use App\Application\Api\v1\Financial\Entry\Controllers\Consolidated\EntriesConsolidatedController;
-use App\Application\Api\v1\Financial\Entry\Controllers\General\EntryController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Ecclesiastical\Groups\Controllers\GroupController;
-use Application\Api\v1\Financial\Entry\Controllers\Indicators\EntryIndicatorsController;
-use Application\Api\v1\Financial\ReadingErrorReceipts\Controllers\ReadingErrorReceiptsController;
+use Application\Api\v1\Financial\Entries\Automation\Controllers\ReadingErrorReceiptsController;
+use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
+use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
+use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\EntriesConsolidatedController;
+use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
+use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -114,112 +115,93 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 Route::prefix('entries')->group(function () {
 
                     /*
-                     * Action: GET
-                     * EndPoint: /
-                     * Description: Get All Entries by Date Range
-                     */
-
-                    Route::get('/', [EntryController::class, 'getEntriesByMonthlyRange']);
-
-
-                    /*
-                     * Action: GET
-                     * EndPoint: /getAmountByEntryType/
-                     * Description: Get amount of entries by Date Range
-                    */
-                    Route::get('/getAmountByEntryType/', [EntryController::class, 'getAmountByEntryType']);
-
-
-                    /*
-                     * Action: GET
-                     * EndPoint: /getConsolidationEntries
-                     * Description: Get a list of months do not consolidated
-                     */
-
-                    Route::get('/getConsolidationEntriesByStatus/', [EntryController::class, 'getConsolidationEntriesByStatus']);
-
-
-                    /*
-                     * Action: PUT
-                     * EndPoint: /updateStatusConsolidationEntries
-                     * Description: Update status consolidation from month
-                     */
-
-                    Route::put('/updateStatusConsolidationEntries', [EntryController::class, 'updateStatusConsolidationEntries']);
-
-
-                    /*
-                     * Action: GET
-                     * EndPoint: /{id}
-                     * Description: Get an entry by id
-                     */
-
-                    Route::get('/{id}', [EntryController::class, 'getEntryById'])->whereNumber('id');
-
-
-                    /*
-                     * Action: POST
-                     * EndPoint: /
-                     * Description: Get All Entries by Date Range
-                     */
-                    Route::post('/', [EntryController::class, 'createEntry']);
-
-
-                    /*
-                     * Action: PUT
-                     * EndPoint: /{id}
-                     * Description: Update an entry
-                     */
-
-                    Route::put('/{id}', [EntryController::class, 'updateEntry'])->whereNumber('id');
-
-
-                    /*
-                     * Action: DELETE
-                     * EndPoint: /{id}
-                     * Description: Delete an entry
-                     */
-
-                    Route::delete('/{id}', [EntryController::class, 'deleteEntry'])->whereNumber('id');
-
-
-                    /*
-                     * Action: POST
-                     * EndPoint: /files/assets/avatar
-                     * Description: Upload a receipt entry
-                     */
-
-                    Route::post('/files/assets/uploadReceiptEntry', [EntryController::class, 'uploadEntryReceipt']);
-
-
-                    /*
-                     * Action: GET
-                     * EndPoint: /getEntriesByTransactionCompensation
-                     * Description: Get a  entries to compensate list
-                     */
-
-                    Route::get('/getEntriesByTransactionCompensation', [EntryController::class, 'getEntriesByTransactionCompensation']);
-
-
-
-                    /*
-                     * Action: GET
-                     * EndPoint: /getDevolutionEntries
-                     * Description: Get a list of devolution entries
-                     */
-
-                    Route::get('/getDevolutionEntries', [EntryController::class, 'getDevolutionEntries']);
-
-
-
-
-                    /*
                     |--------------------------------------------------------------------------
-                    | Group Indicators Financial routes
+                    | Group Entries Financial routes
                     |--------------------------------------------------------------------------
                     |
                     */
-                    Route::prefix('indicators')->group(function () {
+                    Route::prefix('entries')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get All Entries by Date Range
+                         */
+
+                        Route::get('/', [EntriesController::class, 'getEntriesByMonthlyRange']);
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getAmountByEntryType/
+                         * Description: Get amount of entries by Date Range
+                        */
+                        Route::get('/getAmountByEntryType/', [EntriesController::class, 'getAmountByEntryType']);
+
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /{id}
+                         * Description: Get an entry by id
+                         */
+
+                        Route::get('/{id}', [EntriesController::class, 'getEntryById'])->whereNumber('id');
+
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /
+                         * Description: Get All Entries by Date Range
+                         */
+                        Route::post('/', [EntriesController::class, 'createEntry']);
+
+
+                        /*
+                         * Action: PUT
+                         * EndPoint: /{id}
+                         * Description: Update an entry
+                         */
+
+                        Route::put('/{id}', [EntriesController::class, 'updateEntry'])->whereNumber('id');
+
+
+                        /*
+                         * Action: DELETE
+                         * EndPoint: /{id}
+                         * Description: Delete an entry
+                         */
+
+                        Route::delete('/{id}', [EntriesController::class, 'deleteEntry'])->whereNumber('id');
+
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /files/assets/avatar
+                         * Description: Upload a receipt entry
+                         */
+
+                        Route::post('/files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getEntriesByTransactionCompensation
+                         * Description: Get a  entries to compensate list
+                         */
+
+                        Route::get('/getEntriesByTransactionCompensation', [EntriesController::class, 'getEntriesByTransactionCompensation']);
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getDevolutionEntries
+                         * Description: Get a list of devolution entries
+                         */
+
+                        Route::get('/getDevolutionEntries', [EntriesController::class, 'getDevolutionEntries']);
+
+
 
                         /*
                          * Action: GET
@@ -230,6 +212,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                         Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
 
                     });
+
 
 
 
@@ -288,6 +271,48 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::post('/createCult', [CultController::class, 'createCult']);
+
+                    });
+
+
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Consolidation Financial routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('consolidation')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getMonths
+                         * Description: Get all consolidation months
+                         */
+
+                        Route::get('/getMonths', [ConsolidationController::class, 'getMonths']);
+
+
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /consolidateMonth
+                         * Description: Consolidate month
+                         */
+
+                        Route::put('/consolidateMonth', [ConsolidationController::class, 'consolidateMonth']);
+
+
+
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /reopenMonth
+                         * Description: Create a new cult
+                         */
+
+                        Route::put('/reopenMonth', [ConsolidationController::class, 'reopenMonth']);
 
                     });
 

@@ -2,11 +2,11 @@
 
 namespace Domain\Financial\Entries\Indicators\TithesBalance\Actions;
 
-use App\Domain\Financial\Entries\Consolidated\Actions\GetConsolidatedEntriesByStatusAction;
-use App\Domain\Financial\Entries\Consolidated\Constants\ReturnMessages;
-use App\Domain\Financial\Entries\Consolidated\Interfaces\ConsolidatedEntriesRepositoryInterface;
+use App\Domain\Financial\Entries\Consolidation\Actions\GetConsolidatedEntriesByStatusAction;
+use App\Domain\Financial\Entries\Consolidation\Constants\ReturnMessages;
+use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Settings\Actions\GetFinancialSettingsAction;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidated\ConsolidationEntriesRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
 

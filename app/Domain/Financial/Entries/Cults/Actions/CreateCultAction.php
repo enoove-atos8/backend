@@ -2,14 +2,14 @@
 
 namespace Domain\Financial\Entries\Cults\Actions;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
+use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Cults\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Models\Cult;
-use App\Domain\Financial\Entries\General\Actions\CreateEntryAction;
-use App\Domain\Financial\Entries\General\DataTransferObjects\EntryData;
-use App\Infrastructure\Repositories\Financial\Entries\General\EntryRepository;
+use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
+use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Throwable;

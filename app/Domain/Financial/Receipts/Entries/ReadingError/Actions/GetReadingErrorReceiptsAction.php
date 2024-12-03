@@ -2,15 +2,14 @@
 
 namespace Domain\Financial\Receipts\Entries\ReadingError\Actions;
 
+use App\Infrastructure\Repositories\Financial\Entries\Automation\AutomationRepository;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\Receipts\ReadingErrorReceiptRepository;
 
 class GetReadingErrorReceiptsAction
 {
-    private ReadingErrorReceiptRepository $readingErrorReceiptRepository;
+    private AutomationRepository $readingErrorReceiptRepository;
 
     public function __construct(
         ReadingErrorReceiptRepositoryInterface $readingErrorReceiptRepositoryInterface
