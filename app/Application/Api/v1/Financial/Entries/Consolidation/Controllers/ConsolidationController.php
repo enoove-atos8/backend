@@ -3,7 +3,10 @@
 namespace Application\Api\v1\Financial\Entries\Consolidation\Controllers;
 
 
-use App\Domain\Financial\Entries\Cults\Constants\ReturnMessages;
+use App\Domain\Financial\Entries\Consolidation\Actions\UpdateAmountConsolidatedEntriesAction;
+use App\Domain\Financial\Entries\Consolidation\Actions\UpdateStatusConsolidatedEntriesAction;
+use App\Domain\Financial\Entries\Consolidation\Constants\ReturnMessages;
+use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use Application\Api\v1\Financial\Entries\Consolidation\Resources\ConsolidationResourceCollection;
 use Application\Api\v1\Financial\Entries\Cults\Requests\CultRequest;
 use Application\Api\v1\Financial\Entries\Cults\Resources\CultsResourceCollection;
@@ -12,6 +15,7 @@ use Domain\Financial\Entries\Consolidation\Actions\GetMonthsAction;
 use Domain\Financial\Entries\Cults\Actions\CreateCultAction;
 use Domain\Financial\Entries\Cults\Actions\GetCultsAction;
 use Domain\Financial\Entries\Entries\Actions\GetTotalAmountEntriesAction;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -43,17 +47,23 @@ class ConsolidationController extends Controller
 
     /**
      * Create new cult
+     * @param Request $request
+     * @param UpdateAmountConsolidatedEntriesAction $updateAmountConsolidatedEntriesAction
+     * @param UpdateStatusConsolidatedEntriesAction $updateStatusConsolidationEntriesAction
      * @return Application|ResponseFactory|Response
+     * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function consolidateMonth(): Application|ResponseFactory|Response
+    public function consolidateMonth(Request $request, UpdateAmountConsolidatedEntriesAction $updateAmountConsolidatedEntriesAction, UpdateStatusConsolidatedEntriesAction $updateStatusConsolidationEntriesAction): Application|ResponseFactory|Response
     {
         try
         {
-
+            $date = $request->input('date');
+            $updateAmountConsolidatedEntriesAction($date);
+            $updateStatusConsolidationEntriesAction($date, ConsolidationRepository::CONSOLIDATED_VALUE);
 
             return response([
-                'message'   =>  ReturnMessages::SUCCESS_CULT_REGISTERED,
+                'message'   =>  ReturnMessages::SUCCESS_ENTRIES_CONSOLIDATED,
             ], 201);
         }
         catch(GeneralExceptions $e)
@@ -94,7 +104,7 @@ class ConsolidationController extends Controller
     {
         try
         {
-            $date = $request->input('date');
+            $date = $request->input('dates');
             $response = $getTotalAmountEntriesAction($date);
 
             return response($response, 201);

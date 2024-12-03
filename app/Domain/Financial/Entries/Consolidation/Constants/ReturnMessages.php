@@ -5,7 +5,7 @@ namespace App\Domain\Financial\Entries\Consolidation\Constants;
 class ReturnMessages
 {
     //Success messages
-    public const SUCCESS_ENTRIES_CONSOLIDATED = "Consolidação de entradas realizada com sucesso!";
+    public const SUCCESS_ENTRIES_CONSOLIDATED = "Consolidação realizada com sucesso!";
 
 
     // Error messages
