@@ -28,7 +28,12 @@ class GetTotalAmountEntriesAction
      */
     public function __invoke(null | string $dates): array
     {
-        $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers($dates, 'compensated');
+        $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers(
+            $dates,
+            'compensated',
+            [],
+            [EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, EntryRepository::ID_COLUMN_JOINED],
+            false);
 
         $amountTithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::TITHE_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
         $amountOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);

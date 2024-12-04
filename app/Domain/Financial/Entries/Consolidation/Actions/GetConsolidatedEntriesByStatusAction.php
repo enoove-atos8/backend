@@ -39,7 +39,7 @@ class GetConsolidatedEntriesByStatusAction
      */
     public function __invoke(string | int $consolidated, bool $returnNumberEntriesNoCompensate = false, int $limit = 6, bool $callableByTithesBalance = false): Collection
     {
-        $consolidatedEntriesByStatus = $this->consolidationEntriesRepository->getConsolidatedMonths();
+        $consolidatedEntriesByStatus = $this->consolidationEntriesRepository->getConsolidatedMonths($consolidated);
 
         if(!$callableByTithesBalance)
         {

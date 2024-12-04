@@ -193,7 +193,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         string|null $dates,
         string|null $transactionCompensation = 'to_compensate' | 'compensated' | '*',
         array $filters = [],
-        array $orderBy = [self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, self::ID_COLUMN_JOINED]): Collection | Paginator
+        array $orderBy = [self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, self::ID_COLUMN_JOINED],
+        bool $paginate = true): Collection | Paginator
     {
         $arrDates = [];
         $this->queryConditions = [];
@@ -234,7 +235,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             }
         }
 
-        return $this->qbGetEntriesWithMembersAndReviewers($this->queryConditions, $displayColumnsFromRelationship, $orderBy);
+        return $this->qbGetEntriesWithMembersAndReviewers($this->queryConditions, $displayColumnsFromRelationship, $orderBy, $paginate);
     }
 
 
