@@ -55,9 +55,12 @@ class ConsolidationRepository extends BaseRepository implements ConsolidatedEntr
     /**
      * @throws BindingResolutionException
      */
-    public function getConsolidatedMonths(): Collection
+    public function getConsolidatedMonths(string | int $consolidated = 'all'): Collection
     {
         $this->queryConditions = [];
+
+        if($consolidated != 'all')
+            $this->queryConditions [] = $this->whereEqual(self::CONSOLIDATED_COLUMN, $consolidated, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions, self::DATE_COLUMN);
     }

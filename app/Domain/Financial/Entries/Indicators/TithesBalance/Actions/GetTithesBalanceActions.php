@@ -35,13 +35,8 @@ class GetTithesBalanceActions
 
         if($entriesConsolidated->count() > 0)
         {
-            $totalEntriesTithes = null;
-            $date = null;
-
-            foreach ($entriesConsolidated as $value){
-                $totalEntriesTithes = (float) $value->tithe_amount;
-                $date = $value->date;
-            }
+            $totalEntriesTithes = (float) $entriesConsolidated[0]->tithe_amount;
+            $date = $entriesConsolidated[0]->date;
 
             $expectedTotalTithes = (float) $monthlyTarget;
             $balance = $totalEntriesTithes - $expectedTotalTithes;
