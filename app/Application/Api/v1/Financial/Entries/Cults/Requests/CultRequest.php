@@ -2,7 +2,7 @@
 
 namespace Application\Api\v1\Financial\Entries\Cults\Requests;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
+use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
