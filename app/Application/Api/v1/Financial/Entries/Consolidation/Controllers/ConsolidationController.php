@@ -86,7 +86,7 @@ class ConsolidationController extends Controller
 
 
             return response([
-                'message'   =>  ReturnMessages::SUCCESS_CULT_REGISTERED,
+                'message'   =>  ReturnMessages::SUCCESS_ENTRIES_CONSOLIDATED,
             ], 201);
         }
         catch(GeneralExceptions $e)

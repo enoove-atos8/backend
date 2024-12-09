@@ -19,6 +19,7 @@ use Throwable;
 class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 {
     protected mixed $model = Entry::class;
+
     const TABLE_NAME = 'entries';
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
     const DATE_ENTRY_REGISTER_COLUMN_JOINED = 'entries.date_entry_register';
@@ -41,6 +42,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const ID_COLUMN_JOINED = 'entries.id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const ENTRY_TYPE_COLUMN_JOINED = 'entries.entry_type';
+    const CULT_ID_COLUMN_JOINED = 'entries.cult_id';
     const ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE = 'entries_entry_type';
     const AMOUNT_COLUMN = 'amount';
     const AMOUNT_COLUMN_JOINED = 'entries.amount';
@@ -182,9 +184,10 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
     /**
      * @param string|null $dates
-     * @param array $filters
      * @param string|null $transactionCompensation
+     * @param array $filters
      * @param array $orderBy
+     * @param bool $paginate
      * @return Collection|Paginator
      * @throws BindingResolutionException
      */
@@ -370,6 +373,23 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions = [];
 
         $this->queryConditions [] = $this->whereEqual(self::ID_COLUMN, $id, 'and');
+
+        return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
+    }
+
+
+
+    /**
+     * @param int $id
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getEntriesByCultId(int $id): Collection | null
+    {
+        $this->requiredRelationships = ['member'];
+        $this->queryConditions = [];
+
+        $this->queryConditions [] = $this->whereEqual(self::CULT_ID_COLUMN_JOINED, $id, 'and');
 
         return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
     }
