@@ -265,6 +265,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
                         /*
+                         * Action: GET
+                         * EndPoint: /getCultById
+                         * Description: Get a cult
+                         */
+
+                        Route::get('/getCultById', [CultController::class, 'getCultById']);
+
+
+
+                        /*
                          * Action: POST
                          * EndPoint: /createCult
                          * Description: Create a new cult

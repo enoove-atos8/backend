@@ -21,13 +21,16 @@ interface EntryRepositoryInterface
 
     public function getAllEntriesWithMembersAndReviewers(string|null $dates, string $transactionCompensation = 'to_compensate' | 'compensated' | '*', array $filters = [], array $orderBy = []): Collection | Paginator;
 
-    public function getAllEntries(string|null $rangeMonthlyDate): Collection;
+    public function getAllEntries(string|null $dates): Collection;
 
-    public function getDevolutionEntries(string|null $rangeMonthlyDate, bool $devolutionStatus, array $orderBy): Collection | Paginator;
+    public function getDevolutionEntries(string|null $dates, bool $devolutionStatus, array $orderBy): Collection | Paginator;
 
     public function getAllEntriesByDateAndType(string $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection;
 
     public function getEntryById(int $id): Model | null;
+
+    public function getEntriesByCultId(int $id): Collection | null;
+
     public function getEntryByTimestampValueCpf(string $timestampValueCpf): Model | null;
 
     public function getAmountByEntryType(string $dates, string $entryType = '*'): mixed;

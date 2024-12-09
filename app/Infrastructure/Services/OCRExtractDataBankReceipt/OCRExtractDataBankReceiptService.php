@@ -19,6 +19,8 @@ class OCRExtractDataBankReceiptService
         'santander' => 'SANTANDER',
         'itau_1'    => 'ITAU UNIBANCO',
         'itau_2'    => '341 Ita',
+        'itau_3'    => 'via app Itau',
+        'itau_4'    => 'via app itau',
         'sicredi'   => 'SICREDI',
         'nubank'    => 'Nu Pagamentos',
         'digio'     => 'Digio',
@@ -64,12 +66,6 @@ class OCRExtractDataBankReceiptService
      */
     public function getBankingInstitution(string $file, string $totalAmount = ''): array | bool
     {
-        //$adjustedPath = $this->verifyFormatFile($file);
-
-        //if($adjustedPath != '')
-        //    $file = $adjustedPath;
-
-
         $ocr = new TesseractOCR($file);
         $readText = $ocr->run();
 
