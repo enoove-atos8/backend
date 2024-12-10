@@ -101,15 +101,10 @@ class ReceiptModelByInstitution
         return match ($institution) {
             self::BANK_GENERIC => [
                 'amount' => [
-                    '/R\$.(\d.*)/',
                     '/R\$\s*([\d,.]+)/',
-                    '/RS\s*([\d,.]+)/',
-                    '/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/',
                 ],
                 'date' => [
-                    '/\\d{2} [A-Z]{3} \\d{4}\\b/',
-                    '/(\d{2}\/\d{2}\/\d{4}) as/',
-                    '/Data:\s*(\d{2}\/\d{2}\/\d{4})/'
+                    '/\d{2}\/\d{2}\/\d{4}/',
                 ],
                 'cpf' => [
                     '/CPF.*?(\d{3})[,.]*\d?[,.]*([\d][ ]?\d[ ]?\d)/',
@@ -214,11 +209,11 @@ class ReceiptModelByInstitution
             self::BANK_INTER => [
                 'amount' => [
                     '/RS\s(\d{1,3}(?:\.\d{3})*,\d{2})/',
+                    '/R\$ \d{1,3}(?:\.\d{3})*,\d{2}/',
                 ],
-                'name' => ['/Nome\s+([A-Z\s]+)/'],
                 'date' => ['/\d{2}\/\d{2}\/\d{4}/'],
                 'cpf' => [
-                    '/Quem\s+pagou\s+Nome\s+[\w\s]+\s+CPF\/CNPJ\s+\+\s*\*?([\d.]+)-\*\*/',
+                    '/Quem pagou[\s\S]*?(\d{3}\.\d{3})/',
                 ],
                 'timestamp' => '/(\d{2}\/\d{2}\/\d{4})[\s\S]*?(\d{2}h\d{2})/'
             ],
