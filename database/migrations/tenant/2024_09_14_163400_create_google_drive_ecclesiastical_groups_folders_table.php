@@ -22,7 +22,7 @@ return new class extends Migration
                 $table->integer('ecclesiastical_divisions_group_id')->nullable();
                 $table->string('folder_id')->nullable(false);
                 $table->string('folder_name')->nullable(false);
-                $table->string('entry_type')->nullable(false);
+                $table->string('entry_type')->nullable();
 
                 $table->timestamps();
 
