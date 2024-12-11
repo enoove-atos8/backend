@@ -16,6 +16,7 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
 
     const TABLE_NAME = 'cults';
     const DELETED_COLUMN = 'deleted';
+    const ENTRIES_CULT_ID_COLUMN = 'entries.cult_id';
 
 
     /**
@@ -60,5 +61,15 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
             self::ID_COLUMN,
             BaseRepository::ORDERS['DESC']
         );
+    }
+
+
+    /**
+     * @param int $id
+     * @return Cult
+     */
+    public function getCultById(int $id): Cult
+    {
+
     }
 }

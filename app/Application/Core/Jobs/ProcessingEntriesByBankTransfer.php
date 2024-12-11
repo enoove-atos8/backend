@@ -129,6 +129,8 @@ class ProcessingEntriesByBankTransfer
      */
     public function handle(): void
     {
+        // TODO: Recuperar os tenants de acordo com os detalhes da atividade AT8-200
+        
         foreach ($this->allowedTenants as $tenant)
         {
             tenancy()->initialize($tenant);

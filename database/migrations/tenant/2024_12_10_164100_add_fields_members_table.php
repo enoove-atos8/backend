@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up(): void
+    {
+        if (!Schema::hasColumn('members', 'member_number'))
+        {
+            Schema::table('members', function (Blueprint $table)
+            {
+                $table->integer('member_number')->nullable()->after('id');
+            });
+        }
+
+        if (!Schema::hasColumn('members', 'tithers_list'))
+        {
+            Schema::table('members', function (Blueprint $table)
+            {
+                $table->boolean('tithers_list')->nullable()->after('member_number');
+            });
+        }
+    }
+
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('members');
+    }
+};

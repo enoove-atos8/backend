@@ -2,9 +2,11 @@
 
 namespace App\Domain\Financial\Entries\Entries\Models;
 
+use Domain\Ecclesiastical\Groups\Models\Group;
 use Domain\Members\Models\Member;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Entry extends Model
 {
@@ -40,5 +42,10 @@ class Entry extends Model
     public function member(): BelongsTo
     {
         return $this->belongsTo(Member::class);
+    }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_received_id', 'id');
     }
 }

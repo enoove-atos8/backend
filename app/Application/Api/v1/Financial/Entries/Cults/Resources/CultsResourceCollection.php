@@ -43,6 +43,7 @@ class CultsResourceCollection extends ResourceCollection
                 'amountOffers'          =>  $offersAmount,
                 'totalAmount'           =>  $tithesAmount + $designatedAmount + $offersAmount,
                 'receipt'               =>  $item->receipt,
+                'entries'               =>  $item->entries,
             ];
         }
 

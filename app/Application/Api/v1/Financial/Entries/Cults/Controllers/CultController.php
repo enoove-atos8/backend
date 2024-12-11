@@ -9,6 +9,7 @@ use Application\Api\v1\Financial\Entries\Cults\Resources\CultsResourceCollection
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Entries\Cults\Actions\CreateCultAction;
 use Domain\Financial\Entries\Cults\Actions\GetCultsAction;
+use Domain\Financial\Entries\Cults\Actions\GetDataCultByIdAction;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -38,9 +39,30 @@ class CultController extends Controller
     }
 
 
+
+    /**
+     * @throws Throwable
+     */
+    public function getCultById(Request $request, GetDataCultByIdAction $getDataCultByIdAction): CultsResourceCollection
+    {
+        try
+        {
+            $id = $request->input('id');
+            $response = $getDataCultByIdAction($id);
+
+            return new CultsResourceCollection($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
     /**
      * Create new cult
-     * @param \Application\Api\v1\Financial\Entries\Cults\Requests\CultRequest $cultRequest
+     * @param CultRequest $cultRequest
      * @param CreateCultAction $createCultAction
      * @return Application|ResponseFactory|Response
      * @throws GeneralExceptions
