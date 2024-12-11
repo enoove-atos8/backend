@@ -219,9 +219,13 @@ class ReceiptModelByInstitution
             self::BANK_C6 => [
                 'amount' => [
                     '/Valor\s*R\$\s*([\d.,]+)/',
+                    '/valor\s*R\$\s*([\d.,]+)/',
                 ],
                 'date' => ['/\d{2}\/\d{2}\/\d{4}/'],
-                'timestamp' => '/(\d{2}\/\d{2}\/\d{4})[^0-9]*(\d{2}:\d{2})/'
+                'timestamp' => [
+                    '/(\d{2}\/\d{2}\/\d{4})[^0-9]*(\d{2}:\d{2})/',
+                    '/(\d{2}\/\d{2}\/\d{4}).*\n(\d{2}:\d{2})/'
+                ]
             ],
             self::BANK_ITAU_2 => [
                 'amount' => [
@@ -319,14 +323,31 @@ class ReceiptModelByInstitution
         }
     }
 
-    private function extractTimestampAndMountTimestampValueCpf(string $text, ?string $entryType, string $pattern): void
+    private function extractTimestampAndMountTimestampValueCpf(string $text, ?string $entryType, array|string $patterns): void
     {
-        if (preg_match($pattern, $text, $match)) {
-            $timestamp = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]);
-            $this->response['data']['timestamp_value_cpf'] = $timestamp . '_' . $this->response['data']['amount'];
+        if(is_string($patterns)){
+            if (preg_match($patterns, $text, $match)) {
+                $timestamp = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]);
+                $this->response['data']['timestamp_value_cpf'] = $timestamp . '_' . $this->response['data']['amount'];
 
-            if ($entryType === self::TITHE_ENTRY_TYPE && $this->response['data']['middle_cpf'] != '') {
-                $this->response['data']['timestamp_value_cpf'] .= '_' . $this->response['data']['middle_cpf'];
+                if ($entryType === self::TITHE_ENTRY_TYPE && $this->response['data']['middle_cpf'] != '') {
+                    $this->response['data']['timestamp_value_cpf'] .= '_' . $this->response['data']['middle_cpf'];
+                }
+            }
+        }
+        if(is_array($patterns))
+        {
+            foreach ($patterns as $pattern) {
+                if (preg_match($pattern, $text, $match)) {
+                    $timestamp = preg_replace('/\D/', '', $this->formatDateWithTextMonth($match[1])) . preg_replace('/\D/', '', $match[2]);
+                    $this->response['data']['timestamp_value_cpf'] = $timestamp . '_' . $this->response['data']['amount'];
+
+                    if ($entryType === self::TITHE_ENTRY_TYPE && $this->response['data']['middle_cpf'] != '') {
+                        $this->response['data']['timestamp_value_cpf'] .= '_' . $this->response['data']['middle_cpf'];
+                    }
+
+                    return;
+                }
             }
         }
     }
