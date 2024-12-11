@@ -220,6 +220,7 @@ class ReceiptModelByInstitution
                 'amount' => [
                     '/Valor\s*R\$\s*([\d.,]+)/',
                     '/valor\s*R\$\s*([\d.,]+)/',
+                    '/R\$ \d{1,3}(?:\.\d{3})*,\d{2}/',
                 ],
                 'date' => ['/\d{2}\/\d{2}\/\d{4}/'],
                 'timestamp' => [
