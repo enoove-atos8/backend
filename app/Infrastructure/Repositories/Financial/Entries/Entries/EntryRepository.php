@@ -386,12 +386,12 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
      */
     public function getEntriesByCultId(int $id): Collection | null
     {
-        $this->requiredRelationships = ['member'];
+        $this->requiredRelationships = ['member', 'group'];
         $this->queryConditions = [];
 
         $this->queryConditions [] = $this->whereEqual(self::CULT_ID_COLUMN_JOINED, $id, 'and');
 
-        return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 
 

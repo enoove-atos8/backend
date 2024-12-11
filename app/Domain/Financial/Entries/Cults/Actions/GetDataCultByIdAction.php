@@ -4,14 +4,15 @@ namespace Domain\Financial\Entries\Cults\Actions;
 
 use App\Domain\Financial\Entries\Cults\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
+use App\Domain\Financial\Entries\Cults\Models\Cult;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 
-class GetCultsAction
+class GetDataCultByIdAction
 {
     private CultRepository $cultRepository;
     private EntryRepository $entryRepository;
@@ -23,19 +24,21 @@ class GetCultsAction
     }
 
 
+
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke(): Collection | null
+    public function __invoke(int $id): array
     {
-        $cults = $this->cultRepository->getCults();
+        $cult = $this->cultRepository->getCultById($id);
+        $entries = $this->entryRepository->getEntriesByCultId($cult->id);
 
-        if(count($cults) > 0)
+        if($cult->id != null)
         {
-            foreach ($cults as $cult)
-                $cult->entries = $this->entryRepository->getEntriesByCultId($cult->id);
-
-            return $cults;
+            return [
+                'cult'      =>  $cult,
+                'entries'   =>  $entries
+            ];
         }
         else
         {
