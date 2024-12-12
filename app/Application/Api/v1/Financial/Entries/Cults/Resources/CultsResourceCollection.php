@@ -38,6 +38,7 @@ class CultsResourceCollection extends ResourceCollection
                 'id'                    =>  $item->id,
                 'cultDay'               =>  $item->cult_day,
                 'cultDate'              =>  $item->cult_date,
+                'depositCultDate'       =>  $item->date_transaction_compensation,
                 'amountTithes'          =>  $tithesAmount,
                 'amountDesignated'      =>  $designatedAmount,
                 'amountOffers'          =>  $offersAmount,
