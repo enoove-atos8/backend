@@ -5,6 +5,7 @@ namespace Application\Api\v1\Financial\Entries\Cults\Controllers;
 
 use App\Domain\Financial\Entries\Cults\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Entries\Cults\Requests\CultRequest;
+use Application\Api\v1\Financial\Entries\Cults\Resources\CultResource;
 use Application\Api\v1\Financial\Entries\Cults\Resources\CultsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Entries\Cults\Actions\CreateCultAction;
@@ -43,14 +44,14 @@ class CultController extends Controller
     /**
      * @throws Throwable
      */
-    public function getCultById(Request $request, GetDataCultByIdAction $getDataCultByIdAction): CultsResourceCollection
+    public function getCultById(Request $request, GetDataCultByIdAction $getDataCultByIdAction): CultResource
     {
         try
         {
             $id = $request->input('id');
             $response = $getDataCultByIdAction($id);
 
-            return new CultsResourceCollection($response);
+            return new CultResource($response);
 
         }
         catch (GeneralExceptions $e)

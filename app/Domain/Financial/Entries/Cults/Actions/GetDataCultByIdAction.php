@@ -28,17 +28,14 @@ class GetDataCultByIdAction
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke(int $id): array
+    public function __invoke(int $id): Cult|Model
     {
         $cult = $this->cultRepository->getCultById($id);
-        $entries = $this->entryRepository->getEntriesByCultId($cult->id);
+        $cult->entries = $this->entryRepository->getEntriesByCultId($cult->id);
 
         if($cult->id != null)
         {
-            return [
-                'cult'      =>  $cult,
-                'entries'   =>  $entries
-            ];
+            return $cult;
         }
         else
         {
