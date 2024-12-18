@@ -516,7 +516,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
      * @param array $queryClausesAndConditions
      * @param string $orderByColumn
      * @param array $selectColumns
-     * @param int $limit
      * @param string $orderDirection
      * @return Model|null
      * @throws BindingResolutionException
@@ -525,10 +524,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         array $queryClausesAndConditions,
         string $orderByColumn = 'id',
         array $selectColumns = ['*'],
-        int $limit = 1000,
         string $orderDirection = 'desc'): Model | null
     {
-        $query = function () use ($queryClausesAndConditions, $orderByColumn, $orderDirection, $limit, $selectColumns) {
+        $query = function () use ($queryClausesAndConditions, $orderByColumn, $orderDirection, $selectColumns) {
             return $this->model
                 ->with($this->requiredRelationships)
                 ->where(function ($q) use($queryClausesAndConditions){

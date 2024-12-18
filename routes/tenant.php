@@ -280,7 +280,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          * Description: Create a new cult
                          */
 
-                        Route::post('/createCult', [CultController::class, 'createCult']);
+                        Route::post('/', [CultController::class, 'createCult']);
+
+
+
+                        /*
+                         * Action: PUT
+                         * EndPoint: /updateCult
+                         * Description: Update a cult
+                         */
+
+                        Route::put('/{id}', [CultController::class, 'updateCult'])->whereNumber('id');
 
                     });
 

@@ -11,6 +11,7 @@ use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Entries\Cults\Actions\CreateCultAction;
 use Domain\Financial\Entries\Cults\Actions\GetCultsAction;
 use Domain\Financial\Entries\Cults\Actions\GetDataCultByIdAction;
+use Domain\Financial\Entries\Cults\Actions\UpdateCultAction;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Http\Request;
@@ -78,6 +79,33 @@ class CultController extends Controller
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_CULT_REGISTERED,
             ], 201);
+        }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * Create new cult
+     * @param CultRequest $cultRequest
+     * @param $id
+     * @param UpdateCultAction $updateCultAction
+     * @return Application|ResponseFactory|Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     * @throws UnknownProperties
+     */
+    public function updateCult(CultRequest $cultRequest, $id, UpdateCultAction $updateCultAction): Application|ResponseFactory|Response
+    {
+        try
+        {
+            $updateCultAction($id, $cultRequest->cultData(), $cultRequest->consolidationEntriesData());
+
+            return response([
+                'message'   =>  ReturnMessages::SUCCESS_CULT_UPDATED,
+            ], 200);
         }
         catch(GeneralExceptions $e)
         {

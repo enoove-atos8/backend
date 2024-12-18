@@ -47,6 +47,37 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
         ]);
     }
 
+
+    /**
+     * @param $id
+     * @param CultData $cultData
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function updateCult($id, CultData $cultData): mixed
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,];
+
+        return $this->update($conditions, [
+            'reviewer_id'                       =>   $cultData->reviewerId,
+            'cult_day'                          =>   $cultData->cultDay,
+            'cult_date'                         =>   $cultData->cultDate,
+            'date_transaction_compensation'     =>   $cultData->dateTransactionCompensation,
+            'transaction_type'                  =>   $cultData->transactionType,
+            'tithes_amount'                     =>   $cultData->amountTithes != null ? $cultData->amountTithes : 0,
+            'designated_amount'                 =>   $cultData->amountDesignated != null ? $cultData->amountDesignated : 0,
+            'offers_amount'                     =>   $cultData->amountOffers != null ? $cultData->amountOffers : 0,
+            'deleted'                           =>   $cultData->deleted,
+            'receipt'                           =>   $cultData->receipt,
+            'comments'                          =>   null,
+        ]);
+    }
+
+
+
     /**
      * @return Collection
      * @throws BindingResolutionException
@@ -66,10 +97,20 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
 
     /**
      * @param int $id
-     * @return Cult
+     * @return Model
+     * @throws BindingResolutionException
      */
-    public function getCultById(int $id): Cult
+    public function getCultById(int $id): Model
     {
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
+        $this->queryConditions [] = $this->whereEqual(self::ID_COLUMN, $id, 'and');
 
+        return $this->getItemWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::ID_COLUMN,
+            ['*'],
+            BaseRepository::ORDERS['DESC']
+        );
     }
 }
