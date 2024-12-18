@@ -34,6 +34,7 @@ class CultRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'reviewerId'                    =>  'required',
             'worshipWithoutEntries'         =>  'required',
             'cultDay'                       =>  'required',
             'cultDate'                      =>  'required',
@@ -45,8 +46,7 @@ class CultRequest extends FormRequest
             'offer'                         =>  '',
             'devolution'                    =>  '',
             'deleted'                       =>  'required',
-            'reviewerId'                    =>  'required',
-            'receipt'                       =>  $this->input('worshipWithoutEntries') == false ? 'required' : 'nullable'
+            'receipt'                       =>  !$this->input('worshipWithoutEntries') ? 'required' : 'nullable'
         ];
     }
 
@@ -61,7 +61,7 @@ class CultRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'worshipWithoutEntries.required'            =>  "É necessário informar existem valores obtidos neste culto ou não!",
+            'worshipWithoutEntries.required'            =>  "É necessário informar se existem valores obtidos neste culto ou não!",
             'cultDay.required'                          =>  "Informe o dia do culto!",
             'cultDate.required'                         =>  "O preenchimento do campo 'Data do culto' é obrigatório!",
             'dateTransactionCompensation.required'      =>  "O preenchimento do campo 'Data de depósito' é obrigatório!",

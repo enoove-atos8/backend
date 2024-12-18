@@ -3,6 +3,7 @@
 namespace App\Domain\Financial\Entries\Cults\Models;
 
 use App\Domain\Financial\Entries\Entries\Models\Entry;
+use App\Domain\Financial\Reviewers\Models\FinancialReviewer;
 use Domain\Members\Models\Member;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,6 +22,7 @@ class Cult extends Model
      */
     protected $fillable = [
         'reviewer_id',
+        'worship_without_entries',
         'cult_day',
         'cult_date',
         'date_transaction_compensation',
@@ -32,4 +34,10 @@ class Cult extends Model
         'receipt',
         'comments'
     ];
+
+
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(Member::class, 'reviewer_id', 'id');
+    }
 }
