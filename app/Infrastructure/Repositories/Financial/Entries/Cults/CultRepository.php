@@ -34,6 +34,7 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
     {
         return $this->create([
             'reviewer_id'                       =>   $cultData->reviewerId,
+            'worship_without_entries'           =>   $cultData->worshipWithoutEntries,
             'cult_day'                          =>   $cultData->cultDay,
             'cult_date'                         =>   $cultData->cultDate,
             'date_transaction_compensation'     =>   $cultData->dateTransactionCompensation,
@@ -63,6 +64,7 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
 
         return $this->update($conditions, [
             'reviewer_id'                       =>   $cultData->reviewerId,
+            'worship_without_entries'           =>   $cultData->worshipWithoutEntries,
             'cult_day'                          =>   $cultData->cultDay,
             'cult_date'                         =>   $cultData->cultDate,
             'date_transaction_compensation'     =>   $cultData->dateTransactionCompensation,
@@ -84,6 +86,8 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
      */
     public function getCults(): Collection
     {
+        $this->requiredRelationships = ['reviewer'];
+
         $this->queryConditions = [];
         $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
 

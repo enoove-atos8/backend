@@ -16,12 +16,13 @@ use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Throwable;
 
-class UpdateCultAction
+class SaveCultAction
 {
     private CultRepository $cultRepository;
     private UpdateEntryAction $updateEntryAction;
     private CreateEntryAction $createEntryAction;
     private EntryData $entryData;
+
 
     public function __construct(
         CultRepositoryInterface $cultRepositoryInterface,
@@ -37,7 +38,6 @@ class UpdateCultAction
     }
 
 
-
     /**
      * @throws Throwable
      */
@@ -45,45 +45,52 @@ class UpdateCultAction
     {
         $this->calculateTotalTithesAndDesignated($cultData);
 
-        $updated = $this->cultRepository->updateCult($id, $cultData);
-
-        if($updated)
+        if($id != null)
         {
-            if(count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)
-                $this->updateEntries($id, $cultData, $consolidationEntriesData);
+            $updated = $this->cultRepository->updateCult($id, $cultData);
+
+            if($updated)
+            {
+                if(count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)
+                    $this->updateEntries($id, $cultData, $consolidationEntriesData);
+            }
+            else
+            {
+                throw new GeneralExceptions(ReturnMessages::ERROR_CULT_UPDATED, 500);
+            }
         }
         else
         {
-            throw new GeneralExceptions(ReturnMessages::ERROR_CULT_UPDATED, 500);
+            $cult = $this->cultRepository->createCult($cultData);
+
+            if($cult->id && !$cultData->worshipWithoutEntries && (count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)){
+                $this->createEntries($cult, $cultData, $consolidationEntriesData);
+            }
         }
     }
 
 
 
     /**
+     * @param Cult $cult
      * @param CultData $cultData
+     * @param ConsolidationEntriesData $consolidationEntriesData
      * @return void
+     * @throws Throwable
      */
-    private function calculateTotalTithesAndDesignated(CultData $cultData): void
+    private function createEntries(Cult $cult, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
     {
-        if (!is_null($cultData->tithes)) {
-            foreach ($cultData->tithes as $tithe) {
-                $cultData->amountTithes += $tithe['amount'];
-            }
-        }
+        $cultData->id = $cult->id;
+        $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offers);
 
-        if (!is_null($cultData->designated)) {
-            foreach ($cultData->designated as $designated) {
-                $cultData->amountDesignated += $designated['amount'];
-            }
-        }
-
-        if (!is_null($cultData->offers)) {
-            foreach ($cultData->offers as $offer) {
-                $cultData->amountOffers += $offer['amount'];
-            }
+        foreach ($entries as $entry){
+            $this->prepareEntryData($entry);
+            $this->transferCultDataToEntryData($cultData);
+            $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
         }
     }
+
+
 
 
     /**
@@ -155,5 +162,32 @@ class UpdateCultAction
         $this->entryData->deleted = $cultData->deleted;
         $this->entryData->receipt = $cultData->receipt;
         $this->entryData->devolution = 0;
+    }
+
+
+
+    /**
+     * @param CultData $cultData
+     * @return void
+     */
+    private function calculateTotalTithesAndDesignated(CultData $cultData): void
+    {
+        if (!is_null($cultData->tithes)) {
+            foreach ($cultData->tithes as $tithe) {
+                $cultData->amountTithes += $tithe['amount'];
+            }
+        }
+
+        if (!is_null($cultData->designated)) {
+            foreach ($cultData->designated as $designated) {
+                $cultData->amountDesignated += $designated['amount'];
+            }
+        }
+
+        if (!is_null($cultData->offers)) {
+            foreach ($cultData->offers as $offer) {
+                $cultData->amountOffers += $offer['amount'];
+            }
+        }
     }
 }

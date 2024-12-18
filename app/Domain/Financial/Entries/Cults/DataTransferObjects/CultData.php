@@ -9,6 +9,10 @@ class CultData extends DataTransferObject
     /** @var integer */
     public int $id = 0;
 
+
+    /** @var integer|null */
+    public int|null $reviewerId;
+
     /** @var bool|null */
     public bool|null $worshipWithoutEntries;
 
@@ -45,12 +49,9 @@ class CultData extends DataTransferObject
     /** @var string|null */
     public string|null $amountOffers;
 
-    /** @var integer|null */
-    public int|null $deleted;
-
-    /** @var integer|null */
-    public int|null $reviewerId;
-
     /** @var string|null */
     public string|null $receipt;
+
+    /** @var integer|null */
+    public int|null $deleted;
 }
