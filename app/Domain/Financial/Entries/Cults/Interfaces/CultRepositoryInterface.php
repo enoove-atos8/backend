@@ -10,6 +10,8 @@ interface CultRepositoryInterface
 {
     public function createCult(CultData $cultData): Model;
 
+    public function updateCult($id, CultData $cultData): mixed;
+
     public function getCults(): Collection;
 
     public function getCultById(int $id): Model;

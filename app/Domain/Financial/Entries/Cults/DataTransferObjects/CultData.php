@@ -39,8 +39,8 @@ class CultData extends DataTransferObject
     /** @var string|null */
     public string|null $amountDesignated;
 
-    /** @var integer|null */
-    public int|null $offers;
+    /** @var array|null */
+    public array|null $offers;
 
     /** @var string|null */
     public string|null $amountOffers;

@@ -8,26 +8,30 @@ use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Models\Cult;
 use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
+use App\Domain\Financial\Entries\Entries\Actions\UpdateEntryAction;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Throwable;
 
-class CreateCultAction
+class UpdateCultAction
 {
     private CultRepository $cultRepository;
+    private UpdateEntryAction $updateEntryAction;
     private CreateEntryAction $createEntryAction;
     private EntryData $entryData;
 
-
     public function __construct(
         CultRepositoryInterface $cultRepositoryInterface,
+        UpdateEntryAction $updateEntryAction,
         CreateEntryAction $createEntryAction,
         EntryData $entryData
     )
     {
         $this->cultRepository = $cultRepositoryInterface;
+        $this->updateEntryAction = $updateEntryAction;
         $this->createEntryAction = $createEntryAction;
         $this->entryData = $entryData;
     }
@@ -37,19 +41,23 @@ class CreateCultAction
     /**
      * @throws Throwable
      */
-    public function __invoke(CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): Cult
+    public function __invoke($id, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
     {
         $this->calculateTotalTithesAndDesignated($cultData);
 
-        $cult = $this->createCult($cultData);
+        $updated = $this->cultRepository->updateCult($id, $cultData);
 
-        if ($cult->id && !$cultData->worshipWithoutEntries) {
-            $this->createEntries($cult, $cultData, $consolidationEntriesData);
+        if($updated)
+        {
+            if(count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)
+                $this->updateEntries($id, $cultData, $consolidationEntriesData);
         }
-
-        return $cult;
-
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::ERROR_CULT_UPDATED, 500);
+        }
     }
+
 
 
     /**
@@ -71,50 +79,38 @@ class CreateCultAction
         }
 
         if (!is_null($cultData->offers)) {
-            $cultData->amountOffers = $cultData->offers;
+            foreach ($cultData->offers as $offer) {
+                $cultData->amountOffers += $offer['amount'];
+            }
         }
     }
 
 
     /**
-     * @param CultData $cultData
-     * @return Cult
-     */
-    private function createCult(CultData $cultData): Cult
-    {
-        return $this->cultRepository->createCult($cultData);
-    }
-
-
-    /**
-     * @param Cult $cult
+     * @param $cultId
      * @param CultData $cultData
      * @param ConsolidationEntriesData $consolidationEntriesData
      * @return void
+     * @throws BindingResolutionException
+     * @throws GeneralExceptions
      * @throws Throwable
      */
-    private function createEntries(Cult $cult, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
+    private function updateEntries($cultId, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
     {
-        $cultData->id = $cult->id;
+        $this->entryData->cultId = $cultId;
+        $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offers);
 
-        if(count($cultData->tithes) > 0 || count($cultData->designated) > 0){
-            $entries = array_merge($cultData->tithes, $cultData->designated);
-
-            foreach ($entries as $entry){
-                $this->prepareEntryData($entry);
-                $this->transferCultDataToEntryData($cultData);
-                $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
-            }
-        }
-
-        if(!is_null($cultData->offers)){
-            $this->prepareEntryData($cultData);
+        foreach ($entries as $entry){
+            $this->prepareEntryData($entry);
             $this->transferCultDataToEntryData($cultData);
 
-            $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
+            if(array_key_exists('id', $entry))
+                $this->updateEntryAction->__invoke($entry['id'], $this->entryData, $consolidationEntriesData);
+            else
+                $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
         }
-
     }
+
 
 
     /**
@@ -133,16 +129,17 @@ class CreateCultAction
             $this->entryData->groupReceivedId = $entry['groupReceivedId'];
             $this->entryData->amount = $entry['amount'];
         }
-        else if($this->entryData->entryType == 'tithe'){
+        else if($this->entryData->entryType == 'tithes'){
             $this->entryData->memberId = $entry['memberId'];
             $this->entryData->amount = $entry['amount'];
         }
         else if($this->entryData->entryType == 'offers'){
             $this->entryData->memberId = null;
             $this->entryData->groupReceivedId = null;
-            $this->entryData->amount = $entry->offers;
+            $this->entryData->amount = $entry['amount'];
         }
     }
+
 
 
     /**
@@ -152,11 +149,9 @@ class CreateCultAction
     private function transferCultDataToEntryData(CultData $cultData): void
     {
         $this->entryData->reviewerId = $cultData->reviewerId;
-        $this->entryData->cultId = $cultData->id;
         $this->entryData->transactionType = $cultData->transactionType;
         $this->entryData->transactionCompensation = $cultData->transactionCompensation;
         $this->entryData->dateTransactionCompensation = $cultData->dateTransactionCompensation;
-        $this->entryData->dateEntryRegister = $cultData->cultDay;
         $this->entryData->deleted = $cultData->deleted;
         $this->entryData->receipt = $cultData->receipt;
         $this->entryData->devolution = 0;

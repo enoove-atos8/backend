@@ -102,7 +102,7 @@ interface BaseRepositoryInterface
      * @param string $orderDirection
      * @return Model|null
      */
-    public function getItemWithRelationshipsAndWheres(array $queryClausesAndConditions ,string $orderByColumn, array $selectColumns = ['*'], int $limit = 1000, string $orderDirection = 'desc'): Model | null;
+    public function getItemWithRelationshipsAndWheres(array $queryClausesAndConditions ,string $orderByColumn, array $selectColumns = ['*'], string $orderDirection = 'desc'): Model | null;
 
 
 
