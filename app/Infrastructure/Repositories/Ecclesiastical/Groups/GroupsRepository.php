@@ -211,7 +211,6 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             $this->queryConditions,
             self::NAME_GROUP_COLUMN,
             ['*'],
-            1000,
             BaseRepository::ORDERS['ASC']
         );
     }
