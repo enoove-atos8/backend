@@ -155,7 +155,8 @@ class ProcessingEntriesByBankTransfer
 
                         if(count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
                         {
-                            $middleCpf = $extractedData['data']['middle_cpf'];
+                            $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
+                            $middleCpf = strlen($timestampValueCpf) == 6 ? $timestampValueCpf : '';
                             $cpf = $extractedData['data']['cpf'];
                             $member = null;
 
@@ -175,8 +176,6 @@ class ProcessingEntriesByBankTransfer
 
                             if(is_null($member))
                             {
-                                $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
-
                                 $this->setEntryData($extractedData, $member, $folderData);
 
                                 if($timestampValueCpf != '')
