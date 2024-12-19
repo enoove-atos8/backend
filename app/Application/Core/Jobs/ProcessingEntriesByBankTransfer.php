@@ -130,7 +130,7 @@ class ProcessingEntriesByBankTransfer
     public function handle(): void
     {
         // TODO: Recuperar os tenants de acordo com os detalhes da atividade AT8-200
-        
+
         foreach ($this->allowedTenants as $tenant)
         {
             tenancy()->initialize($tenant);
@@ -175,20 +175,25 @@ class ProcessingEntriesByBankTransfer
 
                             if(is_null($member))
                             {
+                                $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
+
                                 $this->setEntryData($extractedData, $member, $folderData);
 
-                                $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($extractedData['data']['timestamp_value_cpf']);
+                                if($timestampValueCpf != '')
+                                {
+                                    $entryByTimestampValueCpf = $this->getEntryByTimestampValueCpfAction->__invoke($timestampValueCpf);
 
-                                if($entryByTimestampValueCpf != null)
-                                {
-                                    $this->googleDriveService->renameFile($file->id, null, 'DUPLICATED');
-                                    continue;
-                                }
-                                else
-                                {
-                                    $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-                                    $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
-                                    $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
+                                    if($entryByTimestampValueCpf != null)
+                                    {
+                                        $this->googleDriveService->renameFile($file->id, null, 'DUPLICATED');
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
+                                        $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $extractedData['data']['timestamp_value_cpf']);
+                                        $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
+                                    }
                                 }
                             }
                             else
