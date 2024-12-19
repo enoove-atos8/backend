@@ -26,7 +26,7 @@ class OCRExtractDataBankReceiptService
         'digio'     => 'Digio',
         'c6'        => 'Banco C6',
         'neon'      => 'NEON PAGAMENTOS',
-        'inter'     => 'Banco Inter',
+        'inter'     => 'INTER',
         //'99'        => '',
         //'uber'      => '',
         'picpay'    => 'PICPAY',

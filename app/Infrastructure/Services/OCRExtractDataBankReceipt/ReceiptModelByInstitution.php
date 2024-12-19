@@ -68,8 +68,6 @@ class ReceiptModelByInstitution
 
     private function extractData(string $text, ?string $entryType, string $institution): array
     {
-        $this->logExtraction(strtoupper($institution));
-
         $patterns = $this->getRegexPatterns($institution);
 
         $this->processExtraction($text, $entryType, $patterns);
@@ -393,13 +391,6 @@ class ReceiptModelByInstitution
         }
 
         $this->response['data']['institution'] = $institution;
-    }
-
-    private function logExtraction(string $institution): void
-    {
-        echo(PHP_EOL . '=========================================' . PHP_EOL);
-        echo("EXTRACTING {$institution} DATA" . PHP_EOL);
-        echo('=========================================' . PHP_EOL);
     }
 
     private function defaultResponse(): array
