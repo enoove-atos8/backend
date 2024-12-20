@@ -165,10 +165,13 @@ class SaveCultAction
      */
     private function transferCultDataToEntryData(CultData $cultData): void
     {
+        $currentDate = date('Y-m-d');
+
         $this->entryData->cultId = $cultData->id;
         $this->entryData->reviewerId = $cultData->reviewerId;
         $this->entryData->transactionType = $cultData->transactionType;
         $this->entryData->transactionCompensation = $cultData->transactionCompensation;
+        $this->entryData->dateEntryRegister = $currentDate;
         $this->entryData->dateTransactionCompensation = $cultData->dateTransactionCompensation;
         $this->entryData->deleted = $cultData->deleted;
         $this->entryData->receipt = $cultData->receipt;
