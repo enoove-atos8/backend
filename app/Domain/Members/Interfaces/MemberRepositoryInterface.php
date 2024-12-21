@@ -13,7 +13,7 @@ interface MemberRepositoryInterface
 
     public function getMembers(): Member|Collection;
     public function getMembersByMiddleCpf(string $cpf): Model | null;
-    public function getMembersByCpf(string $cpf, bool $middleCpf = false): Model | null;
+    public function getMembersByCpf(string $cpf): Model | null;
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
     public function updateStatus($id, $status): mixed;
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed;

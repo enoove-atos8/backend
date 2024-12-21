@@ -156,8 +156,7 @@ class ProcessingEntriesByBankTransfer
                         if(count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
                         {
                             $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
-                            $middleCpf = strlen($timestampValueCpf) == 6 ? $timestampValueCpf : '';
-                            $cpf = $extractedData['data']['cpf'];
+                            $middleCpf = $extractedData['data']['middle_cpf'];
                             $member = null;
 
                             if($middleCpf != '')
@@ -165,14 +164,11 @@ class ProcessingEntriesByBankTransfer
 
                             if ($middleCpf != '' && $member == null)
                             {
-                                $member = $this->getMemberByCPFAction->__invoke($middleCpf, true);
+                                $member = $this->getMemberByCPFAction->__invoke($middleCpf);
 
                                 if(!is_null($member))
                                     $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
                             }
-
-                            if ($cpf != '' && $member == null)
-                                $member = $this->getMemberByCPFAction->__invoke($cpf);
 
                             if(is_null($member))
                             {

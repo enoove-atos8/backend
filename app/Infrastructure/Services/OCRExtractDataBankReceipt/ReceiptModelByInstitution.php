@@ -330,7 +330,7 @@ class ReceiptModelByInstitution
                 elseif ($field === 'date')
                     $this->response['data'][$field] = $this->formatDateWithTextMonth(trim($value));
                 elseif ($field === 'middle_cpf')
-                    $this->response['data'][$field] = preg_replace('/\D/', '', $value);
+                    $this->response['data'][$field] = strlen(preg_replace('/\D/', '', $value)) == 6 ? preg_replace('/\D/', '', $value) : '';
                 else
                     $this->response['data'][$field] = trim($value);
 

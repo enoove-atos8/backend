@@ -140,26 +140,15 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     /**
      * @param string $cpf
-     * @param bool $middleCpf
      * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getMembersByCpf(string $cpf, bool $middleCpf = false): Model | null
+    public function getMembersByCpf(string $cpf): Model | null
     {
-        if(!$middleCpf)
-        {
-            return $this->getItemByColumn(
-                self::CPF_COLUMN,
-                BaseRepository::OPERATORS['EQUALS'],
-                $cpf);
-        }
-        else
-        {
-            return $this->getItemByColumn(
-                self::CPF_COLUMN,
-                BaseRepository::OPERATORS['LIKE'],
-                $cpf);
-        }
+        return $this->getItemByColumn(
+            self::CPF_COLUMN,
+            BaseRepository::OPERATORS['LIKE'],
+            $cpf);
     }
 
 
