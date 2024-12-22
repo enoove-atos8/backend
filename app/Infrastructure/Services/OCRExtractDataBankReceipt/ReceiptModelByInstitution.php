@@ -381,7 +381,7 @@ class ReceiptModelByInstitution
             else
                 $this->response['status'] = 'READING_ERROR';
         }
-        else if($entryType === self::DESIGNATED_ENTRY_TYPE)
+        else if($entryType === self::DESIGNATED_ENTRY_TYPE || $entryType === self::OFFERS_ENTRY_TYPE)
         {
             if ($this->response['data']['amount'] !== 0 && !empty($this->response['data']['date']) && !empty($this->response['data']['timestamp_value_cpf']))
                 $this->response['status'] = 'SUCCESS';
