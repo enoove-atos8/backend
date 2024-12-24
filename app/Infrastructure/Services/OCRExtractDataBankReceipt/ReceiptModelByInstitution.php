@@ -401,7 +401,14 @@ class ReceiptModelByInstitution
             'status' => 'NOT_IMPLEMENTED',
             'msg' => '',
             'data' => [
+                'name' => '',
+                'amount' => 0,
+                'date' => '',
+                'cpf' => '',
+                'middle_cpf' => '',
+                'cnpj' => '',
                 'institution' => 'NOT_MAPPED',
+                'timestamp_value_cpf' => '',
             ]
         ];
     }
