@@ -4,8 +4,10 @@ namespace App\Infrastructure\Services\Atos8\Financial\Entries\Reports;
 
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
 use App\Domain\Financial\Entries\Reports\Models\ReportRequests;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use DateTime;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByIdAction;
+use Domain\Financial\Entries\Reports\Actions\UpdateAmountsReportRequestsAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateLinkReportRequestsAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateStatusReportRequestsAction;
 use Illuminate\Support\Collection;
@@ -25,6 +27,7 @@ class GenerateMonthlyReceiptsReport
 
     private UpdateStatusReportRequestsAction $updateStatusReportRequestsAction;
     private UpdateLinkReportRequestsAction $updateLinkReportRequestsAction;
+    private UpdateAmountsReportRequestsAction $updateAmountsReportRequestsAction;
     private GetGroupsByIdAction $getGroupsByIdAction;
 
     private UploadFile $uploadFile;
@@ -40,6 +43,7 @@ class GenerateMonthlyReceiptsReport
         UpdateStatusReportRequestsAction $updateStatusReportRequestsAction,
         UpdateLinkReportRequestsAction $updateLinkReportRequestsAction,
         GetGroupsByIdAction $getGroupsByIdAction,
+        UpdateAmountsReportRequestsAction $updateAmountsReportRequestsAction,
         UploadFile $uploadFile
     )
     {
@@ -47,6 +51,7 @@ class GenerateMonthlyReceiptsReport
         $this->updateStatusReportRequestsAction = $updateStatusReportRequestsAction;
         $this->updateLinkReportRequestsAction = $updateLinkReportRequestsAction;
         $this->getGroupsByIdAction = $getGroupsByIdAction;
+        $this->updateAmountsReportRequestsAction = $updateAmountsReportRequestsAction;
         $this->uploadFile = $uploadFile;
     }
 
@@ -73,6 +78,7 @@ class GenerateMonthlyReceiptsReport
             $filters = [
               'entryTypes'      => implode(',', $requests->entry_types),
               'groupReceivedId' => $requests->group_received_id,
+              'transactionType' => $requests->include_cash_deposit == 1 ? 'pix,cash' : 'pix',
             ];
 
 
@@ -81,9 +87,26 @@ class GenerateMonthlyReceiptsReport
             {
                 $entries = $this->getEntriesAction->__invoke($date, $filters, false);
                 $linkReceiptEntries = [];
+                $entryTypesAmount = [
+                    'titheAmount' => 0,
+                    'designatedAmount' => 0,
+                    'offersAmount' => 0,
+                ];
 
-                foreach ($entries as $entry)
-                    $linkReceiptEntries [] = $entry->entries_receipt_link;
+                foreach ($entries as $entry){
+                    if($requests->include_cash_deposit == 1)
+                        $linkReceiptEntries [] = $entry->entries_receipt_link;
+
+                    else if($requests->include_cash_deposit == 0)
+                        if($entry->entries_transaction_type == 'pix')
+                            $linkReceiptEntries [] = $entry->entries_receipt_link;
+
+
+                    $entryTypesAmount['titheAmount'] += $entry->entries_entry_type == EntryRepository::TITHE_VALUE ? $entry->entries_amount : 0;
+                    $entryTypesAmount['designatedAmount'] += $entry->entries_entry_type == EntryRepository::DESIGNATED_VALUE ? $entry->entries_amount : 0;
+                    $entryTypesAmount['offersAmount'] += $entry->entries_entry_type == EntryRepository::OFFERS_VALUE ? $entry->entries_amount : 0;
+
+                }
 
                 if(count($linkReceiptEntries) > 0)
                     $arrPathReceiptsLocal = array_merge(
@@ -96,6 +119,7 @@ class GenerateMonthlyReceiptsReport
                 $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group);
                 $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS, $tenant);
                 $this->updateLinkReportRequestsAction->__invoke($requests->id, $pathReportUploaded);
+                $this->updateAmountsReportRequestsAction->__invoke($requests->id, $entryTypesAmount);
 
                 $this->cleanReportTempDir(self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/reports/temp/');
 

@@ -13,6 +13,8 @@ interface ReportRequestsRepositoryInterface
     public function generateReport(ReportRequestsData $reportJobData): ReportRequests;
 
     public function getReports(): Collection;
+    public function getReportsByStatus(string $status): Collection;
     public function updateStatus($id, string $status): mixed;
     public function updateLinkReport($id, string $link): mixed;
+    public function updateEntryTypesAmount($id, array $entryTypesAmount): mixed;
 }

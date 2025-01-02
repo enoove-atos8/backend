@@ -10,6 +10,7 @@ class ReturnMessages
     // Error messages
     public const NO_REPORT_FOUNDED = "Nada por aqui...";
     public const NO_REPORT_REQUEST_FOUNDED = "Não encontramos nenhuma solicitação de geração de relatório...";
+    public const ERROR_AMOUNTS_UPDATE = "Houve um erro ao atualizar os totais das entradas neste relatório, tente mais tarde!";
 
     // Info messages
     public const INFO_AMOUNT_BY_ENTRY_TYPE_NO_RECORDS = "Sem informações...";

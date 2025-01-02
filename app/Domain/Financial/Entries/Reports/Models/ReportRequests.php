@@ -42,6 +42,10 @@ class ReportRequests extends Model
         'entry_types',
         'date_order',
         'all_groups_receipts',
+        'include_cash_deposit',
+        'tithe_amount',
+        'designated_amount',
+        'offers_amount',
     ];
 
     public function user(): BelongsTo
