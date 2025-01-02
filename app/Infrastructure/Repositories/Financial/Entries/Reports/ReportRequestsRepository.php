@@ -63,7 +63,7 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
      */
     public function getReports(): Collection
     {
-        $this->requiredRelationships = ['user'];
+        $this->requiredRelationships = ['user', 'group'];
 
         $this->queryConditions = [];
 

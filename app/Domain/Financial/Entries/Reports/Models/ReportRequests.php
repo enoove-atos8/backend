@@ -52,4 +52,9 @@ class ReportRequests extends Model
     {
         return $this->belongsTo(User::class, 'started_by', 'id');
     }
+
+    public function group(): BelongsTo
+    {
+        return $this->belongsTo(Group::class, 'group_received_id', 'id');
+    }
 }
