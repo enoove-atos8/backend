@@ -22,9 +22,9 @@ class Kernel extends ConsoleKernel
         // =============================================================
 
         // Entries
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->dailyAt('16:26');*/
+        })->hourly();
 
 
         // Reports
