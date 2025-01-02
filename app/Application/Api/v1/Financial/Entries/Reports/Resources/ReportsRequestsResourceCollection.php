@@ -44,10 +44,7 @@ class ReportsRequestsResourceCollection extends ResourceCollection
                 ],
                 'entryTypes'            =>  $item->entry_types,
                 'groupReceivedId'       =>  $item->group_received_id,
-                'group'                 =>  [
-                    'id'  =>  $item->group->id ?? null,
-                    'name'  =>  $item->group->name ?? null
-                ],
+                'group'                 =>  $this->getGroups($item),
                 'dateOrder'             =>  $item->date_order,
                 'includedCashDeposit'   =>  $item->include_cash_deposit,
                 'linkReport'            =>  $item->link_report,
@@ -60,5 +57,26 @@ class ReportsRequestsResourceCollection extends ResourceCollection
         }
 
         return $result;
+    }
+
+
+
+    /**
+     * @param mixed $requestReport $
+     * @return array|null
+     */
+    public function getGroups(mixed $requestReport): ?array
+    {
+        if(!is_null($requestReport->group_received_id))
+        {
+            return [
+                'id'             =>  $requestReport->group->id,
+                'name'           =>  $requestReport->group->name,
+            ];
+        }
+        else
+        {
+            return null;
+        }
     }
 }
