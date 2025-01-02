@@ -42,4 +42,7 @@ class ReportRequestsData extends DataTransferObject
     /** @var boolean | null  */
     public bool | null $allGroupsReceipts;
 
+    /** @var boolean | null  */
+    public bool | null $includeCashDeposit;
+
 }

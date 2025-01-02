@@ -50,7 +50,8 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
             'error'                 => $reportJobData->error,
             'entry_types'           => $reportJobData->entryTypes,
             'date_order'            => $reportJobData->dateOrder,
-            'all_groups_receipts'   => $reportJobData->allGroupsReceipts
+            'all_groups_receipts'   => $reportJobData->allGroupsReceipts,
+            'include_cash_deposit'  => $reportJobData->includeCashDeposit
         ]);
     }
 
@@ -65,6 +66,26 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
         $this->requiredRelationships = ['user'];
 
         $this->queryConditions = [];
+
+        return $this->getItemsWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::ID_COLUMN,
+            BaseRepository::ORDERS['DESC']
+        );
+    }
+
+
+    /**
+     * @param string $status
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getReportsByStatus(string $status): Collection
+    {
+        $this->requiredRelationships = ['user'];
+
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::STATUS_COLUMN, $status, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
@@ -98,6 +119,22 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
 
         return $this->update($conditions, [
             'link_report'  =>   $link,
+        ]);
+    }
+
+
+
+    public function updateEntryTypesAmount($id, array $entryTypesAmount): mixed
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,];
+
+        return $this->update($conditions, [
+            'tithe_amount'          =>   $entryTypesAmount['titheAmount'],
+            'designated_amount'     =>   $entryTypesAmount['designatedAmount'],
+            'offers_amount'         =>   $entryTypesAmount['offersAmount'],
         ]);
     }
 }

@@ -11,6 +11,7 @@ use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;
 use Domain\Financial\Entries\Reports\Actions\GetReportsRequestsAction;
+use Domain\Financial\Entries\Reports\Actions\GetReportsRequestsByStatusAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateStatusReportRequestsAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
@@ -30,6 +31,7 @@ class HandlerEntriesReports
     private GetPlansAction $getPlansAction;
     private GetChurchesAction $getChurchesAction;
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
+    private GetReportsRequestsByStatusAction $getReportsRequestsByStatusAction;
     private UpdateStatusReportRequestsAction $updateStatusReportRequestsAction;
 
 
@@ -42,6 +44,7 @@ class HandlerEntriesReports
         GetChurchesAction $getChurchesAction,
         GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
         UpdateStatusReportRequestsAction $updateStatusReportRequestsAction,
+        GetReportsRequestsByStatusAction $getReportsRequestsByStatusAction,
     )
     {
         $this->getReportsRequestsAction = $getReportsRequestsAction;
@@ -51,6 +54,7 @@ class HandlerEntriesReports
         $this->getPlansAction = $getPlansAction;
         $this->getChurchesAction = $getChurchesAction;
         $this->getChurchesByPlanIdAction = $getChurchesByPlanIdAction;
+        $this->getReportsRequestsByStatusAction = $getReportsRequestsByStatusAction;
         $this->updateStatusReportRequestsAction = $updateStatusReportRequestsAction;
     }
 
@@ -70,9 +74,7 @@ class HandlerEntriesReports
             {
                 tenancy()->initialize($tenant);
 
-                $toProcessRequests = $this->getReportsRequestsAction->__invoke()
-                    ->where(ReportRequestsRepository::STATUS_COLUMN,
-                        ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
+                $toProcessRequests = $this->getReportsRequestsByStatusAction->__invoke(ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
 
                 if(count($toProcessRequests) > 0)
                 {

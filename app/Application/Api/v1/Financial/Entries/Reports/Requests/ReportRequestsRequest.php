@@ -41,6 +41,7 @@ class ReportRequestsRequest extends FormRequest
             'groupReceivedId'           =>  '',
             'dateOrder'                 =>  '',
             'allGroupsReceipts'         =>  '',
+            'includeCashDeposit'        =>  '',
         ];
     }
 
@@ -84,6 +85,7 @@ class ReportRequestsRequest extends FormRequest
             groupReceivedId:        $this->input('groupReceivedId'),
             dateOrder:              $this->input('dateOrder'),
             allGroupsReceipts:      $this->input('allGroupsReceipts'),
+            includeCashDeposit:     $this->input('includeCashDeposit'),
         );
     }
 }

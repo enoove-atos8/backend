@@ -45,6 +45,13 @@ class ReportsRequestsResourceCollection extends ResourceCollection
                 'entryTypes'            =>  $item->entry_types,
                 'groupReceivedId'       =>  $item->group_received_id,
                 'dateOrder'             =>  $item->date_order,
+                'includedCashDeposit'   =>  $item->include_cash_deposit,
+                'linkReport'            =>  $item->link_report,
+                'entryTypesAmounts'     =>  [
+                    'titheAmount'       =>  $item->tithe_amount,
+                    'designatedAmount'  =>  $item->designated_amount,
+                    'offersAmount'      =>  $item->offers_amount,
+                ],
             ];
         }
 

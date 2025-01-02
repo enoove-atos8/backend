@@ -30,7 +30,7 @@ class Kernel extends ConsoleKernel
         // Reports
         $schedule->call(function () {
             resolve(HandlerEntriesReports::class)->handle();
-        })->everyTenMinutes();
+        })->everyFiveMinutes();
     }
 
 
