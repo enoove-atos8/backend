@@ -71,6 +71,11 @@ class GenerateMonthlyReceiptsReport
         {
             $arrPathReceiptsLocal = [];
             $group = null;
+            $entryTypesAmount = [
+                'titheAmount' => 0,
+                'designatedAmount' => 0,
+                'offersAmount' => 0,
+            ];
 
             if(!is_null($requests->group_received_id))
                 $group = $this->getGroupsByIdAction->__invoke($requests->group_received_id);
@@ -87,11 +92,6 @@ class GenerateMonthlyReceiptsReport
             {
                 $entries = $this->getEntriesAction->__invoke($date, $filters, false);
                 $linkReceiptEntries = [];
-                $entryTypesAmount = [
-                    'titheAmount' => 0,
-                    'designatedAmount' => 0,
-                    'offersAmount' => 0,
-                ];
 
                 foreach ($entries as $entry){
                     if($requests->include_cash_deposit == 1)
