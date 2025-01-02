@@ -45,8 +45,8 @@ class ReportsRequestsResourceCollection extends ResourceCollection
                 'entryTypes'            =>  $item->entry_types,
                 'groupReceivedId'       =>  $item->group_received_id,
                 'group'                 =>  [
-                    'id'  =>  $item->group->id,
-                    'name'  =>  $item->group->name
+                    'id'  =>  $item->group->id ?? null,
+                    'name'  =>  $item->group->name ?? null
                 ],
                 'dateOrder'             =>  $item->date_order,
                 'includedCashDeposit'   =>  $item->include_cash_deposit,
