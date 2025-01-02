@@ -43,7 +43,7 @@ class NewChurchUserMail extends Mailable
     public function envelope(): Envelope
     {
         $fromEmail = env('MAIL_USERNAME', 'MS_Sg3moI@atos8.com');
-        $fromName =  strtoupper($this->tenant) . ' - Atos8';
+        $fromName =  strtoupper($this->tenant) . ' - CentralDomain';
 
         return new Envelope(
             from: new Address($fromEmail, $fromName),

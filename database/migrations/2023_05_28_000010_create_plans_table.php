@@ -19,7 +19,7 @@ class CreatePlansTable extends Migration
             $table->integer('id', true);
             $table->string('name')->unique()->nullable(false);
             $table->string('description')->nullable(false);
-            $table->float('price')->nullable(false);
+            $table->decimal('price')->nullable(false);
             $table->boolean('activated')->nullable(false);
 
             $table->timestamps();

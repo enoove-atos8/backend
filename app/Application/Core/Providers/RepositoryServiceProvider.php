@@ -7,6 +7,7 @@ use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
+use App\Domain\Financial\Entries\Reports\Interfaces\ReportRequestsRepositoryInterface;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
 use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
@@ -17,7 +18,8 @@ use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutionEntries\AmountDevolutionEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
-use Domain\Churches\Interfaces\ChurchRepositoryInterface;
+use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
+use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Folders\Interfaces\FoldersRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
@@ -30,6 +32,7 @@ use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Folders\FoldersRepository;
@@ -37,6 +40,7 @@ use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
+use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 
@@ -68,6 +72,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReadingErrorReceiptRepositoryInterface::class, AutomationRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(CultRepositoryInterface::class, CultRepository::class);
+        $this->app->bind(ReportRequestsRepositoryInterface::class, ReportRequestsRepository::class);
+        $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
     }
 
     /**

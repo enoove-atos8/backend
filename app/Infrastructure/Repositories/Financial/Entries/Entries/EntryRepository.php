@@ -194,9 +194,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     public function getAllEntriesWithMembersAndReviewers
     (
         string|null $dates,
-        string|null $transactionCompensation = 'to_compensate' | 'compensated' | '*',
-        array $filters = [],
-        array $orderBy = [self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, self::ID_COLUMN_JOINED],
+        string|null $transactionCompensation,
+        array $filters,
+        array $orderBy,
         bool $paginate = true): Collection | Paginator
     {
         $arrDates = [];
@@ -261,8 +261,11 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
             if($key == self::GROUP_RECEIVED_ID_FILTER)
             {
-                $column = $joinQuery ? self::GROUP_RECEIVED_ID_COLUMN_JOINED : self::GROUP_RECEIVED_ID_COLUMN;
-                $this->queryConditions [] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+                if($filter != null)
+                {
+                    $column = $joinQuery ? self::GROUP_RECEIVED_ID_COLUMN_JOINED : self::GROUP_RECEIVED_ID_COLUMN;
+                    $this->queryConditions [] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+                }
             }
 
             if($key == self::CUSTOM_DATES_FILTER)

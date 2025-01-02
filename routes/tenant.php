@@ -14,6 +14,7 @@ use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\EntriesConsolidatedController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
+use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -343,6 +344,36 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::get('/getTotalAmountEntries', [ConsolidationController::class, 'getTotalAmountEntries']);
+
+                    });
+
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Reports Financial routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('reports')->group(function () {
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /generateReport
+                         * Description: Include report to be process by job schedule
+                         */
+
+                        Route::post('/generateReport', [ReportsRequestsController::class, 'generateReport']);
+
+
+
+                        /*
+                         * Action: POST
+                         * EndPoint: /generateReport
+                         * Description: Include report to be process by job schedule
+                         */
+
+                        Route::get('/getReports', [ReportsRequestsController::class, 'getReports']);
 
                     });
 

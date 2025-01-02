@@ -3,8 +3,6 @@
 namespace Domain\Auth\Actions;
 
 use Domain\Auth\DataTransferObjects\AuthData;
-use Domain\Churches\Actions\GetChurchAction;
-use Domain\Churches\DataTransferObjects\ChurchData;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 use Infrastructure\Traits\Roles\HasAuthorization;
@@ -15,10 +13,10 @@ class LoginAction
 {
     use HasAuthorization;
 
-    private GetChurchAction $getChurchAction;
+    private \Domain\CentralDomain\Churches\Church\Actions\GetChurchAction $getChurchAction;
 
 
-    public function __construct(GetChurchAction $getChurchAction)
+    public function __construct(\Domain\CentralDomain\Churches\Church\Actions\GetChurchAction $getChurchAction)
     {
         $this->getChurchAction = $getChurchAction;
     }

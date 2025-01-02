@@ -2,7 +2,6 @@
 
 namespace Application\Api\v1\Church\Resources;
 
-use App\Domain\Churches\Constants\ReturnMessages;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

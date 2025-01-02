@@ -157,19 +157,19 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
 
     /**
-     * @param array $ids
-     * @return Collection
+     * @param int $id
+     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getGroupsById(array $ids = []): Collection
+    public function getGroupsById(int $id): Model | null
     {
         $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereIn(self::ENABLED_TABLE_COLUMN, $ids, 'and');
+        $this->queryConditions [] = $this->whereIn(self::ID_COLUMN, $id, 'and');
 
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryConditions,
+        return $this->getItemByColumn(
             self::ID_COLUMN,
-            BaseRepository::ORDERS['ASC']
+            BaseRepository::OPERATORS['EQUALS'],
+            $id
         );
     }
 

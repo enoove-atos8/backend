@@ -2,9 +2,9 @@
 
 namespace Infrastructure\Repositories\Church;
 
-use Domain\Churches\Interfaces\ChurchRepositoryInterface;
-use Domain\Churches\DataTransferObjects\ChurchData;
-use Domain\Churches\Models\Church;
+use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
+use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
+use Domain\CentralDomain\Churches\Church\Models\Church;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -16,6 +16,13 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
     protected mixed $model = Church::class;
 
     const TENANT_ID_COLUMN = 'tenant_id';
+    const PLAN_ID_COLUMN = 'plan_id';
+    const ACTIVATED_COLUMN = 'activated';
+
+    /**
+     * Array of conditions
+     */
+    private array $queryConditions = [];
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
@@ -45,12 +52,47 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
 
 
     /**
-     * @param null $tenantId
-     * @return Model
+     * @param string $tenantId
+     * @return Church|Model
      * @throws BindingResolutionException
      */
-    public function getChurch($tenantId): Model
+    public function getChurch(string $tenantId): Church | Model
     {
-        return $this->getItemByColumn(self::TENANT_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $tenantId);
+        return tenancy()->central(function () use ($tenantId){
+            return $this->getItemByColumn(self::TENANT_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $tenantId);
+        });
+    }
+
+
+    /**
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getChurches(): Collection
+    {
+        return tenancy()->central(function (){
+
+            $this->queryConditions = [];
+            $this->queryConditions [] = $this->whereEqual(self::ACTIVATED_COLUMN, true, 'and');
+
+            return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+        });
+    }
+
+
+    /**
+     * @param null $planId
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getChurchesByPlanId(null $planId): Collection
+    {
+        return tenancy()->central(function () use ($planId){
+
+            $this->queryConditions = [];
+            $this->queryConditions [] = $this->whereEqual(self::PLAN_ID_COLUMN, $planId, 'and');
+
+            return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+        });
     }
 }
