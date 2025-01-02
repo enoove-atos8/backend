@@ -29,7 +29,7 @@ class GetReportsRequestsAction
     {
         $reports = $this->reportRequestsRepository->getReports();
 
-        if(count($reports))
+        if(count($reports) > 0)
             return $reports;
         else
             throw new GeneralExceptions(ReturnMessages::NO_REPORT_FOUNDED, 500);
