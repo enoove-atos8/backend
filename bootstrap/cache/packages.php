@@ -1,4 +1,16 @@
 <?php return array (
+  'barryvdh/laravel-dompdf' => 
+  array (
+    'aliases' => 
+    array (
+      'PDF' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+      'Pdf' => 'Barryvdh\\DomPDF\\Facade\\Pdf',
+    ),
+    'providers' => 
+    array (
+      0 => 'Barryvdh\\DomPDF\\ServiceProvider',
+    ),
+  ),
   'darkaonline/l5-swagger' => 
   array (
     'providers' => 
@@ -117,17 +129,6 @@
     array (
       'Tenancy' => 'Stancl\\Tenancy\\Facades\\Tenancy',
       'GlobalCache' => 'Stancl\\Tenancy\\Facades\\GlobalCache',
-    ),
-  ),
-  'yaza/laravel-google-drive-storage' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Yaza\\LaravelGoogleDriveStorage\\LaravelGoogleDriveStorageServiceProvider',
-    ),
-    'aliases' => 
-    array (
-      'LaravelGoogleDriveStorage' => 'Yaza\\LaravelGoogleDriveStorage\\Facades\\LaravelGoogleDriveStorage',
     ),
   ),
 );

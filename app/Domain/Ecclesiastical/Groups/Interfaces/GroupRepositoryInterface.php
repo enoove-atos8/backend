@@ -13,7 +13,7 @@ interface GroupRepositoryInterface
     public function getGroupsByDivision(Division $division): Collection;
 
     public function getGroups(Division $division = null): Collection;
-    public function getGroupsById(array $ids): Collection;
+    public function getGroupsById(int $id): Model | null;
     public function getReturnReceivingGroup(): Model | null;
 
     public function getAllGroups(): Collection;

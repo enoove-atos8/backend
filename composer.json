@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "barryvdh/laravel-dompdf": "^3.0",
         "darkaonline/l5-swagger": "^8.6",
         "fedeisas/laravel-mail-css-inliner": "^5.3",
         "google/apiclient": "^2.15.0",
@@ -45,7 +46,10 @@
             "Database\\Seeders\\Central\\": "database/seeders/central/",
             "Database\\Seeders\\Tenant\\": "database/seeders/tenant/",
             "Application\\Core\\Jobs\\": "app/Application/Core/Jobs/"
-        }
+        },
+        "files": [
+            "app/Application/Core/Helpers/PathHelper.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

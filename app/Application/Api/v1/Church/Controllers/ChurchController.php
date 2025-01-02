@@ -5,7 +5,7 @@ namespace Application\Api\v1\Church\Controllers;
 use Application\Api\v1\Church\Requests\ChurchRequest;
 use Application\Api\v1\Church\Resources\ChurchResource;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Churches\Actions\CreateChurchAction;
+use Domain\CentralDomain\Churches\Church\Actions\CreateChurchAction;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
@@ -17,7 +17,7 @@ class ChurchController extends Controller
      * Store a newly created resource in storage.
      *
      * @param ChurchRequest $churchRequest
-     * @param CreateChurchAction $createChurchAction
+     * @param \Domain\CentralDomain\Churches\Church\Actions\CreateChurchAction $createChurchAction
      * @return ChurchResource
      * @throws TenantCouldNotBeIdentifiedById
      * @throws UnknownProperties

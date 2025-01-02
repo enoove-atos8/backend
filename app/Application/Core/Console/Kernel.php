@@ -2,8 +2,8 @@
 
 namespace Application\Core\Console;
 
-use App\Application\Core\Jobs\ProcessingEntriesByCollectionWorship;
-use Application\Core\Jobs\ProcessingEntriesByBankTransfer;
+use Application\Core\Jobs\Financial\Entries\Automation\ReceiptsProcessing\ProcessingEntriesByBankTransfer;
+use Application\Core\Jobs\Financial\Entries\Reports\HandlerEntriesReports;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -17,13 +17,20 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->call(function () {
-            resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->hourly();
+        // =============================================================
+        // @ Financial
+        // =============================================================
 
+        // Entries
         /*$schedule->call(function () {
-            resolve(ProcessingEntriesByCollectionWorship::class)->handle();
-        })->dailyAt('10:10');*/
+            resolve(ProcessingEntriesByBankTransfer::class)->handle();
+        })->dailyAt('16:26');*/
+
+
+        // Reports
+        $schedule->call(function () {
+            resolve(HandlerEntriesReports::class)->handle();
+        })->everyTenMinutes();
     }
 
 

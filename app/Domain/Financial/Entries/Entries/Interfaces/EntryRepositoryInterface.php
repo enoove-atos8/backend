@@ -19,7 +19,7 @@ interface EntryRepositoryInterface
 
     public function deleteEntry(int $id): bool;
 
-    public function getAllEntriesWithMembersAndReviewers(string|null $dates, string $transactionCompensation = 'to_compensate' | 'compensated' | '*', array $filters = [], array $orderBy = []): Collection | Paginator;
+    public function getAllEntriesWithMembersAndReviewers(string|null $dates, string $transactionCompensation, array $filters, array $orderBy): Collection | Paginator;
 
     public function getAllEntries(string|null $dates): Collection;
 

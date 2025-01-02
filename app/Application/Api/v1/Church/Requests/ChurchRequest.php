@@ -4,7 +4,7 @@ namespace Application\Api\v1\Church\Requests;
 
 use App\Domain\Accounts\Users\DataTransferObjects\UserData;
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
-use Domain\Churches\DataTransferObjects\ChurchData;
+use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
