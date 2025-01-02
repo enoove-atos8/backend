@@ -22,6 +22,9 @@ RUN apt-get update && apt-get install -y \
     nginx \
     nano
 
+#Set Memory limit to 2GB
+RUN echo "memory_limit = 2G" > /usr/local/etc/php/conf.d/memory-limit.ini
+
 # Xdebug
 RUN pecl install xdebug-3.1.2
 ADD docker/prod/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini

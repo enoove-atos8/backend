@@ -29,6 +29,9 @@ RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
     tesseract-ocr-por \
     poppler-utils
 
+#Set Memory limit to 1GB
+RUN echo "memory_limit = 1G" > /usr/local/etc/php/conf.d/memory-limit.ini
+
 # Xdebug
 RUN pecl install xdebug-3.3.1
 ADD docker/local/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
