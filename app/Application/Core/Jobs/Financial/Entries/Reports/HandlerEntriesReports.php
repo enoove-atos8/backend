@@ -108,36 +108,6 @@ class HandlerEntriesReports
     }
 
 
-    /**
-     * @throws GeneralExceptions
-     * @throws BindingResolutionException
-     * @throws Throwable
-     */
-    public function getTenantsByPlan(string $planName): array
-    {
-        $arrTenants = [];
-        $plan = $this->getPlansAction->__invoke()->where(PlanRepository::PLAN_NAME_COLUMN,
-                                                              BaseRepository::OPERATORS['EQUALS'],
-                                                              $planName);
-        if(count($plan) > 0)
-        {
-            $tenants = $this->getChurchesByPlanIdAction->__invoke($plan->id);
-
-            if(count($tenants) > 0)
-            {
-                foreach ($tenants as $tenant)
-                    $arrTenants[] = $tenant->tenant_id;
-
-                return $arrTenants;
-            }
-        }
-        else
-        {
-            throw new GeneralExceptions('O plano GOLD não foi encontrado...', 404);
-        }
-    }
-
-
 
     /**
      * @throws Throwable

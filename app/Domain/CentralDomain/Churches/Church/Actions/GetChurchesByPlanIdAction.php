@@ -25,15 +25,8 @@ class GetChurchesByPlanIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $planId): Collection
+    public function __invoke($id): Collection
     {
-        try
-        {
-            return $this->churchRepository->getChurchesByPlanId($planId);
-        }
-        catch (Exception)
-        {
-            throw new GeneralExceptions('Houve um erro ao tentar acessar o central database!', 500);
-        }
+        return $this->churchRepository->getChurchesByPlanId($id);
     }
 }

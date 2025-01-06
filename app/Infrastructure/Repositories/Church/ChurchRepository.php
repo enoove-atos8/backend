@@ -81,16 +81,16 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
 
 
     /**
-     * @param null $planId
+     * @param int $id
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getChurchesByPlanId(null $planId): Collection
+    public function getChurchesByPlanId(int $id): Collection
     {
-        return tenancy()->central(function () use ($planId){
+        return tenancy()->central(function () use ($id){
 
             $this->queryConditions = [];
-            $this->queryConditions [] = $this->whereEqual(self::PLAN_ID_COLUMN, $planId, 'and');
+            $this->queryConditions [] = $this->whereEqual(self::PLAN_ID_COLUMN, $id, 'and');
 
             return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
         });

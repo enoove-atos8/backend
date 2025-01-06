@@ -27,6 +27,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'entries.date_transaction_compensation';
     const TRANSACTION_TYPE_COLUMN = 'transaction_type';
     const TRANSACTION_TYPE_COLUMN_JOINED = 'entries.transaction_type';
+    const PIX_TRANSACTION_TYPE = 'pix';
+    const CASH_TRANSACTION_TYPE = 'cash';
     const DELETED_COLUMN = 'deleted';
     const DELETED_COLUMN_JOINED = 'entries.deleted';
     const REVIEWER_ID_COLUMN_JOINED = 'entries.reviewer_id';

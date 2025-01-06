@@ -5,6 +5,7 @@ namespace App\Infrastructure\Repositories\Financial\Reviewer;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Reviewers\Models\FinancialReviewer;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 use Throwable;
@@ -49,5 +50,18 @@ class FinancialReviewerRepository extends BaseRepository implements FinancialRev
         $this->queryConditions [] = $this->whereEqual(self::ACTIVATED_COLUMN, true, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions, self::FULL_NAME_COLUMN, BaseRepository::ORDERS['ASC']);
+    }
+
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function getReviewer(): Model | null
+    {
+        return $this->getItemByColumn(
+            self::DELETED_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            false
+        );
     }
 }
