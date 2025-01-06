@@ -2,8 +2,8 @@
 
 namespace App\Infrastructure\Services\Atos8\Financial\Entries\Automation\OCRExtractDataBankReceipt;
 
+use Spatie\PdfToText\Pdf;
 use thiagoalessio\TesseractOCR\TesseractOCR;
-use thiagoalessio\TesseractOCR\TesseractOcrException;
 
 class OCRExtractDataBankReceiptService
 {
@@ -14,7 +14,7 @@ class OCRExtractDataBankReceiptService
         'cef_ger'   => 'Gerenciador CAIXA',
         'cef_ib'    => 'Internet Banking CAIXA',
         'cef_tem'   => 'NSU',
-        'bradesco'  => 'BRADESCO',
+        'bradesco'  => ['Bradesco', 'BRADESCO'],
         'santander' => 'SANTANDER',
         'itau_1'    => 'ITAU UNIBANCO',
         'itau_2'    => '341 Ita',
@@ -25,7 +25,7 @@ class OCRExtractDataBankReceiptService
         'digio'     => 'Digio',
         'c6'        => 'Banco C6',
         'neon'      => 'NEON PAGAMENTOS',
-        'inter'     => 'INTER',
+        'inter'     => ['INTER','Inter'],
         //'99'        => '',
         //'uber'      => '',
         'picpay'    => 'PICPAY',
@@ -39,109 +39,83 @@ class OCRExtractDataBankReceiptService
         $this->receiptModelByInstitution = $receiptModelByInstitution;
     }
 
-
-    /**
-     * Main method for extracting data from bank receipt.
-     *
-     * @param string $filePath
-     * @param string|null $entryType
-     * @param string $totalAmount
-     * @param string $depositDate
-     * @return array|string|bool
-     * @throws TesseractOcrException
-     */
-    public function ocrExtractData(string $filePath, string | null $entryType, string $totalAmount = '', string $depositDate = ''): array | string | bool
+    public function ocrExtractData(array $arrFilePath, string | null $entryType): array | string | bool
     {
-        $dataExtracted = $this->getBankingInstitution($filePath, $totalAmount);
-        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted, $entryType, $depositDate);
+        $dataExtracted = $this->getBankingInstitution($arrFilePath);
+        return $this->receiptModelByInstitution->handleDispatchDataFunctionByInstitution($dataExtracted, $entryType);
     }
 
-
-    /**
-     * @param string $file
-     * @param string $totalAmount
-     * @return string|bool
-     * @throws TesseractOcrException
-     */
-    public function getBankingInstitution(string $file, string $totalAmount = ''): array | bool
+    public function getBankingInstitution(array $arrFilePath): array | bool
     {
-        $ocr = new TesseractOCR($file);
-        $readText = $ocr->run();
+        $readText = $this->getTextFromFile($arrFilePath);
 
-        if($totalAmount == '')
+        foreach (self::SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS as $templateReceipt => $term)
         {
-            foreach (self::SEARCH_TERMS_IN_RECEIPT_BY_INSTITUTIONS as $templateReceipt => $term)
-            {
-                if($templateReceipt == 'cef_app')
-                {
-                    $regex1 = '/Dados do pagador.*?Instituic¢Go.*?([A-Z\w]+)/s';
-                    $regex2 = '/Dados do pagador.*?InstituigGo.*?([A-Z\w]+)/s';
-                    $regex3 = '/Dados do pagador.*?Instituicdo.*?([A-Z\w]+)/s';
-                    $regex4 = '/Dados do pagador.*?Institui¢Go.*?([A-Z\w]+)/s';
-                    $regex5 = '/Dados do pagador.*?InstituicGo.*?([A-Z\w]+)/s';
-
-                    if((preg_match($regex1, $readText, $matches)) ||
-                        (preg_match($regex2, $readText, $matches)) ||
-                        (preg_match($regex3, $readText, $matches)) ||
-                        (preg_match($regex4, $readText, $matches)) ||
-                        (preg_match($regex5, $readText, $matches)))
-                    {
-                        if($matches[1] == $term)
-                        {
-                            return [
-                                'templateReceipt'   =>  $templateReceipt,
-                                'text'              =>  $readText
-                            ];
-                        }
-                    }
-                }
-                else if (str_contains($readText, $term))
-                {
-                    return [
-                        'templateReceipt'   =>  $templateReceipt,
-                        'text'              =>  $readText
-                    ];
-                }
-
+            if ($this->matchTemplateReceipt($templateReceipt, $term, $readText)) {
+                return [
+                    'templateReceipt'   =>  $templateReceipt,
+                    'text'              =>  $readText
+                ];
             }
+        }
 
-            return [
-                'templateReceipt'   =>  'generic',
-                'text'              =>  $readText
-            ];
-        }
-        else
-        {
-            return [
-                'templateReceipt'   =>  'receiptDeposit',
-                'text'              =>  $readText,
-                'amount'            => $totalAmount
-            ];
-        }
+        return [
+            'templateReceipt'   =>  'generic',
+            'text'              =>  $readText
+        ];
     }
 
-
-    /**
-     * Convert PDF to Image
-     */
-    private function verifyFormatFile(string $file): string
+    private function getTextFromFile(array $arrFilePath): ?string
     {
-        $resolutionImage = 250;
+        if (!is_null($arrFilePath['fullFileNamePdf'])) {
+            $pathToPdf = $arrFilePath['fullFileNamePdf'];
+            $readText = Pdf::getText($pathToPdf);
 
-        if(strpos($file, '.pdf'))
-        {
-            $fileNameToJpg = preg_replace('/\.pdf$/', '', $file);
-            exec("pdftoppm -jpeg -f 1 -l 1 -rx $resolutionImage -ry $resolutionImage $file $fileNameToJpg");
-
-            $fileNameWithNumberSufix = preg_replace('/\.jpg$/', '-1.jpg', $fileNameToJpg . '.jpg');
-
-            rename($fileNameWithNumberSufix, $fileNameToJpg . '.jpg');
-
-            return $fileNameToJpg . '.jpg';
+            if (empty($readText)) {
+                $ocr = new TesseractOCR($arrFilePath['destinationPath']);
+                $readText = $ocr->run();
+            }
+        } else {
+            $ocr = new TesseractOCR($arrFilePath['destinationPath']);
+            $readText = $ocr->run();
         }
-        else
-        {
-            return '';
+
+        return $readText;
+    }
+
+    private function matchTemplateReceipt(string $templateReceipt, $term, string $readText): bool
+    {
+        if (is_array($term)) {
+            foreach ($term as $value) {
+                if ($this->matchTerm($templateReceipt, $value, $readText)) {
+                    return true;
+                }
+            }
+        } else {
+            return $this->matchTerm($templateReceipt, $term, $readText);
         }
+        return false;
+    }
+
+    private function matchTerm(string $templateReceipt, string $term, string $readText): bool
+    {
+        if ($templateReceipt == 'cef_app') {
+            $regexes = [
+                '/Dados do pagador.*?Instituic¢Go.*?([A-Z\w]+)/s',
+                '/Dados do pagador.*?InstituigGo.*?([A-Z\w]+)/s',
+                '/Dados do pagador.*?Instituicdo.*?([A-Z\w]+)/s',
+                '/Dados do pagador.*?Institui¢Go.*?([A-Z\w]+)/s',
+                '/Dados do pagador.*?InstituicGo.*?([A-Z\w]+)/s',
+            ];
+
+            foreach ($regexes as $regex) {
+                if (preg_match($regex, $readText, $matches) && $matches[1] == $term) {
+                    return true;
+                }
+            }
+        } else if (str_contains($readText, $term)) {
+            return true;
+        }
+        return false;
     }
 }

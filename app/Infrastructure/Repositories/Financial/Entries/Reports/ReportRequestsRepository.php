@@ -21,6 +21,7 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
     const IN_PROGRESS_STATUS_VALUE = 'in_progress';
     const DONE_STATUS_VALUE = 'done';
     const ERROR_STATUS_VALUE = 'error';
+    const NO_RECEIPTS_STATUS_VALUE = 'no_data';
     const MONTHLY_ENTRIES_REPORT_NAME = 'monthly_entries';
     const MONTHLY_RECEIPTS_REPORT_NAME = 'monthly_receipts';
     const QUARTERLY_ENTRIES_REPORT_NAME = 'quarterly_entries';

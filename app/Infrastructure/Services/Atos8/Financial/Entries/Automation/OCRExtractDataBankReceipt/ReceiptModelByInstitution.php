@@ -38,7 +38,7 @@ class ReceiptModelByInstitution
 
     const CRON_LOG_PATH = 'logs/cron.log';
 
-    public function handleDispatchDataFunctionByInstitution(array $dataExtracted, ?string $entryType, string $depositDate = ''): array | bool
+    public function handleDispatchDataFunctionByInstitution(array $dataExtracted, ?string $entryType): array | bool
     {
         $this->resetResponseArray();
 
@@ -130,14 +130,14 @@ class ReceiptModelByInstitution
                     '/RS\s*([\d,.]+)/'
                 ],
                 'name' => ['/De\s+([A-Z\s]+)/'],
-                'date' => ['/\\d{2}\/[a-z]{3}\/\\d{4}/'],
+                'date' => ['/\d{2}\/[a-z]{3}\/\d{4}/'],
                 'cpf' => [
                     '/\*\*\*\s*([\d.]+)/',
                     '/CPF\s*(.*)/',
                     '/GPF\s*(.*)/',
                     '/(\d{3})[,](\d{3})/'
                 ],
-                'timestamp' => '/(\d{2}\/[a-z]{3}\/\\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/'
+                'timestamp' => ['/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/','/(\d{2}\/[a-z]{3}\/\d{4})[^\d]*(\d{2} \d{2} \d{2})/']
             ],
             self::BANK_CEF_APP => [
                 'amount' => [

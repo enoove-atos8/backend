@@ -5,6 +5,7 @@ namespace Infrastructure\Repositories\CentralDomain;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\CentralDomain\Plans\Models\Plan;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 
@@ -34,6 +35,23 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
     {
         return tenancy()->central(function (){
             return $this->getItemsByWhere();
+        });
+    }
+
+
+    /**
+     * @param string $name
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getPlanByName(string $name): Model | null
+    {
+        return tenancy()->central(function () use ( $name) {
+            return $this->getItemByColumn(
+                self::PLAN_NAME_COLUMN,
+                BaseRepository::OPERATORS['EQUALS'],
+                $name
+            );
         });
     }
 }

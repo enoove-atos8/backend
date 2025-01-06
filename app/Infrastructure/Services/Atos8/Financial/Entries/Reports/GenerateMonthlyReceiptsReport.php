@@ -125,6 +125,10 @@ class GenerateMonthlyReceiptsReport
 
                 $this->updateStatusReportRequestsAction->__invoke($requests->id, ReportRequestsRepository::DONE_STATUS_VALUE);
             }
+            else
+            {
+                $this->updateStatusReportRequestsAction->__invoke($requests->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
+            }
         }
         else
         {

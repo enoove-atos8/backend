@@ -15,5 +15,5 @@ interface ChurchRepositoryInterface
 
     public function getChurches(): Collection;
 
-    public function getChurchesByPlanId(null $planId): Collection;
+    public function getChurchesByPlanId(int $id): Collection;
 }

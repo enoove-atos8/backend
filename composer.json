@@ -21,6 +21,7 @@
         "sentry/sentry-laravel": "^4.6",
         "spatie/data-transfer-object": "^3.9",
         "spatie/laravel-permission": "*",
+        "spatie/pdf-to-text": "^1.54",
         "stancl/tenancy": "^3.8",
         "symfony/css-selector": "^7.1",
         "thiagoalessio/tesseract_ocr": "^2.13",

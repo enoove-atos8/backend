@@ -103,6 +103,7 @@ class GoogleDriveService
     public function download($localFile, $file): array | bool
     {
         $fileMetadata = $this->instance->files->get($file->id, ['fields' => 'mimeType']);
+        $fullFileNamePdf = null;
 
         if ($fileMetadata->mimeType !== 'application/vnd.google-apps.folder')
         {
@@ -114,8 +115,11 @@ class GoogleDriveService
             if ($contentType == 'image/jpeg')
                 $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.jpg';
 
-            if ($contentType == 'application/pdf')
+            if ($contentType == 'application/pdf'){
                 $newNameWithExtension = self::TEMP_FILE_PREFIX_NAME . '_' . Str::uuid() . '.pdf';
+                $fullFileNamePdf = $localFile . '/' . $newNameWithExtension;
+
+            }
 
             if (!file_exists($localFile))
                 mkdir($localFile, 0777, true);
@@ -141,6 +145,7 @@ class GoogleDriveService
 
             return [
                 'destinationPath'   =>  $destinationPath,
+                'fullFileNamePdf'   =>  $fullFileNamePdf,
                 'fileUploaded'      => $uploadedFile
             ];
         }
