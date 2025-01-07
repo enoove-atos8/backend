@@ -20,6 +20,7 @@ use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
 use Domain\Ecclesiastical\Folders\Actions\GetEcclesiasticalGroupsFoldersAction;
+use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
 use Domain\Financial\Receipts\Entries\ReadingError\Actions\CreateReadingErrorReceiptAction;
 use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
@@ -63,6 +64,7 @@ class ProcessingEntriesByBankTransfer
 
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
     private GetReviewerAction $getReviewerAction;
+    private GetFinancialGroupAction $getFinancialGroupAction;
 
     private string $entryType;
     protected Collection $foldersData;
@@ -106,6 +108,7 @@ class ProcessingEntriesByBankTransfer
         GetPlanByNameAction                    $getPlanByNameAction,
         GetChurchesByPlanIdAction              $getChurchesByPlanIdAction,
         GetReviewerAction                      $getReviewerAction,
+        GetFinancialGroupAction                $getFinancialGroupAction,
     )
     {
         $this->googleDriveService = $googleDriveService;
@@ -130,6 +133,7 @@ class ProcessingEntriesByBankTransfer
         $this->getPlanByNameAction = $getPlanByNameAction;
         $this->getChurchesByPlanIdAction = $getChurchesByPlanIdAction;
         $this->getReviewerAction = $getReviewerAction;
+        $this->getFinancialGroupAction = $getFinancialGroupAction;
     }
 
 
@@ -174,11 +178,11 @@ class ProcessingEntriesByBankTransfer
             $this->googleDriveService->deleteFilesInLocalDirectory($basePathTemp);
 
             $downloadedFile = $this->googleDriveService->download($basePathTemp, $file);
-            if (!is_array($downloadedFile)) {
-                continue;
+
+            if (is_array($downloadedFile)) {
+                $this->processFile($downloadedFile, $file, $folderData, $tenant);
             }
 
-            $this->processFile($downloadedFile, $file, $folderData);
         }
     }
 
@@ -189,27 +193,116 @@ class ProcessingEntriesByBankTransfer
      * @throws Throwable
      * @throws BindingResolutionException
      */
-    private function processFile($downloadedFile, $file, $folderData): void
+    private function processFile($downloadedFile, $file, $folderData, $tenant): void
     {
         $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $this->entryType);
 
-        if (empty($extractedData) || $extractedData['status'] !== 'SUCCESS') {
-            return;
+        if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
+        {
+            $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
+            $middleCpf = $extractedData['data']['middle_cpf'];
+            $member = $this->findMember($middleCpf);
+
+            if ($this->isDuplicateEntry($timestampValueCpf, $file)) {
+                return;
+            }
+
+            $this->setEntryData($extractedData, $member, $folderData);
+
+            $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
+            $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $timestampValueCpf);
+
+            if(!$member)
+                $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
+
+            $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_PATH, $tenant);
+            if($fileUploaded != '')
+            {
+                $this->updateReceiptLinkEntryAction->__invoke($entry->id, $fileUploaded);
+                $this->googleDriveService->renameFile($file->id, $fileUploaded, 'FILE_READ', $extractedData['data']['institution']);
+            }
         }
+        else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
+        {
+            $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH, $tenant);
 
-        $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
-        $middleCpf = $extractedData['data']['middle_cpf'];
-        $member = $this->findMember($middleCpf);
+            $this->configReadingErrorReceiptData($extractedData, $folderData);
 
-        if ($this->isDuplicateEntry($timestampValueCpf, $file)) {
-            return;
+            $this->setReadingErrorReceiptData(
+                $this->groupReturnedId,
+                $this->groupReceivedId,
+                $this->entryType,
+                $this->amount,
+                $this->institution,
+                $this->reason,
+                $this->devolution,
+                $fileUploaded);
+
+            $this->createReadingErrorReceiptAction->__invoke($this->readingErrorReceiptData);
+
+            $this->googleDriveService->renameFile($file->id, null, $extractedData['status'], $extractedData['data']['institution']);
         }
+    }
 
-        $this->setEntryData($extractedData, $member, $folderData);
 
-        $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-        $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $timestampValueCpf);
-        //$this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
+
+    /**
+     * @param string|null $groupReturnedId
+     * @param string|null $groupReceivedId
+     * @param string $entryType
+     * @param string|null $amount
+     * @param string|null $institution
+     * @param string|null $reason
+     * @param bool $devolution
+     * @param string|null $receiptLink
+     * @return void
+     */
+    public function setReadingErrorReceiptData(
+        string | null $groupReturnedId,
+        string | null $groupReceivedId,
+        string $entryType,
+        string | null $amount,
+        string | null $institution,
+        string | null $reason,
+        bool $devolution,
+        string | null $receiptLink): void
+    {
+        $this->readingErrorReceiptData->groupReturnedId = $groupReturnedId;
+        $this->readingErrorReceiptData->groupReceivedId = $groupReceivedId;
+        $this->readingErrorReceiptData->entryType = $entryType;
+        $this->readingErrorReceiptData->amount = $amount != null ? floatval($amount) / 100 : null;
+        $this->readingErrorReceiptData->institution = $institution;
+        $this->readingErrorReceiptData->reason = $reason;
+        $this->readingErrorReceiptData->devolution = $devolution;
+        $this->readingErrorReceiptData->deleted = 0;
+        $this->readingErrorReceiptData->receiptLink = $receiptLink;
+    }
+
+
+    /**
+     * @param $extractedData
+     * @param mixed $folderData
+     * @return void
+     * @throws Throwable
+     */
+    public function configReadingErrorReceiptData($extractedData, mixed $folderData): void
+    {
+        $this->devolution = $folderData->folder_devolution == 1;
+        $this->reason = $extractedData['status'];
+        $this->amount = $extractedData['data']['amount'] != 0 ? $extractedData['data']['amount'] : 0;
+        $this->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
+
+        if($this->devolution)
+        {
+            $financialGroup = $this->getFinancialGroupAction->__invoke();
+            $this->groupReceivedId = $financialGroup->id;
+            $this->groupReturnedId = $folderData->ecclesiastical_divisions_group_id;
+        }
+        else
+        {
+            $this->groupReceivedId = $folderData->ecclesiastical_divisions_group_id;
+            $this->groupReturnedId = null;
+        }
     }
 
 
@@ -225,11 +318,13 @@ class ProcessingEntriesByBankTransfer
         }
 
         $member = $this->getMemberByMiddleCPFAction->__invoke($middleCpf);
-        if (!$member) {
+
+        if (!$member)
+        {
             $member = $this->getMemberByCPFAction->__invoke($middleCpf);
-            if ($member) {
+
+            if ($member)
                 $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
-            }
         }
 
         return $member;

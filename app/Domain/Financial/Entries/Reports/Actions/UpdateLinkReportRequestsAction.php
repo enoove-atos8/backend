@@ -22,15 +22,9 @@ class UpdateLinkReportRequestsAction
 
 
     /**
-     * @throws GeneralExceptions
      */
     public function __invoke($id, string $link): bool
     {
-        $updatedReport = $this->reportRequestsRepository->updateLinkReport($id, $link);
-
-        if($updatedReport)
-            return true;
-        else
-            throw new GeneralExceptions(ReturnMessages::NO_REPORT_REQUEST_FOUNDED, 500);
+        return $this->reportRequestsRepository->updateLinkReport($id, $link);
     }
 }

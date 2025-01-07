@@ -26,6 +26,8 @@ class Group extends Model
         'enabled',
         'temporary_event',
         'return_values',
+        'return_receiving',
+        'financial_group',
         'start_date',
         'end_date',
     ];

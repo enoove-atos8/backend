@@ -1,0 +1,46 @@
+<?php
+
+namespace Domain\Ecclesiastical\Groups\Actions;
+
+use App\Domain\Members\Actions\GetMemberLeaderAction;
+use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
+use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
+use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
+use Exception;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
+use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Throwable;
+
+class GetFinancialGroupAction
+{
+
+    private GroupsRepository $groupsRepository;
+
+    public function __construct(
+        GroupRepositoryInterface  $groupsRepositoryInterface,
+    )
+    {
+        $this->groupsRepository = $groupsRepositoryInterface;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function __invoke(): Model | null
+    {
+        $group = $this->groupsRepository->getFinancialGroup();
+
+        if(is_object($group))
+        {
+            return $group;
+        }
+        else
+        {
+            return null;
+        }
+    }
+}

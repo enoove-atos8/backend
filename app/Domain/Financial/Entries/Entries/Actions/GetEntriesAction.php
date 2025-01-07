@@ -32,21 +32,12 @@ class GetEntriesAction
      */
     public function __invoke(null | string $dates, array $filters, bool $paginate = true): Collection | Paginator
     {
-        $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers(
+        return $this->entryRepository->getAllEntriesWithMembersAndReviewers(
             $dates,
             'compensated',
             $filters,
             [EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, EntryRepository::ID_COLUMN_JOINED],
             $paginate
         );
-
-        if($entries->count() > 0)
-        {
-            return $entries;
-        }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::INFO_NO_ENTRIES_FOUNDED, 404);
-        }
     }
 }

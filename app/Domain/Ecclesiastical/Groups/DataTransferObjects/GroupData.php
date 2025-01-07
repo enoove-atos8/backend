@@ -39,6 +39,9 @@ class GroupData extends DataTransferObject
     public null | bool $enabled;
 
     /** @var null | boolean  */
+    public null | bool $financialGroup;
+
+    /** @var null | boolean  */
     public null | bool $temporaryEvent;
 
     /** @var null | string  */

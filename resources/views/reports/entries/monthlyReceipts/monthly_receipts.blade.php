@@ -130,6 +130,10 @@
             <td>Grupo Eclesiástico</td>
             <td>{{ $group != null ? $group->name : '' }}</td>
         </tr>
+        <tr>
+            <td>Total</td>
+            <td>R$ {{ number_format($entryTypesAmount['titheAmount'] + $entryTypesAmount['designatedAmount'] + $entryTypesAmount['offersAmount'], 2, ',', '.') }}</td>
+        </tr>
         </tbody>
     </table>
 </div>

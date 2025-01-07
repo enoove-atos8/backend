@@ -22,15 +22,9 @@ class UpdateAmountsReportRequestsAction
 
 
     /**
-     * @throws GeneralExceptions
      */
     public function __invoke($id, array $entryTypesAmount): bool
     {
-        $updatedEntryTypesAmounts = $this->reportRequestsRepository->updateEntryTypesAmount($id, $entryTypesAmount);
-
-        if($updatedEntryTypesAmounts)
-            return true;
-        else
-            throw new GeneralExceptions(ReturnMessages::ERROR_AMOUNTS_UPDATE, 500);
+        return $this->reportRequestsRepository->updateEntryTypesAmount($id, $entryTypesAmount);
     }
 }

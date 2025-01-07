@@ -116,7 +116,7 @@ class GenerateMonthlyReceiptsReport
 
             if(count($arrPathReceiptsLocal) > 0)
             {
-                $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group);
+                $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group, $entryTypesAmount);
                 $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS, $tenant);
                 $this->updateLinkReportRequestsAction->__invoke($requests->id, $pathReportUploaded);
                 $this->updateAmountsReportRequestsAction->__invoke($requests->id, $entryTypesAmount);
@@ -133,7 +133,6 @@ class GenerateMonthlyReceiptsReport
         else
         {
             $this->updateStatusReportRequestsAction->__invoke($requests->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
-            throw new GeneralExceptions('', 500);
         }
     }
 
@@ -176,10 +175,11 @@ class GenerateMonthlyReceiptsReport
      * @param array $filters
      * @param array $dates
      * @param mixed $group
+     * @param array $entryTypesAmount
      * @return string
      * @throws GeneralExceptions
      */
-    private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group): string
+    private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group, array $entryTypesAmount): string
     {
         $timestamp = date('YmdHis');
         $directoryPath = self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/reports/temp/';
@@ -190,6 +190,7 @@ class GenerateMonthlyReceiptsReport
             'filters' => $filters,
             'dates' => $dates,
             'group' => $group,
+            'entryTypesAmount' => $entryTypesAmount,
         ])->render();
 
         $pdf = Pdf::loadHTML($html);

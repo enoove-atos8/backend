@@ -34,6 +34,7 @@ class GroupRequest extends FormRequest
             'groupLeaderId'         =>  '',
             'financialMovement'     =>  '',
             'returnValues'          =>  '',
+            'financialGroup'        =>  '',
             'returnReceivingGroup'  =>  '',
             'divisionId'            =>  'required',
             'parentGroupId'         =>  '',
@@ -81,6 +82,7 @@ class GroupRequest extends FormRequest
             description:            $this->input('description'),
             enabled:                $this->input('enabled'),
             temporaryEvent:         $this->input('temporaryEvent'),
+            financialGroup:         $this->input('financialGroup'),
             startDate:              $this->input('startDate'),
             endDate:                $this->input('endDate'),
         );

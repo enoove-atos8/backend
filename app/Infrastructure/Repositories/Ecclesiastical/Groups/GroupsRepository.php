@@ -22,6 +22,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     const GROUP_RETURNED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_returned';
     const MEMBER_TABLE_NAME = 'members';
     const ENABLED_TABLE_COLUMN = 'enabled';
+    const FINANCIAL_GROUP_COLUMN = 'financial_group';
     const RETURN_RECEIVING_TABLE_COLUMN = 'return_receiving';
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
@@ -43,6 +44,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'ecclesiastical_divisions_groups.enabled as groups_enabled',
         'ecclesiastical_divisions_groups.temporary_event as groups_temporary_event',
         'ecclesiastical_divisions_groups.return_values as groups_return_values',
+        'ecclesiastical_divisions_groups.financial_group as groups_financial_group',
         'ecclesiastical_divisions_groups.start_date as groups_start_date',
         'ecclesiastical_divisions_groups.end_date as groups_end_date',
         'ecclesiastical_divisions_groups.updated_at as groups_updated_at',
@@ -59,6 +61,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'g_received.enabled AS g_received_enabled',
         'g_received.temporary_event AS g_received_temporary_event',
         'g_received.return_values AS g_received_return_values',
+        'g_received.financial_group AS g_received_financial_group',
         'g_received.start_date AS g_received_start_date',
         'g_received.end_date AS g_received_end_date',
         'g_received.updated_at AS g_received_updated_at',
@@ -75,6 +78,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'g_returned.enabled AS g_returned_enabled',
         'g_returned.temporary_event AS g_returned_temporary_event',
         'g_returned.return_values AS g_returned_return_values',
+        'g_returned.financial_group AS g_returned_financial_group',
         'g_returned.start_date AS g_returned_start_date',
         'g_returned.end_date AS g_returned_end_date',
         'g_returned.updated_at AS g_returned_updated_at',
@@ -93,6 +97,20 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     public function getGroupsByDivision(Model $division): Collection
     {
         return $this->getGroups($division);
+    }
+
+
+    /**
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getFinancialGroup(): Model | null
+    {
+        return $this->getItemByColumn(
+            self::FINANCIAL_GROUP_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            true
+        );
     }
 
 
@@ -163,9 +181,6 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     public function getGroupsById(int $id): Model | null
     {
-        $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereIn(self::ID_COLUMN, $id, 'and');
-
         return $this->getItemByColumn(
             self::ID_COLUMN,
             BaseRepository::OPERATORS['EQUALS'],
@@ -192,6 +207,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             'enabled'                       =>   $groupData->enabled,
             'temporary_event'               =>   $groupData->temporaryEvent,
             'return_values'                 =>   $groupData->returnValues,
+            'financial_group'               =>   $groupData->financialGroup,
             'start_date'                    =>   $groupData->startDate,
             'end_date'                      =>   $groupData->endDate,
         ]);
