@@ -1,21 +1,21 @@
 <?php
 
-namespace Domain\Ecclesiastical\Folders\Actions;
+namespace Domain\Ecclesiastical\SyncFolders\Actions;
 
-use Domain\Ecclesiastical\Folders\Interfaces\FoldersRepositoryInterface;
+use Domain\Ecclesiastical\SyncFolders\Interfaces\SyncFoldersRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
-use Infrastructure\Repositories\Ecclesiastical\Folders\FoldersRepository;
+use Infrastructure\Repositories\Ecclesiastical\SyncFolders\SyncFoldersRepository;
 use Throwable;
 
-class GetEcclesiasticalGroupsFoldersAction
+class GetSyncFoldersAction
 {
-    private FoldersRepository $foldersRepository;
+    private SyncFoldersRepository $foldersRepository;
     public function __construct(
-        FoldersRepositoryInterface  $foldersRepositoryInterface,
+        SyncFoldersRepositoryInterface  $syncFoldersRepository,
     )
     {
-        $this->foldersRepository = $foldersRepositoryInterface;
+        $this->foldersRepository = $syncFoldersRepository;
     }
 
 

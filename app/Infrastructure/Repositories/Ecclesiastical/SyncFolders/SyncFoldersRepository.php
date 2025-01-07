@@ -1,19 +1,19 @@
 <?php
 
-namespace Infrastructure\Repositories\Ecclesiastical\Folders;
+namespace Infrastructure\Repositories\Ecclesiastical\SyncFolders;
 
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Models\Division;
-use Domain\Ecclesiastical\Folders\Interfaces\FoldersRepositoryInterface;
-use Domain\Ecclesiastical\Folders\Models\Folder;
+use Domain\Ecclesiastical\SyncFolders\Interfaces\SyncFoldersRepositoryInterface;
+use Domain\Ecclesiastical\SyncFolders\Models\SyncFolder;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Repositories\BaseRepository;
 
-class FoldersRepository extends BaseRepository implements FoldersRepositoryInterface
+class SyncFoldersRepository extends BaseRepository implements SyncFoldersRepositoryInterface
 {
-    protected mixed $model = Folder::class;
+    protected mixed $model = SyncFolder::class;
 
     const TABLE_NAME = 'google_drive_ecclesiastical_groups_folders';
     const ENTRY_TYPE_COLUMN = 'entry_type';

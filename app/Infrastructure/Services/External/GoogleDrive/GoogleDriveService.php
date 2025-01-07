@@ -269,4 +269,33 @@ class GoogleDriveService
 
         return $fileNameToJpg . '.jpg';
     }
+
+
+
+    /**
+     * Cria um diretório no Google Drive.
+     *
+     * @param string $name Nome do diretório a ser criado.
+     * @param string|null $parentId ID da pasta pai onde o diretório será criado (opcional).
+     * @return string Retorna o ID do diretório criado.
+     * @throws Exception
+     */
+    public function createDirectory(string $name, ?string $parentId = null): string
+    {
+        $fileMetadata = new DriveFile([
+            'name' => $name,
+            'mimeType' => 'application/vnd.google-apps.folder',
+        ]);
+
+        if ($parentId) {
+            $fileMetadata->setParents([$parentId]);
+        }
+
+        $folder = $this->instance->files->create($fileMetadata, [
+            'fields' => 'id',
+        ]);
+
+        return $folder->id;
+    }
+
 }

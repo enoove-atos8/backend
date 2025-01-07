@@ -6,6 +6,7 @@ use App\Domain\Accounts\Users\Actions\CreateUserAction;
 use App\Domain\Accounts\Users\DataTransferObjects\UserData;
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;
+use Domain\CentralDomain\Churches\Church\Constants\S3DefaultFolders;
 use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Churches\Church\Models\Tenant;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Artisan;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Util\Storage\S3\ConnectS3;
+use Infrastructure\Util\Storage\S3\CreateDirectory;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
@@ -22,6 +24,7 @@ class CreateChurchAction
     private ChurchRepository $churchRepository;
     private CreateSubDomainAction $createSubDomainAction;
     private CreateUserAction $createUserAction;
+    private CreateDirectory $createDirectory;
 
     private ConnectS3 $s3;
 
@@ -29,13 +32,15 @@ class CreateChurchAction
         ChurchRepositoryInterface $churchRepositoryInterface,
         CreateSubDomainAction     $createSubDomainAction,
         CreateUserAction          $createUserAction,
-        ConnectS3                 $connectS3
+        ConnectS3                 $connectS3,
+        CreateDirectory           $createDirectory,
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
         $this->createSubDomainAction = $createSubDomainAction;
         $this->createUserAction = $createUserAction;
         $this->s3 = $connectS3;
+        $this->createDirectory = $createDirectory;
     }
 
     /**
@@ -56,6 +61,11 @@ class CreateChurchAction
         {
             $s3->createBucket(['Bucket' => $churchData->tenantId,]);
             $this->s3->setBucketAsPublic($churchData->tenantId, $s3);
+
+            if($s3->doesBucketExist($churchData->tenantId))
+            {
+                $this->createDirectory->create(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
+            }
         }
 
         Artisan::call('tenants:seed', ['--tenants' => [$churchData->tenantId],]);
