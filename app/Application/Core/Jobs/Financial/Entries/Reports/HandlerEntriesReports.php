@@ -65,46 +65,46 @@ class HandlerEntriesReports
      */
     public function handle(): void
     {
-        try
+        $tenants = $this->getActiveTenants();
+        //$tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
+
+        foreach ($tenants as $tenant)
         {
-            $tenants = $this->getActiveTenants();
-            //$tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
+            tenancy()->initialize($tenant);
 
-            foreach ($tenants as $tenant)
+            $toProcessRequests = $this->getReportsRequestsByStatusAction->__invoke(ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
+
+            if(count($toProcessRequests) > 0)
             {
-                tenancy()->initialize($tenant);
-
-                $toProcessRequests = $this->getReportsRequestsByStatusAction->__invoke(ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
-
-                if(count($toProcessRequests) > 0)
+                foreach ($toProcessRequests as $report)
                 {
-                    foreach ($toProcessRequests as $report)
+                    try
                     {
-                        try
-                        {
-                            $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::IN_PROGRESS_STATUS_VALUE);
+                        $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::IN_PROGRESS_STATUS_VALUE);
 
-                            if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
-                                $this->generateMonthlyReceiptsReport->__invoke($report, $tenant);
+                        if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
+                            $this->generateMonthlyReceiptsReport->__invoke($report, $tenant);
 
-                            //if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
-                            //    $this->generateMonthlyReceiptsReport->__invoke();
+                        //if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
+                        //    $this->generateMonthlyReceiptsReport->__invoke();
 
-                            //if($report->report_name == ReportRequestsRepository::MONTHLY_ENTRIES_REPORT_NAME)
-                            //    $this->generateQuarterlyEntriesReports->__invoke();
-                        }
-                        catch(GeneralExceptions $e)
-                        {
-                            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
-                        }
+                        //if($report->report_name == ReportRequestsRepository::MONTHLY_ENTRIES_REPORT_NAME)
+                        //    $this->generateQuarterlyEntriesReports->__invoke();
+                    }
+                    catch(GeneralExceptions $e)
+                    {
+                        if($e->getCode() == 404)
+                            $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
+
+                        if($e->getCode() == 500)
+                            $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
+
+                        throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
                     }
                 }
             }
         }
-        catch (GeneralExceptions $e)
-        {
-            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
-        }
+
     }
 
 

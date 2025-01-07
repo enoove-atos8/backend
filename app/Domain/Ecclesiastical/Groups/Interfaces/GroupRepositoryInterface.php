@@ -11,6 +11,7 @@ use Illuminate\Support\Collection;
 interface GroupRepositoryInterface
 {
     public function getGroupsByDivision(Division $division): Collection;
+    public function getFinancialGroup(): Model | null;
 
     public function getGroups(Division $division = null): Collection;
     public function getGroupsById(int $id): Model | null;

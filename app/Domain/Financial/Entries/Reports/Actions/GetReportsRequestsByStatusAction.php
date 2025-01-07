@@ -22,16 +22,10 @@ class GetReportsRequestsByStatusAction
 
 
     /**
-     * @throws GeneralExceptions
      * @throws BindingResolutionException
      */
     public function __invoke(string $status): Collection
     {
-        $reports = $this->reportRequestsRepository->getReportsByStatus($status);
-
-        if(count($reports))
-            return $reports;
-        else
-            throw new GeneralExceptions(ReturnMessages::NO_REPORT_FOUNDED, 500);
+        return $this->reportRequestsRepository->getReportsByStatus($status);
     }
 }

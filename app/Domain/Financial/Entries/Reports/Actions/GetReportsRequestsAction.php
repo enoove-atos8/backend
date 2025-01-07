@@ -32,6 +32,6 @@ class GetReportsRequestsAction
         if(count($reports) > 0)
             return $reports;
         else
-            throw new GeneralExceptions(ReturnMessages::NO_REPORT_FOUNDED, 500);
+            throw new GeneralExceptions(ReturnMessages::NO_REPORT_FOUNDED, 404);
     }
 }

@@ -22,15 +22,9 @@ class UpdateStatusReportRequestsAction
 
 
     /**
-     * @throws GeneralExceptions
      */
     public function __invoke($id, string $status): bool
     {
-        $updatedReport = $this->reportRequestsRepository->updateStatus($id, $status);
-
-        if($updatedReport)
-            return true;
-        else
-            throw new GeneralExceptions(ReturnMessages::NO_REPORT_REQUEST_FOUNDED, 500);
+        return $this->reportRequestsRepository->updateStatus($id, $status);
     }
 }
