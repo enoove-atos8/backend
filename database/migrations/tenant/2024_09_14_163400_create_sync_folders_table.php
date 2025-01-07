@@ -14,9 +14,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasTable('google_drive_ecclesiastical_groups_folders'))
+        if (!Schema::hasTable('sync_folders'))
         {
-            Schema::create('google_drive_ecclesiastical_groups_folders', function (Blueprint $table) {
+            Schema::create('sync_folders', function (Blueprint $table) {
 
                 $table->integer('id', true)->autoIncrement();
                 $table->integer('ecclesiastical_divisions_group_id')->nullable();
@@ -37,6 +37,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('google_drive_ecclesiastical_groups_folders');
+        Schema::dropIfExists('sync_folders');
     }
 };

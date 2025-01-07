@@ -14,25 +14,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('google_drive_ecclesiastical_groups_folders', 'tenant'))
+        if (!Schema::hasColumn('sync_folders', 'tenant'))
         {
-            Schema::table('google_drive_ecclesiastical_groups_folders', function (Blueprint $table)
+            Schema::table('sync_folders', function (Blueprint $table)
             {
                 $table->string('tenant')->nullable(false)->after('id');
             });
         }
 
-        if (!Schema::hasColumn('google_drive_ecclesiastical_groups_folders', 'exit_type'))
+        if (!Schema::hasColumn('sync_folders', 'exit_type'))
         {
-            Schema::table('google_drive_ecclesiastical_groups_folders', function (Blueprint $table)
+            Schema::table('sync_folders', function (Blueprint $table)
             {
                 $table->string('exit_type')->nullable()->after('entry_type');
             });
         }
 
-        if (!Schema::hasColumn('google_drive_ecclesiastical_groups_folders', 'receipt_type'))
+        if (!Schema::hasColumn('sync_folders', 'receipt_type'))
         {
-            Schema::table('google_drive_ecclesiastical_groups_folders', function (Blueprint $table)
+            Schema::table('sync_folders', function (Blueprint $table)
             {
                 $table->string('receipt_type')->nullable(false)->after('folder_devolution');
             });

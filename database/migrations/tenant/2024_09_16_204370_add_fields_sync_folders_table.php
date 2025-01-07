@@ -14,15 +14,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (Schema::hasColumn('entries', 'cult_financial_data_id'))
+        if (!Schema::hasColumn('sync_folders', 'folder_devolution'))
         {
-            Schema::table('entries', function (Blueprint $table){
-                $table->foreign('cult_financial_data_id')
-                        ->references('id')
-                        ->on('cult_financial_data');
+            Schema::table('sync_folders', function (Blueprint $table)
+            {
+                $table->boolean('folder_devolution')->nullable(false)->default(0) ->after('folder_name');
             });
         }
     }
+
 
 
     /**

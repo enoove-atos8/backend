@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\Actions;
 
+use App\Infrastructure\Services\External\GoogleDrive\GoogleDriveService;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
@@ -13,12 +14,15 @@ use Throwable;
 class CreateNewGroupAction
 {
     private GroupsRepository $groupsRepository;
+    private GoogleDriveService $googleDriveService;
 
     public function __construct(
         GroupRepositoryInterface $groupRepository,
+        GoogleDriveService      $googleDriveService,
     )
     {
         $this->groupsRepository = $groupRepository;
+        $this->googleDriveService = $googleDriveService;
     }
 
 

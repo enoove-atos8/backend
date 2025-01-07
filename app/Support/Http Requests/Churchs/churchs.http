@@ -5,12 +5,12 @@ Content-Type: application/json
 
 {
     "church": {
-        "tenant_id": "iebrd",
+        "tenant_id": "test",
         "plan_id": 1,
-        "name": "Igreja Evangélica Batista em Rio Doce",
+        "name": "Igreja de Test",
         "activated": true,
         "doc_type": "cnpj",
-        "doc_number": "24162422000121"
+        "doc_number": "24122522000121"
     },
     "user": {
         "admin_email_tenant": "rafaelhenrique10101@gmail.com",

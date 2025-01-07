@@ -19,7 +19,7 @@ use App\Infrastructure\Services\External\GoogleDrive\GoogleDriveService;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
-use Domain\Ecclesiastical\Folders\Actions\GetEcclesiasticalGroupsFoldersAction;
+use Domain\Ecclesiastical\SyncFolders\Actions\GetSyncFoldersAction;
 use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
 use Domain\Financial\Receipts\Entries\ReadingError\Actions\CreateReadingErrorReceiptAction;
@@ -45,7 +45,7 @@ class ProcessingEntriesByBankTransfer
     private CreateEntryAction $createEntryAction;
     private GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction;
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
-    private GetEcclesiasticalGroupsFoldersAction $getEcclesiasticalGroupsFoldersAction;
+    private GetSyncFoldersAction $getEcclesiasticalGroupsFoldersAction;
     private UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction;
     private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
@@ -86,13 +86,13 @@ class ProcessingEntriesByBankTransfer
 
 
     public function __construct(
-        GoogleDriveService $googleDriveService,
-        CreateEntryAction $createEntryAction,
-        GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction,
+        GoogleDriveService                     $googleDriveService,
+        CreateEntryAction                      $createEntryAction,
+        GetMemberByMiddleCPFAction             $getMemberByMiddleCPFAction,
         GetMemberByCPFAction                   $getMemberByCPFAction,
         UpdateMiddleCpfMemberAction            $updateMiddleCpfMemberAction,
         GetEntryByTimestampValueCpfAction      $getEntryByTimestampValueCpfAction,
-        GetEcclesiasticalGroupsFoldersAction   $getEcclesiasticalGroupsFoldersAction,
+        GetSyncFoldersAction                   $getEcclesiasticalGroupsFoldersAction,
         GetReturnReceivingGroupAction          $getReturnReceivingGroupAction,
         UploadFile                             $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,

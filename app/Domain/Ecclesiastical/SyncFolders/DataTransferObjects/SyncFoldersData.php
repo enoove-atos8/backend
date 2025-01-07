@@ -1,10 +1,10 @@
 <?php
 
-namespace Domain\Ecclesiastical\Folders\DataTransferObjects;
+namespace Domain\Ecclesiastical\SyncFolders\DataTransferObjects;
 
 use Spatie\DataTransferObject\DataTransferObject;
 
-class FolderData extends DataTransferObject
+class SyncFoldersData extends DataTransferObject
 {
     /** @var string | null  */
     public string | null $ecclesiasticalDivisionsGroupId;
