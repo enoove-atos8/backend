@@ -1,8 +1,8 @@
 <?php
 
-namespace Domain\Ecclesiastical\SyncFolders\Actions;
+namespace Domain\Ecclesiastical\Folders\Actions;
 
-use Domain\Ecclesiastical\SyncFolders\Interfaces\SyncFoldersRepositoryInterface;
+use Domain\Ecclesiastical\Folders\Interfaces\SyncFoldersRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\Ecclesiastical\SyncFolders\SyncFoldersRepository;

@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('ecclesiastical_divisions_groups', function (Blueprint $table)
             {
-                $table->boolean('financial_group')->nullable(false)->default(0)->after('return_receiving');
+                $table->boolean('financial_group')->nullable()->default(0)->after('return_receiving');
             });
         }
     }

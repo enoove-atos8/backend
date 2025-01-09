@@ -6,6 +6,7 @@ use App\Application\Api\v1\Auth\Controllers\AuthController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
+use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Ecclesiastical\Groups\Controllers\GroupController;
 use Application\Api\v1\Financial\Entries\Automation\Controllers\ReadingErrorReceiptsController;
@@ -82,6 +83,21 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             Route::get('/menu', [NavigationMenuController::class, 'getMenu']);
         });
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | Group Financial routes
+        |--------------------------------------------------------------------------
+        |
+        */
+
+        Route::prefix('utils')->group(function () {
+            Route::prefix('files')->group(function () {
+                Route::prefix('upload')->group(function () {
+                    Route::post('/fileUpload', [FileUploadController::class, 'fileUpload']);
+                });
+            });
+        });
 
 
         /*
