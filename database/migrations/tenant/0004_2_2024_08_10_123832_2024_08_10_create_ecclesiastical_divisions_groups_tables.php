@@ -15,7 +15,7 @@ return new class extends Migration
         {
             Schema::create('ecclesiastical_divisions_groups', function (Blueprint $table) {
                 $table->integer('id', true)->autoIncrement();
-                $table->integer('ecclesiastical_division_id')->nullable(false);
+                $table->integer('ecclesiastical_division_id')->nullable();
                 $table->integer('parent_group_id')->nullable();
                 $table->integer('leader_id')->nullable();
                 $table->string('name')->nullable(false);

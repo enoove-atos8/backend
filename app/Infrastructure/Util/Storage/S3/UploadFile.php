@@ -24,12 +24,12 @@ class UploadFile
 
     /**
      * @param mixed $file
-     * @param string $tenantS3PathObject
+     * @param string $relativePath
      * @param string $tenant
      * @return string
      * @throws GeneralExceptions
      */
-    public function upload($file, string $tenantS3PathObject, string $tenant): string
+    public function upload($file, string $relativePath, string $tenant): string
     {
         if(is_string($file))
             $file = new UploadedFile($file, basename($file), null, null, true);
@@ -41,18 +41,11 @@ class UploadFile
         $arrFileParts = explode('.', $file->getClientOriginalName());
         $fileExtension = end($arrFileParts);
         $fileName = $formattedTime . '_' . uniqid().'.'.$fileExtension;
-        $fullPathFile = $tenantS3PathObject . '/' . $fileName;
+        $fullPathFile = $relativePath . '/' . $fileName;
 
         try
         {
             $s3 = $this->s3->getInstance();
-
-            if(!$s3->doesBucketExist($tenant))
-            {
-                $s3->createBucket(['Bucket' => $tenant,]);
-                $this->s3->setBucketAsPublic($tenant, $s3);
-            }
-
 
             $s3->putObject([
                 'Bucket' => $tenant,
