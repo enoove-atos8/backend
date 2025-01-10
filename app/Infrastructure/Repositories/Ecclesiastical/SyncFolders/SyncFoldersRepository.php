@@ -28,49 +28,11 @@ class SyncFoldersRepository extends BaseRepository implements SyncFoldersReposit
 
 
     /**
-     * @param bool $cultEntries
-     * @param bool $depositReceipt
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getFolders(bool $cultEntries, bool $depositReceipt): Collection
+    public function getFolders(): Collection
     {
-        $folders = null;
-
-        if(!$cultEntries && !$depositReceipt)
-            $folders =  $this->getItemsByWhere();
-
-        else if($cultEntries && !$depositReceipt)
-        {
-            $conditions = [
-                [
-                    'field' => self::ENTRY_TYPE_COLUMN,
-                    'operator' => BaseRepository::OPERATORS['EQUALS'],
-                    'value' => self::ENTRIES_IN_CULT_VALUE
-                ]
-            ];
-
-            $folders =  $this->getItemsByWhere(
-                ['*'],
-                $conditions
-            );
-        }
-        else if(!$cultEntries && $depositReceipt)
-        {
-            $conditions = [
-                [
-                    'field' => self::ENTRY_TYPE_COLUMN,
-                    'operator' => BaseRepository::OPERATORS['EQUALS'],
-                    'value' => self::DEPOSIT_RECEIPTS_IN_CULT_VALUE
-                ]
-            ];
-
-            $folders =  $this->getItemsByWhere(
-                ['*'],
-                $conditions
-            );
-        }
-
-        return $folders;
+        return $this->getItemsByWhere();
     }
 }

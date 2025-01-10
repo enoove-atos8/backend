@@ -9,9 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 interface SyncFoldersRepositoryInterface
 {
     /**
-     * @param bool $cultEntries
-     * @param bool $depositReceipt
      * @return Collection
      */
-    public function getFolders(bool $cultEntries, bool $depositReceipt): Collection;
+    public function getFolders(): Collection;
 }
