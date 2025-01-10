@@ -23,9 +23,9 @@ class GetSyncFoldersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(bool $cultEntries = false, bool $depositReceipt = false): Collection | null
+    public function __invoke(): Collection | null
     {
-        $folders = $this->foldersRepository->getFolders($cultEntries, $depositReceipt);
+        $folders = $this->foldersRepository->getFolders();
 
         if ($folders->isNotEmpty())
             return $folders;
