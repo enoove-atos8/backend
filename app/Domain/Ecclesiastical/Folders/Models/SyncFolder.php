@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SyncFolder extends Model
 {
-    protected $table = 'sync_folders';
+    protected $table = 'google_drive_ecclesiastical_groups_folders';
 
 
     /**

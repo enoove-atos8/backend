@@ -45,7 +45,7 @@ class ProcessingEntriesByBankTransfer
     private CreateEntryAction $createEntryAction;
     private GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction;
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
-    private GetSyncFoldersAction $getEcclesiasticalGroupsFoldersAction;
+    private GetSyncFoldersAction $getSyncFoldersAction;
     private UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction;
     private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
@@ -92,7 +92,7 @@ class ProcessingEntriesByBankTransfer
         GetMemberByCPFAction                   $getMemberByCPFAction,
         UpdateMiddleCpfMemberAction            $updateMiddleCpfMemberAction,
         GetEntryByTimestampValueCpfAction      $getEntryByTimestampValueCpfAction,
-        GetSyncFoldersAction                   $getEcclesiasticalGroupsFoldersAction,
+        GetSyncFoldersAction                   $getSyncFoldersAction,
         GetReturnReceivingGroupAction          $getReturnReceivingGroupAction,
         UploadFile                             $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,
@@ -114,7 +114,7 @@ class ProcessingEntriesByBankTransfer
         $this->googleDriveService = $googleDriveService;
         $this->createEntryAction = $createEntryAction;
         $this->getMemberByMiddleCPFAction = $getMemberByMiddleCPFAction;
-        $this->getEcclesiasticalGroupsFoldersAction = $getEcclesiasticalGroupsFoldersAction;
+        $this->getSyncFoldersAction = $getSyncFoldersAction;
         $this->updateMiddleCpfMemberAction = $updateMiddleCpfMemberAction;
         $this->updateIdentificationPendingEntryAction = $updateIdentificationPendingEntryAction;
         $this->getReturnReceivingGroupAction = $getReturnReceivingGroupAction;
@@ -152,7 +152,7 @@ class ProcessingEntriesByBankTransfer
             tenancy()->initialize($tenant);
 
             $this->googleDriveService->defineInstanceGoogleDrive($tenant);
-            $this->foldersData = $this->getEcclesiasticalGroupsFoldersAction->__invoke();
+            $this->foldersData = $this->getSyncFoldersAction->__invoke();
 
             foreach ($this->foldersData as $folderData) {
                 $this->processFolder($folderData, $tenant);

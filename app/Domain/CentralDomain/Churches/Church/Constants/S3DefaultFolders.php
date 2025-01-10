@@ -5,22 +5,33 @@ namespace Domain\CentralDomain\Churches\Church\Constants;
 class S3DefaultFolders
 {
     const S3_DEFAULT_FOLDERS = [
-        'financial_transactions'    =>  [
-            'entries'   =>  [
-                'processed_files',
-                'designated'    =>  [
-                    'campaigns',
-                    'departures',
-                    'ebd',
-                    'events',
-                    'ministries',
-                    'organizations',
-                    'projects',
+        'sync_storage'    =>  [
+            'financial'   =>  [
+                'entries'   =>  [
+                    'shared_receipts'   =>  [
+                        'designated'    =>  [
+                            'campaigns',
+                            'departures',
+                            'ebd',
+                            'events',
+                            'ministries',
+                            'organizations',
+                            'projects',
+                        ],
+                        'offers',
+                        'tithes',
+                    ],
+                    'stored_receipts'   =>  [
+                        'designated',
+                        'offers',
+                        'tithes',
+                    ]
                 ],
-                'tithes',
-                'offers',
+                'exits'   =>  [
+                    'shared_receipts'   =>  [],
+                    'stored_receipts'   =>  []
+                ],
             ],
-            'exits'     =>  []
         ],
     ];
 }
