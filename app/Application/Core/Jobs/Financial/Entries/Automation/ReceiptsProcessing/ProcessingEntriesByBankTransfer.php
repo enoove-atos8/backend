@@ -19,7 +19,7 @@ use App\Infrastructure\Services\External\GoogleDrive\GoogleDriveService;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
-use Domain\Ecclesiastical\SyncFolders\Actions\GetSyncFoldersAction;
+use Domain\Ecclesiastical\Folders\Actions\GetSyncFoldersAction;
 use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
 use Domain\Financial\Receipts\Entries\ReadingError\Actions\CreateReadingErrorReceiptAction;
