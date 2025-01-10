@@ -25,22 +25,23 @@ class CreateChurchAction
     private CreateSubDomainAction $createSubDomainAction;
     private CreateUserAction $createUserAction;
     private CreateDirectory $createDirectory;
+    private CreateS3DefaultFoldersAction $createS3DefaultFoldersAction;
 
     private ConnectS3 $s3;
 
     public function __construct(
-        ChurchRepositoryInterface $churchRepositoryInterface,
-        CreateSubDomainAction     $createSubDomainAction,
-        CreateUserAction          $createUserAction,
-        ConnectS3                 $connectS3,
-        CreateDirectory           $createDirectory,
+        ChurchRepositoryInterface       $churchRepositoryInterface,
+        CreateSubDomainAction           $createSubDomainAction,
+        CreateUserAction                $createUserAction,
+        ConnectS3                       $connectS3,
+        CreateS3DefaultFoldersAction    $createS3DefaultFoldersAction,
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
         $this->createSubDomainAction = $createSubDomainAction;
         $this->createUserAction = $createUserAction;
         $this->s3 = $connectS3;
-        $this->createDirectory = $createDirectory;
+        $this->createS3DefaultFoldersAction = $createS3DefaultFoldersAction;
     }
 
     /**
@@ -64,7 +65,7 @@ class CreateChurchAction
 
             if($s3->doesBucketExist($churchData->tenantId))
             {
-                $this->createDirectory->create(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
+                $this->createS3DefaultFoldersAction->__invoke(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
             }
         }
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Ecclesiastical\SyncFolders\Models;
+namespace Domain\Ecclesiastical\Folders\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

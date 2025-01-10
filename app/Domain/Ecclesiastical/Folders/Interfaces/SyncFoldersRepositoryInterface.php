@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Ecclesiastical\SyncFolders\Interfaces;
+namespace Domain\Ecclesiastical\Folders\Interfaces;
 
 use Domain\Ecclesiastical\Divisions\Models\Division;
 use Illuminate\Support\Collection;

@@ -1,10 +1,10 @@
 <?php
 
-namespace Domain\Ecclesiastical\SyncFolders\Actions;
+namespace Domain\Ecclesiastical\Folders\Actions;
 
-use Domain\Ecclesiastical\SyncFolders\DataTransferObjects\SyncFoldersData;
-use Domain\Ecclesiastical\SyncFolders\Interfaces\SyncFoldersRepositoryInterface;
-use Domain\Ecclesiastical\SyncFolders\Models\SyncFolder;
+use Domain\Ecclesiastical\Folders\DataTransferObjects\SyncFoldersData;
+use Domain\Ecclesiastical\Folders\Interfaces\SyncFoldersRepositoryInterface;
+use Domain\Ecclesiastical\Folders\Models\SyncFolder;
 use Infrastructure\Repositories\Ecclesiastical\SyncFolders\SyncFoldersRepository;
 
 class CreateSyncFolderAction
@@ -22,6 +22,6 @@ class CreateSyncFolderAction
 
     public function __invoke(SyncFoldersData $syncFoldersData)
     {
-        // TODO: Implement __invoke() method.
+        // TODO:
     }
 }
