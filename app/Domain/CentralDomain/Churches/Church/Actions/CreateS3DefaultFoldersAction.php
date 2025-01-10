@@ -17,6 +17,9 @@ class CreateS3DefaultFoldersAction
         $this->s3 = $connectS3;
     }
 
+    /**
+     * @throws GeneralExceptions
+     */
     public function __invoke(array $folders, string $tenant): void
     {
         try
@@ -25,7 +28,7 @@ class CreateS3DefaultFoldersAction
 
             $this->createRecursive($folders, $tenant, $s3);
         }
-        catch (S3Exception $e)
+        catch (S3Exception|GeneralExceptions $e)
         {
             throw new GeneralExceptions('Erro ao criar diretórios no S3', 500);
         }
