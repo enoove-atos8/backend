@@ -23,13 +23,8 @@ class GetSyncFoldersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Collection | null
+    public function __invoke(): Collection
     {
-        $folders = $this->foldersRepository->getFolders();
-
-        if ($folders->isNotEmpty())
-            return $folders;
-
-        return null;
+        return $this->foldersRepository->getFolders();
     }
 }
