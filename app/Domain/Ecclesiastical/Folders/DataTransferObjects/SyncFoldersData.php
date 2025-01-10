@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Ecclesiastical\SyncFolders\DataTransferObjects;
+namespace Domain\Ecclesiastical\Folders\DataTransferObjects;
 
 use Spatie\DataTransferObject\DataTransferObject;
 

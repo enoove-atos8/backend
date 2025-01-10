@@ -4,8 +4,8 @@ namespace Infrastructure\Repositories\Ecclesiastical\SyncFolders;
 
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Models\Division;
-use Domain\Ecclesiastical\SyncFolders\Interfaces\SyncFoldersRepositoryInterface;
-use Domain\Ecclesiastical\SyncFolders\Models\SyncFolder;
+use Domain\Ecclesiastical\Folders\Interfaces\SyncFoldersRepositoryInterface;
+use Domain\Ecclesiastical\Folders\Models\SyncFolder;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
