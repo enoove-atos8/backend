@@ -34,6 +34,9 @@ class SyncStorageData extends DataTransferObject
     public ?bool $isPayment;
 
     /** @var ?bool */
+    public ?bool $isDevolution;
+
+    /** @var ?bool */
     public ?bool $isCreditCardPurchase;
 
     /** @var ?string | null */
