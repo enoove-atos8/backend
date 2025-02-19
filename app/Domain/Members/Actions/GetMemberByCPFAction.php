@@ -29,7 +29,7 @@ class GetMemberByCPFAction
      * @return Model|null
      * @throws BindingResolutionException
      */
-    public function __invoke(string $cpf, bool $searchWithMiddleCpf = false): Model | null
+    public function execute(string $cpf, bool $searchWithMiddleCpf = false): Model | null
     {
         $member = $this->memberRepository->getMembersByCpf($cpf, $searchWithMiddleCpf);
 

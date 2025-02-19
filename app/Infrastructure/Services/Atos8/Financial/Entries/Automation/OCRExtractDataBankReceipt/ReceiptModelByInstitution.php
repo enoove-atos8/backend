@@ -70,13 +70,13 @@ class ReceiptModelByInstitution
     {
         $patterns = $this->getRegexPatterns($institution);
 
-        $this->processExtraction($text, $entryType, $patterns);
+        $this->extractedData($text, $entryType, $patterns);
         $this->setResponseStatus($entryType, strtoupper($institution));
 
         return $this->response;
     }
 
-    private function processExtraction(string $text, ?string $entryType, array $patterns): void
+    private function extractedData(string $text, ?string $entryType, array $patterns): void
     {
         if(key_exists('amount', $patterns))
             $this->extractField($text, $patterns['amount'], 'amount');

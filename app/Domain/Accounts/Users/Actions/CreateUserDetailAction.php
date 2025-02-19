@@ -23,7 +23,7 @@ class CreateUserDetailAction
     /**
      * @throws Throwable
      */
-    public function __invoke($userId, UserDetailData $userDetailData): UserDetail
+    public function execute($userId, UserDetailData $userDetailData): UserDetail
     {
         return $this->userDetailRepository->createUserDetail($userId, $userDetailData);
     }

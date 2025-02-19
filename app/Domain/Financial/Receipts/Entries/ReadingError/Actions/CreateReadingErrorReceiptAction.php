@@ -18,7 +18,7 @@ class CreateReadingErrorReceiptAction
 
 
 
-    public function __invoke(ReadingErrorReceiptData $readingErrorReceiptData): ReadingErrorReceipt | bool
+    public function execute(ReadingErrorReceiptData $readingErrorReceiptData): ReadingErrorReceipt | bool
     {
         $readingErrorReceipt = $this->readingErrorReceiptRepository->createReadingErrorReceipt($readingErrorReceiptData);
 

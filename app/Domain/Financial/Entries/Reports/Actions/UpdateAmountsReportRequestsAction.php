@@ -23,7 +23,7 @@ class UpdateAmountsReportRequestsAction
 
     /**
      */
-    public function __invoke($id, array $entryTypesAmount): bool
+    public function execute($id, array $entryTypesAmount): bool
     {
         return $this->reportRequestsRepository->updateEntryTypesAmount($id, $entryTypesAmount);
     }

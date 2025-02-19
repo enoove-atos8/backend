@@ -26,7 +26,7 @@ class GetCultsAction
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke(): Collection | null
+    public function execute(): Collection | null
     {
         $cults = $this->cultRepository->getCults();
 

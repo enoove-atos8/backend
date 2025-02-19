@@ -21,7 +21,7 @@ class GetEntriesAmountToCompesateActions
     /**
      * @throws BindingResolutionException
      */
-    public function __invoke(): array
+    public function execute(): array
     {
         $entriesToCompensate = $this->amountToCompensateRepository->getEntriesAmountToCompensate();
         $amount = $entriesToCompensate->sum(EntryRepository::AMOUNT_COLUMN);

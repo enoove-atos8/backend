@@ -34,6 +34,9 @@ class GroupData extends DataTransferObject
     /** @var null | string  */
     public null | string $description;
 
+    /** @var null | string  */
+    public null | string $slug;
+
 
     /** @var null | boolean  */
     public null | bool $enabled;

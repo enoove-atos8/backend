@@ -23,7 +23,7 @@ class UpdateLinkReportRequestsAction
 
     /**
      */
-    public function __invoke($id, string $link): bool
+    public function execute($id, string $link): bool
     {
         return $this->reportRequestsRepository->updateLinkReport($id, $link);
     }

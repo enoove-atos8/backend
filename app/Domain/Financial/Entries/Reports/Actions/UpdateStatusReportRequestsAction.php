@@ -23,7 +23,7 @@ class UpdateStatusReportRequestsAction
 
     /**
      */
-    public function __invoke($id, string $status): bool
+    public function execute($id, string $status): bool
     {
         return $this->reportRequestsRepository->updateStatus($id, $status);
     }

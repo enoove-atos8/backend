@@ -29,7 +29,7 @@ class GetAmountByEntryTypeAction
     /**
      * @throws Throwable
      */
-    public function __invoke($rangeMonthlyDate, $entryType = 'all'): null | array
+    public function execute($rangeMonthlyDate, $entryType = 'all'): null | array
     {
         $entries = $this->entryRepository->getAmountByEntryType($rangeMonthlyDate, $entryType);
         $totalTithesAmount = $entries

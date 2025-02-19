@@ -26,7 +26,7 @@ class GetTotalAmountEntriesAction
     /**
      * @throws Throwable
      */
-    public function __invoke(null | string $dates): array
+    public function execute(null | string $dates): array
     {
         $entries = $this->entryRepository->getAllEntriesWithMembersAndReviewers(
             $dates,

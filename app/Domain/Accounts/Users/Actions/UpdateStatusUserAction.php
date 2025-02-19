@@ -22,7 +22,7 @@ class UpdateStatusUserAction
      * @return int
      * @throws BindingResolutionException
      */
-    public function __invoke($userId, $status): int
+    public function execute($userId, $status): int
     {
         return $this->userRepository->updateStatus($userId, $status);
     }

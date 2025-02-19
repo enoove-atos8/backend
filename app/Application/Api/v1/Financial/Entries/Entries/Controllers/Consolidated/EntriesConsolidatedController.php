@@ -25,7 +25,7 @@ class EntriesConsolidatedController extends Controller
         {
             $limit = $request->input('limit');
 
-            $response = $getEntriesEvolutionConsolidatedAction(1, $limit);
+            $response = $getEntriesEvolutionConsolidatedAction->execute(1, $limit);
             return new EntriesEvolutionConsolidationResourceCollection($response);
 
         }

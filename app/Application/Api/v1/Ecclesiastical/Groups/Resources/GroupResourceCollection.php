@@ -49,6 +49,7 @@ class GroupResourceCollection extends ResourceCollection
                     'id'            =>  $item->groups_id,
                     'divisionId'    =>  $item->groups_division_id,
                     'name'          =>  $item->groups_name,
+                    'slug'          =>  $item->groups_slug,
                     'enabled'       =>  $item->groups_enabled,
                     'leader'        =>  $this->division->require_leader == 1 ? [
                         'id'        =>  $item->members_id,
@@ -73,6 +74,7 @@ class GroupResourceCollection extends ResourceCollection
                     'id'            =>  $item->groups_id,
                     'divisionId'    =>  $item->groups_division_id,
                     'name'          =>  $item->groups_name,
+                    'slug'          =>  $item->groups_slug,
                     'enabled'       =>  $item->groups_enabled,
                     'updatedAt'     =>  $item->groups_updated_at
                 ];

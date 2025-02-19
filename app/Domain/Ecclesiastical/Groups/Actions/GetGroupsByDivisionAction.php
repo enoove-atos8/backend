@@ -32,9 +32,9 @@ class GetGroupsByDivisionAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $division): Collection | Paginator | array
+    public function execute(string $division): Collection | Paginator | array
     {
-        $division = $this->getDivisionByNameAction->__invoke($division);
+        $division = $this->getDivisionByNameAction->execute($division);
         $groups = $this->groupsRepository->getGroupsByDivision($division);
 
         if($groups->count() > 0)

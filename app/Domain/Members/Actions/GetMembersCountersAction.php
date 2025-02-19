@@ -27,7 +27,7 @@ class GetMembersCountersAction
      * @return array
      * @throws BindingResolutionException
      */
-    public function __invoke(string $key): array
+    public function execute(string $key): array
     {
         $counters = null;
         $members = $this->memberRepository->getMembers();

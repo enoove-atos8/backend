@@ -26,7 +26,7 @@ class GetGroupsByIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke(int $id): Model | null
+    public function execute(int $id): Model | null
     {
         $group = $this->groupsRepository->getGroupsById($id);
 

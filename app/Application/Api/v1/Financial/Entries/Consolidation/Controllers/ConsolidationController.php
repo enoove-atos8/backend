@@ -34,7 +34,7 @@ class ConsolidationController extends Controller
     {
         try
         {
-            $response = $getMonthsAction();
+            $response = $getMonthsAction->execute();
             return new ConsolidationResourceCollection($response);
 
         }
@@ -59,8 +59,8 @@ class ConsolidationController extends Controller
         try
         {
             $date = $request->input('date');
-            $updateAmountConsolidatedEntriesAction($date);
-            $updateStatusConsolidationEntriesAction($date, ConsolidationRepository::CONSOLIDATED_VALUE);
+            $updateAmountConsolidatedEntriesAction->execute($date);
+            $updateStatusConsolidationEntriesAction->execute($date, ConsolidationRepository::CONSOLIDATED_VALUE);
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_ENTRIES_CONSOLIDATED,
@@ -105,7 +105,7 @@ class ConsolidationController extends Controller
         try
         {
             $date = $request->input('dates');
-            $response = $getTotalAmountEntriesAction($date);
+            $response = $getTotalAmountEntriesAction->execute($date);
 
             return response($response, 201);
 

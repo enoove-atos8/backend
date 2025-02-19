@@ -20,7 +20,7 @@ class GetReviewerAction
     /**
      * @throws BindingResolutionException
      */
-    public function __invoke(): ?Model
+    public function execute(): ?Model
     {
         $reviewer = $this->financialReviewerRepository->getReviewer();
 

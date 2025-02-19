@@ -24,7 +24,7 @@ class GetMonthsAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(): Collection
+    public function execute(): Collection
     {
         $months = $this->consolidationRepository->getConsolidatedMonths();
 

@@ -27,7 +27,7 @@ class ReadingErrorReceiptsController extends Controller
         try
         {
             $reason = strtoupper($request->input('reason'));
-            $receipts = $readingErrorReceiptsAction($reason);
+            $receipts = $readingErrorReceiptsAction->execute($reason);
 
             return new ReadingErrorReceiptsResourceCollection($receipts);
 
@@ -50,7 +50,7 @@ class ReadingErrorReceiptsController extends Controller
         try
         {
             $id = $request->input('id');
-            $deleted = $deleteReadingErrorReceiptAction($id);
+            $deleted = $deleteReadingErrorReceiptAction->execute($id);
 
             if($deleted)
                 return true;

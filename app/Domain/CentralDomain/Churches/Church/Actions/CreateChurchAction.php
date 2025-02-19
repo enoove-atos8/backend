@@ -48,7 +48,7 @@ class CreateChurchAction
      * @throws TenantCouldNotBeIdentifiedById
      * @throws Throwable
      */
-    public function __invoke(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
+    public function execute(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
         $env = App::environment();
         $s3Bucket = config('services-host.services.s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS' ) . '/' . $churchData->tenantId;
@@ -57,17 +57,6 @@ class CreateChurchAction
 
         $newTenant = Tenant::create(['id' => $churchData->tenantId]);
         $newTenant->domains()->create(['domain' => $churchData->tenantId . '.' . $domain]);
-
-        if(!$s3->doesBucketExist($churchData->tenantId))
-        {
-            $s3->createBucket(['Bucket' => $churchData->tenantId,]);
-            $this->s3->setBucketAsPublic($churchData->tenantId, $s3);
-
-            if($s3->doesBucketExist($churchData->tenantId))
-            {
-                $this->createS3DefaultFoldersAction->__invoke(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
-            }
-        }
 
         Artisan::call('tenants:seed', ['--tenants' => [$churchData->tenantId],]);
 
@@ -81,18 +70,26 @@ class CreateChurchAction
 
             if($tenantCreated)
             {
-                $user = $this->createUserAction->__invoke($userData, $userDetailData, $churchData->tenantId, true);
-                $subDomainActionCreated = $this->createSubDomainAction->__invoke($churchData->tenantId);
+                $user = $this->createUserAction->execute($userData, $userDetailData, $churchData->tenantId, true);
+                $subDomainActionCreated = $this->createSubDomainAction->execute($churchData->tenantId);
 
                 if($subDomainActionCreated)
                 {
-                    return [
-                        'message'   =>  ReturnMessages::SUCCESS_CHURCH_REGISTERED,
-                        'data'      =>  [
-                            'church'    =>  $church,
-                            'user'      =>  $user
-                        ]
-                    ];
+                    if(!$s3->doesBucketExist($churchData->tenantId))
+                    {
+                        $s3->createBucket(['Bucket' => $churchData->tenantId,]);
+                        $this->s3->setBucketAsPublic($churchData->tenantId, $s3);
+
+                        $this->createS3DefaultFoldersAction->execute(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
+
+                        return [
+                            'message'   =>  ReturnMessages::SUCCESS_CHURCH_REGISTERED,
+                            'data'      =>  [
+                                'church'    =>  $church,
+                                'user'      =>  $user
+                            ]
+                        ];
+                    }
                 }
             }
         }

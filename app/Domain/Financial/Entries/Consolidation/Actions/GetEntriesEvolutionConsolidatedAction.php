@@ -34,7 +34,7 @@ class GetEntriesEvolutionConsolidatedAction
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function __invoke(string $consolidatedValues, int $limit = 6): array
+    public function execute(string $consolidatedValues, int $limit = 6): array
     {
         $entriesConsolidation = $this->consolidatedEntriesRepository->getEntriesEvolutionConsolidation($consolidatedValues, $limit);
         $countMonthsNoConsolidated = $entriesConsolidation->where(ConsolidationRepository::CONSOLIDATED_COLUMN,
@@ -44,7 +44,7 @@ class GetEntriesEvolutionConsolidatedAction
         //if (($entriesConsolidation->count() > 1 or $limit < 6) and ($entriesConsolidation->count() != $countMonthsNoConsolidated))
         if ($entriesConsolidation->count() > 1)
         {
-            $financialSettings = $this->getFinancialSettingsAction->__invoke();
+            $financialSettings = $this->getFinancialSettingsAction->execute();
             $monthlyTarget = $financialSettings->monthly_budget_tithes;
             $maxTitheAmount = $entriesConsolidation->max(ConsolidationRepository::AMOUNT_TITHE_COLUMN);
 

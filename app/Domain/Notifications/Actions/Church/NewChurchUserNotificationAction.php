@@ -20,7 +20,7 @@ class NewChurchUserNotificationAction
     /**
      * @throws Throwable
      */
-    public function __invoke(UserData $userData, UserDetailData $userDetailData, string $tenant): void
+    public function execute(UserData $userData, UserDetailData $userDetailData, string $tenant): void
     {
         Mail::to($userData->email)->send(new NewChurchUserMail($userData, $userDetailData, $tenant));
     }

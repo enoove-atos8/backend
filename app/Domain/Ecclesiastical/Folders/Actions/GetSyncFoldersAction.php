@@ -23,7 +23,7 @@ class GetSyncFoldersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Collection
+    public function execute(): Collection
     {
         return $this->foldersRepository->getFolders();
     }

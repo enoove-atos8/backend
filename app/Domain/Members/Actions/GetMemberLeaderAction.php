@@ -30,7 +30,7 @@ class GetMemberLeaderAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(int $groupId, bool $groupLeader = true): Member|Model|Collection
+    public function execute(int $groupId, bool $groupLeader = true): Member|Model|Collection
     {
         $member = $this->memberRepository->getMemberAsGroupLeader($groupId);
 

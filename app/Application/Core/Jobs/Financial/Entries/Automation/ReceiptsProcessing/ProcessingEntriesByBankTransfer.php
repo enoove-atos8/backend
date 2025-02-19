@@ -152,7 +152,7 @@ class ProcessingEntriesByBankTransfer
             tenancy()->initialize($tenant);
 
             $this->googleDriveService->defineInstanceGoogleDrive($tenant);
-            $this->foldersData = $this->getSyncFoldersAction->__invoke();
+            $this->foldersData = $this->getSyncFoldersAction->execute();
 
             foreach ($this->foldersData as $folderData) {
                 $this->processFolder($folderData, $tenant);
@@ -209,16 +209,16 @@ class ProcessingEntriesByBankTransfer
 
             $this->setEntryData($extractedData, $member, $folderData);
 
-            $entry = $this->createEntryAction->__invoke($this->entryData, $this->consolidationEntriesData);
-            $this->updateTimestampValueCPFEntryAction->__invoke($entry->id, $timestampValueCpf);
+            $entry = $this->createEntryAction->execute($this->entryData, $this->consolidationEntriesData);
+            $this->updateTimestampValueCPFEntryAction->execute($entry->id, $timestampValueCpf);
 
             if(!$member)
-                $this->updateIdentificationPendingEntryAction->__invoke($entry->id, self::IDENTIFICATION_PENDING_1);
+                $this->updateIdentificationPendingEntryAction->execute($entry->id, self::IDENTIFICATION_PENDING_1);
 
             $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_PATH, $tenant);
             if($fileUploaded != '')
             {
-                $this->updateReceiptLinkEntryAction->__invoke($entry->id, $fileUploaded);
+                $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUploaded);
                 $this->googleDriveService->renameFile($file->id, $fileUploaded, 'FILE_READ', $extractedData['data']['institution']);
             }
         }
@@ -238,7 +238,7 @@ class ProcessingEntriesByBankTransfer
                 $this->devolution,
                 $fileUploaded);
 
-            $this->createReadingErrorReceiptAction->__invoke($this->readingErrorReceiptData);
+            $this->createReadingErrorReceiptAction->execute($this->readingErrorReceiptData);
 
             $this->googleDriveService->renameFile($file->id, null, $extractedData['status'], $extractedData['data']['institution']);
         }
@@ -294,7 +294,7 @@ class ProcessingEntriesByBankTransfer
 
         if($this->devolution)
         {
-            $financialGroup = $this->getFinancialGroupAction->__invoke();
+            $financialGroup = $this->getFinancialGroupAction->execute();
             $this->groupReceivedId = $financialGroup->id;
             $this->groupReturnedId = $folderData->ecclesiastical_divisions_group_id;
         }
@@ -317,14 +317,14 @@ class ProcessingEntriesByBankTransfer
             return null;
         }
 
-        $member = $this->getMemberByMiddleCPFAction->__invoke($middleCpf);
+        $member = $this->getMemberByMiddleCPFAction->execute($middleCpf);
 
         if (!$member)
         {
-            $member = $this->getMemberByCPFAction->__invoke($middleCpf);
+            $member = $this->getMemberByCPFAction->execute($middleCpf);
 
             if ($member)
-                $this->updateMiddleCpfMemberAction->__invoke($member->id, $middleCpf);
+                $this->updateMiddleCpfMemberAction->execute($member->id, $middleCpf);
         }
 
         return $member;
@@ -345,7 +345,7 @@ class ProcessingEntriesByBankTransfer
             return false;
         }
 
-        $entry = $this->getEntryByTimestampValueCpfAction->__invoke($timestampValueCpf);
+        $entry = $this->getEntryByTimestampValueCpfAction->execute($timestampValueCpf);
         if ($entry) {
             $this->googleDriveService->renameFile($file->id, null, 'DUPLICATED');
             return true;
@@ -363,7 +363,7 @@ class ProcessingEntriesByBankTransfer
      */
     public function getReturnReceivingGroup(): int | null
     {
-        $group = $this->getReturnReceivingGroupAction->__invoke();
+        $group = $this->getReturnReceivingGroupAction->execute();
 
         if(!is_null($group))
         {
@@ -425,11 +425,11 @@ class ProcessingEntriesByBankTransfer
     public function getTenantsByPlan(string $planName): array
     {
         $arrTenants = [];
-        $plan = $this->getPlanByNameAction->__invoke($planName);
+        $plan = $this->getPlanByNameAction->execute($planName);
 
         if(!is_null($plan))
         {
-            $tenants = $this->getChurchesByPlanIdAction->__invoke($plan->id);
+            $tenants = $this->getChurchesByPlanIdAction->execute($plan->id);
 
             if(count($tenants) > 0)
             {
@@ -454,7 +454,7 @@ class ProcessingEntriesByBankTransfer
      */
     public function setEntryData(array $extractedData, mixed $member, $folderData): void
     {
-        $reviewer = $this->getReviewerAction->__invoke();
+        $reviewer = $this->getReviewerAction->execute();
 
         $currentDate = date('Y-m-d');
         $extractedDate = $extractedData['data']['date'];

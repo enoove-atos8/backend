@@ -36,7 +36,7 @@ class UpdateEntryAction
      * @throws Throwable
      * @throws BindingResolutionException
      */
-    public function __invoke($id, EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): mixed
+    public function execute($id, EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): mixed
     {
         $dateEntryRegister = $entryData->dateEntryRegister;
         $dateTransactionCompensation = $entryData->dateTransactionCompensation;
@@ -47,7 +47,7 @@ class UpdateEntryAction
                 $entryData->dateEntryRegister = substr($dateTransactionCompensation, 0, 7) . '-01';
         }
 
-        $this->createConsolidatedEntryAction->__invoke($consolidationEntriesData);
+        $this->createConsolidatedEntryAction->execute($consolidationEntriesData);
         $entry = $this->entryRepository->updateEntry($id, $entryData);
 
         if($entry)

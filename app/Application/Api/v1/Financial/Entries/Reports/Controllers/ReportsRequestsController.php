@@ -29,7 +29,7 @@ class ReportsRequestsController extends Controller
     {
         try
         {
-            $response = $getReportsAction();
+            $response = $getReportsAction->execute();
 
             return new ReportsRequestsResourceCollection($response);
 
@@ -48,7 +48,7 @@ class ReportsRequestsController extends Controller
     {
         try
         {
-            $createReportJobAction($reportJobRequest->reportJobData());
+            $createReportJobAction->execute($reportJobRequest->reportJobData());
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_REPORT_SEND_TO_PROCESS,

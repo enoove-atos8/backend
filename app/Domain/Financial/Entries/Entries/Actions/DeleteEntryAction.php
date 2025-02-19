@@ -36,7 +36,7 @@ class DeleteEntryAction
      * @return bool
      * @throws GeneralExceptions|Throwable
      */
-    public function __invoke($id): bool
+    public function execute($id): bool
     {
         $entryDeleted = $this->entryRepository->deleteEntry($id);
 

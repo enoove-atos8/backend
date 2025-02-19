@@ -27,7 +27,7 @@ class CreateConsolidatedEntryAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(ConsolidationEntriesData $consolidationEntriesData): void
+    public function execute(ConsolidationEntriesData $consolidationEntriesData): void
     {
         if($consolidationEntriesData->date !== null)
         {

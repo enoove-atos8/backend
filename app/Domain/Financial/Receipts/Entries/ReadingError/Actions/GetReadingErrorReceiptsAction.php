@@ -25,7 +25,7 @@ class GetReadingErrorReceiptsAction
      * @return Collection|null
      * @throws GeneralExceptions
      */
-    public function __invoke(string $reason): Collection | null
+    public function execute(string $reason): Collection | null
     {
         $receipts = $this->readingErrorReceiptRepository->getReadingErrorReceipts($reason);
 

@@ -25,7 +25,7 @@ class GetTotalGeneralEntriesAction
      * @return array
      * @throws BindingResolutionException
      */
-    public function __invoke(string|null $dates, array $filters): array
+    public function execute(string|null $dates, array $filters): array
     {
         $entries = $this->totalGeneralRepository->getTotalGeneralEntries($dates, $filters);
 

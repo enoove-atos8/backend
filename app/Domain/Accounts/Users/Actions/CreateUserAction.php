@@ -35,20 +35,20 @@ class CreateUserAction
     /**
      * @throws Throwable
      */
-    public function __invoke(UserData $userData, UserDetailData $userDetailData, string $tenant, bool $firstUserChurch = false): User
+    public function execute(UserData $userData, UserDetailData $userDetailData, string $tenant, bool $firstUserChurch = false): User
     {
         if(!$firstUserChurch)
             $userData->password = $this->generatePassword();
 
         $user = $this->userRepository->createUser($userData);
-        $this->createUserDetailAction->__invoke($user->id, $userDetailData);
+        $this->createUserDetailAction->execute($user->id, $userDetailData);
 
         $user->assignRole($userData->roles);
 
         if($firstUserChurch)
-            $this->newChurchUserNotificationAction->__invoke($userData, $userDetailData, $tenant);
+            $this->newChurchUserNotificationAction->execute($userData, $userDetailData, $tenant);
         else
-            $this->newUserNotificationAction->__invoke($userData, $userDetailData, $tenant);
+            $this->newUserNotificationAction->execute($userData, $userDetailData, $tenant);
 
         return $user;
     }

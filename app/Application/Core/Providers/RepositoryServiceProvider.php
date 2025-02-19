@@ -28,7 +28,9 @@ use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCo
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepositoryInterface;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
+use Domain\Financial\SyncStorage\Interfaces\SyncStorageFolderRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
+use Domain\Mobile\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
@@ -42,7 +44,9 @@ use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
 use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
+use Infrastructure\Repositories\Financial\SyncStorageFolders\SyncStorageFoldersRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
+use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
 
 class RepositoryServiceProvider extends ServiceProvider
 {
@@ -75,6 +79,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReportRequestsRepositoryInterface::class, ReportRequestsRepository::class);
         $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
         $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
+        $this->app->bind(SyncStorageRepositoryInterface::class, SyncStorageRepository::class);
+
     }
 
     /**

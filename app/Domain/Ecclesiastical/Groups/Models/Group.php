@@ -22,6 +22,7 @@ class Group extends Model
         'leader_id',
         'name',
         'description',
+        'slug',
         'financial_transactions_exists',
         'enabled',
         'temporary_event',

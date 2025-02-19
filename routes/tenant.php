@@ -17,6 +17,7 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesCont
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
 use Application\Api\v1\Members\Controllers\MemberController;
+use Application\Api\v1\Mobile\SyncStorage\Controllers\SyncStorageController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -39,6 +40,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         ];
     });
 
+
 //==================================================================================================================================
 //================================================  NonAuthenticated Routes  =======================================================
 //==================================================================================================================================
@@ -52,7 +54,39 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
     |------------------------------------------------------------------------------------------
     */
 
-        Route::post('login', [AuthController::class, 'login'])->name('login');
+    Route::post('login', [AuthController::class, 'login'])->name('login');
+
+
+    /*
+        |==========================================================================
+        |=============================== Mobile Routes ============================
+        |==========================================================================
+        */
+
+    Route::prefix('mobile')->group(function () {
+
+        /*
+        |------------------------------------------------------------------------------------------
+        | Resource Group: ecclesiastical
+        | Resource: Divisions
+        | EndPoints: /v1/ecclesiastical/divisions
+        |
+        |   1 - GET - / - OK
+        |------------------------------------------------------------------------------------------
+        */
+
+        Route::prefix('syncStorage')->group(function () {
+
+            /*
+             * Action: POST
+             * EndPoint: /sendData
+             * Description: send
+             */
+
+            Route::post('/sendData', [SyncStorageController::class, 'sendDataToServer']);
+
+        });
+    });
 
 
 
@@ -762,5 +796,21 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             });
 
         });
+
+
+
+        /*
+        |==========================================================================
+        |=============================== Mobile Routes ============================
+        |==========================================================================
+        */
+
+        /*
+        |--------------------------------------------------------------------------
+        | Group Ecclesiastical routes
+        |--------------------------------------------------------------------------
+        |
+        */
+
     });
 });

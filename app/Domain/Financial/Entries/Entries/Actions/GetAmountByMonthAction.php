@@ -17,7 +17,7 @@ class GetAmountByMonthAction
     }
 
 
-    public function __invoke(string $date): float
+    public function execute(string $date): float
     {
         $entries = $this->entryRepositoryInterface->getAllEntriesByDateAndType($date, EntryRepository::REGISTER_INDICATOR);
         return $entries->sum(EntryRepository::AMOUNT_COLUMN);

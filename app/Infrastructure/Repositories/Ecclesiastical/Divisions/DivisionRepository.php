@@ -15,14 +15,14 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
 {
     protected mixed $model = Division::class;
     const TABLE_NAME = 'ecclesiastical_divisions';
-    const ROUTE_RESOURCE_COLUMN = 'route_resource';
+    const SLUG_COLUMN = 'slug';
     const ENABLED_COLUMN = 'enabled';
     const ID_COLUMN = 'ecclesiastical_divisions.id';
     const NAME_COLUMN = 'ecclesiastical_divisions.name';
 
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions.id as division_id',
-        'ecclesiastical_divisions.route_resource  as division_route_resource',
+        'ecclesiastical_divisions.slug  as division_slug',
         'ecclesiastical_divisions.name as division_name',
         'ecclesiastical_divisions.description as division_description',
         'ecclesiastical_divisions.enabled as division_enabled',
@@ -38,12 +38,13 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
     /**
      * @throws BindingResolutionException
      */
-    public function getDivisionByName(string $division): Model
+    public function getDivisionByName(string $division): Model | null
     {
-        $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::ROUTE_RESOURCE_COLUMN, $division, 'and');
-
-        return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
+        return $this->getItemByColumn(
+            self::SLUG_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            $division
+        );
     }
 
 
@@ -66,17 +67,16 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
 
 
     /**
-     * @param string $division
-     * @return Model
+     * @param int $id
+     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getDivisionIdByName(string $division): Model
+    public function getDivisionById(int $id): Model | null
     {
-        $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::ROUTE_RESOURCE_COLUMN, $division, 'and');
-
-        return $this->getItemWithRelationshipsAndWheres(
-            $this->queryConditions
+        return $this->getItemByColumn(
+            self::ID_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            $id
         );
     }
 
@@ -89,7 +89,7 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
     public function createDivision(DivisionData $divisionData): Division
     {
         return $this->create([
-            'route_resource'    =>   $divisionData->routeResource,
+            'slug'              =>   $divisionData->slug,
             'name'              =>   $divisionData->name,
             'description'       =>   $divisionData->description,
             'enabled'           =>   $divisionData->enabled,

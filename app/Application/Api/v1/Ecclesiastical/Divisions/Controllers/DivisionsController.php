@@ -7,7 +7,7 @@ use Application\Api\v1\Ecclesiastical\Divisions\Resources\DivisionsResourceColle
 use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\CreateNewDivisionAction;
-use Domain\Ecclesiastical\Divisions\Actions\GetDivisionIdByName;
+use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsAction;
 use Domain\Ecclesiastical\Divisions\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
@@ -32,7 +32,8 @@ class DivisionsController extends Controller
     {
         try
         {
-            $createNewDivisionAction($divisionRequest->divisionData());
+            $tenant = explode('.', $divisionRequest->getHost())[0];
+            $createNewDivisionAction->execute($divisionRequest->divisionData(), $tenant);
 
             return response([
                 'message'   =>  ReturnMessages::DIVISION_CREATED,
@@ -58,7 +59,7 @@ class DivisionsController extends Controller
         try
         {
             $enabled = $request->input('enabled');
-            $response = $getDivisionsAction((int) $enabled);
+            $response = $getDivisionsAction->execute((int) $enabled);
 
             return new DivisionsResourceCollection($response);
 
@@ -72,21 +73,21 @@ class DivisionsController extends Controller
 
     /**
      * @param Request $request
-     * @param GetDivisionIdByName $getDivisionIdByName
+     * @param GetDivisionByNameAction $getDivisionByName
      * @return ResponseFactory|Application|Response
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getDivisionIdByName(Request $request, GetDivisionIdByName $getDivisionIdByName): ResponseFactory|Application|Response
+    public function getDivisionIdByName(Request $request, GetDivisionByNameAction $getDivisionByName): ResponseFactory|Application|Response
     {
         try
         {
             $division = $request->input('division');
-            $response = $getDivisionIdByName($division);
+            $response = $getDivisionByName->execute($division);
 
             return response([
                 'division'   =>  [
-                    'id'    =>  $response
+                    'id'    =>  $response->id
                 ]
             ], 201);
 

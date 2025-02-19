@@ -6,7 +6,7 @@ use Application\Api\v1\Ecclesiastical\Groups\Requests\GroupRequest;
 use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupResourceCollection;
 use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupsWithDivisionsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Ecclesiastical\Divisions\Actions\GetDivisionIdByName;
+use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Groups\Actions\CreateNewGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
@@ -36,7 +36,8 @@ class GroupController extends Controller
     {
         try
         {
-            $createNewGroupAction($groupRequest->groupData());
+            $tenant = explode('.', $groupRequest->getHost())[0];
+            $createNewGroupAction->execute($groupRequest->groupData(), $tenant);
 
             return response([
                 'message'   =>  ReturnMessages::GROUP_CREATED,
@@ -52,18 +53,18 @@ class GroupController extends Controller
     /**
      * @param Request $request
      * @param GetGroupsByDivisionAction $getGroupsByDivisionAction
-     * @param GetDivisionIdByName $getDivisionIdByName
+     * @param GetDivisionByNameAction $getDivisionByName
      * @return GroupResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getGroupsByDivision(Request $request, GetGroupsByDivisionAction $getGroupsByDivisionAction, GetDivisionIdByName $getDivisionIdByName): GroupResourceCollection
+    public function getGroupsByDivision(Request $request, GetGroupsByDivisionAction $getGroupsByDivisionAction, GetDivisionByNameAction $getDivisionByName): GroupResourceCollection
     {
         try
         {
             $divisionParam = $request->input('division');
-            $division = $getDivisionIdByName($divisionParam);
-            $response = $getGroupsByDivisionAction($divisionParam);
+            $division = $getDivisionByName->execute($divisionParam);
+            $response = $getGroupsByDivisionAction->execute($divisionParam);
 
             return new GroupResourceCollection($response, $division);
 
@@ -85,7 +86,7 @@ class GroupController extends Controller
     {
         try
         {
-            $response = $getAllGroupsAction();
+            $response = $getAllGroupsAction->execute();
 
             return new GroupResourceCollection($response);
 
@@ -108,7 +109,7 @@ class GroupController extends Controller
     {
         try
         {
-            $response = $getAllGroupsWithDivisionsAction();
+            $response = $getAllGroupsWithDivisionsAction->execute();
 
             return new GroupsWithDivisionsResourceCollection($response);
 

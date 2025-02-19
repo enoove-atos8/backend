@@ -31,7 +31,7 @@ class UpdateReceiptLinkEntryAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(int $entryId, string $receiptLink): mixed
+    public function execute(int $entryId, string $receiptLink): mixed
     {
         $entry = $this->entryRepository->updateReceiptLink($entryId, $receiptLink);
 

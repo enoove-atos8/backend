@@ -59,7 +59,7 @@ class GenerateMonthlyReceiptsReport
     /**
      * @throws Throwable
      */
-    public function __invoke(ReportRequests $requests, string $tenant): void
+    public function execute(ReportRequests $requests, string $tenant): void
     {
         $dates = $requests->dates;
 
@@ -78,7 +78,7 @@ class GenerateMonthlyReceiptsReport
             ];
 
             if(!is_null($requests->group_received_id))
-                $group = $this->getGroupsByIdAction->__invoke($requests->group_received_id);
+                $group = $this->getGroupsByIdAction->execute($requests->group_received_id);
 
             $filters = [
               'entryTypes'      => implode(',', $requests->entry_types),
@@ -90,7 +90,7 @@ class GenerateMonthlyReceiptsReport
 
             foreach ($dates as $date)
             {
-                $entries = $this->getEntriesAction->__invoke($date, $filters, false);
+                $entries = $this->getEntriesAction->execute($date, $filters, false);
                 $linkReceiptEntries = [];
 
                 foreach ($entries as $entry){
@@ -118,21 +118,21 @@ class GenerateMonthlyReceiptsReport
             {
                 $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group, $entryTypesAmount);
                 $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS, $tenant);
-                $this->updateLinkReportRequestsAction->__invoke($requests->id, $pathReportUploaded);
-                $this->updateAmountsReportRequestsAction->__invoke($requests->id, $entryTypesAmount);
+                $this->updateLinkReportRequestsAction->execute($requests->id, $pathReportUploaded);
+                $this->updateAmountsReportRequestsAction->execute($requests->id, $entryTypesAmount);
 
                 $this->cleanReportTempDir(self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/reports/temp/');
 
-                $this->updateStatusReportRequestsAction->__invoke($requests->id, ReportRequestsRepository::DONE_STATUS_VALUE);
+                $this->updateStatusReportRequestsAction->execute($requests->id, ReportRequestsRepository::DONE_STATUS_VALUE);
             }
             else
             {
-                $this->updateStatusReportRequestsAction->__invoke($requests->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
+                $this->updateStatusReportRequestsAction->execute($requests->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
             }
         }
         else
         {
-            $this->updateStatusReportRequestsAction->__invoke($requests->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
+            $this->updateStatusReportRequestsAction->execute($requests->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
         }
     }
 

@@ -15,7 +15,7 @@ class Division extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'route_resource',
+        'slug',
         'name',
         'description',
         'enabled',

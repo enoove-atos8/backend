@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Accounts\Users\Interfaces;
+namespace App\Domain\Accounts\TenantVerification\Interfaces;
 
 
 

@@ -28,7 +28,7 @@ class GetMemberByMiddleCPFAction
      * @return Model|null
      * @throws BindingResolutionException
      */
-    public function __invoke(string $cpf): Model | null
+    public function execute(string $cpf): Model | null
     {
         $member = $this->memberRepository->getMembersByMiddleCpf($cpf);
 

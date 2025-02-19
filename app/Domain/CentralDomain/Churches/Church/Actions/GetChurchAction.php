@@ -25,7 +25,7 @@ class GetChurchAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $tenant): Model
+    public function execute(string $tenant): Model
     {
         try
         {

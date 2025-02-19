@@ -22,17 +22,10 @@ class GetDivisionByNameAction
     /**
      * @throws Throwable
      */
-    public function __invoke($division): Model
+    public function execute(string $division): Model | null
     {
         $division = $this->divisionRepository->getDivisionByName($division);
 
-        if($division->id != null)
-        {
-            return $division;
-        }
-        else
-        {
-            throw new GeneralExceptions('', 404);
-        }
+        return $division->id != null ? $division : null;
     }
 }

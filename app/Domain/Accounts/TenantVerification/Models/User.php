@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Accounts\Users\Models;
+namespace App\Domain\Accounts\TenantVerification\Models;
 
 use App\Domain\Accounts\Users\Models\UserDetail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;

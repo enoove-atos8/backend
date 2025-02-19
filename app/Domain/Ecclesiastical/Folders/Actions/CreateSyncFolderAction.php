@@ -20,7 +20,7 @@ class CreateSyncFolderAction
 
 
 
-    public function __invoke(SyncFoldersData $syncFoldersData)
+    public function execute(SyncFoldersData $syncFoldersData)
     {
         // TODO:
     }

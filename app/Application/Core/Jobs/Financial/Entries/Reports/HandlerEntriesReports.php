@@ -72,7 +72,7 @@ class HandlerEntriesReports
         {
             tenancy()->initialize($tenant);
 
-            $toProcessRequests = $this->getReportsRequestsByStatusAction->__invoke(ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
+            $toProcessRequests = $this->getReportsRequestsByStatusAction->execute(ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
 
             if(count($toProcessRequests) > 0)
             {
@@ -80,24 +80,24 @@ class HandlerEntriesReports
                 {
                     try
                     {
-                        $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::IN_PROGRESS_STATUS_VALUE);
+                        $this->updateStatusReportRequestsAction->execute($report->id, ReportRequestsRepository::IN_PROGRESS_STATUS_VALUE);
 
                         if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
-                            $this->generateMonthlyReceiptsReport->__invoke($report, $tenant);
+                            $this->generateMonthlyReceiptsReport->execute($report, $tenant);
 
                         //if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
-                        //    $this->generateMonthlyReceiptsReport->__invoke();
+                        //    $this->generateMonthlyReceiptsReport->execute();
 
                         //if($report->report_name == ReportRequestsRepository::MONTHLY_ENTRIES_REPORT_NAME)
-                        //    $this->generateQuarterlyEntriesReports->__invoke();
+                        //    $this->generateQuarterlyEntriesReports->execute();
                     }
                     catch(GeneralExceptions $e)
                     {
                         if($e->getCode() == 404)
-                            $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
+                            $this->updateStatusReportRequestsAction->execute($report->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
 
                         if($e->getCode() == 500)
-                            $this->updateStatusReportRequestsAction->__invoke($report->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
+                            $this->updateStatusReportRequestsAction->execute($report->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
 
                         throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
                     }
@@ -115,7 +115,7 @@ class HandlerEntriesReports
     public function getActiveTenants(): array
     {
         $arrTenants = [];
-        $tenants = $this->getChurchesAction->__invoke();
+        $tenants = $this->getChurchesAction->execute();
 
         if(count($tenants) > 0)
         {

@@ -2,10 +2,7 @@
 
 namespace Application\Api\v1\Ecclesiastical\Divisions\Requests;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
-use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -31,7 +28,7 @@ class DivisionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'routeResource'     =>  'required',
+            'slug'              =>  'required',
             'name'              =>  'required',
             'description'       =>  '',
             'requireLeader'     =>  '',
@@ -51,7 +48,7 @@ class DivisionRequest extends FormRequest
     {
         return [
             'name.required'             =>  "O preenchimento do nome da divisão é obrigatório!",
-            'routeResource.required'    =>  "O Route Resource deve ser enviado juntamente com os dados preenchidos, tente novamente mais tarde!",
+            'slug.required'    =>  "O Slug deve ser enviado juntamente com os dados preenchidos, tente novamente mais tarde!",
             'enabled.required'          =>  "O campo enabled deve ser enviado juntamente com os dados preenchidos, tente novamente mais tarde!",
         ];
     }
@@ -66,7 +63,7 @@ class DivisionRequest extends FormRequest
     public function divisionData(): DivisionData
     {
         return new DivisionData(
-            routeResource:      $this->input('routeResource'),
+            slug:               $this->input('slug'),
             name:               $this->input('name'),
             description:        $this->input('description'),
             requireLeader:      $this->input('requireLeader'),

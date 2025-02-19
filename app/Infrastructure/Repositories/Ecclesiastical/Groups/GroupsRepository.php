@@ -32,6 +32,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     const MEMBER_ID_COLUMN = 'members.id';
     const MEMBER_GROUP_LEADER_COLUMN = 'members.group_leader';
     const NAME_GROUP_COLUMN = 'name';
+    const SLUG_GROUP_COLUMN = 'slug';
 
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions_groups.id as groups_id',
@@ -40,6 +41,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'ecclesiastical_divisions_groups.leader_id as groups_leader_id',
         'ecclesiastical_divisions_groups.name as groups_name',
         'ecclesiastical_divisions_groups.description as groups_description',
+        'ecclesiastical_divisions_groups.slug as groups_slug',
         'ecclesiastical_divisions_groups.financial_transactions_exists as groups_transactions_exists',
         'ecclesiastical_divisions_groups.enabled as groups_enabled',
         'ecclesiastical_divisions_groups.temporary_event as groups_temporary_event',
@@ -57,6 +59,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'g_received.leader_id AS g_received_leader_id',
         'g_received.name AS g_received_name',
         'g_received.description AS g_received_description',
+        'g_received.slug AS g_received_slug',
         'g_received.financial_transactions_exists AS g_received_transactions_exists',
         'g_received.enabled AS g_received_enabled',
         'g_received.temporary_event AS g_received_temporary_event',
@@ -74,6 +77,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'g_returned.leader_id AS g_returned_leader_id',
         'g_returned.name AS g_returned_name',
         'g_returned.description AS g_returned_description',
+        'g_returned.slug AS g_returned_slug',
         'g_returned.financial_transactions_exists AS g_returned_transactions_exists',
         'g_returned.enabled AS g_returned_enabled',
         'g_returned.temporary_event AS g_returned_temporary_event',
@@ -189,6 +193,21 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     }
 
 
+    /**
+     * @param string $name
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getGroupsByName(string $name): Model | null
+    {
+        return $this->getItemByColumn(
+            self::SLUG_GROUP_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            $name
+        );
+    }
+
+
 
 
     /**
@@ -203,6 +222,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             'leader_id'                     =>   $groupData->leaderId,
             'name'                          =>   $groupData->groupName,
             'description'                   =>   $groupData->description,
+            'slug'                          =>   $groupData->slug,
             'financial_transactions_exists' =>   $groupData->financialMovement,
             'enabled'                       =>   $groupData->enabled,
             'temporary_event'               =>   $groupData->temporaryEvent,

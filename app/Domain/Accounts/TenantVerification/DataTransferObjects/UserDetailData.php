@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Accounts\Users\DataTransferObjects;
+namespace App\Domain\Accounts\TenantVerification\DataTransferObjects;
 
 use Spatie\DataTransferObject\DataTransferObject;
 

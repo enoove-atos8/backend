@@ -9,8 +9,8 @@ use Illuminate\Support\Collection;
 
 interface DivisionRepositoryInterface
 {
-    public function getDivisionByName(string $division): Model;
-    public function getDivisionIdByName(string $division): Model;
+    public function getDivisionByName(string $division): Model | null;
+    public function getDivisionById(int $id): Model | null;
     public function getDivisions(int $enabled): Collection;
     public function createDivision(DivisionData $divisionData): Division;
 }

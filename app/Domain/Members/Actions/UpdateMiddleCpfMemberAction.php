@@ -24,7 +24,7 @@ class UpdateMiddleCpfMemberAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(int $memberId, string $middleCpf): mixed
+    public function execute(int $memberId, string $middleCpf): mixed
     {
         $updatedMember = $this->memberRepository->updateMiddleCpf($memberId, $middleCpf);
 

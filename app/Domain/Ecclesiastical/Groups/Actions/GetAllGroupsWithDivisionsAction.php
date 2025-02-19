@@ -28,10 +28,10 @@ class GetAllGroupsWithDivisionsAction
     /**
      * @throws Throwable
      */
-    public function __invoke(int $enabled = 1): array
+    public function execute(int $enabled = 1): array
     {
         $groups = $this->groupsRepository->getAllGroups();
-        $divisions = $this->getDivisionsAction->__invoke();
+        $divisions = $this->getDivisionsAction->execute();
 
         if(count($groups) > 0)
         {

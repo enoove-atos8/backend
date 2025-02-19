@@ -24,7 +24,7 @@ class GetDevolutionEntriesAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string|null $date): Collection
+    public function execute(string|null $date): Collection
     {
         return $this->entryRepository->getDevolutionEntries($date);
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Accounts\Users\Constants;
+namespace Domain\Accounts\TenantVerification\Constants;
 
 class ReturnMessages
 {

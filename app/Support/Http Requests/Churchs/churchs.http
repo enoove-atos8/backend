@@ -10,7 +10,7 @@ Content-Type: application/json
         "name": "Igreja de Test",
         "activated": true,
         "doc_type": "cnpj",
-        "doc_number": "24122522000121"
+        "doc_number": "24666522069871"
     },
     "user": {
         "admin_email_tenant": "rafaelhenrique10101@gmail.com",

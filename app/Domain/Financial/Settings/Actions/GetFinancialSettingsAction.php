@@ -24,7 +24,7 @@ class GetFinancialSettingsAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Model
+    public function execute(): Model
     {
         $settingData = $this->financialSettingsRepository->getCurrentFinancialSettingsData();
 

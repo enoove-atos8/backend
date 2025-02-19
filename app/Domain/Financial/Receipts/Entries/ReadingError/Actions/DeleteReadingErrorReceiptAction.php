@@ -19,7 +19,7 @@ class DeleteReadingErrorReceiptAction
     /**
      * @throws BindingResolutionException
      */
-    public function __invoke(int $id): bool
+    public function execute(int $id): bool
     {
         $deleted = $this->readingErrorReceiptRepository->deleteReceipt($id);
 

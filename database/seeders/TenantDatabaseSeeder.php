@@ -20,7 +20,7 @@ class TenantDatabaseSeeder extends Seeder
         $this->call([
             RolesAndPermissionsSeeder::class,
             EcclesiasticalDivisionsSeeder::class,
-            EcclesiasticalDivisionsGroupsSeeder::class,
+            //EcclesiasticalDivisionsGroupsSeeder::class,
             FinancialSettingsSeeder::class
         ]);
     }

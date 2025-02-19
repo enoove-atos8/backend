@@ -14,7 +14,7 @@ class GenerateMonthlyEntriesReport
     /**
      * @throws Throwable
      */
-    public function __invoke(): void
+    public function execute(): void
     {
 
     }

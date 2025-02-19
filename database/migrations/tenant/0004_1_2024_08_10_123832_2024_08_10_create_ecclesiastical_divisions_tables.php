@@ -16,7 +16,7 @@ return new class extends Migration
             Schema::create('ecclesiastical_divisions', function (Blueprint $table) {
 
                 $table->integer('id', true)->autoIncrement();
-                $table->string('route_resource')->nullable(false);
+                $table->string('slug')->nullable(false);
                 $table->string('name')->nullable(false);
                 $table->string('description')->nullable();
                 $table->boolean('enabled')->nullable(false)->default(1);

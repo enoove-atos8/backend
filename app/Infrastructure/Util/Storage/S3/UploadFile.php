@@ -3,13 +3,9 @@
 namespace Infrastructure\Util\Storage\S3;
 
 use Aws\S3\Exception\S3Exception;
-use Exception;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\App;
-use Illuminate\Support\Facades\Storage;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Aws\S3\S3Client;
-use PhpParser\Node\Scalar\String_;
 
 class UploadFile
 {
