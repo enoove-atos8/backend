@@ -16,6 +16,7 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
     protected mixed $model = Division::class;
     const TABLE_NAME = 'ecclesiastical_divisions';
     const SLUG_COLUMN = 'slug';
+    const ROUTE_RESOURCE_COLUMN = 'route_resource';
     const ENABLED_COLUMN = 'enabled';
     const ID_COLUMN = 'ecclesiastical_divisions.id';
     const NAME_COLUMN = 'ecclesiastical_divisions.name';
@@ -41,7 +42,7 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
     public function getDivisionByName(string $division): Model | null
     {
         return $this->getItemByColumn(
-            self::SLUG_COLUMN,
+            self::ROUTE_RESOURCE_COLUMN,
             BaseRepository::OPERATORS['EQUALS'],
             $division
         );

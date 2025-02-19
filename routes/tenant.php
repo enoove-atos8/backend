@@ -86,6 +86,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             Route::post('/sendData', [SyncStorageController::class, 'sendDataToServer']);
 
         });
+
+        Route::prefix('groups')->group(function () {
+
+            /*
+             * Action: POST
+             * EndPoint: /sendData
+             * Description: send
+             */
+
+            Route::get('/getGroupsByDivision', [GroupController::class, 'getGroupsToMobileApp']);
+
+        });
     });
 
 

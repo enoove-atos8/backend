@@ -4,6 +4,7 @@ namespace Application\Api\v1\Ecclesiastical\Groups\Controllers;
 
 use Application\Api\v1\Ecclesiastical\Groups\Requests\GroupRequest;
 use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupResourceCollection;
+use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupsToMobileAppResourceCollection;
 use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupsWithDivisionsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
@@ -112,6 +113,30 @@ class GroupController extends Controller
             $response = $getAllGroupsWithDivisionsAction->execute();
 
             return new GroupsWithDivisionsResourceCollection($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param GetGroupsByDivisionAction $getGroupsByDivisionAction
+     * @return GroupsToMobileAppResourceCollection
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getGroupsToMobileApp(Request $request, GetGroupsByDivisionAction $getGroupsByDivisionAction): GroupsToMobileAppResourceCollection
+    {
+        try
+        {
+            $division = $request->input('division');
+            $response = $getGroupsByDivisionAction->execute($division);
+
+            return new GroupsToMobileAppResourceCollection($response);
 
         }
         catch (GeneralExceptions $e)
