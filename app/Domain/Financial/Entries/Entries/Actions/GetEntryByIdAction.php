@@ -23,7 +23,7 @@ class GetEntryByIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke($id): Model
+    public function execute($id): Model
     {
         $entry = $this->entryRepository->getEntryById($id);
 

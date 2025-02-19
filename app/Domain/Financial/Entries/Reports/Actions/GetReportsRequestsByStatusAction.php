@@ -24,7 +24,7 @@ class GetReportsRequestsByStatusAction
     /**
      * @throws BindingResolutionException
      */
-    public function __invoke(string $status): Collection
+    public function execute(string $status): Collection
     {
         return $this->reportRequestsRepository->getReportsByStatus($status);
     }

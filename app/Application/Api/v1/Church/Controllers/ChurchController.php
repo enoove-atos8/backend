@@ -17,7 +17,7 @@ class ChurchController extends Controller
      * Store a newly created resource in storage.
      *
      * @param ChurchRequest $churchRequest
-     * @param \Domain\CentralDomain\Churches\Church\Actions\CreateChurchAction $createChurchAction
+     * @param CreateChurchAction $createChurchAction
      * @return ChurchResource
      * @throws TenantCouldNotBeIdentifiedById
      * @throws UnknownProperties
@@ -26,7 +26,7 @@ class ChurchController extends Controller
     public function createChurch(ChurchRequest $churchRequest, CreateChurchAction $createChurchAction): ChurchResource
     {
         try {
-            $response = $createChurchAction(
+            $response = $createChurchAction->execute(
                 $churchRequest->churchData(),
                 $churchRequest->userData(),
                 $churchRequest->userDetailData());

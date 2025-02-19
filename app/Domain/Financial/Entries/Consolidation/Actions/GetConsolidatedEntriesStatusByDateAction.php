@@ -24,7 +24,7 @@ class GetConsolidatedEntriesStatusByDateAction
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke(ConsolidationEntriesData $consolidationEntriesData): array
+    public function execute(ConsolidationEntriesData $consolidationEntriesData): array
     {
         $consolidatedEntries = $this->consolidationEntriesRepository->getByDate($consolidationEntriesData->date);
 

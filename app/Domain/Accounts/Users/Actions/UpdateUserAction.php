@@ -28,10 +28,10 @@ class UpdateUserAction
      * @return User
      * @throws BindingResolutionException
      */
-    public function __invoke($id, UserData $userData, UserDetailData $userDetailData): User
+    public function execute($id, UserData $userData, UserDetailData $userDetailData): User
     {
         $this->userRepository->updateUser($id, $userData);
-        $this->updateUserDetailAction->__invoke($id, $userDetailData);
+        $this->updateUserDetailAction->execute($id, $userDetailData);
 
         $user = $this->userRepository->getUsers($id);
 

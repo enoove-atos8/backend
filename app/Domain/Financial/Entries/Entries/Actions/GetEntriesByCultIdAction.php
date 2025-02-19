@@ -23,7 +23,7 @@ class GetEntriesByCultIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke(int $id): Collection
+    public function execute(int $id): Collection
     {
         return $this->entryRepository->getEntriesByCultId($id);
     }

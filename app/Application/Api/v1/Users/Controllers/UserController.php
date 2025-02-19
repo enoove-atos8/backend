@@ -42,7 +42,7 @@ class UserController extends Controller
         {
             $tenant = explode('.', $userRequest->getHost())[0];
 
-            $createUserAction(
+            $createUserAction->execute(
                 $userRequest->userData(),
                 $userRequest->userDetailData(),
                 $tenant);
@@ -69,7 +69,7 @@ class UserController extends Controller
     {
         try
         {
-            $response = $getUsersAction();
+            $response = $getUsersAction->execute();
             return new UserResourceCollection($response);
         }
         catch (GeneralExceptions $e)
@@ -87,7 +87,7 @@ class UserController extends Controller
     {
         try
         {
-            $response = $getUserByIdAction($id);
+            $response = $getUserByIdAction->execute($id);
             return new UserResource($response);
 
         }
@@ -109,7 +109,7 @@ class UserController extends Controller
     {
         try
         {
-            $response = $updateStatusUserAction($id, $request->input('status'));
+            $response = $updateStatusUserAction->execute($id, $request->input('status'));
             if($response)
             {
                 return response([
@@ -135,7 +135,7 @@ class UserController extends Controller
     {
         try
         {
-            $response = $updateUserAction($id, $userRequest->userData(), $userRequest->userDetailData());
+            $response = $updateUserAction->execute($id, $userRequest->userData(), $userRequest->userDetailData());
 
             if($response)
             {

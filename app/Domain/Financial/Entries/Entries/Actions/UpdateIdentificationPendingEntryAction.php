@@ -31,7 +31,7 @@ class UpdateIdentificationPendingEntryAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(int $entryId, int $identificationPending): mixed
+    public function execute(int $entryId, int $identificationPending): mixed
     {
         $entry = $this->entryRepository->updateIdentificationPending($entryId, $identificationPending);
 

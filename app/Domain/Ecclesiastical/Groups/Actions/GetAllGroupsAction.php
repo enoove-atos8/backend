@@ -24,7 +24,7 @@ class GetAllGroupsAction
     /**
      * @throws Throwable
      */
-    public function __invoke(int $enabled = 1): Collection
+    public function execute(int $enabled = 1): Collection
     {
         $groups = $this->groupsRepository->getGroups();
 

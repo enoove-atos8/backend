@@ -30,7 +30,7 @@ class GetFinancialGroupAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Model | null
+    public function execute(): Model | null
     {
         $group = $this->groupsRepository->getFinancialGroup();
 

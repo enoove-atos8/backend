@@ -23,7 +23,7 @@ class UpdateUserDetailAction
      * @return int
      * @throws BindingResolutionException
      */
-    public function __invoke($id, UserDetailData $userDetailData): int
+    public function execute($id, UserDetailData $userDetailData): int
     {
         return $this->userDetailRepository->updateUserDetail($id, $userDetailData);
     }

@@ -22,7 +22,7 @@ class GetEntriesToCompensateAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Paginator
+    public function execute(): Paginator
     {
         return $this->entryRepository->getAllEntriesWithMembersAndReviewers(
             'all',

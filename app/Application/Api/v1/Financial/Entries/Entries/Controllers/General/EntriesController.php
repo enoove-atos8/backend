@@ -56,7 +56,7 @@ class EntriesController extends Controller
     {
         try
         {
-            $createEntryAction($entryRequest->entryData(), $entryRequest->consolidationEntriesData());
+            $createEntryAction->execute($entryRequest->entryData(), $entryRequest->consolidationEntriesData());
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_ENTRY_REGISTERED,
@@ -83,8 +83,8 @@ class EntriesController extends Controller
         {
             $dates = $request->input('dates');
             $filters = $request->except(['dates','page']);
-            $entries = $getEntriesAction($dates, $filters);
-            $groups = $getAllGroupsAction();
+            $entries = $getEntriesAction->execute($dates, $filters);
+            $groups = $getAllGroupsAction->execute();
             return new EntryResourceCollection($entries, $groups);
 
         }
@@ -111,7 +111,7 @@ class EntriesController extends Controller
         try
         {
             $consolidated = $request->input('consolidated');
-            $monthsNotConsolidated = $getConsolidationEntriesByStatus(intval($consolidated), true);
+            $monthsNotConsolidated = $getConsolidationEntriesByStatus->execute(intval($consolidated), true);
 
             return new EntryConsolidatedResourceCollection($monthsNotConsolidated);
         }
@@ -133,7 +133,7 @@ class EntriesController extends Controller
     {
         try
         {
-            $response = $getEntryByIdAction($id);
+            $response = $getEntryByIdAction->execute($id);
             return new EntryResource($response);
         }
         catch (GeneralExceptions $e)
@@ -157,7 +157,7 @@ class EntriesController extends Controller
     {
         try
         {
-            $updateEntryAction($id, $entryRequest->entryData(), $entryRequest->consolidationEntriesData());
+            $updateEntryAction->execute($id, $entryRequest->entryData(), $entryRequest->consolidationEntriesData());
 
             return response([
                 'message'   =>  ReturnMessages::INFO_UPDATED_ENTRY,
@@ -183,7 +183,7 @@ class EntriesController extends Controller
     {
         try
         {
-            $entryDeleted = $deleteEntryAction($id);
+            $entryDeleted = $deleteEntryAction->execute($id);
 
             if($entryDeleted)
             {
@@ -215,7 +215,7 @@ class EntriesController extends Controller
     {
         try
         {
-            $response = $updateStatusConsolidationEntriesAction($request->input('date'), $request->input('status'));
+            $response = $updateStatusConsolidationEntriesAction->execute($request->input('date'), $request->input('status'));
 
             if($response)
             {
@@ -245,7 +245,7 @@ class EntriesController extends Controller
             $rangeMonthlyDate = $request->input('rangeMonthlyDate');
             $entryType = $request->input('entryType');
 
-            $response = $getAmountByEntryTypeAction($rangeMonthlyDate, $entryType);
+            $response = $getAmountByEntryTypeAction->execute($rangeMonthlyDate, $entryType);
 
             return new AmountByEntryTypeResource($response);
         }
@@ -300,7 +300,7 @@ class EntriesController extends Controller
         try
         {
             $date = $request->input('date');
-            $entries = $getEntriesToCompensateAction($date);
+            $entries = $getEntriesToCompensateAction->execute($date);
             return new EntriesToCompensateResourceCollection($entries->items());
         }
         catch (GeneralExceptions $e)
@@ -323,7 +323,7 @@ class EntriesController extends Controller
         try
         {
             $date = $request->input('date');
-            $entries = $getDevolutionEntriesAction($date);
+            $entries = $getDevolutionEntriesAction->execute($date);
             return new DevolutionEntriesResourceCollection($entries);
         }
         catch (GeneralExceptions $e)

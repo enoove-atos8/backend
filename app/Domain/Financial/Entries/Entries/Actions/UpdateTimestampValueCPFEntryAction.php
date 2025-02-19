@@ -31,7 +31,7 @@ class UpdateTimestampValueCPFEntryAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(int $entryId, string $timestampValueCpf): mixed
+    public function execute(int $entryId, string $timestampValueCpf): mixed
     {
         $entry = $this->entryRepository->updateTimestampValueCpf($entryId, $timestampValueCpf);
 

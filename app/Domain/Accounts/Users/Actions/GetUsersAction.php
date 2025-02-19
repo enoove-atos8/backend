@@ -23,7 +23,7 @@ class GetUsersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Collection
+    public function execute(): Collection
     {
         $user = $this->userRepository->getUsers();
 

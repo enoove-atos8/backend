@@ -44,23 +44,23 @@ class HandleEntriesIndicatorsAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $indicator, string|null $dates, array $filters): array
+    public function execute(string $indicator, string|null $dates, array $filters): array
     {
         if($indicator == self::TITHES_MONTHLY_TARGET_INDICATOR)
-            return $this->getTithesMonthlyTargetEntriesAction->__invoke();
+            return $this->getTithesMonthlyTargetEntriesAction->execute();
 
         if($indicator == self::TITHES_BALANCE_INDICATOR)
-            return $this->getTithesBalanceActions->__invoke();
+            return $this->getTithesBalanceActions->execute();
 
         if($indicator == self::NO_COMPENSATE_ENTRIES_INDICATOR)
-            return $this->getEntriesAmountToCompesateActions->__invoke();
+            return $this->getEntriesAmountToCompesateActions->execute();
 
         if($indicator == self::DEVOLUTION_ENTRIES_INDICATOR)
-            return $this->getEntriesDevolutionAmountAction->__invoke();
+            return $this->getEntriesDevolutionAmountAction->execute();
 
         if($indicator == self::TOTAL_GENERAL_INDICATOR)
         {
-            $entries = $this->getTotalGeneralEntriesAction->__invoke($dates, $filters);
+            $entries = $this->getTotalGeneralEntriesAction->execute($dates, $filters);
             return [
                 'totalGeneral' =>  [
                     'indicators'    =>  [

@@ -22,7 +22,7 @@ class CreateMemberAction
     /**
      * @throws Throwable
      */
-    public function __invoke(MemberData $memberData): Member
+    public function execute(MemberData $memberData): Member
     {
         return $this->memberRepository->createMember($memberData);
     }

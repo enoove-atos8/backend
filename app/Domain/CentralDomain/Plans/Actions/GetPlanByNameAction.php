@@ -22,7 +22,7 @@ class GetPlanByNameAction
     /**
      * @throws BindingResolutionException
      */
-    public function __invoke(string $name): Model | null
+    public function execute(string $name): Model | null
     {
         $plan = $this->planRepository->getPlanByName($name);
 

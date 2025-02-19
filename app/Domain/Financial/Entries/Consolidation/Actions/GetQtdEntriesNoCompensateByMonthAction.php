@@ -26,7 +26,7 @@ class GetQtdEntriesNoCompensateByMonthAction
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function __invoke(string $dateRegister): Collection
+    public function execute(string $dateRegister): Collection
     {
        return $this->entryRepository->getAllEntriesByDateAndType($dateRegister, 'register')
                                     ->where(EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN,

@@ -21,7 +21,7 @@ class GetPlansAction
     /**
      * @throws BindingResolutionException|GeneralExceptions
      */
-    public function __invoke(): Collection
+    public function execute(): Collection
     {
         $plans = $this->planRepository->getPlans();
 

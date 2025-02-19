@@ -24,7 +24,7 @@ class AuthController extends Controller
         try
         {
             $tenantId = explode('.', $authRequest->getHost())[0];
-            $response = $loginAction($authRequest->authData(), $tenantId);
+            $response = $loginAction->execute($authRequest->authData(), $tenantId);
 
             if (is_array($response) && array_key_exists('error',$response))
                 return (new ErrorLoginResource($response))->response()->setStatusCode($response["status"]);
@@ -46,6 +46,6 @@ class AuthController extends Controller
      */
     public function logout(LogoutAction $logoutAction)
     {
-        return $logoutAction();
+        return $logoutAction->execute();
     }
 }

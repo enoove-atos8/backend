@@ -37,7 +37,7 @@ class GetConsolidatedEntriesByStatusAction
      * @return Collection
      * @throws GeneralExceptions
      */
-    public function __invoke(string | int $consolidated, bool $returnNumberEntriesNoCompensate = false, int $limit = 6, bool $callableByTithesBalance = false): Collection
+    public function execute(string | int $consolidated, bool $returnNumberEntriesNoCompensate = false, int $limit = 6, bool $callableByTithesBalance = false): Collection
     {
         $consolidatedEntriesByStatus = $this->consolidationEntriesRepository->getConsolidatedMonths($consolidated);
 
@@ -47,11 +47,11 @@ class GetConsolidatedEntriesByStatusAction
             {
                 $consolidatedEntriesByStatus->map(function ($value) use($consolidatedEntriesByStatus)
                 {
-                    $entriesNoCompensate = $this->getQtdEntriesNoCompensateByMonthAction->__invoke($value->date);
+                    $entriesNoCompensate = $this->getQtdEntriesNoCompensateByMonthAction->execute($value->date);
                     $amountEntriesNoCompensate = $entriesNoCompensate->sum(EntryRepository::AMOUNT_COLUMN);
                     $value['entriesNoCompensate'] = $entriesNoCompensate->count();
                     $value['amountEntriesNoCompensate'] = $amountEntriesNoCompensate;
-                    $value['amountEntries'] = $this->getAmountByMonthAction->__invoke($value->date);
+                    $value['amountEntries'] = $this->getAmountByMonthAction->execute($value->date);
                     return $value;
                 });
 

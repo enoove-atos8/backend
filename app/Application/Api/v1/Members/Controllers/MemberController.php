@@ -41,7 +41,7 @@ class MemberController extends Controller
     {
         try
         {
-            $createMemberAction($memberRequest->memberData());
+            $createMemberAction->execute($memberRequest->memberData());
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_MEMBER_REGISTERED,
@@ -66,7 +66,7 @@ class MemberController extends Controller
     {
         try
         {
-            $response = $getMembersAction();
+            $response = $getMembersAction->execute();
             return new MemberResourceCollection($response);
         }
         catch (GeneralExceptions $e)
@@ -86,7 +86,7 @@ class MemberController extends Controller
     {
         try
         {
-            $response = $getMembersCountersAction($request->input('key'));
+            $response = $getMembersCountersAction->execute($request->input('key'));
 
             if($response)
             {
@@ -113,7 +113,7 @@ class MemberController extends Controller
     {
         try
         {
-            $response = $getMemberByIdAction($id);
+            $response = $getMemberByIdAction->execute($id);
             return new MemberResource($response);
 
         }
@@ -137,7 +137,7 @@ class MemberController extends Controller
         try
         {
             $activated = $request->input('activated');
-            $response = $updateStatusMemberAction($id, $activated);
+            $response = $updateStatusMemberAction->execute($id, $activated);
             if($response)
             {
                 return response([
@@ -165,7 +165,7 @@ class MemberController extends Controller
     {
         try
         {
-            $response = $updateMemberAction($id, $memberRequest->memberData());
+            $response = $updateMemberAction->execute($id, $memberRequest->memberData());
 
             if($response)
             {

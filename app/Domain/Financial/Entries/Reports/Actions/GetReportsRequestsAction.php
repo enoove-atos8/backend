@@ -25,7 +25,7 @@ class GetReportsRequestsAction
      * @throws GeneralExceptions
      * @throws BindingResolutionException
      */
-    public function __invoke(): Collection
+    public function execute(): Collection
     {
         $reports = $this->reportRequestsRepository->getReports();
 

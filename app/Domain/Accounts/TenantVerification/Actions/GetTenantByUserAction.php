@@ -17,7 +17,7 @@ class GetTenantByUserAction
      * @param string $email
      * @return Model
      */
-    public function __invoke(string $email): Model
+    public function execute(string $email): Model
     {
 
     }

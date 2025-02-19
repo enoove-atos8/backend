@@ -25,7 +25,7 @@ class UpdateMemberAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke($id, MemberData $memberData): bool
+    public function execute($id, MemberData $memberData): bool
     {
         if($this->memberRepository->updateMember($id, $memberData))
         {

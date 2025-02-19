@@ -25,7 +25,7 @@ class GetUserByIdAction
      * @throws GeneralExceptions
      * @throws BindingResolutionException
      */
-    public function __invoke($id = null): Model
+    public function execute($id = null): Model
     {
         $user = $this->userRepository->getUsers($id);
 

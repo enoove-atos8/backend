@@ -1,0 +1,23 @@
+POST http://iebrd.atos8.local:8080/api/v1/mobile/syncStorage/sendData
+#POST https://www.atos8.com/api/v1/church
+Content-Type: application/json
+
+
+{
+    "tenant":"iebrd",
+    "module":"financial",
+    "docType":"exits",
+    "docSubType":"purchase",
+    "divisionId":1,
+    "groupId":1,
+    "paymentCategoryId":null,
+    "paymentItemId":null,
+    "isPayment":false,
+    "isCreditCardPurchase":true,
+    "creditCardDueDate":"2025-02-18",
+    "numberInstallments":"10",
+    "purchaseCreditCardDate":"2025-02-18",
+    "purchaseCreditCardAmount":983.55,
+    "status":"to_process",
+    "path":"sync_storage/financial/shared_receipts/exits/purchase/ministries/evangelismo-e-missoes"
+}

@@ -10,4 +10,5 @@ class ReturnMessages
 
     //ERROR MESSAGES
     public const ERROR_CREATE_DIVISION = 'Houve um erro ao criar esta divisão, tente novamente mais tarde!';
+    public const ERROR_ALREADY_DIVISION = 'Já existe uma divisão criada com este nome!';
 }

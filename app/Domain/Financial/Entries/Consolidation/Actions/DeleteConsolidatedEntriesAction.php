@@ -23,7 +23,7 @@ class DeleteConsolidatedEntriesAction
      * @return bool
      * @throws GeneralExceptions
      */
-    public function __invoke(string $date): bool
+    public function execute(string $date): bool
     {
         $response = $this->consolidationEntriesRepository->deleteConsolidationEntry($date);
 

@@ -28,7 +28,7 @@ class GetDataCultByIdAction
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke(int $id): Cult|Model
+    public function execute(int $id): Cult|Model
     {
         $cult = $this->cultRepository->getCultById($id);
         $cult->entries = $this->entryRepository->getEntriesByCultId($cult->id);

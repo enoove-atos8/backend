@@ -4,7 +4,7 @@ namespace Domain\Auth\Actions;
 
 class LogoutAction
 {
-    public function __invoke()
+    public function execute()
     {
         return auth()->user()->currentAccessToken()->delete();
     }

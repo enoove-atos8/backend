@@ -25,7 +25,7 @@ class GetMembersAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Member|Model|Collection
+    public function execute(): Member|Model|Collection
     {
         $members = $this->memberRepository->getMembers();
 

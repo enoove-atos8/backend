@@ -24,7 +24,7 @@ class LoginAction
     /**
      * @throws Throwable
      */
-    public function __invoke(AuthData $authData, string $tenantId): array|Authenticatable|null
+    public function execute(AuthData $authData, string $tenantId): array|Authenticatable|null
     {
         if(Auth::attempt($authData->toArray()))
         {
@@ -35,7 +35,7 @@ class LoginAction
             foreach ($user->roles()->get() as $role)
                 $userRoles [] = $role->name;
 
-            $church = $this->getChurchAction->__invoke($tenantId);
+            $church = $this->getChurchAction->execute($tenantId);
 
             if ($user->activated)
             {

@@ -35,11 +35,11 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
         {
             $result['data'][] = [
                 'id'               =>  $item->id,
-                'routeResource'   =>  $item->route_resource,
+                'slug'             =>  $item->slug,
                 'name'             =>  $item->name,
                 'description'      =>  $item->description,
                 'enabled'          =>  $item->enabled,
-                'groups'          =>   $this->getGroupsByDivision($this->collection['groups'], $item->id),
+                'groups'           =>   $this->getGroupsByDivision($this->collection['groups'], $item->id),
             ];
         }
 
@@ -68,6 +68,7 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
                      'leaderId'                     => $group->leader_id,
                      'name'                         => $group->name,
                      'description'                  => $group->description,
+                     'slug'                         => $group->slug,
                      'financialTransactionsExists'  => $group->transactions_exists,
                      'enabled'                      => $group->enabled,
                      'temporaryEvent'               => $group->temporary_event,
@@ -83,28 +84,3 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
         return $result;
     }
 }
-
-
-/**
- * [
- * 'id'               =>  $item->division_id,
- * 'route_resource'   =>  $item->division_route_resource,
- * 'name'             =>  $item->division_name,
- * 'description'      =>  $item->division_description,
- * 'enabled'          =>  $item->division_enabled,
- * 'groups' => [
- * 'id'                            => $item->groups_id,
- * 'ecclesiastical_division_id'    => $item->groups_division_id,
- * 'parent_group_id'               => $item->groups_parent_group_id,
- * 'leader_id'                     => $item->groups_leader_id,
- * 'name'                          => $item->groups_name,
- * 'description'                   => $item->groups_description,
- * 'financial_transactions_exists' => $item->groups_transactions_exists,
- * 'enabled'                       => $item->groups_enabled,
- * 'temporary_event'               => $item->groups_temporary_event,
- * 'return_values'                 => $item->groups_return_values,
- * 'start_date'                    => $item->groups_start_date,
- * 'end_date'                      => $item->groups_end_date,
- * ],
- * ];
- */

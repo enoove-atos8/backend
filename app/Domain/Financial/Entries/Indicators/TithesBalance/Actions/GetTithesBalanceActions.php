@@ -27,11 +27,11 @@ class GetTithesBalanceActions
     /**
      * @throws GeneralExceptions|Throwable
      */
-    public function __invoke(): array
+    public function execute(): array
     {
-        $financialSettings = $this->getFinancialSettingsAction->__invoke();
+        $financialSettings = $this->getFinancialSettingsAction->execute();
         $monthlyTarget = $financialSettings->monthly_budget_tithes;
-        $entriesConsolidated = $this->getConsolidatedEntriesByStatusAction->__invoke(1, false, 1, true);
+        $entriesConsolidated = $this->getConsolidatedEntriesByStatusAction->execute(1, false, 1, true);
 
         if($entriesConsolidated->count() > 0)
         {

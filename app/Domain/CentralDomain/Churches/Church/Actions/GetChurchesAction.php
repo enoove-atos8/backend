@@ -26,7 +26,7 @@ class GetChurchesAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): Collection
+    public function execute(): Collection
     {
         $churches = $this->churchRepository->getChurches();
 

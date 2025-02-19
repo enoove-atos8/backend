@@ -22,7 +22,7 @@ class CreateReportRequestAction
     /**
      * @throws GeneralExceptions
      */
-    public function __invoke(ReportRequestsData $reportJobData): ReportRequests
+    public function execute(ReportRequestsData $reportJobData): ReportRequests
     {
         $report = $this->reportJobRepository->generateReport($reportJobData);
 

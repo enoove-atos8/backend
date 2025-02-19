@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Accounts\Users\Models;
+namespace App\Domain\Accounts\TenantVerification\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

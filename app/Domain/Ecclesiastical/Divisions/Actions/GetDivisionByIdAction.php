@@ -8,7 +8,7 @@ use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Throwable;
 
-class GetDivisionIdByName
+class GetDivisionByIdAction
 {
     private DivisionRepository $divisionRepository;
 
@@ -22,17 +22,10 @@ class GetDivisionIdByName
     /**
      * @throws Throwable
      */
-    public function __invoke(string $division): Model
+    public function execute(int $id): Model | null
     {
-        $division = $this->divisionRepository->getDivisionIdByName($division);
+        $division = $this->divisionRepository->getDivisionById($id);
 
-        if($division->id != null)
-        {
-            return $division;
-        }
-        else
-        {
-            throw new GeneralExceptions('', 404);
-        }
+        return $division != null ? $division : null;
     }
 }

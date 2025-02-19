@@ -28,7 +28,7 @@ class GetReturnReceivingGroupAction
      * @throws Throwable
      * @throws BindingResolutionException
      */
-    public function __invoke(): Model | null
+    public function execute(): Model | null
     {
         $group = $this->groupsRepository->getReturnReceivingGroup();
 

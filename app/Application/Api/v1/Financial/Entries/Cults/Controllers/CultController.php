@@ -28,7 +28,7 @@ class CultController extends Controller
     {
         try
         {
-            $response = $getCultsAction();
+            $response = $getCultsAction->execute();
 
             return new CultsResourceCollection($response);
 
@@ -49,7 +49,7 @@ class CultController extends Controller
         try
         {
             $id = $request->input('id');
-            $response = $getDataCultByIdAction($id);
+            $response = $getDataCultByIdAction->execute($id);
 
             return new CultResource($response);
 
@@ -75,7 +75,7 @@ class CultController extends Controller
     {
         try
         {
-            $saveCultAction($id, $cultRequest->cultData(), $cultRequest->consolidationEntriesData());
+            $saveCultAction->execute($id, $cultRequest->cultData(), $cultRequest->consolidationEntriesData());
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_CULT_REGISTERED,

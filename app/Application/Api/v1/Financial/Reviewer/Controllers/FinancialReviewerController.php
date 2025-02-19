@@ -19,7 +19,7 @@ class FinancialReviewerController extends Controller
     {
         try
         {
-            $response = $getFinancialReviewersAction();
+            $response = $getFinancialReviewersAction->execute();
             return new FinancialReviewerResourceCollection($response);
         }
         catch (GeneralExceptions $e)

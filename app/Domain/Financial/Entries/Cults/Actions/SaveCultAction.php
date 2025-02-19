@@ -45,7 +45,7 @@ class SaveCultAction
     /**
      * @throws Throwable
      */
-    public function __invoke($id, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
+    public function execute($id, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
     {
         $this->calculateTotalTithesAndDesignated($cultData);
 
@@ -58,7 +58,7 @@ class SaveCultAction
             {
                 if(count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)
                 {
-                    $entriesForTheCult = $this->getEntriesByCultIdAction->__invoke($id);
+                    $entriesForTheCult = $this->getEntriesByCultIdAction->execute($id);
 
                     if(count($entriesForTheCult) > 0)
                         $this->updateEntries($id, $cultData, $consolidationEntriesData);
@@ -97,7 +97,7 @@ class SaveCultAction
         foreach ($entries as $entry){
             $this->prepareEntryData($entry);
             $this->transferCultDataToEntryData($cultData);
-            $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
+            $this->createEntryAction->execute($this->entryData, $consolidationEntriesData);
         }
     }
 
@@ -122,9 +122,9 @@ class SaveCultAction
             $this->transferCultDataToEntryData($cultData);
 
             if(array_key_exists('id', $entry))
-                $this->updateEntryAction->__invoke($entry['id'], $this->entryData, $consolidationEntriesData);
+                $this->updateEntryAction->execute($entry['id'], $this->entryData, $consolidationEntriesData);
             else
-                $this->createEntryAction->__invoke($this->entryData, $consolidationEntriesData);
+                $this->createEntryAction->execute($this->entryData, $consolidationEntriesData);
         }
     }
 

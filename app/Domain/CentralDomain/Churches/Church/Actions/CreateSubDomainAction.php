@@ -31,7 +31,7 @@ class CreateSubDomainAction
      * @throws GeneralExceptions
      * @throws Exception
      */
-    public function __invoke(string $tenant, $envProd = true): bool
+    public function execute(string $tenant, $envProd = true): bool
     {
         $env = App::environment();
         $uniqueId = $this->generateUniqueId(32);

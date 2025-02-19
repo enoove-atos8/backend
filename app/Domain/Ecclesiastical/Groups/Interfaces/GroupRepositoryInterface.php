@@ -15,6 +15,7 @@ interface GroupRepositoryInterface
 
     public function getGroups(Division $division = null): Collection;
     public function getGroupsById(int $id): Model | null;
+    public function getGroupsByName(string $name): Model | null;
     public function getReturnReceivingGroup(): Model | null;
 
     public function getAllGroups(): Collection;

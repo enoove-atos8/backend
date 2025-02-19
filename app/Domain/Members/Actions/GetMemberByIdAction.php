@@ -28,7 +28,7 @@ class GetMemberByIdAction
      * @return Collection|Member|Model
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function __invoke($id = null): Member|Model|Collection
+    public function execute($id = null): Member|Model|Collection
     {
         $member = $this->memberRepository->getMembers($id);
 

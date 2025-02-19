@@ -24,7 +24,7 @@ class CreateUserTenantLinkAction
     /**
      * @throws Throwable
      */
-    public function __invoke(string $email, string $tenant)
+    public function execute(string $email, string $tenant)
     {
 
     }

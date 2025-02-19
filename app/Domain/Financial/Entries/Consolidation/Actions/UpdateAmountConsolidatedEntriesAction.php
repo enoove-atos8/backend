@@ -34,7 +34,7 @@ class UpdateAmountConsolidatedEntriesAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(string $date): bool
+    public function execute(string $date): bool
     {
         $amountUpdated = false;
         $allEntriesByDate = $this->entryRepository

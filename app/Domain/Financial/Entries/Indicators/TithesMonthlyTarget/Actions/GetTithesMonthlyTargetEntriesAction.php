@@ -26,7 +26,7 @@ class GetTithesMonthlyTargetEntriesAction
     /**
      * @throws Throwable
      */
-    public function __invoke(): array
+    public function execute(): array
     {
         $limit = 3;
         $monthlyValues = [];
@@ -35,7 +35,7 @@ class GetTithesMonthlyTargetEntriesAction
 
         if($lastConsolidatedTitheEntries->count() > 1)
         {
-            $financialSettings = $this->getFinancialSettingsAction->__invoke();
+            $financialSettings = $this->getFinancialSettingsAction->execute();
             $monthlyTarget = $financialSettings->monthly_budget_tithes;
             $lastEntryConsolidated = $lastConsolidatedTitheEntries[0];
             $monthlyTargetPercent = floatval($lastEntryConsolidated->tithe_amount) / $monthlyTarget;

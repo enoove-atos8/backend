@@ -20,7 +20,7 @@ class GetEntriesDevolutionAmountAction
     /**
      * @throws BindingResolutionException
      */
-    public function __invoke(): array
+    public function execute(): array
     {
         $entriesDevolutions = $this->amountDevolutionEntriesRepository->getDevolutionEntriesAmount();
         $amount = $entriesDevolutions->sum(EntryRepository::AMOUNT_COLUMN);

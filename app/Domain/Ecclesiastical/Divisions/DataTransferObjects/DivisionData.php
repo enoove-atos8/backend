@@ -10,7 +10,7 @@ class DivisionData extends DataTransferObject
     public int $id = 0;
 
     /** @var string  */
-    public string $routeResource;
+    public string $slug;
 
     /** @var string  */
     public string $name;

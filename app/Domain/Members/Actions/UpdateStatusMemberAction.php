@@ -24,7 +24,7 @@ class UpdateStatusMemberAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke($memberId, $activated): bool
+    public function execute($memberId, $activated): bool
     {
         $activated = $this->memberRepository->updateStatus($memberId, $activated);
 

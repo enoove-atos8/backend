@@ -14,15 +14,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        if (!Schema::hasColumn('sync_folders', 'folder_devolution'))
+        if (!Schema::hasTable('payment_category'))
         {
-            Schema::table('sync_folders', function (Blueprint $table)
-            {
-                $table->boolean('folder_devolution')->nullable(false)->default(0) ->after('folder_name');
+            Schema::create('payment_category', function (Blueprint $table) {
+
+                $table->integer('id', true);
+                $table->string('tenant');
+                $table->string('payment_category_slug')->unique();
+                $table->string('payment_category_name');
+                $table->timestamps();
+
             });
         }
     }
-
 
 
     /**
@@ -32,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('entries');
+        Schema::dropIfExists('payment_category');
     }
 };

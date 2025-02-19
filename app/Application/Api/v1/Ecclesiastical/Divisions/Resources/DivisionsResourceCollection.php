@@ -31,7 +31,7 @@ class DivisionsResourceCollection extends ResourceCollection
         {
             $result[] = [
                 'id'                =>  $item->id,
-                'route_resource'    =>  $item->route_resource,
+                'slug'              =>  $item->slug,
                 'name'              =>  $item->name,
                 'desc'              =>  $item->description,
                 'requireLeader'     =>  $item->require_leader,

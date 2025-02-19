@@ -36,7 +36,7 @@ class UpdateStatusConsolidatedEntriesAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function __invoke(string $date, string $status): bool
+    public function execute(string $date, string $status): bool
     {
         $response = $this->consolidationEntriesRepository->updateConsolidationStatus($date, $status);
 

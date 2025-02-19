@@ -25,7 +25,7 @@ class GetChurchesByPlanIdAction
     /**
      * @throws Throwable
      */
-    public function __invoke($id): Collection
+    public function execute($id): Collection
     {
         return $this->churchRepository->getChurchesByPlanId($id);
     }
