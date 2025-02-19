@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('sync_storage', function (Blueprint $table)
             {
-                $table->boolean('is_devolution')->after('is_payment');
+                $table->boolean('is_devolution')->nullable()->after('is_payment');
             });
         }
     }
