@@ -22,6 +22,7 @@ class SyncStorage extends Model
         'payment_category_id',
         'payment_item_id',
         'is_payment',
+        'is_devolution',
         'is_credit_card_purchase',
         'credit_card_due_date',
         'number_installments',
