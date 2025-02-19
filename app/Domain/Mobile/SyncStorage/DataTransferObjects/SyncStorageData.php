@@ -18,17 +18,17 @@ class SyncStorageData extends DataTransferObject
     /** @var ?string */
     public ?string $docSubType;
 
-    /** @var ?int | null */
-    public ?int $divisionId;
+    /** @var ?string */
+    public ?string $divisionId;
 
-    /** @var ?int | null */
-    public ?int $groupId;
+    /** @var ?string | null */
+    public ?string $groupId;
 
-    /** @var ?int | null */
-    public ?int $paymentCategoryId;
+    /** @var ?string | null */
+    public ?string $paymentCategoryId;
 
-    /** @var ?int | null */
-    public ?int $paymentItemId;
+    /** @var ?string | null */
+    public ?string $paymentItemId;
 
     /** @var ?bool */
     public ?bool $isPayment;
@@ -39,8 +39,8 @@ class SyncStorageData extends DataTransferObject
     /** @var ?string | null */
     public ?string $creditCardDueDate;
 
-    /** @var ?int | null */
-    public ?int $numberInstallments;
+    /** @var ?string | null */
+    public ?string $numberInstallments;
 
     /** @var ?string | null */
     public ?string $purchaseCreditCardDate;
