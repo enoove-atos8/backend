@@ -85,6 +85,7 @@ class ReceiptDataRequest extends FormRequest
             paymentCategoryId:          $this->input('paymentCategoryId'),
             paymentItemId:              $this->input('paymentItemId'),
             isPayment:                  $this->boolean('isPayment'),
+            isDevolution:               $this->boolean('isDevolution'),
             isCreditCardPurchase:       $this->boolean('isCreditCardPurchase'),
             creditCardDueDate:          $this->input('creditCardDueDate'),
             numberInstallments:         $this->input('numberInstallments'),
