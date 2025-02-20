@@ -26,6 +26,6 @@ class GetDivisionByNameAction
     {
         $division = $this->divisionRepository->getDivisionByName($division);
 
-        return $division->id != null ? $division : null;
+        return $division != null ? $division : null;
     }
 }
