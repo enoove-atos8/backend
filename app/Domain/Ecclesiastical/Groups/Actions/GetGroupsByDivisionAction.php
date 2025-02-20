@@ -35,11 +35,19 @@ class GetGroupsByDivisionAction
     public function execute(string $division): Collection | Paginator | array
     {
         $division = $this->getDivisionByNameAction->execute($division);
-        $groups = $this->groupsRepository->getGroupsByDivision($division);
 
-        if($groups->count() > 0)
+        if(!is_null($division))
         {
-            return $groups;
+            $groups = $this->groupsRepository->getGroupsByDivision($division);
+
+            if($groups->count() > 0)
+            {
+                return $groups;
+            }
+            else
+            {
+                return [];
+            }
         }
         else
         {

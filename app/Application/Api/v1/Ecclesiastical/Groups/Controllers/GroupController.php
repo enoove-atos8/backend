@@ -125,18 +125,21 @@ class GroupController extends Controller
     /**
      * @param Request $request
      * @param GetGroupsByDivisionAction $getGroupsByDivisionAction
-     * @return GroupsToMobileAppResourceCollection
+     * @return ResponseFactory|Application|Response|GroupsToMobileAppResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getGroupsToMobileApp(Request $request, GetGroupsByDivisionAction $getGroupsByDivisionAction): GroupsToMobileAppResourceCollection
+    public function getGroupsToMobileApp(Request $request, GetGroupsByDivisionAction $getGroupsByDivisionAction): ResponseFactory|Application|Response|GroupsToMobileAppResourceCollection
     {
         try
         {
             $division = $request->input('division');
             $response = $getGroupsByDivisionAction->execute($division);
 
-            return new GroupsToMobileAppResourceCollection($response);
+            if(count($response) == 0)
+                return response(['message' =>  'NADA'], 404);
+            else
+                return new GroupsToMobileAppResourceCollection($response);
 
         }
         catch (GeneralExceptions $e)
