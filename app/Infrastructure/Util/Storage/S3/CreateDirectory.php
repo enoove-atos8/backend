@@ -2,11 +2,6 @@
 
 namespace Infrastructure\Util\Storage\S3;
 
-use Aws\S3\Exception\S3Exception;
-use Aws\S3\S3Client;
-use Domain\Financial\SyncStorage\Actions\AddPathSyncStorageAction;
-use Domain\Financial\SyncStorage\DataTransferObjects\SyncStorageData;
-use Illuminate\Support\Facades\App;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class CreateDirectory

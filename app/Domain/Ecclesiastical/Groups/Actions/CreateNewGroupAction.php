@@ -48,10 +48,7 @@ class CreateNewGroupAction
 
         if(is_null($existGroup))
         {
-            $division = $this->getDivisionByIdAction->execute($groupData->divisionId);
             $group = $this->groupsRepository->newGroup($groupData);
-
-            $this->createDirectory->createDirectory(self::BASE_PATH_DESIGNATED_ENTRIES_SHARED_RECEIPTS . '/' . $division->slug . '/' . $groupData->slug, $tenant);
 
             if(!is_null($group->id))
             {
