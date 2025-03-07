@@ -54,7 +54,7 @@ return new class extends Migration
                     ->references('id')
                     ->on('payment_category');
 
-                $table->foreign('payment_category_id')
+                $table->foreign('payment_item_id')
                     ->references('id')
                     ->on('payment_item');
 
