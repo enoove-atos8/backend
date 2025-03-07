@@ -39,7 +39,7 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
                 'name'             =>  $item->name,
                 'description'      =>  $item->description,
                 'enabled'          =>  $item->enabled,
-                'groups'           =>   $this->getGroupsByDivision($this->collection['groups'], $item->id),
+                'groups'           =>   $this->getGroupsByDivision($this->collection['groups'], $item),
             ];
         }
 
@@ -53,13 +53,13 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
     /**
      *
      */
-    public function getGroupsByDivision(Collection $groups, $divisionId): array
+    public function getGroupsByDivision(Collection $groups, $division): array
     {
         $result = [];
 
         foreach ($groups as $group)
         {
-            if($group->ecclesiastical_division_id == $divisionId)
+            if($group->ecclesiastical_division_id == $division->id)
             {
                 $result[] = [
                      'id'                           => $group->id,
@@ -76,6 +76,29 @@ class GroupsWithDivisionsResourceCollection extends ResourceCollection
                      'returnReceivingGroup'         => $group->return_receiving,
                      'startDate'                    => $group->start_date,
                      'endDate'                      => $group->end_date,
+                     'division'                     => $this->getDivisionById($this->collection['divisions'], $group->ecclesiastical_division_id),
+
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+
+
+    public function getDivisionById(Collection $divisions, $divisionId): array
+    {
+        $result = [];
+
+        foreach ($divisions as $division)
+        {
+            if($division->id == $divisionId)
+            {
+                $result[] = [
+                    'id'       => $division->id,
+                    'name'     => $division->name,
+                    'slug'     => $division->route_resource,
 
                 ];
             }

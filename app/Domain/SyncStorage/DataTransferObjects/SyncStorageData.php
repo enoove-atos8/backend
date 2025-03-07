@@ -1,11 +1,14 @@
 <?php
 
-namespace Domain\Mobile\SyncStorage\DataTransferObjects;
+namespace App\Domain\SyncStorage\DataTransferObjects;
 
 use Spatie\DataTransferObject\DataTransferObject;
 
 class SyncStorageData extends DataTransferObject
 {
+    /** @var ?integer */
+    public ?int $id;
+
     /** @var ?string */
     public ?string $tenant;
 

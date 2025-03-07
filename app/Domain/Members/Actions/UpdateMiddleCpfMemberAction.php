@@ -2,11 +2,11 @@
 
 namespace App\Domain\Members\Actions;
 
-use App\Domain\Members\Constants\ReturnMessages;
+use App\Domain\SyncStorage\Constants\ReturnMessages;
+use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Member\MemberRepository;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
 
 class UpdateMiddleCpfMemberAction
 {

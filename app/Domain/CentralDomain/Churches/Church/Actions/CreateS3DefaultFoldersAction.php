@@ -2,12 +2,10 @@
 
 namespace Domain\CentralDomain\Churches\Church\Actions;
 
+use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Domain\Ecclesiastical\Folders\DataTransferObjects\SyncFoldersData;
-use Domain\Financial\SyncStorage\Actions\AddPathSyncStorageAction;
-use Domain\Financial\SyncStorage\Actions\GetSyncStorageDataByPathAction;
-use Domain\Financial\SyncStorage\DataTransferObjects\SyncStorageData;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Util\Storage\S3\ConnectS3;
 use Infrastructure\Util\Storage\S3\CreateDirectory;
@@ -19,24 +17,17 @@ class CreateS3DefaultFoldersAction
     private SyncStorageData $syncStorageData;
     private CreateDirectory $createDirectory;
 
-    private GetSyncStorageDataByPathAction $getSyncStorageDataByPathAction;
-
-    private AddPathSyncStorageAction $addPathSyncStorageAction;
     private string $tenant;
 
     public function __construct(
         ConnectS3 $connectS3,
         SyncStorageData $syncStorageData,
         CreateDirectory $createDirectory,
-        AddPathSyncStorageAction $addPathSyncStorageAction,
-        GetSyncStorageDataByPathAction $getSyncStorageDataByPathAction,
     )
     {
         $this->s3 = $connectS3;
         $this->syncStorageData = $syncStorageData;
         $this->createDirectory = $createDirectory;
-        $this->addPathSyncStorageAction = $addPathSyncStorageAction;
-        $this->getSyncStorageDataByPathAction = $getSyncStorageDataByPathAction;
     }
 
     /**
@@ -69,8 +60,7 @@ class CreateS3DefaultFoldersAction
             }
             else
             {
-                $this->syncStorageData = $this->getSyncStorageDataByPathAction->execute($currentPath);
-                $this->addPathSyncStorageAction->execute($this->syncStorageData, $tenant);
+                //$this->syncStorageData = $this->getSyncStorageDataByPathAction->execute($currentPath);
             }
         }
     }

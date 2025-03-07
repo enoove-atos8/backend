@@ -2,9 +2,11 @@
 
 namespace Infrastructure\Repositories\Mobile\SyncStorage;
 
-use Domain\Mobile\SyncStorage\DataTransferObjects\SyncStorageData;
-use Domain\Mobile\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
-use Domain\Mobile\SyncStorage\Models\SyncStorage;
+use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
+use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
+use App\Domain\SyncStorage\Models\SyncStorage;
+use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
 
 class SyncStorageRepository extends BaseRepository implements SyncStorageRepositoryInterface
@@ -12,6 +14,20 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     protected mixed $model = SyncStorage::class;
 
     const TABLE_NAME = 'sync_storage';
+
+    const STATUS_COLUMN = 'status';
+    const DOC_TYPE_COLUMN = 'doc_type';
+    const ENTRIES_VALUE_DOC_TYPE = 'entries';
+    const EXITS_VALUE_DOC_TYPE = 'exits';
+    const TO_PROCESS_VALUE = 'to_process';
+    const DONE_VALUE = 'done';
+
+    const ERROR_VALUE = 'error';
+
+    /**
+     * Array of conditions
+     */
+    private array $queryConditions = [];
 
 
     /**
@@ -38,6 +54,68 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'purchase_credit_card_amount'   => $syncStorageData->purchaseCreditCardAmount,
             'status'                        => $syncStorageData->status,
             'path'                          => $syncStorageData->path
+        ]);
+    }
+
+
+
+    /**
+     * @param string $docType
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getSyncStorageData(string $docType): Collection
+    {
+        $this->queryConditions = [];
+        $this->queryConditions [] = $this->whereEqual(self::STATUS_COLUMN, self::TO_PROCESS_VALUE, 'and');
+        $this->queryConditions [] = $this->whereEqual(self::DOC_TYPE_COLUMN, $docType, 'and');
+
+        return $this->getItemsWithRelationshipsAndWheres(
+            $this->queryConditions,
+            self::ID_COLUMN,
+            BaseRepository::ORDERS['ASC']
+        );
+    }
+
+
+    /**
+     * @param int $id
+     * @param string $fileName
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function updatePathWithFileName(int $id, string $fileName): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $id,
+            ];
+
+        return $this->update($conditions, [
+            'path'  =>   $fileName,
+        ]);
+    }
+
+
+    /**
+     * @param int $id
+     * @param string $status
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function updateStatus(int $id, string $status): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $id,
+            ];
+
+        return $this->update($conditions, [
+            'status'  =>   $status,
         ]);
     }
 }

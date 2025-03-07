@@ -2,7 +2,7 @@
 
 namespace Application\Api\v1\Mobile\SyncStorage\Requests;
 
-use Domain\Mobile\SyncStorage\DataTransferObjects\SyncStorageData;
+use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 

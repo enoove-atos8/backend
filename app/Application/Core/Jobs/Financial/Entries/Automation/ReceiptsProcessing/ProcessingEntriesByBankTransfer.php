@@ -13,30 +13,31 @@ use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Members\Actions\GetMemberByCPFAction;
 use App\Domain\Members\Actions\GetMemberByMiddleCPFAction;
 use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
+use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Automation\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
 use App\Infrastructure\Services\External\GoogleDrive\GoogleDriveService;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
-use Domain\Ecclesiastical\Folders\Actions\GetSyncFoldersAction;
 use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
 use Domain\Financial\Receipts\Entries\ReadingError\Actions\CreateReadingErrorReceiptAction;
 use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
 use Domain\Members\DataTransferObjects\MemberData;
-use Domain\Members\Models\Member;
+use Domain\SyncStorage\Actions\GetSyncStorageDataAction;
+use Domain\SyncStorage\Actions\UpdateStatusAction;
 use Google\Service\Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
+use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
+use Infrastructure\Services\External\minIO\MinioStorageService;
 use Infrastructure\Util\Storage\S3\UploadFile;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
-use thiagoalessio\TesseractOCR\TesseractOcrException;
 use Throwable;
 
 class ProcessingEntriesByBankTransfer
@@ -45,7 +46,7 @@ class ProcessingEntriesByBankTransfer
     private CreateEntryAction $createEntryAction;
     private GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction;
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
-    private GetSyncFoldersAction $getSyncFoldersAction;
+    private GetSyncStorageDataAction $getSyncStorageDataAction;
     private UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction;
     private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
@@ -66,8 +67,11 @@ class ProcessingEntriesByBankTransfer
     private GetReviewerAction $getReviewerAction;
     private GetFinancialGroupAction $getFinancialGroupAction;
 
+    private UpdateStatusAction $updateStatusAction;
+
     private string $entryType;
     protected Collection $foldersData;
+    protected Collection $syncStorageData;
 
     private bool $devolution = false;
     private int $amount = 0;
@@ -77,12 +81,22 @@ class ProcessingEntriesByBankTransfer
     private ?int $groupReturnedId = null;
     private ?int $groupReceivedId = null;
 
+    private MinioStorageService $minioStorageService;
+
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
     const IDENTIFICATION_PENDING_1 = 1;
     const IDENTIFICATION_PENDING_0 = 0;
     const S3_ENTRIES_RECEIPT_PATH = 'entries/assets/receipts';
-    const S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH = 'entries/assets/receipts/unidentified';
+    const SYNC_STORAGE_ENTRIES_ERROR_RECEIPTS = 'sync_storage/financial/error_receipts/entries';
     const SUFIX_TIMEZONE = 'T03:00:00.000Z';
+    const SHARED_RECEIPTS_FOLDER_NAME = 'shared_receipts';
+    const STORED_RECEIPTS_FOLDER_NAME = 'stored_receipts';
+    const SYNC_STORAGE_FOLDER_NAME = 'sync_storage';
+    const FINANCIAL_FOLDER_NAME = 'financial';
+    const ENTRIES_FOLDER_NAME = 'entries';
+    const TITHE_FOLDER_NAME = 'tithe';
+    const DESIGNATED_FOLDER_NAME = 'designated';
+    const OFFER_FOLDER_NAME = 'offer';
 
 
     public function __construct(
@@ -92,7 +106,7 @@ class ProcessingEntriesByBankTransfer
         GetMemberByCPFAction                   $getMemberByCPFAction,
         UpdateMiddleCpfMemberAction            $updateMiddleCpfMemberAction,
         GetEntryByTimestampValueCpfAction      $getEntryByTimestampValueCpfAction,
-        GetSyncFoldersAction                   $getSyncFoldersAction,
+        GetSyncStorageDataAction               $getSyncStorageDataAction,
         GetReturnReceivingGroupAction          $getReturnReceivingGroupAction,
         UploadFile                             $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,
@@ -109,12 +123,14 @@ class ProcessingEntriesByBankTransfer
         GetChurchesByPlanIdAction              $getChurchesByPlanIdAction,
         GetReviewerAction                      $getReviewerAction,
         GetFinancialGroupAction                $getFinancialGroupAction,
+        MinioStorageService                    $minioStorageService,
+        UpdateStatusAction                     $updateStatusAction
     )
     {
         $this->googleDriveService = $googleDriveService;
         $this->createEntryAction = $createEntryAction;
         $this->getMemberByMiddleCPFAction = $getMemberByMiddleCPFAction;
-        $this->getSyncFoldersAction = $getSyncFoldersAction;
+        $this->getSyncStorageDataAction = $getSyncStorageDataAction;
         $this->updateMiddleCpfMemberAction = $updateMiddleCpfMemberAction;
         $this->updateIdentificationPendingEntryAction = $updateIdentificationPendingEntryAction;
         $this->getReturnReceivingGroupAction = $getReturnReceivingGroupAction;
@@ -134,6 +150,8 @@ class ProcessingEntriesByBankTransfer
         $this->getChurchesByPlanIdAction = $getChurchesByPlanIdAction;
         $this->getReviewerAction = $getReviewerAction;
         $this->getFinancialGroupAction = $getFinancialGroupAction;
+        $this->minioStorageService = $minioStorageService;
+        $this->updateStatusAction = $updateStatusAction;
     }
 
 
@@ -146,18 +164,25 @@ class ProcessingEntriesByBankTransfer
      */
     public function handle(): void
     {
-        $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
+        try
+        {
+            $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
 
-        foreach ($tenants as $tenant) {
-            tenancy()->initialize($tenant);
+            foreach ($tenants as $tenant) {
+                tenancy()->initialize($tenant);
 
-            $this->googleDriveService->defineInstanceGoogleDrive($tenant);
-            $this->foldersData = $this->getSyncFoldersAction->execute();
+                $this->syncStorageData = $this->getSyncStorageDataAction->execute(SyncStorageRepository::ENTRIES_VALUE_DOC_TYPE);
 
-            foreach ($this->foldersData as $folderData) {
-                $this->processFolder($folderData, $tenant);
+                foreach ($this->syncStorageData as $data) {
+                    $this->process($data, $tenant);
+                }
             }
         }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
     }
 
 
@@ -168,21 +193,16 @@ class ProcessingEntriesByBankTransfer
      * @throws Exception
      * @throws BindingResolutionException
      */
-    private function processFolder($folderData, $tenant): void
+    private function process(SyncStorageData $data, $tenant): void
     {
-        $this->entryType = $folderData->entry_type;
-        $files = $this->googleDriveService->listFiles($folderData->folder_id);
+        $basePathTemp = self::STORAGE_BASE_PATH . "tenants/{$tenant}/temp";
+        $this->minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
 
-        foreach ($files as $file) {
-            $basePathTemp = self::STORAGE_BASE_PATH . "tenants/{$tenant}/temp";
-            $this->googleDriveService->deleteFilesInLocalDirectory($basePathTemp);
+        $downloadedFile = $this->minioStorageService->downloadFile($data->path, $tenant, $basePathTemp);
+        $this->minioStorageService->delete($data->path, $tenant);
 
-            $downloadedFile = $this->googleDriveService->download($basePathTemp, $file);
-
-            if (is_array($downloadedFile)) {
-                $this->processFile($downloadedFile, $file, $folderData, $tenant);
-            }
-
+        if (is_array($downloadedFile)) {
+            $this->processFile($downloadedFile, $data, $tenant);
         }
     }
 
@@ -193,9 +213,9 @@ class ProcessingEntriesByBankTransfer
      * @throws Throwable
      * @throws BindingResolutionException
      */
-    private function processFile($downloadedFile, $file, $folderData, $tenant): void
+    private function processFile(array $downloadedFile, SyncStorageData $syncStorageData, string $tenant): void
     {
-        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $this->entryType);
+        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $syncStorageData->docSubType);
 
         if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
         {
@@ -203,30 +223,34 @@ class ProcessingEntriesByBankTransfer
             $middleCpf = $extractedData['data']['middle_cpf'];
             $member = $this->findMember($middleCpf);
 
-            if ($this->isDuplicateEntry($timestampValueCpf, $file)) {
+            if ($this->isDuplicateEntry($timestampValueCpf))
                 return;
-            }
 
-            $this->setEntryData($extractedData, $member, $folderData);
+            $this->setEntryData($extractedData, $member, $syncStorageData);
 
             $entry = $this->createEntryAction->execute($this->entryData, $this->consolidationEntriesData);
             $this->updateTimestampValueCPFEntryAction->execute($entry->id, $timestampValueCpf);
 
-            if(!$member)
+            if($extractedData['data']['entry_type'] == EntryRepository::TITHE_VALUE && !$member)
                 $this->updateIdentificationPendingEntryAction->execute($entry->id, self::IDENTIFICATION_PENDING_1);
 
-            $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_PATH, $tenant);
-            if($fileUploaded != '')
-            {
-                $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUploaded);
-                $this->googleDriveService->renameFile($file->id, $fileUploaded, 'FILE_READ', $extractedData['data']['institution']);
-            }
+
+            $syncStorageData->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $syncStorageData->path);
+            $urlParts = explode('/', $syncStorageData->path);
+            array_pop($urlParts);
+            $path = implode('/', $urlParts);
+            $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
+
+            $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUrl);
+
+            $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
+
         }
         else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
         {
-            $fileUploaded = $this->uploadFile->upload($downloadedFile['fileUploaded'], self::S3_ENTRIES_RECEIPT_UNIDENTIFIED_PATH, $tenant);
+            $fileUploaded = $this->minioStorageService->upload($downloadedFile['fileUploaded'], self::SYNC_STORAGE_ENTRIES_ERROR_RECEIPTS, $tenant, true);
 
-            $this->configReadingErrorReceiptData($extractedData, $folderData);
+            $this->configReadingErrorReceiptData($extractedData, $syncStorageData);
 
             $this->setReadingErrorReceiptData(
                 $this->groupReturnedId,
@@ -240,7 +264,7 @@ class ProcessingEntriesByBankTransfer
 
             $this->createReadingErrorReceiptAction->execute($this->readingErrorReceiptData);
 
-            $this->googleDriveService->renameFile($file->id, null, $extractedData['status'], $extractedData['data']['institution']);
+            $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::ERROR_VALUE);
         }
     }
 
@@ -281,13 +305,14 @@ class ProcessingEntriesByBankTransfer
 
     /**
      * @param $extractedData
-     * @param mixed $folderData
+     * @param mixed $data
      * @return void
      * @throws Throwable
      */
-    public function configReadingErrorReceiptData($extractedData, mixed $folderData): void
+    public function configReadingErrorReceiptData($extractedData, SyncStorageData $data): void
     {
-        $this->devolution = $folderData->folder_devolution == 1;
+        $this->entryType = $data->docSubType;
+        $this->devolution = $data->isDevolution == 1;
         $this->reason = $extractedData['status'];
         $this->amount = $extractedData['data']['amount'] != 0 ? $extractedData['data']['amount'] : 0;
         $this->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
@@ -296,11 +321,11 @@ class ProcessingEntriesByBankTransfer
         {
             $financialGroup = $this->getFinancialGroupAction->execute();
             $this->groupReceivedId = $financialGroup->id;
-            $this->groupReturnedId = $folderData->ecclesiastical_divisions_group_id;
+            $this->groupReturnedId = $data->groupId;
         }
         else
         {
-            $this->groupReceivedId = $folderData->ecclesiastical_divisions_group_id;
+            $this->groupReceivedId = $data->groupId;
             $this->groupReturnedId = null;
         }
     }
@@ -331,15 +356,12 @@ class ProcessingEntriesByBankTransfer
     }
 
 
-
     /**
      * @param string $timestampValueCpf
-     * @param $file
      * @return bool
-     * @throws Exception
      * @throws Throwable
      */
-    private function isDuplicateEntry(string $timestampValueCpf, $file): bool
+    private function isDuplicateEntry(string $timestampValueCpf): bool
     {
         if (empty($timestampValueCpf)) {
             return false;
@@ -347,7 +369,6 @@ class ProcessingEntriesByBankTransfer
 
         $entry = $this->getEntryByTimestampValueCpfAction->execute($timestampValueCpf);
         if ($entry) {
-            $this->googleDriveService->renameFile($file->id, null, 'DUPLICATED');
             return true;
         }
 
@@ -389,7 +410,7 @@ class ProcessingEntriesByBankTransfer
             '05-01', // Dia do Trabalho
             '05-30', // Corpus Christi
             '09-07', // Independência do Brasil
-            '10-12', // Nossa Senhora Aparecida
+            '10-12', // Aparecida
             '11-02', // Finados
             '11-15', // Proclamação da República
             '12-25', // Natal
@@ -452,7 +473,7 @@ class ProcessingEntriesByBankTransfer
      * @throws \Exception
      * @throws Throwable
      */
-    public function setEntryData(array $extractedData, mixed $member, $folderData): void
+    public function setEntryData(array $extractedData, mixed $member, SyncStorageData $data): void
     {
         $reviewer = $this->getReviewerAction->execute();
 
@@ -464,7 +485,7 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->dateEntryRegister = $currentDate;
         $this->entryData->dateTransactionCompensation = $this->getNextBusinessDay($extractedDate) . self::SUFIX_TIMEZONE;
         $this->entryData->deleted = 0;
-        $this->entryData->entryType = $folderData->entry_type;
+        $this->entryData->entryType = $data->docSubType;
         $this->entryData->memberId = $member?->id;
         $this->entryData->receipt = null;
         $this->entryData->devolution = 0;
@@ -473,15 +494,15 @@ class ProcessingEntriesByBankTransfer
         $this->entryData->cultId = null;
         $this->entryData->timestampValueCpf = null;
 
-        if($folderData->entry_type == EntryRepository::DESIGNATED_VALUE)
+        if($data->docSubType == EntryRepository::DESIGNATED_VALUE)
         {
-            $this->entryData->groupReceivedId = $folderData->ecclesiastical_divisions_group_id;
+            $this->entryData->groupReceivedId = $data->groupId;
 
-            if($folderData->folder_devolution == 1)
+            if($data->isDevolution == 1)
             {
                 $this->entryData->devolution = 1;
                 $this->entryData->groupReceivedId = $this->getReturnReceivingGroup();
-                $this->entryData->groupReturnedId = $folderData->ecclesiastical_divisions_group_id;
+                $this->entryData->groupReturnedId = $data->groupId;
             }
         }
 

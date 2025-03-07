@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Members\Constants;
+namespace App\Domain\SyncStorage\Constants;
 
 class ReturnMessages
 {

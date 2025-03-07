@@ -22,10 +22,11 @@ class UploadFile
      * @param mixed $file
      * @param string $relativePath
      * @param string $tenant
+     * @param bool $processError
      * @return string
      * @throws GeneralExceptions
      */
-    public function upload($file, string $relativePath, string $tenant): string
+    public function upload(mixed $file, string $relativePath, string $tenant, bool $processError = false): string
     {
         if(is_string($file))
             $file = new UploadedFile($file, basename($file), null, null, true);
@@ -36,7 +37,7 @@ class UploadFile
         $baseUrl = config('services-hosts.services.s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS');
         $arrFileParts = explode('.', $file->getClientOriginalName());
         $fileExtension = end($arrFileParts);
-        $fileName = $formattedTime . '_' . uniqid().'.'.$fileExtension;
+        $fileName = $processError ? 'ERROR_' .$formattedTime . '_' . uniqid().'.'.$fileExtension : $formattedTime . '_' . uniqid().'.'.$fileExtension;
         $fullPathFile = $relativePath . '/' . $fileName;
 
         try

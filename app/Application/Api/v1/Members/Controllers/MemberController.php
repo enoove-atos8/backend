@@ -2,7 +2,7 @@
 
 namespace Application\Api\v1\Members\Controllers;
 
-use App\Domain\Members\Constants\ReturnMessages;
+use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Application\Api\v1\Members\Requests\MemberAvatarRequest;
 use Application\Api\v1\Members\Requests\MemberRequest;
 use Application\Api\v1\Members\Resources\MemberResource;
@@ -12,8 +12,8 @@ use Domain\Members\Actions\CreateMemberAction;
 use Domain\Members\Actions\GetMemberByIdAction;
 use Domain\Members\Actions\GetMembersAction;
 use Domain\Members\Actions\GetMembersCountersAction;
-use Domain\Members\Actions\UpdateStatusMemberAction;
 use Domain\Members\Actions\UpdateMemberAction;
+use Domain\Members\Actions\UpdateStatusMemberAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;

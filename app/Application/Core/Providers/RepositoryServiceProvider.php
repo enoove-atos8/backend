@@ -10,6 +10,7 @@ use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Reports\Interfaces\ReportRequestsRepositoryInterface;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
+use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Automation\AutomationRepository;
@@ -30,7 +31,6 @@ use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepo
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
 use Domain\Financial\SyncStorage\Interfaces\SyncStorageFolderRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Mobile\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;

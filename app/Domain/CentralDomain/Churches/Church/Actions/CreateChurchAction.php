@@ -50,6 +50,7 @@ class CreateChurchAction
      */
     public function execute(ChurchData $churchData, UserData $userData, UserDetailData $userDetailData): array
     {
+        $result = [];
         $env = App::environment();
         $s3Bucket = config('services-host.services.s3.environments.' . $env . '.S3_ENDPOINT_EXTERNAL_ACCESS' ) . '/' . $churchData->tenantId;
         $domain = config('services-hosts.environments.' . $env . '.domain');
@@ -80,16 +81,16 @@ class CreateChurchAction
                         $s3->createBucket(['Bucket' => $churchData->tenantId,]);
                         $this->s3->setBucketAsPublic($churchData->tenantId, $s3);
 
-                        $this->createS3DefaultFoldersAction->execute(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
-
-                        return [
-                            'message'   =>  ReturnMessages::SUCCESS_CHURCH_REGISTERED,
-                            'data'      =>  [
-                                'church'    =>  $church,
-                                'user'      =>  $user
-                            ]
-                        ];
+                        //$this->createS3DefaultFoldersAction->execute(S3DefaultFolders::S3_DEFAULT_FOLDERS, $churchData->tenantId);
                     }
+
+                    $result = [
+                        'message'   =>  ReturnMessages::SUCCESS_CHURCH_REGISTERED,
+                        'data'      =>  [
+                            'church'    =>  $church,
+                            'user'      =>  $user
+                        ]
+                    ];
                 }
             }
         }
@@ -97,5 +98,7 @@ class CreateChurchAction
         {
             throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_TENANT, 500);
         }
+
+        return $result;
     }
 }

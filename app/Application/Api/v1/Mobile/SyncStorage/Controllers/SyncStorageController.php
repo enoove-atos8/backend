@@ -2,16 +2,14 @@
 
 namespace Application\Api\v1\Mobile\SyncStorage\Controllers;
 
+use App\Domain\SyncStorage\Actions\NewReceiptToProcessAction;
 use Application\Api\v1\Mobile\SyncStorage\Requests\ReceiptDataRequest;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Mobile\SyncStorage\Actions\NewReceiptToProcessAction;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
-use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
 class SyncStorageController extends Controller
