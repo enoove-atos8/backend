@@ -7,6 +7,7 @@ use App\Application\Api\v1\Auth\Resources\ErrorLoginResource;
 use App\Application\Api\v1\Auth\Resources\LoginResource;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Auth\Actions\LoginAction;
+use Domain\Auth\Actions\LoginFromAppAction;
 use Domain\Auth\Actions\LogoutAction;
 use Illuminate\Http\JsonResponse;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -25,6 +26,31 @@ class AuthController extends Controller
         {
             $tenantId = explode('.', $authRequest->getHost())[0];
             $response = $loginAction->execute($authRequest->authData(), $tenantId);
+
+            if (is_array($response) && array_key_exists('error',$response))
+                return (new ErrorLoginResource($response))->response()->setStatusCode($response["status"]);
+            else
+                return new LoginResource($response);
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+
+    }
+
+
+
+
+    /**
+     * @throws UnknownProperties
+     * @throws Throwable
+     */
+    public function loginFromApp(AuthRequest $authRequest, LoginFromAppAction $loginFromAppAction): JsonResponse|LoginResource
+    {
+        try
+        {
+            $response = $loginFromAppAction->execute($authRequest->authData());
 
             if (is_array($response) && array_key_exists('error',$response))
                 return (new ErrorLoginResource($response))->response()->setStatusCode($response["status"]);
