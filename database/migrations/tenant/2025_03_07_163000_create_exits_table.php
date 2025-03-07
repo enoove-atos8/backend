@@ -17,7 +17,7 @@ return new class extends Migration
         {
             Schema::create('exits', function (Blueprint $table) {
                 $table->integer('id', true);
-                $table->string('reviewer_id')->nullable(false);
+                $table->integer('reviewer_id')->nullable(false);
                 $table->string('exit_type')->nullable(false);
                 $table->integer('division_id')->nullable();
                 $table->integer('group_id')->nullable();
