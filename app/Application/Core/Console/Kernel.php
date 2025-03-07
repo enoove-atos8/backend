@@ -24,13 +24,13 @@ class Kernel extends ConsoleKernel
         // Entries
         $schedule->call(function () {
             resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->at('18:25');
+        })->everyThirtyMinutes();
 
 
         // Reports
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             resolve(HandlerEntriesReports::class)->handle();
-        })->everyMinute();*/
+        })->everyMinute();
     }
 
 
