@@ -2,7 +2,6 @@
 
 namespace Domain\Ecclesiastical\Groups\Actions;
 
-use App\Infrastructure\Services\External\GoogleDrive\GoogleDriveService;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByIdAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
@@ -17,7 +16,6 @@ use Throwable;
 class CreateNewGroupAction
 {
     private GroupsRepository $groupsRepository;
-    private GoogleDriveService $googleDriveService;
     private GetDivisionByIdAction $getDivisionByIdAction;
 
     private CreateDirectory $createDirectory;
@@ -26,13 +24,11 @@ class CreateNewGroupAction
 
     public function __construct(
         GroupRepositoryInterface $groupRepository,
-        GoogleDriveService      $googleDriveService,
         GetDivisionByIdAction   $getDivisionByIdAction,
         CreateDirectory $createDirectory,
     )
     {
         $this->groupsRepository = $groupRepository;
-        $this->googleDriveService = $googleDriveService;
         $this->getDivisionByIdAction = $getDivisionByIdAction;
         $this->createDirectory = $createDirectory;
     }

@@ -16,7 +16,6 @@ use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Automation\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
-use App\Infrastructure\Services\External\GoogleDrive\GoogleDriveService;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
@@ -42,7 +41,6 @@ use Throwable;
 
 class ProcessingEntriesByBankTransfer
 {
-    private GoogleDriveService $googleDriveService;
     private CreateEntryAction $createEntryAction;
     private GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction;
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
@@ -100,7 +98,6 @@ class ProcessingEntriesByBankTransfer
 
 
     public function __construct(
-        GoogleDriveService                     $googleDriveService,
         CreateEntryAction                      $createEntryAction,
         GetMemberByMiddleCPFAction             $getMemberByMiddleCPFAction,
         GetMemberByCPFAction                   $getMemberByCPFAction,
@@ -127,7 +124,6 @@ class ProcessingEntriesByBankTransfer
         UpdateStatusAction                     $updateStatusAction
     )
     {
-        $this->googleDriveService = $googleDriveService;
         $this->createEntryAction = $createEntryAction;
         $this->getMemberByMiddleCPFAction = $getMemberByMiddleCPFAction;
         $this->getSyncStorageDataAction = $getSyncStorageDataAction;
