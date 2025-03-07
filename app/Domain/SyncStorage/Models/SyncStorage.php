@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Mobile\SyncStorage\Models;
+namespace App\Domain\SyncStorage\Models;
 
 use Illuminate\Database\Eloquent\Model;
 

@@ -10,7 +10,7 @@ class ReceiptModelByInstitution
 
     const TITHE_ENTRY_TYPE = 'tithe';
     const DESIGNATED_ENTRY_TYPE = 'designated';
-    const OFFERS_ENTRY_TYPE = 'offers';
+    const OFFERS_ENTRY_TYPE = 'offer';
 
 
     // Bank institutions
@@ -393,6 +393,7 @@ class ReceiptModelByInstitution
         }
 
         $this->response['data']['institution'] = $institution;
+        $this->response['data']['entry_type'] = $entryType;
     }
 
     private function defaultResponse(): array
@@ -402,6 +403,7 @@ class ReceiptModelByInstitution
             'msg' => '',
             'data' => [
                 'name' => '',
+                'entry_type' => '',
                 'amount' => 0,
                 'date' => '',
                 'cpf' => '',
@@ -450,6 +452,7 @@ class ReceiptModelByInstitution
             'msg' => '',
             'data' => [
                 'name' => '',
+                'entry_type' => '',
                 'amount' => 0,
                 'date' => '',
                 'cpf' => '',

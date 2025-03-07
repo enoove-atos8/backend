@@ -56,6 +56,8 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
+    Route::post('loginFromApp', [AuthController::class, 'loginFromApp'])->name('loginFromApp');
+
 
     /*
         |==========================================================================
@@ -83,7 +85,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              * Description: send
              */
 
-            Route::post('/sendData', [SyncStorageController::class, 'sendDataToServer']);
+            Route::post('sendData', [SyncStorageController::class, 'sendDataToServer']);
 
         });
 

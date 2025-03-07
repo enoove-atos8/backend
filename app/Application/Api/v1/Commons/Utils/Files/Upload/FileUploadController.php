@@ -8,42 +8,50 @@ use Application\Core\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Services\External\minIO\MinioStorageService;
 use Infrastructure\Util\Storage\S3\UploadFile;
 
 class FileUploadController extends Controller
 {
-    const MODULES_FEATURES_S3_PATHS = [
-        'entries'    =>  [
-            'receipts'  =>  'entries/assets/receipts'
+    private MinioStorageService $minioStorageService;
+
+    public function __construct(MinioStorageService $minioStorageService)
+    {
+        $this->minioStorageService = $minioStorageService;
+    }
+
+    const S3_BASE_PATHS_STORED_RECEIPTS = [
+        'financial'    =>  [
+            'shared'  =>  'sync_storage/financial/shared_receipts',
+            'stored'  =>  'sync_storage/financial/stored_receipts',
         ],
-        'exits'    =>  [],
         'users'    =>  [
-            'avatars'   =>  ''
+            'avatars'   =>  'users/assets/avatars'
         ],
         'members'    =>  [
-            'avatars'   =>  ''
+            'avatars'   =>  'members/assets/avatars'
         ],
     ];
 
 
     /**
      * @param Request $request
-     * @param UploadFile $uploadFile
      * @return Response
      * @throws GeneralExceptions
      */
-    public function fileUpload(Request $request, UploadFile $uploadFile): Response
+    public function fileUpload(Request $request): Response
     {
         try
         {
             $module = $request->input('module');
-            $feature = $request->input('feature');
+            $typeDir = $request->input('typeDir');
+            $relativePath = $request->input('relativePath');
 
-            $path = self::MODULES_FEATURES_S3_PATHS[$module][$feature];
+            $path = self::S3_BASE_PATHS_STORED_RECEIPTS[$module][$typeDir] . '/' . $relativePath;
             $tenant = explode('.', $request->getHost())[0];
             $file = $request->files->get('file');
 
-            $response = $uploadFile->upload($file, $path, $tenant);
+            $response = $this->minioStorageService->upload($file, $path, $tenant);
 
             if(!empty($response))
                 return response(['link'   =>  $response], 200);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Mobile\SyncStorage\Actions;
+namespace App\Domain\SyncStorage\Actions;
 
 use Aws\S3\Exception\S3Exception;
 use Illuminate\Support\Facades\App;

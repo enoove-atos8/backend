@@ -2,7 +2,7 @@
 
 namespace Domain\Members\Actions;
 
-use App\Domain\Members\Constants\ReturnMessages;
+use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
