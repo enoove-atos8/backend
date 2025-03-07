@@ -1,5 +1,6 @@
 <?php
 
+use App\Application\Api\v1\Auth\Controllers\AuthController;
 use Application\Api\v1\Church\Controllers\ChurchController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -41,4 +42,16 @@ Route::prefix('v1')->group(function () {
         Route::post('/', [ChurchController::class, 'createChurch']);
 
     });
+
+
+    /*
+   |------------------------------------------------------------------------------------------
+   | Resource: Login from app
+   | EndPoints:
+   |
+   |   1   - GET    - /loginFromApp
+   |------------------------------------------------------------------------------------------
+   */
+
+    Route::post('loginFromApp', [AuthController::class, 'loginFromApp'])->name('loginFromApp');
 });
