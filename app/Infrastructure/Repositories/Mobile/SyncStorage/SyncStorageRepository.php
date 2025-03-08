@@ -24,6 +24,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
 
     const ERROR_VALUE = 'error';
     const DUPLICATED_RECEIPT_VALUE = 'duplicated';
+    const CLOSED_MONTH_VALUE = 'closed_month';
 
     /**
      * Array of conditions

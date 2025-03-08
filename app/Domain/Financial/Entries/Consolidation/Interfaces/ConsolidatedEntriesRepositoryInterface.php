@@ -19,6 +19,8 @@ interface ConsolidatedEntriesRepositoryInterface
 
     public function updateConsolidationStatus(string $date, string $status): bool;
 
+    public function checkConsolidationStatus(string $date): Model|null;
+
     public function updateTotalValueConsolidation(string $date, string $amount, string $column): bool;
 
     public function deleteConsolidationEntry(string $date): bool;

@@ -99,6 +99,19 @@ class ConsolidationRepository extends BaseRepository implements ConsolidatedEntr
 
     /**
      * @param string $date
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function checkConsolidationStatus(string $date): Model|null
+    {
+        $this->requiredRelationships = [];
+
+        return $this->getItemByColumn(self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date);
+    }
+
+
+    /**
+     * @param string $date
      * @param string $amount
      * @param string $column
      * @return bool
