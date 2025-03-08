@@ -21,6 +21,7 @@ use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
 use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
+use Domain\Financial\Entries\Consolidation\Actions\CheckConsolidationStatusAction;
 use Domain\Financial\Receipts\Entries\ReadingError\Actions\CreateReadingErrorReceiptAction;
 use Domain\Financial\Receipts\Entries\ReadingError\DataTransferObjects\ReadingErrorReceiptData;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
@@ -66,6 +67,7 @@ class ProcessingEntriesByBankTransfer
     private GetFinancialGroupAction $getFinancialGroupAction;
 
     private UpdateStatusAction $updateStatusAction;
+    private CheckConsolidationStatusAction $checkConsolidationStatusAction;
 
     private string $entryType;
     protected Collection $foldersData;
@@ -121,7 +123,8 @@ class ProcessingEntriesByBankTransfer
         GetReviewerAction                      $getReviewerAction,
         GetFinancialGroupAction                $getFinancialGroupAction,
         MinioStorageService                    $minioStorageService,
-        UpdateStatusAction                     $updateStatusAction
+        UpdateStatusAction                     $updateStatusAction,
+        CheckConsolidationStatusAction         $checkConsolidationStatusAction
     )
     {
         $this->createEntryAction = $createEntryAction;
@@ -148,6 +151,7 @@ class ProcessingEntriesByBankTransfer
         $this->getFinancialGroupAction = $getFinancialGroupAction;
         $this->minioStorageService = $minioStorageService;
         $this->updateStatusAction = $updateStatusAction;
+        $this->checkConsolidationStatusAction = $checkConsolidationStatusAction;
     }
 
 
@@ -222,6 +226,13 @@ class ProcessingEntriesByBankTransfer
             if ($this->isDuplicateEntry($timestampValueCpf)){
                 $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
+                return;
+            }
+
+            if($this->isEntryInsertionInClosedMonth($extractedData['data']['date'])){
+                $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::CLOSED_MONTH_VALUE);
+                //$this->minioStorageService->delete($syncStorageData->path, $tenant);
+                // AQUI SERÁ CHAMADO A ACTION PARA TRANSFORMAR A ENTRADA EM OFERTA CASO ELA NÃO SEJA
                 return;
             }
 
@@ -372,6 +383,17 @@ class ProcessingEntriesByBankTransfer
         }
 
         return false;
+    }
+
+
+    /**
+     * @param string $date
+     * @return bool
+     * @throws Throwable
+     */
+    private function isEntryInsertionInClosedMonth(string $date): bool
+    {
+        return $this->checkConsolidationStatusAction->execute($date);
     }
 
 
