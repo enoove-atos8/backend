@@ -221,6 +221,7 @@ class ProcessingEntriesByBankTransfer
 
             if ($this->isDuplicateEntry($timestampValueCpf)){
                 $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
+                $this->minioStorageService->delete($syncStorageData->path, $tenant);
                 return;
             }
 
