@@ -229,13 +229,6 @@ class ProcessingEntriesByBankTransfer
                 return;
             }
 
-            if($this->isEntryInsertionInClosedMonth($extractedData['data']['date'])){
-                $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::CLOSED_MONTH_VALUE);
-                //$this->minioStorageService->delete($syncStorageData->path, $tenant);
-                // AQUI SERÁ CHAMADO A ACTION PARA TRANSFORMAR A ENTRADA EM OFERTA CASO ELA NÃO SEJA
-                return;
-            }
-
             $this->setEntryData($extractedData, $member, $syncStorageData);
 
             $entry = $this->createEntryAction->execute($this->entryData, $this->consolidationEntriesData);
