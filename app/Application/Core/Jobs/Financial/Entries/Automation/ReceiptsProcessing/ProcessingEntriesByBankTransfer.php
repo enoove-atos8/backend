@@ -219,8 +219,10 @@ class ProcessingEntriesByBankTransfer
             $middleCpf = $extractedData['data']['middle_cpf'];
             $member = $this->findMember($middleCpf);
 
-            if ($this->isDuplicateEntry($timestampValueCpf))
+            if ($this->isDuplicateEntry($timestampValueCpf)){
+                $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
                 return;
+            }
 
             $this->setEntryData($extractedData, $member, $syncStorageData);
 
@@ -317,11 +319,11 @@ class ProcessingEntriesByBankTransfer
         {
             $financialGroup = $this->getFinancialGroupAction->execute();
             $this->groupReceivedId = $financialGroup->id;
-            $this->groupReturnedId = $data->groupId != 0 ? $data->groupId : null;
+            $this->groupReturnedId = $data->groupId;
         }
         else
         {
-            $this->groupReceivedId = $data->groupId != 0 ? $data->groupId : null;
+            $this->groupReceivedId = $data->groupId;
             $this->groupReturnedId = null;
         }
     }

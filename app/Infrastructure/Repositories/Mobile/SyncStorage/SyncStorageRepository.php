@@ -23,6 +23,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     const DONE_VALUE = 'done';
 
     const ERROR_VALUE = 'error';
+    const DUPLICATED_RECEIPT_VALUE = 'duplicated';
 
     /**
      * Array of conditions
@@ -41,10 +42,10 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'module'                        => $syncStorageData->module,
             'doc_type'                      => $syncStorageData->docType,
             'doc_sub_type'                  => $syncStorageData->docSubType,
-            'division_id'                   => $syncStorageData->divisionId,
-            'group_id'                      => $syncStorageData->groupId,
-            'payment_category_id'           => $syncStorageData->paymentCategoryId,
-            'payment_item_id'               => $syncStorageData->paymentItemId,
+            'division_id'                   => $syncStorageData->divisionId != '0' ? $syncStorageData->divisionId : null,
+            'group_id'                      => $syncStorageData->groupId != '0' ? $syncStorageData->groupId : null,
+            'payment_category_id'           => $syncStorageData->paymentCategoryId != '0' ? $syncStorageData->paymentCategoryId : null,
+            'payment_item_id'               => $syncStorageData->paymentItemId != '0' ? $syncStorageData->paymentItemId : null,
             'is_payment'                    => $syncStorageData->isPayment,
             'is_devolution'                 => $syncStorageData->isDevolution,
             'is_credit_card_purchase'       => $syncStorageData->isCreditCardPurchase,
