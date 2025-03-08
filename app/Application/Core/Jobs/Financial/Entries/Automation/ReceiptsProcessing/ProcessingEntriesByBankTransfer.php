@@ -199,7 +199,6 @@ class ProcessingEntriesByBankTransfer
         $this->minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
 
         $downloadedFile = $this->minioStorageService->downloadFile($data->path, $tenant, $basePathTemp);
-        $this->minioStorageService->delete($data->path, $tenant);
 
         if (is_array($downloadedFile)) {
             $this->processFile($downloadedFile, $data, $tenant);
@@ -243,6 +242,9 @@ class ProcessingEntriesByBankTransfer
             array_pop($urlParts);
             $path = implode('/', $urlParts);
             $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
+
+            if(!empty($fileUrl))
+                $this->minioStorageService->delete($syncStorageData->path, $tenant);
 
             $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUrl);
 
