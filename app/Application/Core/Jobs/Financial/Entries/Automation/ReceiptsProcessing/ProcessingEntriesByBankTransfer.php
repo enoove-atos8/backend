@@ -317,11 +317,11 @@ class ProcessingEntriesByBankTransfer
         {
             $financialGroup = $this->getFinancialGroupAction->execute();
             $this->groupReceivedId = $financialGroup->id;
-            $this->groupReturnedId = $data->groupId;
+            $this->groupReturnedId = $data->groupId != 0 ? $data->groupId : null;
         }
         else
         {
-            $this->groupReceivedId = $data->groupId;
+            $this->groupReceivedId = $data->groupId != 0 ? $data->groupId : null;
             $this->groupReturnedId = null;
         }
     }

@@ -23,10 +23,10 @@ return new class extends Migration
                 $table->string('module');
                 $table->string('doc_type');
                 $table->string('doc_sub_type');
-                $table->unsignedBigInteger('division_id')->nullable();
-                $table->unsignedBigInteger('group_id')->nullable();
-                $table->unsignedBigInteger('payment_category_id')->nullable();
-                $table->unsignedBigInteger('payment_item_id')->nullable();
+                $table->integer('division_id')->nullable();
+                $table->integer('group_id')->nullable();
+                $table->integer('payment_category_id')->nullable();
+                $table->integer('payment_item_id')->nullable();
                 $table->boolean('is_payment');
                 $table->boolean('is_credit_card_purchase');
                 $table->date('credit_card_due_date')->nullable();
