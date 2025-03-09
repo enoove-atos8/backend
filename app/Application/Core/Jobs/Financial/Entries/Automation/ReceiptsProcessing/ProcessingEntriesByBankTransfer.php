@@ -247,13 +247,15 @@ class ProcessingEntriesByBankTransfer
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
 
             $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUrl);
-
             $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
 
         }
         else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
         {
             $fileUploaded = $this->minioStorageService->upload($downloadedFile['fileUploaded'], self::SYNC_STORAGE_ENTRIES_ERROR_RECEIPTS, $tenant, true);
+
+            if(!empty($fileUploaded))
+                $this->minioStorageService->delete($syncStorageData->path, $tenant);
 
             $this->configReadingErrorReceiptData($extractedData, $syncStorageData);
 
