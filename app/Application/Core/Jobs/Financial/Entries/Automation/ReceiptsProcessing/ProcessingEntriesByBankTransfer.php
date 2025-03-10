@@ -236,7 +236,7 @@ class ProcessingEntriesByBankTransfer
             if($extractedData['data']['entry_type'] == EntryRepository::TITHE_VALUE && !$member)
                 $this->updateIdentificationPendingEntryAction->execute($entry->id, self::IDENTIFICATION_PENDING_1);
 
-
+            $sharedPath = $syncStorageData->path;
             $syncStorageData->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $syncStorageData->path);
             $urlParts = explode('/', $syncStorageData->path);
             array_pop($urlParts);
@@ -244,7 +244,7 @@ class ProcessingEntriesByBankTransfer
             $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
 
             if(!empty($fileUrl))
-                $this->minioStorageService->delete($syncStorageData->path, $tenant);
+                $this->minioStorageService->delete($sharedPath, $tenant);
 
             $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUrl);
             $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
