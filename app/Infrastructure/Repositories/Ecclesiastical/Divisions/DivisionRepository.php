@@ -19,11 +19,12 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
     const ROUTE_RESOURCE_COLUMN = 'route_resource';
     const ENABLED_COLUMN = 'enabled';
     const ID_COLUMN = 'ecclesiastical_divisions.id';
+    const ID_COLUMN_JOINED = 'ecclesiastical_divisions.id';
     const NAME_COLUMN = 'ecclesiastical_divisions.name';
 
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions.id as division_id',
-        'ecclesiastical_divisions.slug  as division_slug',
+        'ecclesiastical_divisions.route_resource  as division_slug',
         'ecclesiastical_divisions.name as division_name',
         'ecclesiastical_divisions.description as division_description',
         'ecclesiastical_divisions.enabled as division_enabled',

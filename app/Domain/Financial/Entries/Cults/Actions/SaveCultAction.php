@@ -56,7 +56,7 @@ class SaveCultAction
 
             if($updated)
             {
-                if(count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)
+                if(count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offer) > 0)
                 {
                     $entriesForTheCult = $this->getEntriesByCultIdAction->execute($id);
 
@@ -75,7 +75,7 @@ class SaveCultAction
         {
             $cult = $this->cultRepository->createCult($cultData);
 
-            if($cult->id && !$cultData->worshipWithoutEntries && (count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offers) > 0)){
+            if($cult->id && !$cultData->worshipWithoutEntries && (count($cultData->tithes) > 0 || count($cultData->designated) > 0 || count($cultData->offer) > 0)){
                 $this->createEntries($cult->id, $cultData, $consolidationEntriesData);
             }
         }
@@ -92,7 +92,7 @@ class SaveCultAction
     private function createEntries($cultId, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
     {
         $cultData->id = $cultId;
-        $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offers);
+        $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offer);
 
         foreach ($entries as $entry){
             $this->prepareEntryData($entry);
@@ -115,7 +115,7 @@ class SaveCultAction
      */
     private function updateEntries($cultId, CultData $cultData, ConsolidationEntriesData $consolidationEntriesData): void
     {
-        $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offers);
+        $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offer);
 
         foreach ($entries as $entry){
             $this->prepareEntryData($entry);
@@ -137,7 +137,7 @@ class SaveCultAction
     private function prepareEntryData(array | CultData $entry): void
     {
         if($entry instanceof CultData)
-            $this->entryData->entryType = EntryRepository::OFFERS_VALUE;
+            $this->entryData->entryType = EntryRepository::OFFER_VALUE;
         else
             $this->entryData->entryType = $entry['entryType'];
 
@@ -150,7 +150,7 @@ class SaveCultAction
             $this->entryData->memberId = $entry['memberId'];
             $this->entryData->amount = $entry['amount'];
         }
-        else if($this->entryData->entryType == 'offers'){
+        else if($this->entryData->entryType == 'offer'){
             $this->entryData->memberId = null;
             $this->entryData->groupReceivedId = null;
             $this->entryData->amount = $entry['amount'];
@@ -198,9 +198,9 @@ class SaveCultAction
             }
         }
 
-        if (!is_null($cultData->offers)) {
-            foreach ($cultData->offers as $offer) {
-                $cultData->amountOffers += $offer['amount'];
+        if (!is_null($cultData->offer)) {
+            foreach ($cultData->offer as $offer) {
+                $cultData->amountOffer += $offer['amount'];
             }
         }
     }

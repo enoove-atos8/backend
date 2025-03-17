@@ -10,7 +10,7 @@ class ReceiptModelByInstitution
 
     const TITHE_ENTRY_TYPE = 'tithe';
     const DESIGNATED_ENTRY_TYPE = 'designated';
-    const OFFERS_ENTRY_TYPE = 'offer';
+    const OFFER_ENTRY_TYPE = 'offer';
 
 
     // Bank institutions
@@ -383,7 +383,7 @@ class ReceiptModelByInstitution
             else
                 $this->response['status'] = 'READING_ERROR';
         }
-        else if($entryType === self::DESIGNATED_ENTRY_TYPE || $entryType === self::OFFERS_ENTRY_TYPE)
+        else if($entryType === self::DESIGNATED_ENTRY_TYPE || $entryType === self::OFFER_ENTRY_TYPE)
         {
             if ($this->response['data']['amount'] !== 0 && !empty($this->response['data']['date']) && !empty($this->response['data']['timestamp_value_cpf']))
                 $this->response['status'] = 'SUCCESS';

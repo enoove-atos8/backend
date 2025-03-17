@@ -26,7 +26,7 @@ class CultResource extends JsonResource
             'cultDay'               =>  $this->resource->cult_day,
             'cultDate'              =>  $this->resource->cult_date,
             'depositCultDate'       =>  $this->resource->date_transaction_compensation,
-            'amountOffers'          =>  $this->resource->amount_offers,
+            'amountOffer'           =>  $this->resource->amount_offer,
             'receipt'               =>  $this->resource->receipt,
             'entries'               =>  $this->resource->entries,
         ];

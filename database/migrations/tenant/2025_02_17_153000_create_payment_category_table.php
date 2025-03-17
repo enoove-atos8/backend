@@ -19,9 +19,8 @@ return new class extends Migration
             Schema::create('payment_category', function (Blueprint $table) {
 
                 $table->integer('id', true);
-                $table->string('tenant');
-                $table->string('payment_category_slug')->unique();
-                $table->string('payment_category_name');
+                $table->string('slug')->unique();
+                $table->string('name');
                 $table->timestamps();
 
             });

@@ -51,7 +51,7 @@ class ReportsRequestsResourceCollection extends ResourceCollection
                 'entryTypesAmounts'     =>  [
                     'titheAmount'       =>  $item->tithe_amount,
                     'designatedAmount'  =>  $item->designated_amount,
-                    'offersAmount'      =>  $item->offers_amount,
+                    'offerAmount'       =>  $item->offer_amount,
                 ],
             ];
         }

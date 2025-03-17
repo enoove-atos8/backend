@@ -74,7 +74,7 @@ class GenerateMonthlyReceiptsReport
             $entryTypesAmount = [
                 'titheAmount' => 0,
                 'designatedAmount' => 0,
-                'offersAmount' => 0,
+                'offerAmount' => 0,
             ];
 
             if(!is_null($requests->group_received_id))
@@ -104,7 +104,7 @@ class GenerateMonthlyReceiptsReport
 
                     $entryTypesAmount['titheAmount'] += $entry->entries_entry_type == EntryRepository::TITHE_VALUE ? $entry->entries_amount : 0;
                     $entryTypesAmount['designatedAmount'] += $entry->entries_entry_type == EntryRepository::DESIGNATED_VALUE ? $entry->entries_amount : 0;
-                    $entryTypesAmount['offersAmount'] += $entry->entries_entry_type == EntryRepository::OFFERS_VALUE ? $entry->entries_amount : 0;
+                    $entryTypesAmount['offerAmount'] += $entry->entries_entry_type == EntryRepository::OFFER_VALUE ? $entry->entries_amount : 0;
 
                 }
 

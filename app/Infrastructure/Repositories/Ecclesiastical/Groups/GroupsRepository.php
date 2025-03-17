@@ -27,6 +27,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
+    const ID_COLUMN_JOINED = 'ecclesiastical_divisions_groups.id';
     const LEADER_ID_COLUMN = 'ecclesiastical_divisions_groups.leader_id';
     const MEMBER_ECCLESIASTICAL_DIVISION_GROUPS_ID_COLUMN = 'members.ecclesiastical_divisions_group_id';
     const MEMBER_ID_COLUMN = 'members.id';
@@ -220,7 +221,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             'ecclesiastical_division_id'    =>   $groupData->divisionId,
             'parent_group_id'               =>   $groupData->parentGroupId,
             'leader_id'                     =>   $groupData->leaderId,
-            'name'                          =>   $groupData->groupName,
+            'name'                          =>   $groupData->name,
             'description'                   =>   $groupData->description,
             'slug'                          =>   $groupData->slug,
             'financial_transactions_exists' =>   $groupData->financialMovement,

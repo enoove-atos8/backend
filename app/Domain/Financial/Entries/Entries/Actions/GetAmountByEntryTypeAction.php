@@ -36,10 +36,10 @@ class GetAmountByEntryTypeAction
                             ->where(EntryRepository::ENTRY_TYPE_COLUMN,
                                         BaseRepository::OPERATORS['EQUALS'],
                                 EntryRepository::TITHE_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
-        $totalOffersAmount = $entries
+        $totalOfferAmount = $entries
             ->where(EntryRepository::ENTRY_TYPE_COLUMN,
                 BaseRepository::OPERATORS['EQUALS'],
-                EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
+                EntryRepository::OFFER_VALUE)->sum(EntryRepository::AMOUNT_COLUMN);
 
         $totalDesignatedAmount = $entries
             ->where(EntryRepository::ENTRY_TYPE_COLUMN,
@@ -54,7 +54,7 @@ class GetAmountByEntryTypeAction
 
         return [
             'tithes'        =>  $totalTithesAmount,
-            'offers'        =>  $totalOffersAmount,
+            'offer'         =>  $totalOfferAmount,
             'designated'    =>  $totalDesignatedAmount,
             'devolution'    =>  $totalDevolutionAmount,
         ];

@@ -29,7 +29,7 @@ class Cult extends Model
         'transaction_type',
         'tithes_amount',
         'designated_amount',
-        'offers_amount',
+        'offer_amount',
         'deleted',
         'receipt',
         'comments'

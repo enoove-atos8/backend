@@ -10,7 +10,7 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class EntryRequest extends FormRequest
 {
     const TITHE = 'tithe';
-    const OFFERS = 'offers';
+    const OFFER = 'offer';
     const DESIGNATED = 'designated';
 
 

@@ -56,7 +56,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const DEVOLUTION_COLUMN_JOINED = 'entries.devolution';
     const TITHE_VALUE = 'tithe';
     const DESIGNATED_VALUE = 'designated';
-    const OFFERS_VALUE = 'offers';
+    const OFFER_VALUE = 'offer';
     const REGISTER_INDICATOR = 'register';
     const TRANSACTION_INDICATOR = 'transaction';
     const PAGINATE_NUMBER = 30;
@@ -324,7 +324,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
                 if(!array_key_exists(self::TITHES_NOT_IDENTIFIER_FILTER, $filters) and
                     (!in_array(self::DESIGNATED_VALUE, $entryTypes) and
-                        !in_array(self::OFFERS_VALUE, $entryTypes)))
+                        !in_array(self::OFFER_VALUE, $entryTypes)))
 
                     $this->queryConditions [] = $this->whereEqual($column, [$filter], 'andWithOrInside');
                 else
