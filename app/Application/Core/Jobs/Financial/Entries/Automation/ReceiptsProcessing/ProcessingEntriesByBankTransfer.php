@@ -524,6 +524,13 @@ class ProcessingEntriesByBankTransfer
             }
         }
 
+        if($data->docSubType == EntryRepository::TITHE_VALUE)
+        {
+            $this->entryData->groupReceivedId = null;
+            $this->entryData->devolution = null;
+            $this->entryData->groupReturnedId = null;
+        }
+
         $this->entryData->reviewerId = $reviewer->id;
         $this->entryData->transactionCompensation = EntryRepository::COMPENSATED_VALUE;
         $this->entryData->transactionType = EntryRepository::PIX_TRANSACTION_TYPE;
