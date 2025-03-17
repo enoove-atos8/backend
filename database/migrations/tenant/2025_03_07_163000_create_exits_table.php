@@ -24,19 +24,17 @@ return new class extends Migration
                 $table->integer('payment_category_id')->nullable();
                 $table->integer('payment_item_id')->nullable();
                 $table->boolean('is_payment')->nullable();
-                $table->boolean('is_credit_card_purchase')->nullable();
                 $table->boolean('deleted')->nullable(false)->default(0);
-                $table->string('credit_card_due_date')->nullable();
-                $table->string('purchase_credit_card_date')->nullable();
                 $table->string('transaction_type')->nullable(false);
                 $table->string('transaction_compensation')->nullable(false);
                 $table->string('date_transaction_compensation')->nullable(false);
                 $table->string('date_exit_register')->nullable(false);
                 $table->string('timestamp_exit_transaction')->nullable(false);
-                $table->integer('number_installment')->nullable();
                 $table->decimal('amount', 10, 2)->nullable();
                 $table->string('comments')->nullable();
                 $table->string('receipt_link')->nullable(false);
+
+                $table->timestamps();
 
                 $table->foreign('reviewer_id')
                     ->references('id')

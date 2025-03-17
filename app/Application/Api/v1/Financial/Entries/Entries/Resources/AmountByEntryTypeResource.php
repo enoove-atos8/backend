@@ -21,8 +21,8 @@ class AmountByEntryTypeResource extends JsonResource
         $result = $this->resource;
 
         return [
-            'tithes'  => $result['tithes'],
-            'offers'     => $result['offers'],
+            'tithes'        => $result['tithes'],
+            'offer'         => $result['offer'],
             'designated'    => $result['designated'],
             'devolution'    => $result['devolution'],
         ];

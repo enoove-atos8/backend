@@ -54,10 +54,10 @@ class UpdateAmountConsolidatedEntriesAction
                                 EntryRepository::DESIGNATED_VALUE)
                         ->sum(EntryRepository::AMOUNT_COLUMN);
 
-        $amountOffers = $allEntriesByDate
+        $amountOffer = $allEntriesByDate
                         ->where(EntryRepository::ENTRY_TYPE_COLUMN,
                                     BaseRepository::OPERATORS['EQUALS'],
-                              EntryRepository::OFFERS_VALUE)
+                              EntryRepository::OFFER_VALUE)
                         ->sum(EntryRepository::AMOUNT_COLUMN);
 
 
@@ -69,9 +69,9 @@ class UpdateAmountConsolidatedEntriesAction
             $amountUpdated = $this->consolidationEntriesRepository
                 ->updateTotalValueConsolidation($date, $amountDesignated, ConsolidationRepository::AMOUNT_DESIGNATED_COLUMN);
 
-        if($amountOffers != 0)
+        if($amountOffer != 0)
             $amountUpdated = $this->consolidationEntriesRepository
-                ->updateTotalValueConsolidation($date, $amountOffers, ConsolidationRepository::AMOUNT_OFFERS_COLUMN);
+                ->updateTotalValueConsolidation($date, $amountOffer, ConsolidationRepository::AMOUNT_OFFER_COLUMN);
 
 
         $this->consolidationEntriesRepository

@@ -26,7 +26,7 @@ return new class extends Migration
                 $table->string('transaction_type')->nullable();
                 $table->decimal('tithes_amount')->nullable()->default(0);
                 $table->decimal('designated_amount')->nullable()->default(0);
-                $table->decimal('offers_amount')->nullable()->default(0);
+                $table->decimal('offer_amount')->nullable()->default(0);
                 $table->boolean('deleted')->nullable()->default(0);
                 $table->string('receipt')->nullable();
                 $table->string('comments')->nullable();

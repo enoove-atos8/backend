@@ -16,7 +16,7 @@ class Consolidation extends Model
         'date',
         'consolidated',
         'designated_amount',
-        'offers_amount',
+        'offer_amount',
         'tithe_amount',
         'total_amount',
         'monthly_target',

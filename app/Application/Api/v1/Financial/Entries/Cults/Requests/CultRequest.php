@@ -10,7 +10,7 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class CultRequest extends FormRequest
 {
     const TITHE = 'tithe';
-    const OFFERS = 'offers';
+    const OFFER = 'offer';
     const DESIGNATED = 'designated';
 
 
@@ -91,7 +91,7 @@ class CultRequest extends FormRequest
             transactionCompensation:       $this->input('transactionCompensation'),
             tithes:                        $this->input('tithe'),
             designated:                    $this->input('designated'),
-            offers:                        $this->input('offer'),
+            offer:                         $this->input('offer'),
             deleted:                       $this->input('deleted'),
             reviewerId:                    $this->input('reviewerId'),
             receipt:                       $this->input('receipt'),

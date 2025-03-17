@@ -16,6 +16,7 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\Entrie
 use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
+use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Mobile\SyncStorage\Controllers\SyncStorageController;
 use Application\Api\v1\Users\Controllers\UserController;
@@ -442,6 +443,284 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     });
 
                 });
+
+
+
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource Group: financial
+            | Resource: Exits
+            | EndPoints: /v1/financial/exits
+            |
+            |   1 - GET - / - OK
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('exits')->group(function () {
+
+                /*
+                |--------------------------------------------------------------------------
+                | Group Exits Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('exits')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /
+                     * Description: Get All exits by Date Range
+                     */
+
+                    Route::get('/', [ExitsController::class, 'getExits']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getAmountByEntryType/
+                     * Description: Get amount of entries by Date Range
+                    */
+                    //Route::get('/getAmountByEntryType/', [EntriesController::class, 'getAmountByEntryType']);
+
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /{id}
+                     * Description: Get an entry by id
+                     */
+
+                    //Route::get('/{id}', [EntriesController::class, 'getEntryById'])->whereNumber('id');
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /
+                     * Description: Get All Entries by Date Range
+                     */
+                    //Route::post('/', [EntriesController::class, 'createEntry']);
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /{id}
+                     * Description: Update an entry
+                     */
+
+                    //Route::put('/{id}', [EntriesController::class, 'updateEntry'])->whereNumber('id');
+
+
+                    /*
+                     * Action: DELETE
+                     * EndPoint: /{id}
+                     * Description: Delete an entry
+                     */
+
+                    //Route::delete('/{id}', [EntriesController::class, 'deleteEntry'])->whereNumber('id');
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /files/assets/avatar
+                     * Description: Upload a receipt entry
+                     */
+
+                    //Route::post('/files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getEntriesByTransactionCompensation
+                     * Description: Get a  entries to compensate list
+                     */
+
+                    //Route::get('/getEntriesByTransactionCompensation', [EntriesController::class, 'getEntriesByTransactionCompensation']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getDevolutionEntries
+                     * Description: Get a list of devolution entries
+                     */
+
+                    //Route::get('/getDevolutionEntries', [EntriesController::class, 'getDevolutionEntries']);
+
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getEntriesIndicators
+                     * Description: Get entries indicators
+                     */
+
+                    //Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
+
+                });
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Automation Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('automation')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getReadingErrorReceipts
+                     * Description: Get reading error receipts
+                     */
+
+                    Route::get('/getReadingErrorReceipts', [ReadingErrorReceiptsController::class, 'getReadingErrorReceipts']);
+
+
+
+                    /*
+                     * Action: DELETE
+                     * EndPoint: /deleteReadingErrorReceipt
+                     * Description: Delete reading error receipts
+                     */
+
+                    Route::delete('/deleteReadingErrorReceipt', [ReadingErrorReceiptsController::class, 'deleteReadingErrorReceipt']);
+
+                });
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Cults Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('cults')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getCults
+                     * Description: Get all cults
+                     */
+
+                    Route::get('/getCults', [CultController::class, 'getCults']);
+
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getCultById
+                     * Description: Get a cult
+                     */
+
+                    Route::get('/getCultById', [CultController::class, 'getCultById']);
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /createCult
+                     * Description: Create a new cult
+                     */
+
+                    Route::post('/', [CultController::class, 'saveCult']);
+
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /updateCult
+                     * Description: Update a cult
+                     */
+
+                    Route::put('/{id}', [CultController::class, 'saveCult'])->whereNumber('id');
+
+                });
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Consolidation Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('consolidation')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getMonths
+                     * Description: Get all consolidation months
+                     */
+
+                    Route::get('/getMonths', [ConsolidationController::class, 'getMonths']);
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /consolidateMonth
+                     * Description: Consolidate month
+                     */
+
+                    Route::put('/consolidateMonth', [ConsolidationController::class, 'consolidateMonth']);
+
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /reopenMonth
+                     * Description: Create a new cult
+                     */
+
+                    Route::put('/reopenMonth', [ConsolidationController::class, 'reopenMonth']);
+
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getTotalAmountEntries
+                     * Description: Get all entries amount for a month
+                     */
+
+                    Route::get('/getTotalAmountEntries', [ConsolidationController::class, 'getTotalAmountEntries']);
+
+                });
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Reports Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('reports')->group(function () {
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateReport', [ReportsRequestsController::class, 'generateReport']);
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::get('/getReports', [ReportsRequestsController::class, 'getReports']);
+
+                });
+
+            });
 
 
                 /*

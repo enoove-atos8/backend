@@ -32,7 +32,7 @@ class CultsResourceCollection extends ResourceCollection
         {
             $tithesAmount = $item->tithes_amount;
             $designatedAmount = $item->designated_amount;
-            $offersAmount = $item->offers_amount;
+            $offerAmount = $item->offer_amount;
 
             $reviewer = $item->reviewer()->get()[0];
 
@@ -44,8 +44,8 @@ class CultsResourceCollection extends ResourceCollection
                 'depositCultDate'       =>  $item->date_transaction_compensation,
                 'amountTithes'          =>  $tithesAmount,
                 'amountDesignated'      =>  $designatedAmount,
-                'amountOffers'          =>  $offersAmount,
-                'totalAmount'           =>  $tithesAmount + $designatedAmount + $offersAmount,
+                'amountOffer'           =>  $offerAmount,
+                'totalAmount'           =>  $tithesAmount + $designatedAmount + $offerAmount,
                 'receipt'               =>  $item->receipt,
                 'entries'               =>  $item->entries,
                 'reviewer'              =>  [

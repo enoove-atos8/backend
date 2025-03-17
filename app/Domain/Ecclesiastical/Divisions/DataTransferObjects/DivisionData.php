@@ -6,22 +6,22 @@ use Spatie\DataTransferObject\DataTransferObject;
 
 class DivisionData extends DataTransferObject
 {
-    /** @var integer  */
-    public int $id = 0;
-
-    /** @var string  */
-    public string $slug;
-
-    /** @var string  */
-    public string $name;
+    /** @var null | integer  */
+    public ?int $id = 0;
 
     /** @var null | string  */
-    public null | string $description;
+    public ?string $slug;
 
-    /** @var boolean  */
-    public bool $requireLeader;
+    /** @var null | string  */
+    public ?string $name;
 
-    /** @var boolean  */
-    public bool $enabled;
+    /** @var null | string  */
+    public ?string $description;
+
+    /** @var null | boolean  */
+    public ?bool $requireLeader;
+
+    /** @var null | boolean  */
+    public ?bool $enabled;
 
 }

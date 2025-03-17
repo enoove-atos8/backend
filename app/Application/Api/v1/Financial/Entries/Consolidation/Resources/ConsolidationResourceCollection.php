@@ -37,7 +37,7 @@ class ConsolidationResourceCollection extends ResourceCollection
                 'consolidated'          =>  $item->consolidated,
                 'amountTithes'          =>  $item->tithe_amount,
                 'amountDesignated'      =>  $item->designated_amount,
-                'amountOffers'          =>  $item->offers_amount,
+                'amountOffer'          =>  $item->offer_amount,
                 'totalAmount'           =>  $item->total_amount,
             ];
         }

@@ -116,7 +116,7 @@
                                 <span class="chip">Todos</span>
                             @endif
                             @break
-                        @case('offers')
+                        @case('offer')
                             <span class="chip">Ofertas</span>
                             @break
                         @default
@@ -132,7 +132,7 @@
         </tr>
         <tr>
             <td>Total</td>
-            <td>R$ {{ number_format($entryTypesAmount['titheAmount'] + $entryTypesAmount['designatedAmount'] + $entryTypesAmount['offersAmount'], 2, ',', '.') }}</td>
+            <td>R$ {{ number_format($entryTypesAmount['titheAmount'] + $entryTypesAmount['designatedAmount'] + $entryTypesAmount['offerAmount'], 2, ',', '.') }}</td>
         </tr>
         </tbody>
     </table>

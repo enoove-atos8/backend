@@ -20,9 +20,8 @@ return new class extends Migration
 
                 $table->integer('id', true);
                 $table->integer('payment_category_id');
-                $table->string('tenant');
-                $table->string('payment_item_slug')->unique();
-                $table->string('payment_item_name');
+                $table->string('slug')->unique();
+                $table->string('name');
                 $table->timestamps();
 
                 $table->foreign('payment_category_id')

@@ -30,11 +30,11 @@ return new class extends Migration
             });
         }
 
-        if (!Schema::hasColumn('entries_report_requests', 'offers_amount'))
+        if (!Schema::hasColumn('entries_report_requests', 'offer_amount'))
         {
             Schema::table('entries_report_requests', function (Blueprint $table)
             {
-                $table->decimal('offers_amount')->nullable(false)->default(0)->after('link_report');
+                $table->decimal('offer_amount')->nullable(false)->default(0)->after('link_report');
             });
         }
     }

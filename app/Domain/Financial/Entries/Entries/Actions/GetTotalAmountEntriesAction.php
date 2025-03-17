@@ -36,7 +36,7 @@ class GetTotalAmountEntriesAction
             false);
 
         $amountTithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::TITHE_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
-        $amountOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
+        $amountOffer = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::OFFERS_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
         $amountDesignated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, EntryRepository::DESIGNATED_VALUE)->sum(EntryRepository::AMOUNT_COLUMN_JOINED_WITH_UNDERLINE);
 
         if($entries->count() > 0)
@@ -44,7 +44,7 @@ class GetTotalAmountEntriesAction
             return [
                 'totalAmount'   =>  [
                     'titheAmount'       =>  $amountTithes,
-                    'offersAmount'      =>  $amountOffers,
+                    'offerAmount'      =>  $amountOffer,
                     'designatedAmount'  =>  $amountDesignated,
                 ]
             ];

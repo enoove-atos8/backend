@@ -28,6 +28,7 @@ use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevol
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepositoryInterface;
+use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
 use Domain\Financial\SyncStorage\Interfaces\SyncStorageFolderRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
@@ -43,6 +44,7 @@ use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
 use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
+use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
 use Infrastructure\Repositories\Financial\SyncStorageFolders\SyncStorageFoldersRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
@@ -72,7 +74,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TotalGeneralRepositoryInterface::class, TotalGeneralRepository::class);
         $this->app->bind(DivisionRepositoryInterface::class, DivisionRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
-        $this->app->bind(SyncFoldersRepositoryInterface::class, SyncFoldersRepository::class);
         $this->app->bind(ReadingErrorReceiptRepositoryInterface::class, AutomationRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(CultRepositoryInterface::class, CultRepository::class);
@@ -80,6 +81,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
         $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
         $this->app->bind(SyncStorageRepositoryInterface::class, SyncStorageRepository::class);
+        $this->app->bind(ExitRepositoryInterface::class, ExitRepository::class);
+
 
     }
 

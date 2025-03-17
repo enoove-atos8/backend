@@ -19,7 +19,7 @@ class ConsolidationEntriesData extends DataTransferObject
     public string|null $designatedAmount;
 
     /** @var string|null */
-    public string|null $offersAmount;
+    public string|null $offerAmount;
 
     /** @var string|null */
     public string|null $titheAmount;
