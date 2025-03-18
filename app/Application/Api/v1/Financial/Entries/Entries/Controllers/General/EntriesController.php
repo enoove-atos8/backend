@@ -95,33 +95,6 @@ class EntriesController extends Controller
     }
 
 
-
-    /**
-     * @param Request $request
-     * @param GetConsolidatedEntriesByStatusAction $getConsolidationEntriesByStatus
-     * @param GetQtdEntriesNoCompensateByMonthAction $getQtdEntriesNoCompensateByMonth
-     * @return EntryConsolidatedResourceCollection
-     * @throws GeneralExceptions
-     */
-    public function getConsolidationEntriesByStatus(
-        Request                                $request,
-        GetConsolidatedEntriesByStatusAction   $getConsolidationEntriesByStatus,
-        GetQtdEntriesNoCompensateByMonthAction $getQtdEntriesNoCompensateByMonth): EntryConsolidatedResourceCollection
-    {
-        try
-        {
-            $consolidated = $request->input('consolidated');
-            $monthsNotConsolidated = $getConsolidationEntriesByStatus->execute(intval($consolidated), true);
-
-            return new EntryConsolidatedResourceCollection($monthsNotConsolidated);
-        }
-        catch (GeneralExceptions $e)
-        {
-            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
-        }
-    }
-
-
     /**
      * @param $id
      * @param GetEntryByIdAction $getEntryByIdAction
@@ -192,37 +165,6 @@ class EntriesController extends Controller
                 ], 200);
             }
 
-        }
-        catch(GeneralExceptions $e)
-        {
-            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
-        }
-    }
-
-
-
-    /**
-     *
-     * Store a newly created resource in storage.
-     *
-     * @param Request $request
-     * @param UpdateStatusConsolidatedEntriesAction $updateStatusConsolidationEntriesAction
-     * @return Application|Response|ResponseFactory
-     * @throws BindingResolutionException
-     * @throws GeneralExceptions
-     */
-    public function updateStatusConsolidationEntries(Request $request, UpdateStatusConsolidatedEntriesAction $updateStatusConsolidationEntriesAction): Application|ResponseFactory|Response
-    {
-        try
-        {
-            $response = $updateStatusConsolidationEntriesAction->execute($request->input('date'), $request->input('status'));
-
-            if($response)
-            {
-                return response([
-                    'message'   =>  ConsolidationEntriesReturnMessages::SUCCESS_ENTRIES_CONSOLIDATED,
-                ], 200);
-            }
         }
         catch(GeneralExceptions $e)
         {

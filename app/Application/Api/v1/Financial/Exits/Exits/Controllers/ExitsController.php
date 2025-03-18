@@ -3,6 +3,7 @@
 namespace Application\Api\v1\Financial\Exits\Exits\Controllers;
 
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
+use App\Domain\Financial\Exits\Indicators\Actions\HandleExitsIndicatorsAction;
 use Application\Api\v1\Financial\Entries\Entries\Resources\EntryResourceCollection;
 use Application\Api\v1\Financial\Exits\Exits\Resources\AmountByExitTypeResource;
 use Application\Api\v1\Financial\Exits\Exits\Resources\ExitsResourceCollection;
@@ -62,6 +63,30 @@ class ExitsController extends Controller
             $response = $getAmountByExitTypeAction->execute($date, $exitType);
 
             return new AmountByExitTypeResource($response);
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param HandleExitsIndicatorsAction $handleExitsIndicatorsAction
+     * @return array
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getExitsAmount(Request $request, HandleExitsIndicatorsAction $handleExitsIndicatorsAction): array
+    {
+        try
+        {
+            $indicator = $request->input('indicator');
+            $dates = $request->input('dates');
+            $filters = $request->except(['dates', 'page', 'indicator']);
+
+            return $handleExitsIndicatorsAction->execute($indicator, $dates, $filters);
         }
         catch (GeneralExceptions $e)
         {
