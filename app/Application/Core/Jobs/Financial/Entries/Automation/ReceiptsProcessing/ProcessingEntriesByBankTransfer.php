@@ -527,7 +527,7 @@ class ProcessingEntriesByBankTransfer
         if($data->docSubType == EntryRepository::TITHE_VALUE)
         {
             $this->entryData->groupReceivedId = null;
-            $this->entryData->devolution = null;
+            $this->entryData->devolution = 0;
             $this->entryData->groupReturnedId = null;
         }
 
