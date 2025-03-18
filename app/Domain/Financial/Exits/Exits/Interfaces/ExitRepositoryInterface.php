@@ -8,7 +8,7 @@ use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 
 interface ExitRepositoryInterface
 {
-    public function getExits(?string $dates, array $filters, string $transactionCompensation = ExitRepository::COMPENSATED_VALUE, bool $paginate = true): Collection | Paginator;
+    public function getExits(?string $dates, array $filters, string $transactionCompensation = ExitRepository::COMPENSATED_VALUE, bool $paginate = true, bool $queryOnlyExitsTable = false): Collection | Paginator;
 
     public function getAmountByExitType(string $dates, string $exitType = '*'): mixed;
 }
