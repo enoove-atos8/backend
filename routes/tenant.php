@@ -453,6 +453,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             | EndPoints: /v1/financial/exits
             |
             |   1 - GET - / - OK
+            |   2 - GET - /getAmountByEntryType - OK
             |------------------------------------------------------------------------------------------
             */
 
@@ -480,7 +481,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * EndPoint: /getAmountByEntryType/
                      * Description: Get amount of entries by Date Range
                     */
-                    //Route::get('/getAmountByEntryType/', [EntriesController::class, 'getAmountByEntryType']);
+                    Route::get('/getAmountByExitType/', [ExitsController::class, 'getAmountByExitType']);
 
 
 

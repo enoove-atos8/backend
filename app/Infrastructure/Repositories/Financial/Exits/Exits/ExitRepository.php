@@ -40,6 +40,12 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const PAYMENT_ITEM_ID_COLUMN_JOINED = 'exits.payment_item_id';
 
     const ID_COLUMN_JOINED = 'exits.id';
+    const AMOUNT_COLUMN = 'amount';
+    const EXIT_TYPE_COLUMN = 'exit_type';
+    const PAYMENT_VALUE = 'payment';
+    const TRANSFER_VALUE = 'transfer';
+    const MINISTERIAL_TRANSFER_VALUE = 'ministerial_transfer';
+    const CONTRIBUTIONS_VALUE = 'contributions';
 
     const PAGINATE_NUMBER = 30;
 
@@ -127,6 +133,27 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     }
 
 
+    /**
+     * @param string $dates
+     * @param string $exitType
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function getAmountByExitType(string $dates, string $exitType = '*'): mixed
+    {
+        $this->queryConditions = [];
+        $arrDates = explode(',', $dates);
+
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+
+        if($exitType != 'all')
+            $this->queryConditions [] = $this->whereEqual(self::EXIT_TYPE_COLUMN, $exitType, 'and');
+
+        if($dates !== 'all')
+            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+
+        return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+    }
 
 
     /*public function applyFilters(array $filters, bool $returnConditions = false)
