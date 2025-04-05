@@ -20,7 +20,7 @@ class ConsolidationRepository extends BaseRepository implements ConsolidatedEntr
     const CONSOLIDATED_VALUE = '1';
     const AMOUNT_TITHE_COLUMN = 'tithe_amount';
     const AMOUNT_DESIGNATED_COLUMN = 'designated_amount';
-    const AMOUNT_OFFER_COLUMN = 'offer_amount';
+    const AMOUNT_OFFER_COLUMN = 'offers_amount';
     const AMOUNT_TOTAL_COLUMN = 'total_amount';
 
     /**
