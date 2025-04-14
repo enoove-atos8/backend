@@ -135,7 +135,7 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
         return $this->update($conditions, [
             'tithe_amount'          =>   $entryTypesAmount['titheAmount'],
             'designated_amount'     =>   $entryTypesAmount['designatedAmount'],
-            'offer_amount'         =>   $entryTypesAmount['offerAmount'],
+            'offers_amount'         =>   $entryTypesAmount['offerAmount'],
         ]);
     }
 }
