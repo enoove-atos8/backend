@@ -2,8 +2,8 @@
 
 namespace Application\Api\v1\Financial\Exits\Exits\Resources;
 
-use App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData;
-use App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData;
+use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
+use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
@@ -164,10 +164,8 @@ class ExitsResourceCollection extends ResourceCollection
     }
 
 
-
-
     /**
-     * @param \App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData $data
+     * @param PaymentItemData $data
      * @return array|null
      */
     public function getPaymentItem(PaymentItemData $data): ?array
