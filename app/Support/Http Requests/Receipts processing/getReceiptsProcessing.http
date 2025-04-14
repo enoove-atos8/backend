@@ -1,0 +1,5 @@
+###
+GET http://iebrd.atos8.local:8080/api/v1/financial/receiptsProcessing/receiptsProcessing?status=error&docType=entry
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer 571|ioPMZF6KF9Qdia6r1W5BfxINCOv8xGHiqFGQmTor0b4bb410

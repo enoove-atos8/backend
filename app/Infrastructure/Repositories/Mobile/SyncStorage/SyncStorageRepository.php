@@ -70,7 +70,6 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     {
         $this->queryConditions = [];
         $this->queryConditions [] = $this->whereEqual(self::STATUS_COLUMN, self::TO_PROCESS_VALUE, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::DOC_TYPE_COLUMN, $docType, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,

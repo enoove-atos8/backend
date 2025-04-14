@@ -7,7 +7,7 @@ use Spatie\DataTransferObject\DataTransferObject;
 class DivisionData extends DataTransferObject
 {
     /** @var null | integer  */
-    public ?int $id = 0;
+    public ?int $id;
 
     /** @var null | string  */
     public ?string $slug;

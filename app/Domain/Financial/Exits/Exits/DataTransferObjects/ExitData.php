@@ -2,11 +2,11 @@
 
 namespace Domain\Financial\Exits\Exits\DataTransferObjects;
 
+use App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData;
+use App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use Domain\Financial\Exits\PaymentCategory\DataTransferObjects\PaymentCategoryData;
-use Domain\Financial\Exits\PaymentItem\DataTransferObjects\PaymentItemData;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -14,9 +14,6 @@ class ExitData extends DataTransferObject
 {
     /** @var integer | null */
     public ?int $id;
-
-    /** @var integer | null */
-    public ?int $reviewerId;
 
     /** @var string | null */
     public ?string $exitType;
@@ -60,8 +57,8 @@ class ExitData extends DataTransferObject
     /** @var GroupData | null */
     public ?GroupData $group;
 
-    /** @var PaymentCategoryData | null */
-    public ?PaymentCategoryData $paymentCategory;
+    /** @var \App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData | null */
+    public ?\App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData $paymentCategory;
 
     /** @var PaymentItemData | null */
     public ?PaymentItemData $paymentItem;
@@ -132,6 +129,7 @@ class ExitData extends DataTransferObject
                 'id' => $data['payment_category_id'] ?? null,
                 'slug' => $data['payment_category_slug'] ?? null,
                 'name' => $data['payment_category_name'] ?? null,
+                'description' => $data['payment_category_description'] ?? null,
             ]),
 
             paymentItem: new PaymentItemData([
@@ -139,6 +137,7 @@ class ExitData extends DataTransferObject
                 'paymentCategoryId' => $data['payment_item_payment_category_id'] ?? null,
                 'slug' => $data['payment_item_slug'] ?? null,
                 'name' => $data['payment_item_name'] ?? null,
+                'description' => $data['payment_item_description'] ?? null,
             ])
         );
     }

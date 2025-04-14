@@ -2,15 +2,14 @@
 
 namespace Application\Api\v1\Financial\Exits\Exits\Resources;
 
+use App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData;
+use App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use Domain\Financial\Exits\PaymentCategory\DataTransferObjects\PaymentCategoryData;
-use Domain\Financial\Exits\PaymentItem\DataTransferObjects\PaymentItemData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
-use Illuminate\Support\Collection;
 use JsonSerializable;
 
 class ExitsResourceCollection extends ResourceCollection
@@ -155,6 +154,7 @@ class ExitsResourceCollection extends ResourceCollection
                 'id'            =>  $data->id,
                 'slug'          =>  $data->slug,
                 'name'          =>  $data->name,
+                'description'   =>  $data->description,
             ];
         }
         else
@@ -167,7 +167,7 @@ class ExitsResourceCollection extends ResourceCollection
 
 
     /**
-     * @param PaymentItemData $data
+     * @param \App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData $data
      * @return array|null
      */
     public function getPaymentItem(PaymentItemData $data): ?array
@@ -179,6 +179,7 @@ class ExitsResourceCollection extends ResourceCollection
                 'paymentCategoryId'     =>  $data->paymentCategoryId,
                 'slug'                  =>  $data->slug,
                 'name'                  =>  $data->name,
+                'description'           =>  $data->description,
             ];
         }
         else

@@ -29,7 +29,7 @@ return new class extends Migration
                 $table->string('transaction_compensation')->nullable(false);
                 $table->string('date_transaction_compensation')->nullable(false);
                 $table->string('date_exit_register')->nullable(false);
-                $table->string('timestamp_exit_transaction')->nullable(false);
+                $table->string('timestamp_exit_transaction')->nullable();
                 $table->decimal('amount', 10, 2)->nullable();
                 $table->string('comments')->nullable();
                 $table->string('receipt_link')->nullable(false);

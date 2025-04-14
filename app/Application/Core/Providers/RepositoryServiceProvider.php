@@ -22,15 +22,16 @@ use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerReposito
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
-use Domain\Ecclesiastical\Folders\Interfaces\SyncFoldersRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
+use Domain\Financial\Entries\Automation\Interfaces\EntriesAutomationRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TithesMonthlyTarget\Interfaces\TithesMonthlyTargetEntriesRepositoryInterface;
 use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepositoryInterface;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
-use Domain\Financial\Receipts\Entries\ReadingError\Interfaces\ReadingErrorReceiptRepositoryInterface;
-use Domain\Financial\SyncStorage\Interfaces\SyncStorageFolderRepositoryInterface;
+use Domain\Financial\Exits\Payments\Categories\Interfaces\PaymentCategoryRepositoryInterface;
+use Domain\Financial\Exits\Payments\Items\Interfaces\PaymentItemRepositoryInterface;
+use Domain\Financial\ReceiptProcessing\Interfaces\ReceiptProcessingRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
@@ -39,14 +40,15 @@ use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
-use Infrastructure\Repositories\Ecclesiastical\SyncFolders\SyncFoldersRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
 use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
+use Infrastructure\Repositories\Financial\Exits\Payments\PaymentCategoryRepository;
+use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
+use Infrastructure\Repositories\Financial\ReceiptProcessing\ReceiptProcessingRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
-use Infrastructure\Repositories\Financial\SyncStorageFolders\SyncStorageFoldersRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
 
@@ -74,7 +76,6 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(TotalGeneralRepositoryInterface::class, TotalGeneralRepository::class);
         $this->app->bind(DivisionRepositoryInterface::class, DivisionRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
-        $this->app->bind(ReadingErrorReceiptRepositoryInterface::class, AutomationRepository::class);
         $this->app->bind(GroupRepositoryInterface::class, GroupsRepository::class);
         $this->app->bind(CultRepositoryInterface::class, CultRepository::class);
         $this->app->bind(ReportRequestsRepositoryInterface::class, ReportRequestsRepository::class);
@@ -82,6 +83,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PlanRepositoryInterface::class, PlanRepository::class);
         $this->app->bind(SyncStorageRepositoryInterface::class, SyncStorageRepository::class);
         $this->app->bind(ExitRepositoryInterface::class, ExitRepository::class);
+        $this->app->bind(ReceiptProcessingRepositoryInterface::class, ReceiptProcessingRepository::class);
+        $this->app->bind(PaymentCategoryRepositoryInterface::class, PaymentCategoryRepository::class);
+        $this->app->bind(PaymentItemRepositoryInterface::class, PaymentItemRepository::class);
 
 
     }
