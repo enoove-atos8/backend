@@ -2,7 +2,8 @@
 
 namespace Application\Core\Console;
 
-use Application\Core\Jobs\Financial\Entries\Automation\ReceiptsProcessing\ProcessingEntriesByBankTransfer;
+use App\Application\Core\Jobs\Financial\Entries\ReceiptsProcessing\ProcessingBankEntriesTransferReceipts;
+use App\Application\Core\Jobs\Financial\Exits\ReceiptsProcessing\ProcessingBankExitsTransferReceipts;
 use Application\Core\Jobs\Financial\Entries\Reports\HandlerEntriesReports;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
@@ -23,9 +24,13 @@ class Kernel extends ConsoleKernel
 
         // Entries
         $schedule->call(function () {
-            resolve(ProcessingEntriesByBankTransfer::class)->handle();
-        })->everyThirtyMinutes();
+            resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
+        })->everyFifteenMinutes();
 
+        // Exits
+        $schedule->call(function () {
+            resolve(ProcessingBankExitsTransferReceipts::class)->handle();
+        })->everyThirtyMinutes();
 
         // Reports
         $schedule->call(function () {
