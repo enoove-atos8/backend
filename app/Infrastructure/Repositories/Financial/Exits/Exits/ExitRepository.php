@@ -7,6 +7,7 @@ use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Exits\Exits\Models\Exits;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,8 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const TABLE_NAME = 'exits';
 
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
+    const PIX_VALUE = 'pix';
+    const EXITS_VALUE = 'exits';
     const TRANSACTIONS_COMPENSATION_COLUMN = 'transaction_compensation';
     const TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'exits.transaction_compensation';
     const DATE_EXIT_REGISTER_COLUMN = 'date_exit_register';
@@ -31,7 +34,8 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const DELETED_COLUMN = 'deleted';
     const DELETED_COLUMN_JOINED = 'exits.deleted';
     const COMPENSATED_VALUE = 'compensated';
-    const TO_COMPENSATE_VALUE = 'tp_compensate';
+    const TO_COMPENSATE_VALUE = 'to_compensate';
+    const TIMESTAMP_EXIT_TRANSACTION_COLUMN = 'timestamp_exit_transaction';
 
     const REVIEWER_ID_COLUMN_JOINED = 'exits.reviewer_id';
     const DIVISION_ID_COLUMN_JOINED = 'exits.division_id';
@@ -75,6 +79,33 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
      * Array of conditions
      */
     private array $queryConditions = [];
+
+
+    /**
+     * @param ExitData $exitData
+     * @return Exits
+     */
+    public function newExit(ExitData $exitData): Exits
+    {
+        return $this->create([
+            'reviewer_id'                        =>   $exitData->financialReviewer->id,
+            'exit_type'                          =>   $exitData->exitType,
+            'division_id'                        =>   $exitData->division->id,
+            'group_id'                           =>   $exitData->group->id,
+            'payment_category_id'                =>   $exitData->paymentCategory->id,
+            'payment_item_id'                    =>   $exitData->paymentItem->id,
+            'is_payment'                         =>   $exitData->isPayment,
+            'deleted'                            =>   $exitData->deleted,
+            'transaction_type'                   =>   $exitData->transactionType,
+            'transaction_compensation'           =>   $exitData->transactionCompensation,
+            'date_transaction_compensation'      =>   $exitData->dateTransactionCompensation,
+            'date_exit_register'                 =>   $exitData->dateExitRegister,
+            'timestamp_exit_transaction'         =>   $exitData->timestampExitTransaction,
+            'amount'                             =>   floatval($exitData->amount),
+            'comments'                           =>   $exitData->comments,
+            'receipt_link'                       =>   $exitData->receiptLink,
+        ]);
+    }
 
 
     /**
@@ -169,6 +200,63 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         if($returnConditions)
             return $this->queryConditions;
     }*/
+
+
+    /**
+     * @param int $exitId
+     * @param string $timestamp
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function updateTimestamp(int $exitId, string $timestamp): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $exitId,
+            ];
+
+        return $this->update($conditions, [
+            'timestamp_exit_transaction'  =>   $timestamp,
+        ]);
+    }
+
+
+    /**
+     * @param int $exitId
+     * @param string $link
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function updateReceiptLink(int $exitId, string $link): mixed
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $exitId,
+            ];
+
+        return $this->update($conditions, [
+            'receipt_link'  =>   $link,
+        ]);
+    }
+
+
+    /**
+     * @param string $timestamp
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getExitByTimestamp(string $timestamp): Model | null
+    {
+        $this->queryConditions = [];
+
+        $this->queryConditions [] = $this->whereEqual(self::TIMESTAMP_EXIT_TRANSACTION_COLUMN, $timestamp, 'and');
+
+        return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
+    }
 
 
 

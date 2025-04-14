@@ -192,7 +192,8 @@ class MinioStorageService
      */
     public function downloadFile(string $filePath, string $tenant, string $localPath): array | bool
     {
-        try {
+        try
+        {
             $s3 = $this->s3->getInstance();
             $result = $s3->getObject([
                 'Bucket' => $tenant,
@@ -237,8 +238,10 @@ class MinioStorageService
                 'fullFileNamePdf'   => $fullFileNamePdf,
                 'fileUploaded'      => $uploadedFile
             ];
-        } catch (S3Exception $e) {
-            throw new GeneralExceptions("Error downloading file from MinIO", 500);
+        }
+        catch (S3Exception $e)
+        {
+            return false;
         }
     }
 

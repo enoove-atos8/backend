@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Database\Seeders\Tenant\EcclesiasticalDivisionsGroupsSeeder;
 use Database\Seeders\Tenant\EcclesiasticalDivisionsSeeder;
 use Database\Seeders\Tenant\FinancialSettingsSeeder;
+use Database\Seeders\Tenant\PaymentsSeeder;
 use Database\Seeders\tenant\RolesAndPermissionsSeeder;
 use Illuminate\Database\Seeder;
 
@@ -21,7 +22,8 @@ class TenantDatabaseSeeder extends Seeder
             RolesAndPermissionsSeeder::class,
             EcclesiasticalDivisionsSeeder::class,
             //EcclesiasticalDivisionsGroupsSeeder::class,
-            FinancialSettingsSeeder::class
+            FinancialSettingsSeeder::class,
+            PaymentsSeeder::class
         ]);
     }
 }

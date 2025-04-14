@@ -23,9 +23,9 @@ class GetEntryByTimestampValueCpfAction
     /**
      * @throws Throwable
      */
-    public function execute($id): Model | null
+    public function execute($timestampValueCpf): Model | null
     {
-        $entry = $this->entryRepository->getEntryByTimestampValueCpf($id);
+        $entry = $this->entryRepository->getEntryByTimestampValueCpf($timestampValueCpf);
 
         if($entry != null)
         {
