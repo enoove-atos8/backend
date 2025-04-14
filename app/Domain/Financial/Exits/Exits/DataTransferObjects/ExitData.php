@@ -2,8 +2,8 @@
 
 namespace Domain\Financial\Exits\Exits\DataTransferObjects;
 
-use App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData;
-use App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData;
+use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
+use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
@@ -57,8 +57,8 @@ class ExitData extends DataTransferObject
     /** @var GroupData | null */
     public ?GroupData $group;
 
-    /** @var \App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData | null */
-    public ?\App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData $paymentCategory;
+    /** @var PaymentCategoryData | null */
+    public ?PaymentCategoryData $paymentCategory;
 
     /** @var PaymentItemData | null */
     public ?PaymentItemData $paymentItem;
