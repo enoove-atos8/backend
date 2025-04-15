@@ -40,9 +40,9 @@ class PaymentItemsMobileResourceCollection extends ResourceCollection
                 'slugPage'              =>  $payment->slug,
                 'titleCard'             =>  $payment->name,
                 'descCard'              =>  $payment->description,
-                'paymentType'           =>  null,
-                'paymentCategoryId'     =>  $payment->id,
-                'paymentItemId'         =>  null,
+                'paymentType'           =>  '',
+                'paymentCategoryId'     =>  $payment->paymentCategoryId,
+                'paymentItemId'         =>  $payment->id,
             ];
         }
 
