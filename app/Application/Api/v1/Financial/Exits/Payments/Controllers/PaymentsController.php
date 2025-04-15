@@ -33,9 +33,13 @@ class PaymentsController extends Controller
     {
         try
         {
+            $source = $request->input('source');
             $payments = $getPaymentsAction->execute();
 
-            return new PaymentsResourceCollection($payments);
+            if($source == 'web')
+                return new PaymentsResourceCollection($payments);
+            else if($source == 'app')
+                return new PaymentsResourceCollection($payments);
 
         }
         catch (GeneralExceptions $e)
@@ -47,19 +51,24 @@ class PaymentsController extends Controller
 
     /**
      * @param int $id
+     * @param Request $request
      * @param GetPaymentItemsAction $getPaymentItemsAction
      * @return PaymentItemsResourceCollection
+     * @throws BindingResolutionException
      * @throws GeneralExceptions
      * @throws Throwable
-     * @throws BindingResolutionException
      */
-    public function getPaymentItems(int $id, GetPaymentItemsAction $getPaymentItemsAction): PaymentItemsResourceCollection
+    public function getPaymentItems(int $id, Request $request, GetPaymentItemsAction $getPaymentItemsAction): PaymentItemsResourceCollection
     {
         try
         {
+            $source = $request->input('source');
             $items = $getPaymentItemsAction->execute($id);
 
-            return new PaymentItemsResourceCollection($items);
+            if($source == 'web')
+                return new PaymentItemsResourceCollection($items);
+            else if($source == 'app')
+                return new PaymentItemsResourceCollection($items);
 
         }
         catch (GeneralExceptions $e)
