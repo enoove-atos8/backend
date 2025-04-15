@@ -5,6 +5,7 @@ namespace Domain\Financial\Exits\Payments\Categories\Actions;
 use App\Domain\Financial\Exits\Payments\Categories\Constants\ReturnMessages;
 use Domain\Financial\Exits\Payments\Categories\Interfaces\PaymentCategoryRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentCategoryRepository;
@@ -25,7 +26,7 @@ class GetPaymentsAction
      * @throws Throwable
      * @throws BindingResolutionException|GeneralExceptions
      */
-    public function execute(): Collection
+    public function execute(): Collection | Paginator
     {
         $payments = $this->paymentCategoryRepository->getPayments();
 
