@@ -103,6 +103,32 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             Route::get('/getGroupsByDivision', [GroupController::class, 'getGroupsToMobileApp']);
 
         });
+
+        Route::prefix('payments')->group(function () {
+
+            Route::prefix('categories')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All exits by Date Range
+                 */
+
+                Route::get('/', [PaymentsController::class, 'getPaymentsCategories']);
+
+            });
+
+            Route::prefix('items')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All exits by Date Range
+                 */
+
+                Route::get('/{id}', [PaymentsController::class, 'getPaymentItems']);
+            });
+        });
     });
 
 
