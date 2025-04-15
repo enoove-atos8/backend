@@ -9,6 +9,8 @@ class ReturnMessages
 
     // Error messages
 
+    public const NOT_FOUND = 'Nada por aqui.';
+
 
     // Info messages
 }

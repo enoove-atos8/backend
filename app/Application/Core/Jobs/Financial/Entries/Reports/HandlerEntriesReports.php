@@ -6,7 +6,6 @@ use App\Domain\CentralDomain\Plans\Actions\GetPlansAction;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Reports\GenerateMonthlyEntriesReport;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Reports\GenerateMonthlyReceiptsReport;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Reports\GenerateQuarterlyEntriesReports;
-use Domain\CentralDomain\Churches\Church\Actions\GetChurchByPlanIdAction;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;

@@ -11,7 +11,7 @@ class ReturnMessages
 
     // Error messages
 
-    public const PAYMENTS_ITEMS_NOT_FOUND = 'Nenhuma item de pagamento encontrado!';
+    public const PAYMENTS_ITEMS_NOT_FOUND = 'Nenhum item de pagamento encontrado!';
     public const DELETED_PAYMENTS_ITEMS_ERROR = 'Houve um erro ao excluir este item!';
     public const ADD_PAYMENTS_ITEMS_ERROR = 'Houve um erro ao adicionar este item!';
 
