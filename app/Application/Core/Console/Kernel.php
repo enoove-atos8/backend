@@ -23,7 +23,7 @@ class Kernel extends ConsoleKernel
         // =============================================================
 
         // Entries
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
         })->everyFifteenMinutes();
 
@@ -35,7 +35,7 @@ class Kernel extends ConsoleKernel
         // Reports
         $schedule->call(function () {
             resolve(HandlerEntriesReports::class)->handle();
-        })->everyMinute();*/
+        })->everyMinute();
     }
 
 
