@@ -5,6 +5,7 @@ namespace Application\Api\v1\Financial\Exits\Payments\Controllers;
 use App\Domain\Financial\Exits\Payments\Items\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Exits\Payments\Requests\AddPaymentItemsRequest;
 use Application\Api\v1\Financial\Exits\Payments\Resources\PaymentCategoriesMobileResourceCollection;
+use Application\Api\v1\Financial\Exits\Payments\Resources\PaymentItemsMobileResourceCollection;
 use Application\Api\v1\Financial\Exits\Payments\Resources\PaymentItemsResourceCollection;
 use Application\Api\v1\Financial\Exits\Payments\Resources\PaymentsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
@@ -59,7 +60,7 @@ class PaymentsController extends Controller
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getPaymentItems(int $id, Request $request, GetPaymentItemsAction $getPaymentItemsAction): PaymentItemsResourceCollection
+    public function getPaymentItems(int $id, Request $request, GetPaymentItemsAction $getPaymentItemsAction): PaymentItemsResourceCollection | PaymentItemsMobileResourceCollection
     {
         try
         {
@@ -69,7 +70,7 @@ class PaymentsController extends Controller
             if($source == 'web')
                 return new PaymentItemsResourceCollection($items);
             else if($source == 'app')
-                return new PaymentItemsResourceCollection($items);
+                return new PaymentItemsMobileResourceCollection($items);
 
         }
         catch (GeneralExceptions $e)
