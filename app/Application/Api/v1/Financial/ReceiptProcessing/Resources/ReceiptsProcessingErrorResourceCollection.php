@@ -2,8 +2,8 @@
 
 namespace Application\Api\v1\Financial\ReceiptProcessing\Resources;
 
-use App\Domain\Financial\Exits\Payments\PaymentCategory\DataTransferObjects\PaymentCategoryData;
-use App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData;
+use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
+use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\ReceiptProcessing\DataTransferObjects\ReceiptProcessingData;
@@ -158,7 +158,7 @@ class ReceiptsProcessingErrorResourceCollection extends ResourceCollection
 
 
     /**
-     * @param \App\Domain\Financial\Exits\Payments\PaymentItem\DataTransferObjects\PaymentItemData $paymentItemData
+     * @param PaymentItemData $paymentItemData
      * @return array|null
      */
     public function getPaymentItem(PaymentItemData $paymentItemData): ?array
