@@ -20,7 +20,7 @@ return new class extends Migration
 
                 $table->integer('id', true);
                 $table->integer('payment_category_id');
-                $table->string('slug')->unique();
+                $table->string('slug');
                 $table->string('name');
                 $table->timestamps();
 
