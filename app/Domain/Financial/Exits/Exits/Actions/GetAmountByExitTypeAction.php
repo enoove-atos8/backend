@@ -27,7 +27,7 @@ class GetAmountByExitTypeAction
         $totalPayment = $exits
             ->where(ExitRepository::EXIT_TYPE_COLUMN,
                 BaseRepository::OPERATORS['EQUALS'],
-                ExitRepository::PAYMENT_VALUE)->sum(ExitRepository::AMOUNT_COLUMN);
+                ExitRepository::PAYMENTS_VALUE)->sum(ExitRepository::AMOUNT_COLUMN);
 
         $totalTransfer = $exits
             ->where(ExitRepository::EXIT_TYPE_COLUMN,
