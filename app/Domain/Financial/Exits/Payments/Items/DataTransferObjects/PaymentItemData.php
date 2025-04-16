@@ -22,6 +22,9 @@ class PaymentItemData extends DataTransferObject
     /** @var string | null */
     public ?string $description;
 
+    /** @var bool | null */
+    public ?bool $deleted = false;
+
 
     /**
      * @throws UnknownProperties
@@ -34,6 +37,7 @@ class PaymentItemData extends DataTransferObject
             slug: $data['payment_item_slug'] ?? null,
             name: $data['payment_item_name'] ?? null,
             description: $data['payment_item_description'] ?? null,
+            deleted: $data['payment_item_deleted'] ?? null,
         );
     }
 }

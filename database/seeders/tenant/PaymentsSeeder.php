@@ -50,25 +50,24 @@ class PaymentsSeeder extends Seeder
 
             $items = match ($category['slug']) {
                 'institutional_taxes' => [
-
+                    ['slug' => 'darf', 'name' => 'DARF', 'description' => 'Documento de arrecadação de receitas federais para pagamento de impostos como IRPJ, IRPF, CSLL, PIS, COFINS entre outros.', 'deleted'    =>  false],
                 ],
                 'employees_taxes' => [
-                    ['slug' => 'darf', 'name' => 'DARF', 'description' => 'Documento de arrecadação de receitas federais para pagamento de impostos como IRPJ, IRPF, CSLL, PIS, COFINS entre outros.'],
-                    ['slug' => 'gps_inss', 'name' => 'GPS/INSS', 'description' => 'A GPS é usada para pagar contribuições previdenciárias ao INSS que são usadas para financiar aposentadorias, pensões, auxílios e outros benefícios previdenciários.'],
+                    ['slug' => 'gps_inss', 'name' => 'GPS/INSS', 'description' => 'A GPS é usada para pagar contribuições previdenciárias ao INSS que são usadas para financiar aposentadorias, pensões, auxílios e outros benefícios previdenciários.', 'deleted'  =>  false],
                 ],
                 'employees' => [
-                    ['slug' => 'monthly_remuneration', 'name' => 'Remuneração Mensal', 'description' => 'Valores pagos como remuneração mensal ao funcionário.'],
+                    ['slug' => 'monthly_remuneration', 'name' => 'Remuneração Mensal', 'description' => 'Valores pagos como remuneração mensal ao funcionário.', 'deleted'  =>  false],
                 ],
                 'pastoral_ministry' => [
-                    ['slug' => 'prebend', 'name' => 'Prebenda pastoral', 'description' => 'Valores pagos como remuneração mensal ao pastor.'],
-                    ['slug' => 'health_plan', 'name' => 'Plano de saúde', 'description' => 'Plano de saúde do pastor.'],
-                    ['slug' => 'house_rent', 'name' => 'Aluguel de moradia', 'description' => 'Valores pagos para o aluguel da moradia do pastor.'],
-                    ['slug' => '13th_salary', 'name' => 'Décimo terceiro', 'description' => 'Valores pagos como décimo terceiro salário ao pastor.'],
+                    ['slug' => 'prebend', 'name' => 'Prebenda pastoral', 'description' => 'Valores pagos como remuneração mensal ao pastor.', 'deleted' =>  false],
+                    ['slug' => 'health_plan', 'name' => 'Plano de saúde', 'description' => 'Plano de saúde do pastor.', 'deleted'   =>  false],
+                    ['slug' => 'house_rent', 'name' => 'Aluguel de moradia', 'description' => 'Valores pagos para o aluguel da moradia do pastor.', 'deleted'   =>  false],
+                    ['slug' => '13th_salary', 'name' => 'Décimo terceiro', 'description' => 'Valores pagos como décimo terceiro salário ao pastor.', 'deleted'  =>  false],
                 ],
                 'fixed_expenses' => [
-                    ['slug' => 'water_sewage', 'name' => 'Água e esgoto', 'description' => 'Despesa fixa da companhia de água e esgoto'],
-                    ['slug' => 'electrical_energy', 'name' => 'Energia elétrica', 'description' => 'Despesa fixa da companhia de energia elétrica'],
-                    ['slug' => 'credit_card', 'name' => 'Cartão de crédito', 'description' => 'Despesa fixa do cartão de crédito.'],
+                    ['slug' => 'water_sewage', 'name' => 'Água e esgoto', 'description' => 'Despesa fixa da companhia de água e esgoto', 'deleted'  =>  false],
+                    ['slug' => 'electrical_energy', 'name' => 'Energia elétrica', 'description' => 'Despesa fixa da companhia de energia elétrica', 'deleted'   =>  false],
+                    ['slug' => 'credit_card', 'name' => 'Cartão de crédito', 'description' => 'Despesa fixa do cartão de crédito.', 'deleted'   =>  false],
                 ],
                 default => [],
             };

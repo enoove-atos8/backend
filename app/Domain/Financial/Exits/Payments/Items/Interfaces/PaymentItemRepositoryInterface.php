@@ -17,9 +17,9 @@ interface PaymentItemRepositoryInterface
 
     /**
      * @param int $id
-     * @return bool
+     * @return mixed
      */
-    public function deletePaymentItem(int $id): bool;
+    public function deletePaymentItem(int $id): mixed;
 
 
     /**

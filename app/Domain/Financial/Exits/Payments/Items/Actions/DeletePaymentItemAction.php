@@ -26,6 +26,11 @@ class DeletePaymentItemAction
      */
     public function execute(int $id): bool
     {
-        return $this->paymentItemRepository->deletePaymentItem($id);
+        $deleted = $this->paymentItemRepository->deletePaymentItem($id);
+
+        if($deleted)
+            return $deleted;
+        else
+            throw new GeneralExceptions(ReturnMessages::DELETED_PAYMENTS_ITEMS_ERROR, 500);
     }
 }
