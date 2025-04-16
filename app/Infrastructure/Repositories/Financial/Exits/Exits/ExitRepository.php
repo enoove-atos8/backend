@@ -49,6 +49,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const AMOUNT_COLUMN_JOINED_WITH_UNDERLINE = 'exits_amount';
     const EXIT_TYPE_COLUMN = 'exit_type';
     const PAYMENT_VALUE = 'payment';
+    const PAYMENTS_VALUE = 'payments';
     const TRANSFER_VALUE = 'transfer';
     const MINISTERIAL_TRANSFER_VALUE = 'ministerial_transfer';
     const CONTRIBUTIONS_VALUE = 'contributions';

@@ -324,7 +324,7 @@ class ProcessingBankExitsTransferReceipts
         $this->exitData->receiptLink = '';
         $this->exitData->timestampExitTransaction = null;
 
-        if($data->docSubType == ExitRepository::PAYMENT_VALUE)
+        if($data->docSubType == ExitRepository::PAYMENTS_VALUE)
         {
             $this->exitData->isPayment = 1;
             $this->exitData->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
@@ -333,7 +333,7 @@ class ProcessingBankExitsTransferReceipts
             $this->exitData->division = new DivisionData(['id' => null]);
         }
 
-        if($data->docSubType != ExitRepository::PAYMENT_VALUE)
+        if($data->docSubType != ExitRepository::PAYMENTS_VALUE)
         {
             $this->exitData->isPayment = 0;
             $this->exitData->paymentItem = new PaymentItemData(['id' => null]);
