@@ -18,6 +18,7 @@ class PaymentItemRepository extends BaseRepository implements PaymentItemReposit
     const TABLE_NAME = 'payment_item';
     const ID_COLUMN_JOINED = 'payment_item.id';
     const PAYMENT_CATEGORY_ID_COLUMN_JOINED = 'payment_item.payment_category_id';
+    const DELETED_COLUMN_JOINED = 'payment_item.deleted';
     const TABLE_ALIAS = 'payment_item';
     const PAGINATE_NUMBER = 999;
 
@@ -33,6 +34,7 @@ class PaymentItemRepository extends BaseRepository implements PaymentItemReposit
         'payment_item.slug as payment_item_slug',
         'payment_item.name as payment_item_name',
         'payment_item.description as payment_item_description',
+        'payment_item.deleted as payment_item_deleted',
     ];
 
 
@@ -45,19 +47,29 @@ class PaymentItemRepository extends BaseRepository implements PaymentItemReposit
     {
         $this->queryConditions = [];
         $this->queryConditions [] = $this->whereEqual(self::PAYMENT_CATEGORY_ID_COLUMN_JOINED, $id, 'and');
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
 
         return $this->qbGetPaymentItems($this->queryConditions, self::DISPLAY_SELECT_COLUMNS, (array)self::ID_COLUMN_JOINED, false);
     }
 
 
-
     /**
      * @param int $id
      * @return bool
+     * @throws BindingResolutionException
      */
-    public function deletePaymentItem(int $id): bool
+    public function deletePaymentItem(int $id): mixed
     {
-        return $this->delete($id);
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $id,
+            ];
+
+        return $this->update($conditions, [
+            'deleted'  =>   true,
+        ]);
     }
 
 
@@ -69,6 +81,7 @@ class PaymentItemRepository extends BaseRepository implements PaymentItemReposit
             'slug'                    =>   $paymentItemData->slug,
             'name'                    =>   $paymentItemData->name,
             'description'             =>   $paymentItemData->description,
+            'deleted'                 =>   $paymentItemData->deleted,
         ]);
     }
 
@@ -102,7 +115,9 @@ class PaymentItemRepository extends BaseRepository implements PaymentItemReposit
             $q = DB::table(PaymentItemRepository::TABLE_NAME)
                 ->select($selectColumns)
                 ->where(function ($q) use($queryClausesAndConditions){
-                    $q->where($queryClausesAndConditions[0]['condition']['field'], $queryClausesAndConditions[0]['condition']['operator'], $queryClausesAndConditions[0]['condition']['value']);
+                    foreach ($queryClausesAndConditions as $key => $clause) {
+                        $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
+                    }
                 });
 
             if($paginate)
