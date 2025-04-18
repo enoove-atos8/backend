@@ -345,7 +345,7 @@ class ProcessingBankExitsTransferReceipts
 
         $this->exitData->financialReviewer = new FinancialReviewerData(['id' => $reviewer->id]);
         $this->exitData->transactionCompensation = ExitRepository::COMPENSATED_VALUE;
-        $this->exitData->transactionType = ExitRepository::PIX_VALUE;
+        $this->exitData->transactionType = $data->docSubType == ExitRepository::PAYMENTS_VALUE ? ExitRepository::BANK_SLIP_VALUE : ExitRepository::PIX_VALUE;
 
     }
 
