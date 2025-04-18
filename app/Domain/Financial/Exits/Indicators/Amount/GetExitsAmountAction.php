@@ -24,7 +24,13 @@ class GetExitsAmountAction
      */
     public function execute($dates, $filters): array
     {
-        $exits = $this->exitRepository->getExits($dates, $filters, ExitRepository::COMPENSATED_VALUE, false, true);
+        $exits = $this->exitRepository->getExits(
+            $dates,
+            $filters,
+            ['id'],
+            ExitRepository::COMPENSATED_VALUE,
+            false,
+            true);
 
         return [
             'qtdExits'      =>  $exits->count(),
