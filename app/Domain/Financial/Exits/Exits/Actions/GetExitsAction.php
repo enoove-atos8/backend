@@ -26,7 +26,8 @@ class GetExitsAction
     {
         return $this->exitRepository->getExits(
             $dates,
-            $filters
+            $filters,
+            [ExitRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, ExitRepository::ID_COLUMN_JOINED],
         );
     }
 }

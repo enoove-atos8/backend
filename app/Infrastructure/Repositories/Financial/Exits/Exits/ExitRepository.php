@@ -25,6 +25,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const TABLE_NAME = 'exits';
 
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
+    const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'exits.date_transaction_compensation';
     const PIX_VALUE = 'pix';
     const BANK_SLIP_VALUE = 'bank_slip';
     const EXITS_VALUE = 'exits';
@@ -113,13 +114,21 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     /**
      * @param string|null $dates
      * @param array $filters
+     * @param array $orderBy
      * @param string $transactionCompensation
      * @param bool $paginate
      * @param bool $queryOnlyExitsTable
      * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getExits(?string $dates, array $filters, string $transactionCompensation = self::COMPENSATED_VALUE, bool $paginate = true, bool $queryOnlyExitsTable = false): Collection | Paginator
+    public function getExits
+    (
+        ?string $dates,
+        array $filters,
+        array $orderBy,
+        string $transactionCompensation = self::COMPENSATED_VALUE,
+        bool $paginate = true,
+        bool $queryOnlyExitsTable = false): Collection | Paginator
     {
         $this->queryConditions = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
@@ -163,7 +172,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         if($queryOnlyExitsTable)
             return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
         else
-            return $this->qbGetExitsWithReviewers($this->queryConditions, $displayColumnsFromRelationship, (array)self::ID_COLUMN_JOINED, $paginate);
+            return $this->qbGetExitsWithReviewers($this->queryConditions, $displayColumnsFromRelationship, $orderBy, $paginate);
     }
 
 
