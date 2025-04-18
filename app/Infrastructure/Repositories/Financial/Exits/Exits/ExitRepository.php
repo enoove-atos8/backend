@@ -26,6 +26,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
 
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
     const PIX_VALUE = 'pix';
+    const BANK_SLIP_VALUE = 'bank_slip';
     const EXITS_VALUE = 'exits';
     const TRANSACTIONS_COMPENSATION_COLUMN = 'transaction_compensation';
     const TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'exits.transaction_compensation';
