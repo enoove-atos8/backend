@@ -262,6 +262,25 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
 
 
 
+    /**
+     * @param int $id
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function deleteExit(int $id): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,
+        ];
+
+        return $this->update($conditions, [
+            'deleted' =>   1,
+        ]);
+    }
+
+
     /*
     |------------------------------------------------------------------------------------------
     | Query Builder queries

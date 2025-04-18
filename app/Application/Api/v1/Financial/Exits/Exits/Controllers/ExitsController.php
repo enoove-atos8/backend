@@ -9,8 +9,10 @@ use Application\Api\v1\Financial\Exits\Exits\Resources\AmountByExitTypeResource;
 use Application\Api\v1\Financial\Exits\Exits\Resources\ExitsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
+use Domain\Financial\Exits\Exits\Actions\DeleteExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetAmountByExitTypeAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
+use Domain\Financial\Exits\Exits\Constants\ReturnMessages;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -91,6 +93,35 @@ class ExitsController extends Controller
         catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+
+    /**
+     *
+     * @param $id
+     * @param DeleteExitAction $deleteExitAction
+     * @return Application|Response|ResponseFactory
+     * @throws GeneralExceptions|Throwable
+     */
+    public function deleteExit($id, DeleteExitAction $deleteExitAction): Application|ResponseFactory|Response
+    {
+        try
+        {
+            $exitDeleted = $deleteExitAction->execute($id);
+
+            if($exitDeleted)
+            {
+                return response([
+                    'message'   =>  ReturnMessages::EXIT_DELETED,
+                ], 200);
+            }
+
+        }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
     }
 }
