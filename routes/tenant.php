@@ -510,10 +510,10 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     /*
                      * Action: DELETE
                      * EndPoint: /{id}
-                     * Description: Delete an entry
+                     * Description: Delete an exit
                      */
 
-                    //Route::delete('/{id}', [EntriesController::class, 'deleteEntry'])->whereNumber('id');
+                    Route::delete('/{id}', [ExitsController::class, 'deleteExit'])->whereNumber('id');
 
 
                     /*

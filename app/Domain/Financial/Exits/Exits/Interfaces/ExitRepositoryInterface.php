@@ -17,6 +17,8 @@ interface ExitRepositoryInterface
 
     public function newExit(ExitData $exitData): Exits;
 
+    public function deleteExit(int $id): bool;
+
     public function updateTimestamp(int $exitId, string $timestamp): mixed;
     public function updateReceiptLink(int $exitId, string $link): mixed;
 }
