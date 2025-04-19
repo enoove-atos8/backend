@@ -231,10 +231,10 @@ class ProcessingBankExitsTransferReceipts
     {
         $this->receiptProcessingData->docType = ExitRepository::EXITS_VALUE;
         $this->receiptProcessingData->docSubType = $data->docSubType;
-        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) != 0 ? $extractedData['data']['amount'] : 0;
+        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
         $this->receiptProcessingData->reason = $extractedData['status'];
         $this->receiptProcessingData->status = 'error';
-        $this->receiptProcessingData->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
+        $this->receiptProcessingData->institution = null;
         $this->receiptProcessingData->devolution = $data->isDevolution == 1;
         $this->receiptProcessingData->isPayment = false;
         $this->receiptProcessingData->deleted = false;
@@ -247,6 +247,7 @@ class ProcessingBankExitsTransferReceipts
 
         if($data->isPayment)
         {
+            $this->receiptProcessingData->isPayment = true;
             $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => $data->paymentCategoryId]);
             $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
         }

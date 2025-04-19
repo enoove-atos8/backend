@@ -279,7 +279,7 @@ class ProcessingBankEntriesTransferReceipts
     {
         $this->receiptProcessingData->docType = EntryRepository::ENTRIES_VALUE;
         $this->receiptProcessingData->docSubType = $data->docSubType;
-        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) != 0 ? $extractedData['data']['amount'] : 0;
+        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
         $this->receiptProcessingData->reason = $extractedData['status'];
         $this->receiptProcessingData->status = 'error';
         $this->receiptProcessingData->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
