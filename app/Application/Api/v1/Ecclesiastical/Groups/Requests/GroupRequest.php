@@ -73,7 +73,7 @@ class GroupRequest extends FormRequest
     public function groupData(): GroupData
     {
         return new GroupData(
-            groupName:              $this->input('groupName'),
+            name:                   $this->input('groupName'),
             leaderId:               $this->input('groupLeaderId'),
             financialMovement:      $this->input('financialMovement'),
             returnValues:           $this->input('returnValues'),
