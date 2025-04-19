@@ -34,9 +34,9 @@ class PaymentsSeeder extends Seeder
                 'description' => 'Valores pagos ao ministério pastoral da igreja, como remunerações, planos de saúde, aluguel, adicionais e etc.',
             ],
             [
-                'slug' => 'fixed_expenses',
-                'name' => 'Despesas fixas',
-                'description' => 'Despesas fixas como contas de água, energia, telefone, aluguel e etc.',
+                'slug' => 'fixed_expenses_services',
+                'name' => 'Despesas fixas e servi;os',
+                'description' => 'Despesas fixas e serviços como contas de água, energia, telefone, aluguel, pagamentos de presetação de serviços e etc.',
             ],
         ];
 
