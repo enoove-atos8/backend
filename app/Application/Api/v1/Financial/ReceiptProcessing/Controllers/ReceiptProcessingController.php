@@ -5,7 +5,7 @@ namespace Application\Api\v1\Financial\ReceiptProcessing\Controllers;
 use Application\Api\v1\Financial\ReceiptProcessing\Resources\ReceiptsProcessingErrorResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\ReceiptProcessing\Actions\DeleteReceiptProcessedAction;
-use Domain\Financial\ReceiptProcessing\Actions\GetReceiptsProcessedErrorAction;
+use Domain\Financial\ReceiptProcessing\Actions\GetNotProcessedReceiptsAction;
 use Domain\Financial\ReceiptProcessing\Constants\ReturnMessages;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -20,13 +20,13 @@ class ReceiptProcessingController extends Controller
     /**
      * @throws GeneralExceptions|BindingResolutionException
      */
-    public function getReceiptsProcessing(Request $request, GetReceiptsProcessedErrorAction $getReceiptsProcessedErrorAction): ReceiptsProcessingErrorResourceCollection
+    public function getReceiptsProcessing(Request $request, GetNotProcessedReceiptsAction $getNotProcessedReceiptsAction): ReceiptsProcessingErrorResourceCollection
     {
         try
         {
             $status = $request->input('status');
             $docType = $request->input('docType');
-            $receipts = $getReceiptsProcessedErrorAction->execute($docType, $status);
+            $receipts = $getNotProcessedReceiptsAction->execute($docType, $status);
 
             return new ReceiptsProcessingErrorResourceCollection($receipts);
         }

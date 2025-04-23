@@ -85,10 +85,10 @@ class ReceiptProcessingRepository extends BaseRepository implements ReceiptProce
     /**
      * @param string $docType
      * @param string $status
-     * @return Collection|Paginator
+     * @return Collection
      * @throws BindingResolutionException
      */
-    public function getReceiptsProcessed(string $docType, string $status): Collection | Paginator
+    public function getReceiptsProcessed(string $docType, string $status): Collection
     {
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             DivisionRepository::DISPLAY_SELECT_COLUMNS,
@@ -117,8 +117,9 @@ class ReceiptProcessingRepository extends BaseRepository implements ReceiptProce
                 ->where(self::STATUS_COLUMN, $status);
 
 
-            $paginator = $q->simplePaginate(9999);
-            return $paginator->setCollection($paginator->getCollection()->map(fn($item) => ReceiptProcessingData::fromArray((array) $item)));
+            $results = $q->get();
+            return $results->map(fn($item) => ReceiptProcessingData::fromArray((array) $item));
+
         };
 
         return $this->doQuery($query);

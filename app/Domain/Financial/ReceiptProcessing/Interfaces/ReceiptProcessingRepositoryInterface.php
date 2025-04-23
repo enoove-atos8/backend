@@ -11,7 +11,7 @@ interface ReceiptProcessingRepositoryInterface
 {
     public function createReceiptProcessing(ReceiptProcessingData $receiptProcessingData): ReceiptProcessing;
 
-    public function getReceiptsProcessed(string $docType, string $status): Collection | Paginator;
+    public function getReceiptsProcessed(string $docType, string $status): Collection;
 
     public function deleteReceiptsProcessed(int $id): mixed;
 }

@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\ReceiptProcessing\ReceiptProcessingRepository;
 
-class GetReceiptsProcessedErrorAction
+class GetNotProcessedReceiptsAction
 {
     private ReceiptProcessingRepository $receiptProcessingRepository;
 
@@ -24,12 +24,12 @@ class GetReceiptsProcessedErrorAction
      * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function execute(string $docType, string $status): Collection | Paginator | null
+    public function execute(string $docType, string $status): Collection | null
     {
-        $receiptsProcessing = $this->receiptProcessingRepository->getReceiptsProcessed($docType, $status);
+        $notProcessedReceipts = $this->receiptProcessingRepository->getReceiptsProcessed($docType, $status);
 
-        if(count($receiptsProcessing) > 0)
-            return $receiptsProcessing;
+        if(count($notProcessedReceipts) > 0)
+            return $notProcessedReceipts;
 
         else
             throw new GeneralExceptions(ReturnMessages::NOT_FOUND, 404);
