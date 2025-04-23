@@ -30,51 +30,36 @@ class ReceiptsProcessingErrorResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $result = [
-            'notProcessed'     =>  [],
-            'notMapped'        =>  [],
-        ];
+        $result = [];
         $receipts = $this->collection;
 
         foreach ($receipts as $receipt)
         {
-            if($receipt->reason == 'READING_ERROR')
-                $result['notProcessed'][] = $this->mountResource($receipt);
-
-            else if($receipt->reason == 'NOT_MAPPED')
-                $result['notMapped'][] = $this->mountResource($receipt);
-
+            $result [] = [
+                'id'                =>  $receipt->id,
+                'docType'           =>  $receipt->docType,
+                'docSubType'        =>  $receipt->docSubType,
+                'payments'          =>  [
+                    'category'  =>  [
+                        'id'        =>  $receipt->paymentCategory->id,
+                        'name'      =>  $receipt->paymentCategory->name,
+                    ],
+                    'item'  =>  [
+                        'id'        =>  $receipt->paymentItem->id,
+                        'name'      =>  $receipt->paymentItem->name,
+                    ],
+                ],
+                'groups'  =>  [
+                    'id'            =>  $receipt->groupReceived->id,
+                    'divisionId'    =>  $receipt->groupReceived->divisionId,
+                    'name'          =>  $receipt->groupReceived->name,
+                ],
+                'amount'            =>  $receipt->amount,
+                'receipt'           =>  $receipt->receiptLink,
+            ];
         }
 
         return $result;
-    }
-
-
-
-    /**
-     * @param ReceiptProcessingData $receipt
-     * @return array
-     */
-    public function mountResource(ReceiptProcessingData $receipt): array
-    {
-        return [
-            'id'                =>  $receipt->id,
-            'docType'           =>  $receipt->docType,
-            'docSubType'        =>  $receipt->docSubType,
-            'amount'            =>  $receipt->amount,
-            'reason'            =>  $receipt->reason,
-            'status'            =>  $receipt->status,
-            'institution'       =>  $receipt->institution,
-            'devolution'        =>  $receipt->devolution,
-            'isPayment'         =>  $receipt->isPayment,
-            'deleted'           =>  $receipt->deleted,
-            'receiptLink'       =>  $receipt->receiptLink,
-            'division'          =>  $this->getDivision($receipt->division),
-            'groupReturned'     =>  $this->getGroup($receipt->groupReturned),
-            'groupReceived'     =>  $this->getGroup($receipt->groupReceived),
-            'paymentCategory'   =>  $this->getPaymentCategory($receipt->paymentCategory),
-            'paymentItem'       =>  $this->getPaymentItem($receipt->paymentItem),
-        ];
     }
 
 
