@@ -264,6 +264,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     {
         $this->queryConditions = [];
 
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
         $this->queryConditions [] = $this->whereEqual(self::TIMESTAMP_EXIT_TRANSACTION_COLUMN, $timestamp, 'and');
 
         return $this->getItemWithRelationshipsAndWheres($this->queryConditions);

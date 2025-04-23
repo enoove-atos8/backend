@@ -411,6 +411,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->requiredRelationships = ['member'];
         $this->queryConditions = [];
 
+        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
         $this->queryConditions [] = $this->whereEqual(self::TIMESTAMP_VALUE_CPF_COLUMN, $timestampValueCpf, 'and');
 
         return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
