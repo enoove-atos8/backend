@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('receipt_processing', function (Blueprint $table)
             {
-                $table->integer('reviewer_id')->nullable(false)->after('doc_sub_type');
+                $table->integer('reviewer_id')->nullable()->after('doc_sub_type');
 
                 $table->foreign('reviewer_id')
                     ->references('id')
