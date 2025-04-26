@@ -17,6 +17,7 @@ class ReceiptProcessing extends Model
     protected $fillable = [
         'doc_type',
         'doc_sub_type',
+        'reviewer_id',
         'division_id',
         'group_returned_id',
         'group_received_id',
@@ -29,6 +30,10 @@ class ReceiptProcessing extends Model
         'devolution',
         'is_payment',
         'deleted',
+        'transaction_type',
+        'transaction_compensation',
+        'date_transaction_compensation',
+        'date_register',
         'receipt_link',
     ];
 

@@ -4,6 +4,7 @@ namespace Domain\Financial\ReceiptProcessing\DataTransferObjects;
 
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
+use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Spatie\DataTransferObject\DataTransferObject;
@@ -19,6 +20,9 @@ class ReceiptProcessingData extends DataTransferObject
 
     /** @var string | null */
     public ?string $docSubType;
+
+    /** @var FinancialReviewerData | null */
+    public ?FinancialReviewerData $reviewer;
 
     /** @var DivisionData | null */
     public ?DivisionData $division;
@@ -57,6 +61,18 @@ class ReceiptProcessingData extends DataTransferObject
     public ?bool $deleted;
 
     /** @var string | null */
+    public ?string $transactionType;
+
+    /** @var string | null */
+    public ?string $transactionCompensation;
+
+    /** @var string | null */
+    public ?string $dateTransactionCompensation;
+
+    /** @var string | null */
+    public ?string $dateRegister;
+
+    /** @var string | null */
     public ?string $receiptLink;
 
 
@@ -70,6 +86,7 @@ class ReceiptProcessingData extends DataTransferObject
             id: $data['receipt_processing_id'] ?? null,
             docType: $data['receipt_processing_doc_type'] ?? null,
             docSubType: $data['receipt_processing_doc_sub_type'] ?? null,
+            reviewerId: $data['receipt_processing_reviewer_id'] ?? null,
             amount: $data['receipt_processing_amount'] ?? null,
             reason: $data['receipt_processing_reason'] ?? null,
             status: $data['receipt_processing_status'] ?? null,
@@ -77,8 +94,25 @@ class ReceiptProcessingData extends DataTransferObject
             devolution: $data['receipt_processing_devolution'] ?? null,
             isPayment: $data['receipt_processing_is_payment'] ?? null,
             deleted: $data['receipt_processing_deleted'] ?? null,
+            transactionType: $data['receipt_processing_transaction_type'] ?? null,
+            transactionCompensation: $data['receipt_processing_transaction_compensation'] ?? null,
+            dateTransactionCompensation: $data['receipt_processing_date_transaction_compensation'] ?? null,
+            dateRegister: $data['receipt_processing_date_register'] ?? null,
             receiptLink: $data['receipt_processing_receipt_link'] ?? null,
 
+            reviewer: new FinancialReviewerData([
+                'id' => $data['financial_reviewers_id'] ?? null,
+                'fullName' => $data['financial_reviewers_full_name'] ?? null,
+                'reviewerType' => $data['financial_reviewers_reviewer_type'] ?? null,
+                'avatar' => $data['financial_reviewers_avatar'] ?? null,
+                'gender' => $data['financial_reviewers_gender'] ?? null,
+                'cpf' => $data['financial_reviewers_cpf'] ?? null,
+                'rg' => $data['financial_reviewers_rg'] ?? null,
+                'email' => $data['financial_reviewers_email'] ?? null,
+                'cellPhone' => $data['financial_reviewers_cell_phone'] ?? null,
+                'activated' => $data['financial_reviewers_activated'] ?? null,
+                'deleted' => $data['financial_reviewers_deleted'] ?? null,
+            ]),
             division: new DivisionData([
                 'id' => $data['division_id'] ?? null,
                 'slug' => $data['division_slug'] ?? null,

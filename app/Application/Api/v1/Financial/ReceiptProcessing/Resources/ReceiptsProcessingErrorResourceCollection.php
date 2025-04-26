@@ -36,131 +36,47 @@ class ReceiptsProcessingErrorResourceCollection extends ResourceCollection
         foreach ($receipts as $receipt)
         {
             $result [] = [
-                'id'                =>  $receipt->id,
-                'docType'           =>  $receipt->docType,
-                'docSubType'        =>  $receipt->docSubType,
-                'payments'          =>  [
+                'id'                            =>  $receipt->id,
+                'docType'                       =>  $receipt->docType,
+                'docSubType'                    =>  $receipt->docSubType,
+                'reviewer'                      =>  [
+                    'id'        =>  $receipt->reviewer->id,
+                    'fullName'  =>  $receipt->reviewer->fullName,
+                ],
+                'payments'                      =>  [
                     'category'  =>  [
-                        'id'        =>  $receipt->paymentCategory->id,
-                        'name'      =>  $receipt->paymentCategory->name,
+                        'id'                    =>  $receipt->paymentCategory->id,
+                        'name'                  =>  $receipt->paymentCategory->name,
                     ],
                     'item'  =>  [
-                        'id'        =>  $receipt->paymentItem->id,
-                        'name'      =>  $receipt->paymentItem->name,
+                        'id'                    =>  $receipt->paymentItem->id,
+                        'name'                  =>  $receipt->paymentItem->name,
                     ],
                 ],
                 'groups'  =>  [
-                    'id'            =>  $receipt->groupReceived->id,
-                    'divisionId'    =>  $receipt->groupReceived->divisionId,
-                    'name'          =>  $receipt->groupReceived->name,
+                    'received'  =>  [
+                        'id'                        =>  $receipt->groupReceived->id,
+                        'divisionId'                =>  $receipt->groupReceived->divisionId,
+                        'name'                      =>  $receipt->groupReceived->name,
+                    ],
+                    'returned'  =>  [
+                        'id'                        =>  $receipt->groupReturned->id,
+                        'divisionId'                =>  $receipt->groupReturned->divisionId,
+                        'name'                      =>  $receipt->groupReturned->name,
+                    ],
                 ],
-                'amount'            =>  $receipt->amount,
-                'receipt'           =>  $receipt->receiptLink,
+                'amount'                        =>  $receipt->amount,
+                'reason'                        =>  $receipt->reason,
+                'status'                        =>  $receipt->status,
+                'devolution'                    =>  $receipt->devolution,
+                'transactionType'               =>  $receipt->transactionType,
+                'transactionCompensation'       =>  $receipt->transactionCompensation,
+                'dateTransactionCompensation'   =>  $receipt->dateTransactionCompensation,
+                'dateRegister'                  =>  $receipt->dateRegister,
+                'receipt'                       =>  $receipt->receiptLink,
             ];
         }
 
         return $result;
-    }
-
-
-
-
-    /**
-     * @param DivisionData $divisionData
-     * @return array|null
-     */
-    public function getDivision(DivisionData $divisionData): ?array
-    {
-        if(!is_null($divisionData->id))
-        {
-            return [
-                'id'            =>  $divisionData->id,
-                'slug'          =>  $divisionData->slug,
-                'name'          =>  $divisionData->name,
-                'description'   =>  $divisionData->description,
-                'enabled'       =>  $divisionData->enabled,
-            ];
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-
-    /**
-     * @param GroupData $groupData
-     * @return array|null
-     */
-    public function getGroup(GroupData $groupData): ?array
-    {
-        if(!is_null($groupData->id))
-        {
-            return [
-                'id'                    =>  $groupData->id,
-                'divisionId'            =>  $groupData->divisionId,
-                'parentGroupId'         =>  $groupData->parentGroupId,
-                'leaderId'              =>  $groupData->leaderId,
-                'name'                  =>  $groupData->name,
-                'description'           =>  $groupData->description,
-                'slug'                  =>  $groupData->slug,
-                'enabled'               =>  $groupData->enabled,
-                'temporaryEvent'        =>  $groupData->temporaryEvent,
-                'returnValues'          =>  $groupData->returnValues,
-                'financialGroup'        =>  $groupData->financialGroup,
-                'startDate'             =>  $groupData->startDate,
-                'endDate'               =>  $groupData->endDate,
-            ];
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-
-    /**
-     * @param PaymentCategoryData $paymentCategoryData
-     * @return array|null
-     */
-    public function getPaymentCategory(PaymentCategoryData $paymentCategoryData): ?array
-    {
-        if(!is_null($paymentCategoryData->id))
-        {
-            return [
-                'id'            =>  $paymentCategoryData->id,
-                'slug'          =>  $paymentCategoryData->slug,
-                'name'          =>  $paymentCategoryData->name,
-                'description'   =>  $paymentCategoryData->description,
-            ];
-        }
-        else
-        {
-            return null;
-        }
-    }
-
-
-
-    /**
-     * @param PaymentItemData $paymentItemData
-     * @return array|null
-     */
-    public function getPaymentItem(PaymentItemData $paymentItemData): ?array
-    {
-        if(!is_null($paymentItemData->id))
-        {
-            return [
-                'id'                    =>  $paymentItemData->id,
-                'paymentCategoryId'     =>  $paymentItemData->paymentCategoryId,
-                'slug'                  =>  $paymentItemData->slug,
-                'name'                  =>  $paymentItemData->name,
-                'description'           =>  $paymentItemData->description,
-            ];
-        }
-        else
-        {
-            return null;
-        }
     }
 }
