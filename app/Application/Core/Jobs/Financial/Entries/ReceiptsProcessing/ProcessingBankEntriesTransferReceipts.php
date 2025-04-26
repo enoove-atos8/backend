@@ -292,6 +292,8 @@ class ProcessingBankEntriesTransferReceipts
         $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
         $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
         $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
+        $this->receiptProcessingData->transactionType = EntryRepository::PIX_TRANSACTION_TYPE;
+        $this->receiptProcessingData->transactionCompensation = EntryRepository::COMPENSATED_VALUE;
 
         if($data->docSubType == EntryRepository::DESIGNATED_VALUE)
         {

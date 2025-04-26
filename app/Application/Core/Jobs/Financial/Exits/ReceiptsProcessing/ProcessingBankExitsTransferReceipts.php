@@ -244,12 +244,15 @@ class ProcessingBankExitsTransferReceipts
         $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
         $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
         $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
+        $this->receiptProcessingData->transactionType = ExitRepository::PIX_VALUE;
+        $this->receiptProcessingData->transactionCompensation = ExitRepository::COMPENSATED_VALUE;
 
         if($data->isPayment)
         {
             $this->receiptProcessingData->isPayment = true;
             $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => $data->paymentCategoryId]);
             $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
+            $this->receiptProcessingData->transactionType = '-';
         }
     }
 
