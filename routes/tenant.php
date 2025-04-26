@@ -493,9 +493,8 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     /*
                      * Action: POST
                      * EndPoint: /
-                     * Description: Get All Entries by Date Range
                      */
-                    //Route::post('/', [EntriesController::class, 'createEntry']);
+                    Route::post('/', [ExitsController::class, 'createExit']);
 
 
                     /*

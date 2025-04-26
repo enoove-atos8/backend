@@ -5,10 +5,12 @@ namespace Application\Api\v1\Financial\Exits\Exits\Controllers;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
 use App\Domain\Financial\Exits\Indicators\Actions\HandleExitsIndicatorsAction;
 use Application\Api\v1\Financial\Entries\Entries\Resources\EntryResourceCollection;
+use Application\Api\v1\Financial\Exits\Exits\Requests\ExitRequest;
 use Application\Api\v1\Financial\Exits\Exits\Resources\AmountByExitTypeResource;
 use Application\Api\v1\Financial\Exits\Exits\Resources\ExitsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
+use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
 use Domain\Financial\Exits\Exits\Actions\DeleteExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetAmountByExitTypeAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
@@ -18,6 +20,8 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\ResponseFactory;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
+use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
 class ExitsController extends Controller
@@ -95,6 +99,33 @@ class ExitsController extends Controller
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
+
+
+
+    /**
+     *
+     * @param ExitRequest $exitRequest
+     * @param CreateExitAction $createExitAction
+     * @return Application|ResponseFactory|Response
+     * @throws UnknownProperties
+     * @throws Throwable
+     */
+    public function createExit(ExitRequest $exitRequest, CreateExitAction $createExitAction): Application|ResponseFactory|Response
+    {
+        try
+        {
+            $createExitAction->execute($exitRequest->exitData());
+
+            return response([
+                'message'   =>  ReturnMessages::SUCCESS_EXIT_REGISTERED,
+            ], 201);
+        }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
 
 
 
