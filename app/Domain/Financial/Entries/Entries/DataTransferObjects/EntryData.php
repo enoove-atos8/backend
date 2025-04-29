@@ -7,60 +7,63 @@ use Spatie\DataTransferObject\DataTransferObject;
 class EntryData extends DataTransferObject
 {
     /** @var integer | null  */
-    public int | null $memberId;
+    public ?int $id;
 
     /** @var integer | null  */
-    public int | null $cultId;
+    public ?int $memberId;
 
     /** @var integer | null  */
-    public int | null $reviewerId;
+    public ?int $cultId;
 
     /** @var integer | null  */
-    public int | null $groupReturnedId;
+    public ?int $reviewerId;
 
     /** @var integer | null  */
-    public int | null $groupReceivedId;
+    public ?int $groupReturnedId;
+
+    /** @var integer | null  */
+    public ?int $groupReceivedId;
 
     /** @var integer|null  */
-    public int | null $identificationPending;
+    public ?int $identificationPending;
 
     /** @var string | null  */
-    public string | null $entryType;
+    public ?string $entryType;
 
     /** @var string | null  */
-    public string | null $transactionType;
+    public ?string $transactionType;
 
     /** @var string | null  */
-    public string | null $transactionCompensation;
+    public ?string $transactionCompensation;
 
     /** @var string | null  */
-    public string | null $dateTransactionCompensation;
+    public ?string $dateTransactionCompensation;
 
     /** @var string | null  */
-    public string | null $dateEntryRegister;
+    public ?string $dateEntryRegister;
 
     /** @var string | null  */
-    public string | null $amount;
+    public ?string $amount;
 
     /** @var string | null  */
-    public string | null $recipient;
+    public ?string $recipient;
 
     /** @var string | null  */
-    public string | null $timestampValueCpf;
+    public ?string $timestampValueCpf;
 
     /** @var integer | null  */
-    public int | null $devolution;
+    public ?int $devolution;
 
     /** @var integer | null  */
-    public int | null $residualValue;
+    public ?int $residualValue;
 
     /** @var integer | null  */
-    public int | null $deleted;
+    public ?int $deleted;
 
     /** @var string | null  */
-    public string | null $comments;
+    public ?string $comments;
 
     /** @var string | null  */
-    public string | null $receipt;
+    public ?string $receipt;
 
 }

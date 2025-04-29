@@ -60,8 +60,9 @@ class CreateEntryAction
 
         $this->createConsolidatedEntryAction->execute($consolidationEntriesData);
         $entry = $this->entryRepository->newEntry($entryData);
+        $entryData->id = $entry->id;
 
-        if($entry->id !== null)
+        if($entryData->id !== null)
         {
             // Get the current balance from the database
             //$currentBalance = 0.0;
