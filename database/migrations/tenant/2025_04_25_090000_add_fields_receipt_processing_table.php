@@ -49,14 +49,6 @@ return new class extends Migration
                 $table->string('date_transaction_compensation')->nullable()->after('transaction_compensation');
             });
         }
-
-        if (!Schema::hasColumn('receipt_processing', 'date_register'))
-        {
-            Schema::table('receipt_processing', function (Blueprint $table)
-            {
-                $table->string('date_register')->nullable(false)->after('date_transaction_compensation');
-            });
-        }
     }
 
 

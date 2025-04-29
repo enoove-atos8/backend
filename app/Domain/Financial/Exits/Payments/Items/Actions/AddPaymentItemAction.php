@@ -15,7 +15,7 @@ use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
 
 class AddPaymentItemAction
 {
-    private PaymentItemRepository $paymentItemRepository;
+    private PaymentItemRepositoryInterface $paymentItemRepository;
 
     public function __construct(PaymentItemRepositoryInterface $paymentItemRepositoryInterface)
     {

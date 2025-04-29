@@ -13,7 +13,7 @@ use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMemberLeaderAction
 {
-    private MemberRepository $memberRepository;
+    private MemberRepositoryInterface $memberRepository;
 
     public function __construct(MemberRepositoryInterface $memberRepositoryInterface)
     {

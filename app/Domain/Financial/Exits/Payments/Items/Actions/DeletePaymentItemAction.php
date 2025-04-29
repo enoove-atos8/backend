@@ -12,7 +12,7 @@ use Throwable;
 
 class DeletePaymentItemAction
 {
-    private PaymentItemRepository $paymentItemRepository;
+    private PaymentItemRepositoryInterface $paymentItemRepository;
 
     public function __construct(
         PaymentItemRepositoryInterface $paymentItemRepositoryInterface,

@@ -9,7 +9,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 
 class UpdateStatusUserAction
 {
-    private UserRepository $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {

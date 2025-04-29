@@ -378,6 +378,21 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
 
     /**
+     * Check if a record exists by the primary key.
+     *
+     * @param $id
+     * @return bool
+     */
+    public function exists($id): bool
+    {
+        return $this->model
+            ->where($this->model->getKeyName(), $id)
+            ->exists();
+    }
+
+
+
+    /**
      * Delete a record by the column specified.
      *
      * @param string $column

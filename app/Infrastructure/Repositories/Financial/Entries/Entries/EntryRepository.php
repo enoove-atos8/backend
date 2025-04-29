@@ -21,6 +21,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     protected mixed $model = Entry::class;
 
     const TABLE_NAME = 'entries';
+    const ENTRY_TYPE = 'entry';
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
     const DATE_ENTRY_REGISTER_COLUMN_JOINED = 'entries.date_entry_register';
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';

@@ -11,7 +11,7 @@ use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 
 class CreateExitAction
 {
-    private ExitRepository $exitRepository;
+    private ExitRepositoryInterface $exitRepository;
 
     public function __construct(ExitRepositoryInterface $exitRepositoryInterface)
     {

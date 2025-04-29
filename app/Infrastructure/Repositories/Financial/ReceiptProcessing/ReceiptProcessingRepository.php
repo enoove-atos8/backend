@@ -59,7 +59,6 @@ class ReceiptProcessingRepository extends BaseRepository implements ReceiptProce
         'receipt_processing.transaction_type as receipt_processing_transaction_type',
         'receipt_processing.transaction_compensation as receipt_processing_transaction_compensation',
         'receipt_processing.date_transaction_compensation as receipt_processing_date_transaction_compensation',
-        'receipt_processing.date_register as receipt_processing_date_register',
         'receipt_processing.receipt_link as receipt_processing_receipt_link',
     ];
 
@@ -89,7 +88,6 @@ class ReceiptProcessingRepository extends BaseRepository implements ReceiptProce
             'transaction_type'                  =>   $receiptProcessingData->transactionType,
             'transaction_compensation'          =>   $receiptProcessingData->transactionCompensation,
             'date_transaction_compensation'     =>   $receiptProcessingData->dateTransactionCompensation,
-            'date_register'                     =>   $receiptProcessingData->dateRegister,
             'receipt_link'                      =>   $receiptProcessingData->receiptLink,
         ]);
     }

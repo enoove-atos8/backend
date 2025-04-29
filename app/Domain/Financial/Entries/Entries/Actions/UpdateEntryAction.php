@@ -14,7 +14,7 @@ use Throwable;
 
 class UpdateEntryAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
     private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
 
     public function __construct(

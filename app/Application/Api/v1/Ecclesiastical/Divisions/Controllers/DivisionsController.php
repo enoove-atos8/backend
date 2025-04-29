@@ -4,14 +4,11 @@ namespace Application\Api\v1\Ecclesiastical\Divisions\Controllers;
 
 use Application\Api\v1\Ecclesiastical\Divisions\Requests\DivisionRequest;
 use Application\Api\v1\Ecclesiastical\Divisions\Resources\DivisionsResourceCollection;
-use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\CreateNewDivisionAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsAction;
 use Domain\Ecclesiastical\Divisions\Constants\ReturnMessages;
-use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
-use Domain\Ecclesiastical\Groups\Models\Group;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;

@@ -9,7 +9,7 @@ use Throwable;
 
 class GetAmountByExitTypeAction
 {
-    private ExitRepository $exitRepository;
+    private ExitRepositoryInterface $exitRepository;
 
     public function __construct(ExitRepositoryInterface $exitRepositoryInterface)
     {

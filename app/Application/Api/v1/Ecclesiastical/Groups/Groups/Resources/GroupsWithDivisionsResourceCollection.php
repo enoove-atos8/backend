@@ -1,9 +1,8 @@
 <?php
 
-namespace Application\Api\v1\Ecclesiastical\Groups\Resources;
+namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Support\Collection;

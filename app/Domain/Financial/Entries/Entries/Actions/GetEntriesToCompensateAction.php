@@ -10,7 +10,7 @@ use Throwable;
 
 class GetEntriesToCompensateAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,

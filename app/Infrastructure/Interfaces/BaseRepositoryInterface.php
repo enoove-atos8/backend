@@ -144,6 +144,16 @@ interface BaseRepositoryInterface
     public function delete($id): bool;
 
 
+
+    /**
+     * Check if a record exists by the primary key.
+     *
+     * @param $id
+     * @return bool
+     */
+    public function exists($id): bool;
+
+
     /**
      * Delete a record by the column specified.
      *

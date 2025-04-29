@@ -1,11 +1,11 @@
 <?php
 
-namespace Application\Api\v1\Ecclesiastical\Groups\Controllers;
+namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers;
 
-use Application\Api\v1\Ecclesiastical\Groups\Requests\GroupRequest;
-use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupResourceCollection;
-use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupsToMobileAppResourceCollection;
-use Application\Api\v1\Ecclesiastical\Groups\Resources\GroupsWithDivisionsResourceCollection;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResourceCollection;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobileAppResourceCollection;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsWithDivisionsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Groups\Actions\CreateNewGroupAction;
@@ -13,7 +13,6 @@ use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
-use Domain\Ecclesiastical\Groups\Models\Group;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -26,7 +25,7 @@ class GroupController extends Controller
 {
     /**
      *
-     * @param GroupRequest $groupRequest
+     * @param \App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest $groupRequest
      * @param CreateNewGroupAction $createNewGroupAction
      * @return Application|Response|ResponseFactory
      * @throws GeneralExceptions
@@ -102,7 +101,7 @@ class GroupController extends Controller
     /**
      * @param Request $request
      * @param GetAllGroupsWithDivisionsAction $getAllGroupsWithDivisionsAction
-     * @return GroupsWithDivisionsResourceCollection
+     * @return \App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsWithDivisionsResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */
@@ -125,7 +124,7 @@ class GroupController extends Controller
     /**
      * @param Request $request
      * @param GetGroupsByDivisionAction $getGroupsByDivisionAction
-     * @return ResponseFactory|Application|Response|GroupsToMobileAppResourceCollection
+     * @return ResponseFactory|Application|Response|\App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobileAppResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */

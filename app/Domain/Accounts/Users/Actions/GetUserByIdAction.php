@@ -11,7 +11,7 @@ use Infrastructure\Exceptions\GeneralExceptions;
 
 class GetUserByIdAction
 {
-    private UserRepository $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {

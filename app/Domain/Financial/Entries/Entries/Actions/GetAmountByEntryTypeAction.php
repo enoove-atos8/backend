@@ -14,7 +14,7 @@ use Throwable;
 
 class GetAmountByEntryTypeAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
     private GetMembersAction $getMembersAction;
 
     public function __construct(

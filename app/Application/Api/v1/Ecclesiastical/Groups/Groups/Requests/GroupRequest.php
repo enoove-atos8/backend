@@ -1,9 +1,8 @@
 <?php
 
-namespace Application\Api\v1\Ecclesiastical\Groups\Requests;
+namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests;
 
 use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
-use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
