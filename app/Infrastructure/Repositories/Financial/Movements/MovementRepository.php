@@ -33,7 +33,8 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     const DISPLAY_SELECT_COLUMNS = [
         'movements.id as id',
         'movements.group_id as group_id',
-        'movements.reference_id as reference_id',
+        'movements.entry_id as entry_id',
+        'movements.exit_id as exit_id',
         'movements.sub_type as sub_type',
         'movements.type as type',
         'movements.amount as amount',
@@ -58,7 +59,8 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     {
         return $this->create([
             'group_id' => $movementsData->groupId,
-            'reference_id' => $movementsData->referenceId,
+            'entry_id' => $movementsData->entryId,
+            'exit_id' => $movementsData->exitId,
             'type' => $movementsData->type,
             'subType' => $movementsData->subType,
             'amount' => $movementsData->amount,

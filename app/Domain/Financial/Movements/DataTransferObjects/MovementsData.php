@@ -19,6 +19,12 @@ class MovementsData extends DataTransferObject
     /** @var int|null */
     public ?int $groupId;
 
+    /** @var int|null */
+    public ?int $entryId;
+
+    /** @var int|null */
+    public ?int $exitId;
+
     /** @var string|null */
     public ?string $type;
 
@@ -37,9 +43,6 @@ class MovementsData extends DataTransferObject
     /** @var string|null */
     public ?string $movementDate;
 
-    /** @var integer|null */
-    public ?int $referenceId;
-
     /** @var bool|null */
     public ?bool $isInitialBalance;
 
@@ -50,6 +53,8 @@ class MovementsData extends DataTransferObject
     {
         return new self([
             'groupId' => $data['group_id'] ?? 0,
+            'entryId' => $data['entry_id'] ?? 0,
+            'exitId' => $data['exit_id'] ?? 0,
             'type' => $data['type'] ?? '',
             'subType' => $data['sub_type'] ?? '',
             'amount' => $data['amount'] ?? 0.0,
@@ -74,6 +79,8 @@ class MovementsData extends DataTransferObject
     {
         $data = [
             'groupId' => $entryData->groupReceivedId ?? 0,
+            'entryId' => $entryData->id ?? null,
+            'exitId' => null,
             'type' => EntryRepository::ENTRY_TYPE,
             'subType' => $entryData->entryType,
             'amount' => $entryData->amount ?? 0.0,
@@ -100,6 +107,8 @@ class MovementsData extends DataTransferObject
     {
         $data = [
             'groupId' => $exitData->group->id ?? 0,
+            'entryId' => null,
+            'exitId' => $exitData->id ?? null,
             'type' => ExitRepository::EXIT_TYPE,
             'subType' => $exitData->exitType ?? '',
             'amount' => (float)($exitData->amount ?? 0.0),

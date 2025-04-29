@@ -18,8 +18,9 @@ return new class extends Migration
             Schema::create('movements', function (Blueprint $table) {
 
                 $table->id();
-                $table->unsignedBigInteger('group_id');
-                $table->string('reference_id')->nullable();
+                $table->integer('group_id');
+                $table->integer('entry_id')->nullable();
+                $table->integer('exit_id')->nullable();
                 $table->enum('type', ['entry', 'exit']);
                 $table->string('sub_type');
                 $table->decimal('amount', 10);
@@ -33,6 +34,16 @@ return new class extends Migration
                     ->references('id')
                     ->on('ecclesiastical_divisions_groups')
                     ->onDelete('cascade');
+
+                $table->foreign('entry_id')
+                    ->references('id')
+                    ->on('entries')
+                    ->onDelete('set null');
+
+                $table->foreign('exit_id')
+                    ->references('id')
+                    ->on('exits');
+
 
             });
         }
