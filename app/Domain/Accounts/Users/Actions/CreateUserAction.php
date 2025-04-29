@@ -14,7 +14,7 @@ use Throwable;
 
 class CreateUserAction
 {
-    private UserRepository $userRepository;
+    private UserRepositoryInterface $userRepository;
     private CreateUserDetailAction $createUserDetailAction;
     private NewUserNotificationAction $newUserNotificationAction;
     private NewChurchUserNotificationAction $newChurchUserNotificationAction;

@@ -11,7 +11,7 @@ use Throwable;
 
 class GetEntryByTimestampValueCpfAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,

@@ -229,23 +229,26 @@ class ProcessingBankExitsTransferReceipts
      */
     public function setReceiptProcessingData($extractedData, SyncStorageData $data, string $linkReceipt): void
     {
+        $reviewer = $this->getReviewerAction->execute();
+
         $this->receiptProcessingData->docType = ExitRepository::EXITS_VALUE;
         $this->receiptProcessingData->docSubType = $data->docSubType;
-        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
-        $this->receiptProcessingData->reason = $extractedData['status'];
-        $this->receiptProcessingData->status = 'error';
-        $this->receiptProcessingData->institution = null;
-        $this->receiptProcessingData->devolution = $data->isDevolution == 1;
-        $this->receiptProcessingData->isPayment = false;
-        $this->receiptProcessingData->deleted = false;
-        $this->receiptProcessingData->receiptLink = $linkReceipt;
+        $this->receiptProcessingData->reviewer = new FinancialReviewerData(['id' => $reviewer->id]);
         $this->receiptProcessingData->division = new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]);
-        $this->receiptProcessingData->groupReceived = new GroupData(['id' => !is_null($data->groupId) ? (int) $data->groupId : null]);
+        $this->receiptProcessingData->groupReceived = new GroupData(['id' => null]);
         $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
         $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
         $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
+        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
+        $this->receiptProcessingData->reason = $extractedData['status'];
+        $this->receiptProcessingData->status = 'error';
+        $this->receiptProcessingData->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
+        $this->receiptProcessingData->devolution = $data->isDevolution == 1;
+        $this->receiptProcessingData->isPayment = false;
+        $this->receiptProcessingData->deleted = false;
         $this->receiptProcessingData->transactionType = ExitRepository::PIX_VALUE;
         $this->receiptProcessingData->transactionCompensation = ExitRepository::COMPENSATED_VALUE;
+        $this->receiptProcessingData->receiptLink = $linkReceipt;
 
         if($data->isPayment)
         {

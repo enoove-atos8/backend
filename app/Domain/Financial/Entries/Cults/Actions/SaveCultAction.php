@@ -19,7 +19,7 @@ use Throwable;
 
 class SaveCultAction
 {
-    private CultRepository $cultRepository;
+    private CultRepositoryInterface $cultRepository;
     private UpdateEntryAction $updateEntryAction;
     private CreateEntryAction $createEntryAction;
     private GetEntriesByCultIdAction $getEntriesByCultIdAction;

@@ -11,7 +11,7 @@ use Throwable;
 
 class GetUsersAction
 {
-    private UserRepository $userRepository;
+    private UserRepositoryInterface $userRepository;
 
     public function __construct(UserRepositoryInterface $userRepositoryInterface)
     {

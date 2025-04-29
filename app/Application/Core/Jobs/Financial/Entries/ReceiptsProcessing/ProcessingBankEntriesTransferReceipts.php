@@ -12,6 +12,7 @@ use App\Domain\Financial\Entries\Entries\Actions\UpdateTimestampValueCPFEntryAct
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
+use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use App\Domain\Members\Actions\GetMemberByCPFAction;
 use App\Domain\Members\Actions\GetMemberByMiddleCPFAction;
 use App\Domain\Members\Actions\UpdateMiddleCpfMemberAction;
@@ -277,8 +278,16 @@ class ProcessingBankEntriesTransferReceipts
      */
     public function setReceiptProcessingData($extractedData, SyncStorageData $data, string $linkReceipt): void
     {
+        $reviewer = $this->getReviewerAction->execute();
+
         $this->receiptProcessingData->docType = EntryRepository::ENTRIES_VALUE;
         $this->receiptProcessingData->docSubType = $data->docSubType;
+        $this->receiptProcessingData->reviewer = new FinancialReviewerData(['id' => $reviewer->id]);
+        $this->receiptProcessingData->division = new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]);
+        $this->receiptProcessingData->groupReceived = new GroupData(['id' => null]);
+        $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
+        $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
+        $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
         $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
         $this->receiptProcessingData->reason = $extractedData['status'];
         $this->receiptProcessingData->status = 'error';
@@ -286,14 +295,9 @@ class ProcessingBankEntriesTransferReceipts
         $this->receiptProcessingData->devolution = $data->isDevolution == 1;
         $this->receiptProcessingData->isPayment = false;
         $this->receiptProcessingData->deleted = false;
-        $this->receiptProcessingData->receiptLink = $linkReceipt;
-        $this->receiptProcessingData->division = new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]);
-        $this->receiptProcessingData->groupReceived = new GroupData(['id' => null]);
-        $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
-        $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
-        $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
         $this->receiptProcessingData->transactionType = EntryRepository::PIX_TRANSACTION_TYPE;
         $this->receiptProcessingData->transactionCompensation = EntryRepository::COMPENSATED_VALUE;
+        $this->receiptProcessingData->receiptLink = $linkReceipt;
 
         if($data->docSubType == EntryRepository::DESIGNATED_VALUE)
         {

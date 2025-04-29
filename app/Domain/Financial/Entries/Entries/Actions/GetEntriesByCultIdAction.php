@@ -9,7 +9,7 @@ use Throwable;
 
 class GetEntriesByCultIdAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,

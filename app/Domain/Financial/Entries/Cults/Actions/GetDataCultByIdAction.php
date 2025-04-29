@@ -14,8 +14,8 @@ use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 
 class GetDataCultByIdAction
 {
-    private CultRepository $cultRepository;
-    private EntryRepository $entryRepository;
+    private CultRepositoryInterface $cultRepository;
+    private EntryRepositoryInterface $entryRepository;
 
     public function __construct(CultRepositoryInterface $cultRepositoryInterface, EntryRepositoryInterface $entryRepositoryInterface)
     {

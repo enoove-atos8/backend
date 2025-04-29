@@ -15,8 +15,8 @@ use Throwable;
 
 class GetEntriesAction
 {
-    private EntryRepository $entryRepository;
-    private GroupsRepository $groupsRepository;
+    private EntryRepositoryInterface $entryRepository;
+    private GroupRepositoryInterface $groupsRepository;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,

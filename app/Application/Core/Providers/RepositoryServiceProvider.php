@@ -31,6 +31,7 @@ use Domain\Financial\Entries\Indicators\TotalGeneral\Interfaces\TotalGeneralRepo
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Exits\Payments\Categories\Interfaces\PaymentCategoryRepositoryInterface;
 use Domain\Financial\Exits\Payments\Items\Interfaces\PaymentItemRepositoryInterface;
+use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Domain\Financial\ReceiptProcessing\Interfaces\ReceiptProcessingRepositoryInterface;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
@@ -47,6 +48,7 @@ use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsReposito
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentCategoryRepository;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
+use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 use Infrastructure\Repositories\Financial\ReceiptProcessing\ReceiptProcessingRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
@@ -86,6 +88,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReceiptProcessingRepositoryInterface::class, ReceiptProcessingRepository::class);
         $this->app->bind(PaymentCategoryRepositoryInterface::class, PaymentCategoryRepository::class);
         $this->app->bind(PaymentItemRepositoryInterface::class, PaymentItemRepository::class);
+        $this->app->bind(MovementRepositoryInterface::class, MovementRepository::class);
 
 
     }

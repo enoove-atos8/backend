@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Ecclesiastical\Groups\Resources;
+namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;

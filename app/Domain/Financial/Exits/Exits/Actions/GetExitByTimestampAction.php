@@ -13,7 +13,7 @@ use Throwable;
 
 class GetExitByTimestampAction
 {
-    private ExitRepository $exitRepository;
+    private ExitRepositoryInterface $exitRepository;
 
     public function __construct(
         ExitRepositoryInterface $exitRepositoryInterface,

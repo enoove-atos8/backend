@@ -10,7 +10,7 @@ use Throwable;
 
 class GetExitsAction
 {
-    private ExitRepository $exitRepository;
+    private ExitRepositoryInterface $exitRepository;
 
     public function __construct(
         ExitRepositoryInterface $exitRepositoryInterface,

@@ -11,7 +11,7 @@ use Throwable;
 
 class CreateUserDetailAction
 {
-    private UserDetailRepository $userDetailRepository;
+    private UserDetailRepositoryInterface $userDetailRepository;
 
     public function __construct(
         UserDetailRepositoryInterface $userDetailRepositoryInterface,

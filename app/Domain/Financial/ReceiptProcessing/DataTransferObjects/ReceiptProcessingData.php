@@ -69,8 +69,6 @@ class ReceiptProcessingData extends DataTransferObject
     /** @var string | null */
     public ?string $dateTransactionCompensation;
 
-    /** @var string | null */
-    public ?string $dateRegister;
 
     /** @var string | null */
     public ?string $receiptLink;
@@ -97,7 +95,6 @@ class ReceiptProcessingData extends DataTransferObject
             transactionType: $data['receipt_processing_transaction_type'] ?? null,
             transactionCompensation: $data['receipt_processing_transaction_compensation'] ?? null,
             dateTransactionCompensation: $data['receipt_processing_date_transaction_compensation'] ?? null,
-            dateRegister: $data['receipt_processing_date_register'] ?? null,
             receiptLink: $data['receipt_processing_receipt_link'] ?? null,
 
             reviewer: new FinancialReviewerData([

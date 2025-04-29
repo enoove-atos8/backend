@@ -8,7 +8,7 @@ use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMembersCountersAction
 {
-    private MemberRepository $memberRepository;
+    private MemberRepositoryInterface $memberRepository;
 
     public function __construct(MemberRepositoryInterface $memberRepositoryInterface)
     {

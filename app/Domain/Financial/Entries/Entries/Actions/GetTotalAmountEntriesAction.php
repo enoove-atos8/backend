@@ -14,7 +14,7 @@ use Throwable;
 
 class GetTotalAmountEntriesAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
 
     public function __construct(
         EntryRepositoryInterface $entryRepositoryInterface,

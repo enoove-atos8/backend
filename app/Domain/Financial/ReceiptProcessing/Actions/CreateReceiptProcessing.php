@@ -9,7 +9,7 @@ use Infrastructure\Repositories\Financial\ReceiptProcessing\ReceiptProcessingRep
 
 class CreateReceiptProcessing
 {
-    private ReceiptProcessingRepository $receiptProcessingRepository;
+    private ReceiptProcessingRepositoryInterface $receiptProcessingRepository;
 
     public function __construct(ReceiptProcessingRepositoryInterface $receiptProcessingRepositoryInterface)
     {

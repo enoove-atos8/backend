@@ -13,7 +13,7 @@ use PHPUnit\Event\Code\Throwable;
 
 class GetPaymentsAction
 {
-    private PaymentCategoryRepository $paymentCategoryRepository;
+    private PaymentCategoryRepositoryInterface $paymentCategoryRepository;
 
     public function __construct(
         PaymentCategoryRepositoryInterface $paymentCategoryRepositoryInterface,

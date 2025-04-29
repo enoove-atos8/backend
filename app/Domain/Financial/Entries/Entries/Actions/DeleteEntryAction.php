@@ -12,7 +12,7 @@ use Throwable;
 
 class DeleteEntryAction
 {
-    private EntryRepository $entryRepository;
+    private EntryRepositoryInterface $entryRepository;
     private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
     private DeleteConsolidatedEntriesAction $deleteConsolidationEntriesAction;
     private GetEntryByIdAction $getEntryByIdAction;

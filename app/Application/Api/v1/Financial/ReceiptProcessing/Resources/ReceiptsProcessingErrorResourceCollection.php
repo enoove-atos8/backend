@@ -72,7 +72,6 @@ class ReceiptsProcessingErrorResourceCollection extends ResourceCollection
                 'transactionType'               =>  $receipt->transactionType,
                 'transactionCompensation'       =>  $receipt->transactionCompensation,
                 'dateTransactionCompensation'   =>  $receipt->dateTransactionCompensation,
-                'dateRegister'                  =>  $receipt->dateRegister,
                 'receipt'                       =>  $receipt->receiptLink,
             ];
         }

@@ -23,6 +23,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     protected mixed $model = Exits::class;
 
     const TABLE_NAME = 'exits';
+    const EXIT_TYPE = 'exit';
 
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'exits.date_transaction_compensation';
