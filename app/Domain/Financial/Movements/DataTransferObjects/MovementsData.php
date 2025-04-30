@@ -7,6 +7,8 @@ use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
+use Exception;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -46,78 +48,63 @@ class MovementsData extends DataTransferObject
     /** @var bool|null */
     public ?bool $isInitialBalance;
 
+    /** @var bool|null */
+    public ?bool $deleted;
+
     /**
      * @throws UnknownProperties
      */
-    public static function fromArray(array $data): self
+    public static function fromResponse(array $data): self
     {
         return new self([
             'groupId' => $data['group_id'] ?? 0,
             'entryId' => $data['entry_id'] ?? 0,
             'exitId' => $data['exit_id'] ?? 0,
-            'type' => $data['type'] ?? '',
-            'subType' => $data['sub_type'] ?? '',
+            'type' => $data['type'] ?? null,
+            'subType' => $data['sub_type'] ?? null,
             'amount' => $data['amount'] ?? 0.0,
             'balance' => $data['balance'] ?? 0.0,
             'description' => $data['description'] ?? null,
             'movementDate' => $data['movement_date'] ?? '',
             'reference' => $data['reference'] ?? null,
             'isInitialBalance' => $data['is_initial_balance'] ?? false,
+            'deleted' => $data['deleted'] ?? false,
         ]);
     }
 
 
     /**
-     * Create a MovementsData instance from an EntryData object
+     * Create a MovementsData instance from either an EntryData or ExitData object
      *
-     * @param EntryData $entryData
-     * @param array $additionalData Additional data to override or complement the entry data
+     * @param EntryData|null $entryData Entry data object (optional)
+     * @param ExitData|null $exitData Exit data object (optional)
+     * @param array $additionalData Additional data to override or complement the data
      * @return self
      * @throws UnknownProperties
+     * @throws Exception If neither EntryData nor ExitData is provided
      */
-    public static function fromEntryData(EntryData $entryData, array $additionalData = []): self
+    public static function fromObjectData(?EntryData $entryData = null, ?ExitData $exitData = null, array $additionalData = []): self
     {
+
+        if ($entryData === null && $exitData === null)
+            throw new GeneralExceptions("Não foi informado nem um obejeto EntryData e nem um ExitData, verifique!", 500);
+
+        $isEntry = $entryData !== null;
+
         $data = [
-            'groupId' => $entryData->groupReceivedId ?? 0,
-            'entryId' => $entryData->id ?? null,
-            'exitId' => null,
-            'type' => EntryRepository::ENTRY_TYPE,
-            'subType' => $entryData->entryType,
-            'amount' => $entryData->amount ?? 0.0,
-            'description' => $entryData->description ?? 'Entry movement',
-            'movementDate' => $entryData->dateEntryRegister ?? '',
+            'groupId' => $isEntry ? ($entryData->groupReceivedId ?? 0) : ($exitData->group->id ?? 0),
+            'entryId' => $isEntry ? ($entryData->id ?? null) : null,
+            'exitId' => $isEntry ? null : ($exitData->id ?? null),
+            'type' => $isEntry ? EntryRepository::ENTRY_TYPE : ExitRepository::EXIT_TYPE,
+            'subType' => $isEntry ? ($entryData->entryType ?? '') : ($exitData->exitType ?? ''),
+            'amount' => $isEntry ? ($entryData->amount ?? 0.0) : (float)($exitData->amount ?? 0.0),
+            'description' => $isEntry ? ($entryData->description ?? 'Entry movement') : ($exitData->comments ?? 'Exit movement'),
+            'movementDate' => $isEntry ? ($entryData->dateEntryRegister ?? '') : ($exitData->dateExitRegister ?? ''),
             'isInitialBalance' => false,
+            'deleted' => false,
         ];
 
-        return new self(array_merge($data, $additionalData));
-    }
-
-
-
-
-    /**
-     * Create a MovementsData instance from an ExitData object
-     *
-     * @param ExitData $exitData
-     * @param array $additionalData Additional data to override or complement the exit data
-     * @return self
-     * @throws UnknownProperties
-     */
-    public static function fromExitData(ExitData $exitData, array $additionalData = []): self
-    {
-        $data = [
-            'groupId' => $exitData->group->id ?? 0,
-            'entryId' => null,
-            'exitId' => $exitData->id ?? null,
-            'type' => ExitRepository::EXIT_TYPE,
-            'subType' => $exitData->exitType ?? '',
-            'amount' => (float)($exitData->amount ?? 0.0),
-            'description' => $exitData->comments ?? 'Exit movement',
-            'movementDate' => $exitData->dateExitRegister ?? '',
-            'isInitialBalance' => false,
-        ];
-
-        // Merge additional data
+        // Merge additional data and return new instance
         return new self(array_merge($data, $additionalData));
     }
 }

@@ -24,13 +24,15 @@ class Movement extends Model
      */
     protected $fillable = [
         'group_id',
+        'entry_id',
+        'exit_id',
         'type',
         'sub_type',
         'amount',
         'balance',
         'description',
         'movement_date',
-        'reference',
         'is_initial_balance',
+        'deleted',
     ];
 }

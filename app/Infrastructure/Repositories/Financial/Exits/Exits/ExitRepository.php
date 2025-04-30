@@ -419,11 +419,11 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             if($paginate)
             {
                 $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => ExitData::fromArray((array) $item)));
+                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => ExitData::fromResponse((array) $item)));
             }
             else
             {
-                return collect($q)->map(fn($item) => ExitData::fromArray((array) $item));
+                return collect($q)->map(fn($item) => ExitData::fromResponse((array) $item));
             }
         };
 

@@ -279,33 +279,11 @@ class ProcessingBankEntriesTransferReceipts
     public function setReceiptProcessingData($extractedData, SyncStorageData $data, string $linkReceipt): void
     {
         $reviewer = $this->getReviewerAction->execute();
+        $financialGroup = $this->getFinancialGroupAction->execute();
 
-        $this->receiptProcessingData->docType = EntryRepository::ENTRIES_VALUE;
-        $this->receiptProcessingData->docSubType = $data->docSubType;
-        $this->receiptProcessingData->reviewer = new FinancialReviewerData(['id' => $reviewer->id]);
-        $this->receiptProcessingData->division = new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]);
-        $this->receiptProcessingData->groupReceived = new GroupData(['id' => null]);
-        $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
-        $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
-        $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
-        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
-        $this->receiptProcessingData->reason = $extractedData['status'];
-        $this->receiptProcessingData->status = 'error';
-        $this->receiptProcessingData->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
-        $this->receiptProcessingData->devolution = $data->isDevolution == 1;
-        $this->receiptProcessingData->isPayment = false;
-        $this->receiptProcessingData->deleted = false;
-        $this->receiptProcessingData->transactionType = EntryRepository::PIX_TRANSACTION_TYPE;
-        $this->receiptProcessingData->transactionCompensation = EntryRepository::COMPENSATED_VALUE;
-        $this->receiptProcessingData->receiptLink = $linkReceipt;
-
-        if($data->docSubType == EntryRepository::DESIGNATED_VALUE)
-        {
-            $financialGroup = $this->getFinancialGroupAction->execute();
-
-            $this->receiptProcessingData->groupReceived = new GroupData(['id' => $data->isDevolution ? $financialGroup->id : (int) $data->groupId]);
-            $this->receiptProcessingData->groupReturned = new GroupData(['id' => $data->isDevolution ? (int) $data->groupId : null]);
-        }
+        $this->receiptProcessingData = ReceiptProcessingData::fromExtractedData(
+            $data, $extractedData, $linkReceipt, $reviewer, $financialGroup
+        );
     }
 
 
@@ -465,48 +443,18 @@ class ProcessingBankEntriesTransferReceipts
     public function setEntryData(array $extractedData, mixed $member, SyncStorageData $data): void
     {
         $reviewer = $this->getReviewerAction->execute();
+        $returnReceivingGroupId = $this->getReturnReceivingGroup();
+        $nextBusinessDay = $this->getNextBusinessDay($extractedData['data']['date']);
 
-        $currentDate = date('Y-m-d');
-        $extractedDate = $extractedData['data']['date'];
-
-        $this->entryData->amount = floatval($extractedData['data']['amount']) / 100;
-        $this->entryData->comments = 'Entrada registrada automaticamente!';
-        $this->entryData->dateEntryRegister = $currentDate;
-        $this->entryData->dateTransactionCompensation = $this->getNextBusinessDay($extractedDate) . self::SUFFIX_TIMEZONE;
-        $this->entryData->deleted = 0;
-        $this->entryData->entryType = $data->docSubType;
-        $this->entryData->memberId = $member?->id;
-        $this->entryData->receipt = null;
-        $this->entryData->devolution = 0;
-        $this->entryData->residualValue = 0;
-        $this->entryData->identificationPending = 0;
-        $this->entryData->cultId = null;
-        $this->entryData->timestampValueCpf = null;
-
-        if($data->docSubType == EntryRepository::DESIGNATED_VALUE)
-        {
-            $this->entryData->groupReceivedId = $data->groupId;
-
-            if($data->isDevolution == 1)
-            {
-                $this->entryData->devolution = 1;
-                $this->entryData->groupReceivedId = $this->getReturnReceivingGroup();
-                $this->entryData->groupReturnedId = $data->groupId;
-            }
-        }
-
-        if($data->docSubType == EntryRepository::TITHE_VALUE)
-        {
-            $this->entryData->groupReceivedId = null;
-            $this->entryData->devolution = 0;
-            $this->entryData->groupReturnedId = null;
-        }
-
-        $this->entryData->reviewerId = $reviewer->id;
-        $this->entryData->transactionCompensation = EntryRepository::COMPENSATED_VALUE;
-        $this->entryData->transactionType = EntryRepository::PIX_TRANSACTION_TYPE;
+        $this->entryData = EntryData::fromExtractedData(
+            $extractedData,
+            $member,
+            $data,
+            $reviewer,
+            $returnReceivingGroupId,
+            $nextBusinessDay
+        );
 
         $this->consolidationEntriesData->date = DateTime::createFromFormat('d/m/Y', $extractedData['data']['date'])->format('Y-m-d');
-
     }
 }

@@ -24,7 +24,7 @@ class PaymentCategoryData extends DataTransferObject
     /**
      * @throws UnknownProperties
      */
-    public static function fromArray(array $data): self
+    public static function fromResponse(array $data): self
     {
         return new self(
             id: $data['payment_category_id'] ?? null,

@@ -11,11 +11,12 @@ use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use Domain\Financial\Movements\Actions\CreateEntryMovementAction;
+use Domain\Financial\Movements\Actions\CreateMovementAction;
 use Domain\Financial\Movements\Actions\GetCurrentBalanceAction;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 use Throwable;
 
 class CreateEntryAction
@@ -23,23 +24,23 @@ class CreateEntryAction
     private EntryRepositoryInterface $entryRepository;
     private ConsolidatedEntriesRepositoryInterface $consolidatedEntriesRepository;
     private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
-    private CreateEntryMovementAction $createEntryMovementAction;
+    private CreateMovementAction $createMovementAction;
     private MovementsData $movementsData;
     private MovementRepositoryInterface $movementRepository;
 
     public function __construct(
-        EntryRepositoryInterface                $entryRepositoryInterface,
+        EntryRepositoryInterface               $entryRepositoryInterface,
         ConsolidatedEntriesRepositoryInterface $consolidatedEntriesRepositoryInterface,
-        CreateConsolidatedEntryAction           $createConsolidatedEntryAction,
-        CreateEntryMovementAction               $createEntryMovementAction,
-        MovementsData                           $movementsData,
-        MovementRepositoryInterface             $movementRepositoryInterface
+        CreateConsolidatedEntryAction          $createConsolidatedEntryAction,
+        CreateMovementAction                   $createMovementAction,
+        MovementsData                          $movementsData,
+        MovementRepositoryInterface            $movementRepositoryInterface
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
         $this->consolidatedEntriesRepository = $consolidatedEntriesRepositoryInterface;
         $this->createConsolidatedEntryAction = $createConsolidatedEntryAction;
-        $this->createEntryMovementAction = $createEntryMovementAction;
+        $this->createMovementAction = $createMovementAction;
         $this->movementsData = $movementsData;
         $this->movementRepository = $movementRepositoryInterface;
     }
@@ -62,25 +63,22 @@ class CreateEntryAction
         $entry = $this->entryRepository->newEntry($entryData);
         $entryData->id = $entry->id;
 
-        if($entryData->id !== null)
+        if(!is_null($entryData->id))
         {
-            // Get the current balance from the database
-            //$currentBalance = 0.0;
-            /*$movements = $this->movementRepository->getMovementsByGroup($entryData->groupReceivedId);
+            if($entryData->entryType == EntryRepository::DESIGNATED_VALUE)
+            {
+                $currentBalance = 0.0;
+                $movements = $this->movementRepository->getMovementsByGroup($entryData->groupReceivedId);
 
-            if (!$movements->isEmpty()) {
-                // Get the last movement to get the current balance
-                $lastMovement = $movements->sortByDesc('movementDate')->first();
-                $currentBalance = $lastMovement->balance;
+                if (!$movements->isEmpty()) {
+                    $lastMovement = $movements->first();
+                    $currentBalance = $lastMovement->balance;
+                }
+
+                $movementData = $this->movementsData::fromObjectData($entryData, null, [MovementRepository::BALANCE_COLUMN => $currentBalance]);
+
+                $this->createMovementAction->execute($movementData);
             }
-
-            // Create a movement record for this entry with the current balance
-            $movementData = $this->movementsData::fromEntryData($entryData, [
-                'referenceId' => $entry->id,
-                'balance' => $currentBalance // Pass the current balance from the database
-            ]);
-
-            $this->createEntryMovementAction->execute($movementData);*/
 
             return $entry;
         }

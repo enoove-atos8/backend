@@ -21,8 +21,8 @@ return new class extends Migration
                 $table->integer('group_id');
                 $table->integer('entry_id')->nullable();
                 $table->integer('exit_id')->nullable();
-                $table->enum('type', ['entry', 'exit']);
-                $table->string('sub_type');
+                $table->enum('type', ['entry', 'exit'])->nullable();
+                $table->string('sub_type')->nullable();
                 $table->decimal('amount', 10);
                 $table->decimal('balance', 10);
                 $table->string('description')->nullable();

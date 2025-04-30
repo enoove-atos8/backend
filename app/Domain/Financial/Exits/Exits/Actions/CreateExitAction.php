@@ -6,16 +6,32 @@ use Domain\Financial\Exits\Exits\Constants\ReturnMessages;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Exits\Exits\Models\Exits;
+use Domain\Financial\Movements\Actions\CreateMovementAction;
+use Domain\Financial\Movements\DataTransferObjects\MovementsData;
+use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
+use Infrastructure\Repositories\Financial\Movements\MovementRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class CreateExitAction
 {
     private ExitRepositoryInterface $exitRepository;
+    private MovementRepositoryInterface $movementRepository;
+    private MovementsData $movementsData;
+    private CreateMovementAction $createMovementAction;
 
-    public function __construct(ExitRepositoryInterface $exitRepositoryInterface)
+    public function __construct(
+        ExitRepositoryInterface         $exitRepositoryInterface,
+        MovementRepositoryInterface     $movementRepositoryInterface,
+        MovementsData                   $movementsData,
+        CreateMovementAction            $createMovementAction
+    )
     {
         $this->exitRepository = $exitRepositoryInterface;
+        $this->movementRepository = $movementRepositoryInterface;
+        $this->movementsData = $movementsData;
+        $this->createMovementAction = $createMovementAction;
     }
 
 
@@ -23,6 +39,7 @@ class CreateExitAction
      * @param ExitData $exitData
      * @return Exits
      * @throws GeneralExceptions
+     * @throws UnknownProperties
      */
     public function execute(ExitData $exitData): Exits
     {
@@ -34,9 +51,28 @@ class CreateExitAction
                 $exitData->dateExitRegister = substr($dateTransactionCompensation, 0, 7) . '-01';
 
         $exit = $this->exitRepository->newExit($exitData);
+        $exitData->id = $exit->id;
 
-        if(!is_null($exit->id))
+        if(!is_null($exitData->id))
+        {
+            if(!is_null($exitData->group->id))
+            {
+                $currentBalance = 0.0;
+                $movements = $this->movementRepository->getMovementsByGroup($exitData->group->id);
+
+                if (!$movements->isEmpty()) {
+                    $lastMovement = $movements->first();
+                    $currentBalance = $lastMovement->balance;
+                }
+
+                $movementData = $this->movementsData::fromObjectData(null, $exitData, [MovementRepository::BALANCE_COLUMN => $currentBalance]);
+
+                $this->createMovementAction->execute($movementData);
+            }
+
+
             return $exit;
+        }
         else
             throw new GeneralExceptions(ReturnMessages::CREATE_EXIT_ERROR, 500);
 
