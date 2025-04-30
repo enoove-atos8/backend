@@ -231,32 +231,9 @@ class ProcessingBankExitsTransferReceipts
     {
         $reviewer = $this->getReviewerAction->execute();
 
-        $this->receiptProcessingData->docType = ExitRepository::EXITS_VALUE;
-        $this->receiptProcessingData->docSubType = $data->docSubType;
-        $this->receiptProcessingData->reviewer = new FinancialReviewerData(['id' => $reviewer->id]);
-        $this->receiptProcessingData->division = new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]);
-        $this->receiptProcessingData->groupReceived = new GroupData(['id' => null]);
-        $this->receiptProcessingData->groupReturned = new GroupData(['id' => null]);
-        $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => null]);
-        $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => null]);
-        $this->receiptProcessingData->amount = floatval($extractedData['data']['amount']) / 100;
-        $this->receiptProcessingData->reason = $extractedData['status'];
-        $this->receiptProcessingData->status = 'error';
-        $this->receiptProcessingData->institution = $extractedData['data']['institution'] != '' ? $extractedData['data']['institution'] : null;
-        $this->receiptProcessingData->devolution = $data->isDevolution == 1;
-        $this->receiptProcessingData->isPayment = false;
-        $this->receiptProcessingData->deleted = false;
-        $this->receiptProcessingData->transactionType = ExitRepository::PIX_VALUE;
-        $this->receiptProcessingData->transactionCompensation = ExitRepository::COMPENSATED_VALUE;
-        $this->receiptProcessingData->receiptLink = $linkReceipt;
-
-        if($data->isPayment)
-        {
-            $this->receiptProcessingData->isPayment = true;
-            $this->receiptProcessingData->paymentCategory = new PaymentCategoryData(['id' => $data->paymentCategoryId]);
-            $this->receiptProcessingData->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
-            $this->receiptProcessingData->transactionType = '-';
-        }
+        $this->receiptProcessingData = ReceiptProcessingData::fromExtractedData(
+            $data, $extractedData, $linkReceipt, $reviewer
+        );
     }
 
 
@@ -318,41 +295,14 @@ class ProcessingBankExitsTransferReceipts
     public function setExitData(array $extractedData, SyncStorageData $data): void
     {
         $reviewer = $this->getReviewerAction->execute();
+        $nextBusinessDay = $this->getNextBusinessDay($extractedData['data']['date']);
 
-        $currentDate = date('Y-m-d');
-        $extractedDate = $extractedData['data']['date'];
-
-        $this->exitData->amount = floatval($extractedData['data']['amount']) / 100;
-        $this->exitData->comments = 'Saída registrada automaticamente!';
-        $this->exitData->dateExitRegister = $currentDate;
-        $this->exitData->dateTransactionCompensation = $this->getNextBusinessDay($extractedDate) . self::SUFFIX_TIMEZONE;
-        $this->exitData->deleted = 0;
-        $this->exitData->exitType = $data->docSubType;
-        $this->exitData->receiptLink = '';
-        $this->exitData->timestampExitTransaction = null;
-
-        if($data->docSubType == ExitRepository::PAYMENTS_VALUE)
-        {
-            $this->exitData->isPayment = 1;
-            $this->exitData->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
-            $this->exitData->paymentCategory = new PaymentCategoryData(['id' => $data->paymentCategoryId]);
-            $this->exitData->group = new GroupData(['id' => null]);
-            $this->exitData->division = new DivisionData(['id' => null]);
-        }
-
-        if($data->docSubType != ExitRepository::PAYMENTS_VALUE)
-        {
-            $this->exitData->isPayment = 0;
-            $this->exitData->paymentItem = new PaymentItemData(['id' => null]);
-            $this->exitData->paymentCategory = new PaymentCategoryData(['id' => null]);
-            $this->exitData->group = new GroupData(['id' => $data->groupId]);
-            $this->exitData->division = new DivisionData(['id' => $data->divisionId]);
-        }
-
-
-        $this->exitData->financialReviewer = new FinancialReviewerData(['id' => $reviewer->id]);
-        $this->exitData->transactionCompensation = ExitRepository::COMPENSATED_VALUE;
-        $this->exitData->transactionType = $data->docSubType == ExitRepository::PAYMENTS_VALUE ? ExitRepository::BANK_SLIP_VALUE : ExitRepository::PIX_VALUE;
+        $this->exitData = ExitData::fromExtractedData(
+            $extractedData,
+            $data,
+            $reviewer,
+            $nextBusinessDay
+        );
 
     }
 

@@ -123,12 +123,12 @@ class PaymentItemRepository extends BaseRepository implements PaymentItemReposit
             if($paginate)
             {
                 $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => PaymentItemData::fromArray((array) $item)));
+                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => PaymentItemData::fromResponse((array) $item)));
             }
             else
             {
                 $results = $q->get();
-                return $results->map(fn($item) => PaymentItemData::fromArray((array) $item));
+                return $results->map(fn($item) => PaymentItemData::fromResponse((array) $item));
             }
         };
 

@@ -5,8 +5,12 @@ namespace Domain\Financial\Exits\Exits\DataTransferObjects;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
+use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
+use DateTime;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use Exception;
+use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -67,7 +71,7 @@ class ExitData extends DataTransferObject
     /**
      * @throws UnknownProperties
      */
-    public static function fromArray(array $data): self
+    public static function fromResponse(array $data): self
     {
         return new self(
             id: $data['exits_id'] ?? null,
@@ -140,5 +144,67 @@ class ExitData extends DataTransferObject
                 'description' => $data['payment_item_description'] ?? null,
             ])
         );
+    }
+
+
+
+    /**
+     * Create an ExitData instance from extracted data
+     *
+     * @param array $extractedData Data extracted from receipt
+     * @param SyncStorageData $data Sync storage data
+     * @param object $reviewer Reviewer object
+     * @param string|null $nextBusinessDay Function to get next business day from a date
+     * @return self New ExitData instance
+     * @throws UnknownProperties
+     * @throws Exception
+     */
+    public static function fromExtractedData(
+        array $extractedData,
+        SyncStorageData $data,
+        object $reviewer,
+        ?string $nextBusinessDay = null
+    ): self {
+        $currentDate = date('Y-m-d');
+        $extractedDate = $extractedData['data']['date'];
+
+        $dateTransactionCompensation = $nextBusinessDay ?
+            $nextBusinessDay . 'T03:00:00.000Z' :
+            (new DateTime($extractedDate))->format('Y-m-d') . 'T03:00:00.000Z';
+
+        $instance = new self([
+            'id' => null,
+            'amount' => floatval($extractedData['data']['amount']) / 100,
+            'comments' => 'Saída registrada automaticamente!',
+            'dateExitRegister' => $currentDate,
+            'dateTransactionCompensation' => $dateTransactionCompensation,
+            'deleted' => 0,
+            'exitType' => $data->docSubType,
+            'receiptLink' => '',
+            'timestampExitTransaction' => null,
+            'transactionCompensation' => ExitRepository::COMPENSATED_VALUE,
+            'transactionType' => ExitRepository::PIX_VALUE,
+            'isPayment' => 0,
+            'financialReviewer' => new FinancialReviewerData(['id' => $reviewer->id]),
+            'division' => new DivisionData(['id' => null]),
+            'group' => new GroupData(['id' => null]),
+            'paymentCategory' => new PaymentCategoryData(['id' => null]),
+            'paymentItem' => new PaymentItemData(['id' => null])
+        ]);
+
+        if ($data->docSubType == ExitRepository::PAYMENTS_VALUE)
+        {
+            $instance->isPayment = 1;
+            $instance->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
+            $instance->paymentCategory = new PaymentCategoryData(['id' => $data->paymentCategoryId]);
+        }
+
+        if ($data->docSubType != ExitRepository::PAYMENTS_VALUE)
+        {
+            $instance->group = new GroupData(['id' => $data->groupId]);
+            $instance->division = new DivisionData(['id' => $data->divisionId]);
+        }
+
+        return $instance;
     }
 }

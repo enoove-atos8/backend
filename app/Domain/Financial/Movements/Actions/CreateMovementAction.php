@@ -2,11 +2,11 @@
 
 namespace Domain\Financial\Movements\Actions;
 
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
-use Domain\Financial\Movements\Models\Movement;
 
-class CreateExitMovementAction
+class CreateMovementAction
 {
     /**
      * @var MovementRepositoryInterface
@@ -14,7 +14,7 @@ class CreateExitMovementAction
     private MovementRepositoryInterface $movementRepository;
 
     /**
-     * CreateExitMovementAction constructor.
+     * CreateMovementAction constructor.
      *
      * @param MovementRepositoryInterface $movementRepository
      */
@@ -27,10 +27,19 @@ class CreateExitMovementAction
      * Execute the action.
      *
      * @param MovementsData $movementsData
-     * @return Movement
+     * @return mixed
      */
-    public function execute(MovementsData $movementsData): Movement
+    public function execute(MovementsData $movementsData): mixed
     {
+        $currentBalance = $movementsData->balance;
+        $amount = $movementsData->amount;
+
+        $newBalance = $movementsData->type === EntryRepository::ENTRY_TYPE
+            ? $currentBalance + $amount
+            : $currentBalance - $amount;
+
+        $movementsData->balance = $newBalance;
+
         return $this->movementRepository->createMovement($movementsData);
     }
 }

@@ -132,7 +132,7 @@ class ReceiptProcessingRepository extends BaseRepository implements ReceiptProce
 
 
             $results = $q->get();
-            return $results->map(fn($item) => ReceiptProcessingData::fromArray((array) $item));
+            return $results->map(fn($item) => ReceiptProcessingData::fromResponse((array) $item));
 
         };
 

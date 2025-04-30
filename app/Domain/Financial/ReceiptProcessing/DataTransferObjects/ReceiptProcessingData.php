@@ -5,8 +5,13 @@ namespace Domain\Financial\ReceiptProcessing\DataTransferObjects;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
+use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
+use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use Domain\Financial\Reviewers\Actions\GetReviewerAction;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -78,7 +83,7 @@ class ReceiptProcessingData extends DataTransferObject
     /**
      * @throws UnknownProperties
      */
-    public static function fromArray(array $data): self
+    public static function fromResponse(array $data): self
     {
         return new self(
             id: $data['receipt_processing_id'] ?? null,
@@ -161,5 +166,69 @@ class ReceiptProcessingData extends DataTransferObject
                 'description' => $data['payment_item_description'] ?? null,
             ])
         );
+    }
+
+
+    /**
+     * Create a ReceiptProcessingData instance from SyncStorageData and extracted data
+     *
+     * @param SyncStorageData $data
+     * @param array $extractedData
+     * @param string $linkReceipt
+     * @param mixed $reviewer
+     * @param mixed|null $financialGroup
+     * @return self
+     * @throws UnknownProperties
+     */
+    public static function fromExtractedData(
+        SyncStorageData $data,
+        array $extractedData,
+        string $linkReceipt,
+        mixed $reviewer,
+        mixed $financialGroup = null): self
+    {
+
+        $groupReceived = new GroupData(['id' => null]);
+        $groupReturned = new GroupData(['id' => null]);
+        $isPayment = false;
+        $transactionType = '-';
+
+        if($data->docType == EntryRepository::ENTRIES_VALUE)
+            $transactionType = EntryRepository::PIX_TRANSACTION_TYPE;
+
+        if($data->isPayment)
+            $isPayment = true;
+
+        if ($data->docSubType == EntryRepository::DESIGNATED_VALUE) {
+
+            $groupReceived = new GroupData(['id' => $data->isDevolution ? $financialGroup->id : (int) $data->groupId]);
+            $groupReturned = new GroupData(['id' => $data->isDevolution ? (int) $data->groupId : null]);
+        }
+
+
+        return new self([
+            'id' => null,
+            'docType' => $data->docType,
+            'docSubType' => $data->docSubType,
+            'reviewer' => new FinancialReviewerData(['id' => $reviewer->id]),
+            'division' => new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]),
+            'groupReceived' => $groupReceived,
+            'groupReturned' => $groupReturned,
+            'paymentCategory' => new PaymentCategoryData(['id' => !is_null($data->paymentCategoryId) ? (int) $data->paymentCategoryId : null]),
+            'paymentItem' => new PaymentItemData(['id' => !is_null($data->paymentItemId) ? (int) $data->paymentItemId : null]),
+            'amount' => floatval($extractedData['data']['amount'] ?? 0) / 100,
+            'reason' => $extractedData['status'] ?? null,
+            'status' => 'error',
+            'institution' => isset($extractedData['data']['institution']) && $extractedData['data']['institution'] != ''
+                ? $extractedData['data']['institution']
+                : null,
+            'devolution' => $data->isDevolution == 1,
+            'isPayment' => $isPayment,
+            'deleted' => false,
+            'transactionType' => $transactionType,
+            'transactionCompensation' => EntryRepository::COMPENSATED_VALUE,
+            'dateTransactionCompensation' => null,
+            'receiptLink' => $linkReceipt
+        ]);
     }
 }

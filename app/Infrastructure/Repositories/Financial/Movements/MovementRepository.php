@@ -42,6 +42,7 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         'movements.description as description',
         'movements.movement_date as movement_date',
         'movements.is_initial_balance as is_initial_balance',
+        'movements.deleted as deleted',
     ];
 
     /**
@@ -62,12 +63,13 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
             'entry_id' => $movementsData->entryId,
             'exit_id' => $movementsData->exitId,
             'type' => $movementsData->type,
-            'subType' => $movementsData->subType,
+            'sub_type' => $movementsData->subType,
             'amount' => $movementsData->amount,
             'balance' => $movementsData->balance,
             'description' => $movementsData->description,
             'movement_date' => $movementsData->movementDate,
             'is_initial_balance' => $movementsData->isInitialBalance,
+            'deleted' => $movementsData->deleted,
         ]);
     }
 
@@ -84,15 +86,13 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     {
         $this->queryConditions = [];
 
-        $this->queryConditions[] = $this->whereEqual(self::GROUP_ID_COLUMN, $groupId, 'and');
         $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::GROUP_ID_COLUMN, $groupId, 'and');
 
-        $balances = $this->getItemsWithRelationshipsAndWheres(
+        return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
-            self::MOVEMENT_DATE_ORDER_COLUMN
+            self::ID_COLUMN
         );
-
-        return $balances->map(fn($balance) => MovementsData::fromArray((array) $balance));
     }
 
 

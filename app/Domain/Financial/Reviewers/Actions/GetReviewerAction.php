@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class GetReviewerAction
 {
-    private FinancialReviewerRepository $financialReviewerRepository;
+    private FinancialReviewerRepositoryInterface $financialReviewerRepository;
 
     public function __construct(FinancialReviewerRepositoryInterface $financialReviewerRepositoryInterface)
     {
@@ -18,7 +18,7 @@ class GetReviewerAction
 
 
     /**
-     * @throws BindingResolutionException
+     * @return Model|null
      */
     public function execute(): ?Model
     {

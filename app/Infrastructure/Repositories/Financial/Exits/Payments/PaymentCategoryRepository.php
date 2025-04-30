@@ -77,12 +77,12 @@ class PaymentCategoryRepository extends BaseRepository implements PaymentCategor
             if($paginate)
             {
                 $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => PaymentCategoryData::fromArray((array) $item)));
+                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => PaymentCategoryData::fromResponse((array) $item)));
             }
             else
             {
                 $results = $q->get();
-                return $results->map(fn($item) => PaymentCategoryData::fromArray((array) $item));
+                return $results->map(fn($item) => PaymentCategoryData::fromResponse((array) $item));
             }
         };
 
