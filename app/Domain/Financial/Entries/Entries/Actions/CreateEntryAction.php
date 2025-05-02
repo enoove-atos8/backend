@@ -67,16 +67,7 @@ class CreateEntryAction
         {
             if($entryData->entryType == EntryRepository::DESIGNATED_VALUE)
             {
-                $currentBalance = 0.0;
-                $movements = $this->movementRepository->getMovementsByGroup($entryData->groupReceivedId);
-
-                if (!$movements->isEmpty()) {
-                    $lastMovement = $movements->first();
-                    $currentBalance = $lastMovement->balance;
-                }
-
-                $movementData = $this->movementsData::fromObjectData($entryData, null, [MovementRepository::BALANCE_COLUMN => $currentBalance]);
-
+                $movementData = $this->movementsData::fromObjectData($entryData);
                 $this->createMovementAction->execute($movementData);
             }
 

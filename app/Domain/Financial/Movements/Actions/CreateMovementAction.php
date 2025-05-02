@@ -5,6 +5,7 @@ namespace Domain\Financial\Movements\Actions;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
+use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 
 class CreateMovementAction
 {
@@ -24,6 +25,38 @@ class CreateMovementAction
     }
 
     /**
+     * Calcula o saldo atual para um grupo específico
+     *
+     * @param int $groupId ID do grupo
+     * @return float Saldo atual calculado
+     */
+    public function calculateCurrentBalance(int $groupId): float
+    {
+        $currentBalance = 0.0;
+
+        // 1. Primeiro considera o saldo inicial (se existir)
+        $initialBalanceMovement = $this->movementRepository->getInitialMovementsByGroup($groupId);
+        if ($initialBalanceMovement) {
+            $currentBalance = $this->movementRepository->getMovementAmount($initialBalanceMovement);
+        }
+
+        // 2. Depois aplica as movimentações normais (se existirem)
+        $movements = $this->movementRepository->getMovementsByGroup($groupId);
+        if (!$movements->isEmpty()) {
+            foreach ($movements as $movement) {
+                $amount = $this->movementRepository->getMovementAmount($movement);
+                if ($movement->type === EntryRepository::ENTRY_TYPE) {
+                    $currentBalance += $amount;
+                } else if ($movement->type === ExitRepository::EXIT_TYPE) {
+                    $currentBalance -= $amount;
+                }
+            }
+        }
+
+        return $currentBalance;
+    }
+
+    /**
      * Execute the action.
      *
      * @param MovementsData $movementsData
@@ -31,12 +64,22 @@ class CreateMovementAction
      */
     public function execute(MovementsData $movementsData): mixed
     {
+        if (!isset($movementsData->balance))
+        {
+            if (isset($movementsData->groupId) && $movementsData->groupId > 0)
+                $movementsData->balance = $this->calculateCurrentBalance($movementsData->groupId);
+            else
+                $movementsData->balance = 0.0;
+        }
+
         $currentBalance = $movementsData->balance;
         $amount = $movementsData->amount;
 
         $newBalance = $movementsData->type === EntryRepository::ENTRY_TYPE
             ? $currentBalance + $amount
-            : $currentBalance - $amount;
+            : ($movementsData->type === ExitRepository::EXIT_TYPE
+                ? $currentBalance - $amount
+                : $currentBalance);
 
         $movementsData->balance = $newBalance;
 

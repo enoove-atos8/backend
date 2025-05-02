@@ -55,26 +55,12 @@ class CreateExitAction
 
         if(!is_null($exitData->id))
         {
-            if(!is_null($exitData->group->id))
-            {
-                $currentBalance = 0.0;
-                $movements = $this->movementRepository->getMovementsByGroup($exitData->group->id);
-
-                if (!$movements->isEmpty()) {
-                    $lastMovement = $movements->first();
-                    $currentBalance = $lastMovement->balance;
-                }
-
-                $movementData = $this->movementsData::fromObjectData(null, $exitData, [MovementRepository::BALANCE_COLUMN => $currentBalance]);
-
-                $this->createMovementAction->execute($movementData);
-            }
-
+            $movementData = $this->movementsData::fromObjectData(null, $exitData);
+            $this->createMovementAction->execute($movementData);
 
             return $exit;
         }
         else
             throw new GeneralExceptions(ReturnMessages::CREATE_EXIT_ERROR, 500);
-
     }
 }
