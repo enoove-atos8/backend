@@ -2,7 +2,6 @@
 
 namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests;
 
-use App\Domain\Financial\Entries\Consolidated\DataTransferObjects\ConsolidationEntriesData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -41,6 +40,7 @@ class GroupRequest extends FormRequest
             'slug'                  =>  '',
             'enabled'               =>  '',
             'temporaryEvent'        =>  '',
+            'initialBalance'        =>  '',
             'startDate'             =>  '',
             'endDate'               =>  '',
         ];
@@ -84,6 +84,7 @@ class GroupRequest extends FormRequest
             enabled:                $this->input('enabled'),
             temporaryEvent:         $this->input('temporaryEvent'),
             financialGroup:         $this->input('financialGroup'),
+            initialBalance:         $this->input('initialBalance'),
             startDate:              $this->input('startDate'),
             endDate:                $this->input('endDate'),
         );

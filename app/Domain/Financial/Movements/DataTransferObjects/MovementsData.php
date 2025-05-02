@@ -5,6 +5,7 @@ namespace Domain\Financial\Movements\DataTransferObjects;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Exception;
@@ -86,7 +87,7 @@ class MovementsData extends DataTransferObject
     public static function fromObjectData(?EntryData $entryData = null, ?ExitData $exitData = null, array $additionalData = []): self
     {
 
-        if ($entryData === null && $exitData === null)
+        if ($entryData === null && $exitData === null && empty($additionalData))
             throw new GeneralExceptions("Não foi informado nem um obejeto EntryData e nem um ExitData, verifique!", 500);
 
         $isEntry = $entryData !== null;
@@ -98,9 +99,42 @@ class MovementsData extends DataTransferObject
             'type' => $isEntry ? EntryRepository::ENTRY_TYPE : ExitRepository::EXIT_TYPE,
             'subType' => $isEntry ? ($entryData->entryType ?? '') : ($exitData->exitType ?? ''),
             'amount' => $isEntry ? ($entryData->amount ?? 0.0) : (float)($exitData->amount ?? 0.0),
-            'description' => $isEntry ? ($entryData->description ?? 'Entry movement') : ($exitData->comments ?? 'Exit movement'),
+            'description' => $isEntry ? ($entryData->comments ?? 'Entry movement') : ($exitData->comments ?? 'Exit movement'),
             'movementDate' => $isEntry ? ($entryData->dateEntryRegister ?? '') : ($exitData->dateExitRegister ?? ''),
             'isInitialBalance' => false,
+            'deleted' => false,
+        ];
+
+        // Merge additional data and return new instance
+        return new self(array_merge($data, $additionalData));
+    }
+
+    /**
+     * Create a MovementsData instance from a GroupData object (specifically for initial balance)
+     *
+     * @param GroupData $groupData Group data object
+     * @param float $totalPreviousMovements Total amount from previous movements (optional)
+     * @param array $additionalData Additional data to override or complement the data
+     * @return self
+     * @throws UnknownProperties
+     */
+    public static function fromGroupData(GroupData $groupData, float $totalPreviousMovements = 0.0, array $additionalData = []): self
+    {
+        // Calcular o saldo inicial considerando movimentações anteriores
+        $initialBalance = !is_null($groupData->initialBalance)
+            ? (float)$groupData->initialBalance + $totalPreviousMovements
+            : $totalPreviousMovements;
+
+        $data = [
+            'groupId' => $groupData->id,
+            'entryId' => null,
+            'exitId' => null,
+            'type' => EntryRepository::ENTRY_TYPE,
+            'subType' => 'initial_balance',
+            'amount' => $initialBalance,
+            'description' => 'Saldo Inicial do Grupo',
+            'movementDate' => now()->format('Y-m-d'),
+            'isInitialBalance' => true,
             'deleted' => false,
         ];
 

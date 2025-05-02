@@ -30,6 +30,8 @@ class GroupData extends DataTransferObject
     /** @var null | integer */
     public ?int $leaderId;
 
+    /** @var string | null */
+    public ?string $initialBalance;
 
     /** @var null | string  */
     public ?string $description;
