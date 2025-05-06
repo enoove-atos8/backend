@@ -12,6 +12,7 @@ use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -199,7 +200,9 @@ class ReceiptProcessingData extends DataTransferObject
         if($data->isPayment)
             $isPayment = true;
 
-        if ($data->docSubType == EntryRepository::DESIGNATED_VALUE) {
+        if ($data->docSubType == EntryRepository::DESIGNATED_VALUE ||
+            $data->docSubType == ExitRepository::TRANSFER_VALUE ||
+            $data->docSubType == ExitRepository::MINISTERIAL_TRANSFER_VALUE) {
 
             $groupReceived = new GroupData(['id' => $data->isDevolution ? $financialGroup->id : (int) $data->groupId]);
             $groupReturned = new GroupData(['id' => $data->isDevolution ? (int) $data->groupId : null]);
