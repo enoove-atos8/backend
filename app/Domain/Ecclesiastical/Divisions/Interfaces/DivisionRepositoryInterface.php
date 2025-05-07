@@ -9,7 +9,11 @@ use Illuminate\Support\Collection;
 
 interface DivisionRepositoryInterface
 {
-    public function getDivisionByName(string $division): Model | null;
+    /**
+     * @param string $division
+     * @return DivisionData|null
+     */
+    public function getDivisionByName(string $division): ?DivisionData;
     public function getDivisionById(int $id): Model | null;
     public function getDivisions(int $enabled): Collection;
     public function createDivision(DivisionData $divisionData): Division;

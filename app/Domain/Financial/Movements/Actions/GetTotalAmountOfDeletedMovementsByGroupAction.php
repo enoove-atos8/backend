@@ -2,7 +2,10 @@
 
 namespace Domain\Financial\Movements\Actions;
 
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
+use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
+use Illuminate\Contracts\Container\BindingResolutionException;
 
 class GetTotalAmountOfDeletedMovementsByGroupAction
 {
@@ -26,6 +29,24 @@ class GetTotalAmountOfDeletedMovementsByGroupAction
      */
     public function execute(int $groupId): float
     {
-        return $this->movementRepository->getTotalAmountOfDeletedMovementsByGroup($groupId);
+        $deletedMovements = $this->movementRepository->getDeletedMovementsByGroup($groupId);
+
+        if ($deletedMovements->isEmpty())
+            return 0.0;
+
+        // Calcula o saldo final considerando todas as movimentações deletadas
+        $totalBalance = 0.0;
+
+        foreach ($deletedMovements as $movement) {
+            $amount = $this->movementRepository->getMovementAmount($movement);
+
+            if ($movement->type === EntryRepository::ENTRIES_VALUE || $movement->is_initial_balance)
+                $totalBalance += $amount;
+
+            else if ($movement->type === ExitRepository::EXIT_TYPE)
+                $totalBalance -= $amount;
+        }
+
+        return $totalBalance;
     }
 }

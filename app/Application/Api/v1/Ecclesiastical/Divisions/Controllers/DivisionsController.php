@@ -9,6 +9,7 @@ use Domain\Ecclesiastical\Divisions\Actions\CreateNewDivisionAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsAction;
 use Domain\Ecclesiastical\Divisions\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
@@ -82,9 +83,46 @@ class DivisionsController extends Controller
             $division = $request->input('division');
             $response = $getDivisionByName->execute($division);
 
+            if (!$response) {
+                return response([
+                    'message' => 'Division not found'
+                ], 404);
+            }
+
             return response([
                 'division'   =>  [
                     'id'    =>  $response->id
+                ]
+            ], 201);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+
+    /**
+     * @param Request $request
+     * @param GetDivisionByNameAction $getDivisionByName
+     * @return ResponseFactory|Application|Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function getDivisionByName(Request $request, GetDivisionByNameAction $getDivisionByName): ResponseFactory|Application|Response
+    {
+        try
+        {
+            $division = $request->input('division');
+            $response = $getDivisionByName->execute($division);
+
+            return response([
+                'division' => [
+                    'id' => $response->id,
+                    'name' => $response->name,
+                    'slug' => $response->slug,
                 ]
             ], 201);
 

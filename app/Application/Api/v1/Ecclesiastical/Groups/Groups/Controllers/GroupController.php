@@ -3,6 +3,7 @@
 namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers;
 
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResource;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResourceCollection;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobileAppResourceCollection;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsWithDivisionsResourceCollection;
@@ -11,6 +12,7 @@ use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Groups\Actions\CreateNewGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
+use Domain\Ecclesiastical\Groups\Actions\GetGroupByIdAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -25,7 +27,7 @@ class GroupController extends Controller
 {
     /**
      *
-     * @param \App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest $groupRequest
+     * @param GroupRequest $groupRequest
      * @param CreateNewGroupAction $createNewGroupAction
      * @return Application|Response|ResponseFactory
      * @throws GeneralExceptions
@@ -67,6 +69,30 @@ class GroupController extends Controller
             $response = $getGroupsByDivisionAction->execute($divisionParam);
 
             return new GroupResourceCollection($response, $division);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param GetGroupByIdAction $getGroupByIdAction
+     * @return GroupResource
+     * @throws GeneralExceptions
+     * @throws UnknownProperties
+     */
+    public function getGroupById(Request $request, GetGroupByIdAction $getGroupByIdAction): GroupResource
+    {
+        try
+        {
+            $id = $request->input('id');
+            $response = $getGroupByIdAction->execute($id);
+
+            return new GroupResource($response);
 
         }
         catch (GeneralExceptions $e)

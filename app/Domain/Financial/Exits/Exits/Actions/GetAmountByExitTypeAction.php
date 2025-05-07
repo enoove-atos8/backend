@@ -40,7 +40,7 @@ class GetAmountByExitTypeAction
                 ExitRepository::MINISTERIAL_TRANSFER_VALUE)->sum(ExitRepository::AMOUNT_COLUMN);
 
         $totalContributions = $exits
-            ->where(ExitRepository::CONTRIBUTIONS_VALUE,
+            ->where(ExitRepository::EXIT_TYPE_COLUMN,
                 BaseRepository::OPERATORS['EQUALS'],
                 ExitRepository::CONTRIBUTIONS_VALUE)->sum(ExitRepository::AMOUNT_COLUMN);
 
@@ -50,6 +50,7 @@ class GetAmountByExitTypeAction
             'transfers'             =>  $totalTransfer,
             'ministerialTransfers'  =>  $totalMinisterialTransfers,
             'contributions'         =>  $totalContributions,
+            'total'                 =>  $totalPayment + $totalTransfer + $totalMinisterialTransfers + $totalContributions,
         ];
     }
 }

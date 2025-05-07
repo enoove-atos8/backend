@@ -28,6 +28,7 @@ class AmountByExitTypeResource extends JsonResource
             'transfers'             => $result['transfers'],
             'ministerialTransfers'  => $result['ministerialTransfers'],
             'contributions'         => $result['contributions'],
+            'total'                 => $result['total'],
         ];
     }
 }

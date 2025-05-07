@@ -940,6 +940,15 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
                 /*
+                 * Action: GET
+                 * EndPoint: /{enabled}
+                 * Description: Get division by name
+                 */
+
+                Route::get('getDivisionByName', [DivisionsController::class, 'getDivisionByName']);
+
+
+                /*
                  * Action: POST
                  * EndPoint: /
                  * Description: Create a division
@@ -971,6 +980,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::get('getGroupsByDivision', [GroupController::class, 'getGroupsByDivision']);
+
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get groups by division
+                 */
+
+                Route::get('getGroupById', [GroupController::class, 'getGroupById']);
 
 
                 /*

@@ -3,6 +3,7 @@
 namespace Infrastructure\Repositories\Financial\Movements;
 
 
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Domain\Financial\Movements\Models\Movement;
@@ -12,7 +13,6 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
-use Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 
 class MovementRepository extends BaseRepository implements MovementRepositoryInterface
@@ -166,46 +166,23 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     }
 
     /**
-     * Get total amount of deleted movements for a group
-     * This calculates the final balance of all deleted movements
-     * 
+     * Get deleted movements for a group
+     *
      * @param int $groupId
-     * @return float
+     * @return Collection
+     * @throws BindingResolutionException
      */
-    public function getTotalAmountOfDeletedMovementsByGroup(int $groupId): float
+    public function getDeletedMovementsByGroup(int $groupId): Collection
     {
         // Buscar todas as movimentações que foram marcadas como deletadas para o grupo
         $this->queryConditions = [];
         $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, 1, 'and');
         $this->queryConditions[] = $this->whereEqual(self::GROUP_ID_COLUMN, $groupId, 'and');
-        
-        $deletedMovements = $this->getItemsWithRelationshipsAndWheres(
+
+        return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
             self::MOVEMENT_DATE_ORDER_COLUMN
         );
-        
-        // Se não houver movimentações deletadas, retorna zero
-        if ($deletedMovements->isEmpty()) {
-            return 0.0;
-        }
-        
-        // Calcula o saldo final considerando todas as movimentações deletadas
-        $totalBalance = 0.0;
-        
-        foreach ($deletedMovements as $movement) {
-            $amount = $this->getMovementAmount($movement);
-            
-            // Se for movimentação de entrada (saldo inicial ou entrada comum)
-            if ($movement->type === EntryRepository::ENTRY_TYPE || $movement->is_initial_balance) {
-                $totalBalance += $amount;
-            } 
-            // Se for movimentação de saída
-            else if ($movement->type === ExitRepository::EXIT_TYPE) {
-                $totalBalance -= $amount;
-            }
-        }
-        
-        return $totalBalance;
     }
 
     /**

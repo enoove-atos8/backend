@@ -2,6 +2,7 @@
 
 namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources;
 
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class GroupResourceCollection extends ResourceCollection
      */
     public static $wrap = 'groups';
 
-    private null | Model $division;
+    private null | DivisionData $division;
 
 
     public function __construct($resource, $division = null)
@@ -39,7 +40,7 @@ class GroupResourceCollection extends ResourceCollection
         {
             $result = [
                 'divisionId'    =>  $this->division->id,
-                'requireLeader' =>  $this->division->require_leader,
+                'requireLeader' =>  $this->division->requireLeader,
                 'data'          =>  []
             ];
 
@@ -51,7 +52,7 @@ class GroupResourceCollection extends ResourceCollection
                     'name'          =>  $item->groups_name,
                     'slug'          =>  $item->groups_slug,
                     'enabled'       =>  $item->groups_enabled,
-                    'leader'        =>  $this->division->require_leader == 1 ? [
+                    'leader'        =>  $this->division->requireLeader == 1 ? [
                         'id'        =>  $item->members_id,
                         'fullName'  =>  $item->members_full_name,
                         'avatar'    =>  $item->members_avatar,

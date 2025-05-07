@@ -10,6 +10,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\BaseRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class DivisionRepository extends BaseRepository implements DivisionRepositoryInterface
 {
@@ -24,10 +25,11 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
 
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions.id as division_id',
-        'ecclesiastical_divisions.route_resource  as division_slug',
+        'ecclesiastical_divisions.route_resource as division_slug',
         'ecclesiastical_divisions.name as division_name',
         'ecclesiastical_divisions.description as division_description',
         'ecclesiastical_divisions.enabled as division_enabled',
+        'ecclesiastical_divisions.require_leader as require_leader',
     ];
 
 
@@ -38,15 +40,23 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
 
 
     /**
-     * @throws BindingResolutionException
+     * @param string $division
+     * @return DivisionData|null
+     * @throws UnknownProperties
      */
-    public function getDivisionByName(string $division): Model | null
+    public function getDivisionByName(string $division): ?DivisionData
     {
-        return $this->getItemByColumn(
-            self::ROUTE_RESOURCE_COLUMN,
-            BaseRepository::OPERATORS['EQUALS'],
-            $division
-        );
+        $result = $this->model
+            ->select(self::DISPLAY_SELECT_COLUMNS)
+            ->where(
+                self::ROUTE_RESOURCE_COLUMN,
+                BaseRepository::OPERATORS['EQUALS'],
+                $division
+            )
+            ->first();
+
+        $attributes = $result->getAttributes();
+        return DivisionData::fromResponse($attributes);
     }
 
 
