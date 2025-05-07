@@ -66,7 +66,7 @@ class GroupData extends DataTransferObject
             'name' => $data['groups_name'] ?? null,
             'description' => $data['groups_description'] ?? null,
             'slug' => $data['groups_slug'] ?? null,
-            'financialMovement' => isset($data['groups_transactions_exists']) ? (bool)$data['groups_transactions_exists'] : null,
+            'financialMovement' => isset($data['groups_financial_transactions_exists']) ? (bool)$data['groups_financial_transactions_exists'] : null,
             'enabled' => isset($data['groups_enabled']) ? (bool)$data['groups_enabled'] : null,
             'temporaryEvent' => isset($data['groups_temporary_event']) ? (bool)$data['groups_temporary_event'] : null,
             'returnValues' => isset($data['groups_return_values']) ? (bool)$data['groups_return_values'] : null,

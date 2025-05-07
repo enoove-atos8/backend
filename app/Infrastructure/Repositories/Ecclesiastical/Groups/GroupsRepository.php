@@ -45,7 +45,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'ecclesiastical_divisions_groups.name as groups_name',
         'ecclesiastical_divisions_groups.description as groups_description',
         'ecclesiastical_divisions_groups.slug as groups_slug',
-        'ecclesiastical_divisions_groups.financial_transactions_exists as groups_transactions_exists',
+        'ecclesiastical_divisions_groups.financial_transactions_exists as groups_financial_transactions_exists',
         'ecclesiastical_divisions_groups.enabled as groups_enabled',
         'ecclesiastical_divisions_groups.temporary_event as groups_temporary_event',
         'ecclesiastical_divisions_groups.return_values as groups_return_values',

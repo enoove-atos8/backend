@@ -55,8 +55,10 @@ class CreateExitAction
 
         if(!is_null($exitData->id))
         {
-            $movementData = $this->movementsData::fromObjectData(null, $exitData);
-            $this->createMovementAction->execute($movementData);
+            if($exitData->exitType == ExitRepository::TRANSFER_VALUE){
+                $movementData = $this->movementsData::fromObjectData(null, $exitData);
+                $this->createMovementAction->execute($movementData);
+            }
 
             return $exit;
         }

@@ -18,6 +18,10 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
     const TABLE_NAME = 'ecclesiastical_divisions';
     const SLUG_COLUMN = 'slug';
     const ROUTE_RESOURCE_COLUMN = 'route_resource';
+    const MINISTRIES_VALUE = 'ministries';
+    const DEPARTURES_VALUE = 'departures';
+    const ORGANIZATIONS_VALUE = 'organizations';
+    const EDUCATION_VALUE = 'education';
     const ENABLED_COLUMN = 'enabled';
     const ID_COLUMN = 'ecclesiastical_divisions.id';
     const ID_COLUMN_JOINED = 'ecclesiastical_divisions.id';

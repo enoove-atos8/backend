@@ -11,6 +11,7 @@ use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\Movements\Actions\CreateMovementAction;
 use Domain\Financial\Movements\Actions\GetCurrentBalanceAction;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
@@ -27,6 +28,7 @@ class CreateEntryAction
     private CreateMovementAction $createMovementAction;
     private MovementsData $movementsData;
     private MovementRepositoryInterface $movementRepository;
+    private GroupRepositoryInterface $groupRepository;
 
     public function __construct(
         EntryRepositoryInterface               $entryRepositoryInterface,
@@ -34,7 +36,8 @@ class CreateEntryAction
         CreateConsolidatedEntryAction          $createConsolidatedEntryAction,
         CreateMovementAction                   $createMovementAction,
         MovementsData                          $movementsData,
-        MovementRepositoryInterface            $movementRepositoryInterface
+        MovementRepositoryInterface            $movementRepositoryInterface,
+        GroupRepositoryInterface               $groupRepositoryInterface
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
@@ -43,6 +46,7 @@ class CreateEntryAction
         $this->createMovementAction = $createMovementAction;
         $this->movementsData = $movementsData;
         $this->movementRepository = $movementRepositoryInterface;
+        $this->groupRepository = $groupRepositoryInterface;
     }
 
     /**
@@ -67,8 +71,13 @@ class CreateEntryAction
         {
             if($entryData->entryType == EntryRepository::DESIGNATED_VALUE)
             {
-                $movementData = $this->movementsData::fromObjectData($entryData);
-                $this->createMovementAction->execute($movementData);
+                $group = $this->groupRepository->getGroupById($entryData->groupReceivedId);
+
+                if($group && $group->financialMovement)
+                {
+                    $movementData = $this->movementsData::fromObjectData($entryData);
+                    $this->createMovementAction->execute($movementData);
+                }
             }
 
             return $entry;
