@@ -64,7 +64,7 @@ interface MovementRepositoryInterface
      * @param int $groupId
      * @return float
      */
-    public function getTotalAmountOfDeletedMovementsByGroup(int $groupId): float;
+    public function getDeletedMovementsByGroup(int $groupId): Collection;
 
     /**
      * Get the balance from a movement

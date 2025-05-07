@@ -2,6 +2,7 @@
 
 namespace Infrastructure\Repositories\Ecclesiastical\Groups;
 
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Divisions\Models\Division;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
@@ -13,6 +14,7 @@ use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Illuminate\Database\Eloquent\Model;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class GroupsRepository extends BaseRepository implements GroupRepositoryInterface
 {
@@ -96,10 +98,10 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
 
     /**
-     * @param Division $division
+     * @param DivisionData $division
      * @return Collection
      */
-    public function getGroupsByDivision(Model $division): Collection
+    public function getGroupsByDivision(DivisionData $division): Collection
     {
         return $this->getGroups($division);
     }
@@ -122,15 +124,15 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     /**
      * Get Groups and leaders members data
      */
-    public function getGroups(Division $division = null): Collection
+    public function getGroups(DivisionData $divisionData = null): Collection
     {
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($division != null)
+        if($divisionData != null)
         {
-            if($division->require_leader == 1)
+            if($divisionData->requireLeader == 1)
             {
                 $q = DB::table(self::TABLE_NAME)
                     ->join(self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
@@ -150,8 +152,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
                 ->select(self::DISPLAY_SELECT_COLUMNS);
         }
 
-        if($division != null)
-            $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $division->id);
+        if($divisionData != null)
+            $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionData->id);
 
         $q->where(self::ENABLED_TABLE_COLUMN, 1);
 
@@ -193,6 +195,28 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         );
     }
 
+    /**
+     * Recupera um grupo por ID como um objeto GroupData
+     * @param int $id
+     * @return GroupData|null
+     * @throws UnknownProperties
+     */
+    public function getGroupById(int $id): ?GroupData
+    {
+        $group = $this->model
+            ->select(self::DISPLAY_SELECT_COLUMNS)
+            ->where(self::ID_COLUMN, $id)
+            ->where(self::ENABLED_TABLE_COLUMN, 1)
+            ->first();
+
+        if (!$group) {
+            return null;
+        }
+
+        $attributes = $group->getAttributes();
+        return GroupData::fromResponse($attributes);
+    }
+
 
     /**
      * @param string $name
@@ -215,7 +239,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      * @param GroupData $groupData
      * @return Group
      */
-    public function newGroup(GroupData $groupData): Group
+    public function save(GroupData $groupData): Group
     {
         return $this->create([
             'ecclesiastical_division_id'    =>   $groupData->divisionId,

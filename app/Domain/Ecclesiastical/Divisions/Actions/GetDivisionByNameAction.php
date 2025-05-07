@@ -2,10 +2,12 @@
 
 namespace Domain\Ecclesiastical\Divisions\Actions;
 
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
 class GetDivisionByNameAction
@@ -20,12 +22,12 @@ class GetDivisionByNameAction
     }
 
     /**
-     * @throws Throwable
+     * @param string $division
+     * @return DivisionData|null
+     * @throws UnknownProperties
      */
-    public function execute(string $division): Model | null
+    public function execute(string $division): ?DivisionData
     {
-        $division = $this->divisionRepository->getDivisionByName($division);
-
-        return $division != null ? $division : null;
+        return $this->divisionRepository->getDivisionByName($division);
     }
 }

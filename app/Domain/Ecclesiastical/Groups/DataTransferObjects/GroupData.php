@@ -3,35 +3,24 @@
 namespace Domain\Ecclesiastical\Groups\DataTransferObjects;
 
 use Spatie\DataTransferObject\DataTransferObject;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class GroupData extends DataTransferObject
 {
     /** @var null | integer  */
-    public ?int $id = 0;
+    public ?int $id;
 
-    /** @var null | string  */
-    public ?string $name;
-
-    /** @var null | boolean  */
-    public ?bool $financialMovement;
-
-    /** @var null | boolean  */
-    public ?bool $returnValues;
-
-    /** @var null | boolean  */
-    public ?bool $returnReceivingGroup;
-
-    /** @var null | string  */
-    public ?string $divisionId;
+    /** @var null | integer  */
+    public ?int $divisionId;
 
     /** @var null | integer  */
     public ?int $parentGroupId;
 
-    /** @var null | integer */
+    /** @var null | integer  */
     public ?int $leaderId;
 
-    /** @var string | null */
-    public ?string $initialBalance;
+    /** @var null | string  */
+    public ?string $name;
 
     /** @var null | string  */
     public ?string $description;
@@ -39,15 +28,20 @@ class GroupData extends DataTransferObject
     /** @var null | string  */
     public ?string $slug;
 
+    /** @var null | boolean  */
+    public ?bool $financialMovement;
 
     /** @var null | boolean  */
     public ?bool $enabled;
 
     /** @var null | boolean  */
-    public ?bool $financialGroup;
+    public ?bool $temporaryEvent;
 
     /** @var null | boolean  */
-    public ?bool $temporaryEvent;
+    public ?bool $returnValues;
+
+    /** @var null | boolean  */
+    public ?bool $financialGroup;
 
     /** @var null | string  */
     public ?string $startDate;
@@ -55,4 +49,30 @@ class GroupData extends DataTransferObject
     /** @var null | string  */
     public ?string $endDate;
 
+    /**
+     * Create a GroupData instance from response data
+     *
+     * @param array $data Response data from repository
+     * @return self New GroupData instance
+     * @throws UnknownProperties
+     */
+    public static function fromResponse(array $data): self
+    {
+        return new self([
+            'id' => $data['groups_id'] ?? null,
+            'divisionId' => $data['groups_division_id'] ?? null,
+            'parentGroupId' => $data['groups_parent_group_id'] ?? null,
+            'leaderId' => $data['groups_leader_id'] ?? null,
+            'name' => $data['groups_name'] ?? null,
+            'description' => $data['groups_description'] ?? null,
+            'slug' => $data['groups_slug'] ?? null,
+            'financialMovement' => isset($data['groups_transactions_exists']) ? (bool)$data['groups_transactions_exists'] : null,
+            'enabled' => isset($data['groups_enabled']) ? (bool)$data['groups_enabled'] : null,
+            'temporaryEvent' => isset($data['groups_temporary_event']) ? (bool)$data['groups_temporary_event'] : null,
+            'returnValues' => isset($data['groups_return_values']) ? (bool)$data['groups_return_values'] : null,
+            'financialGroup' => isset($data['groups_financial_group']) ? (bool)$data['groups_financial_group'] : null,
+            'startDate' => $data['groups_start_date'] ?? null,
+            'endDate' => $data['groups_end_date'] ?? null,
+        ]);
+    }
 }
