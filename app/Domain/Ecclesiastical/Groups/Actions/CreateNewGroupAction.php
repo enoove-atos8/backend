@@ -68,13 +68,6 @@ class CreateNewGroupAction
 
             if(!is_null($group->id))
             {
-                if($groupData->financialMovement)
-                {
-                    $groupData->id = $group->id;
-                    $movementData = $this->movementsData::fromGroupData($groupData);
-                    $this->createMovementAction->execute($movementData);
-                }
-
                 return $group;
             }
             else
