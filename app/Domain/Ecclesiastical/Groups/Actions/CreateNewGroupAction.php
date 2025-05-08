@@ -68,7 +68,7 @@ class CreateNewGroupAction
 
             if(!is_null($group->id))
             {
-                if(!is_null($groupData->initialBalance))
+                if($groupData->financialMovement)
                 {
                     $groupData->id = $group->id;
                     $movementData = $this->movementsData::fromGroupData($groupData);
