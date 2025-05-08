@@ -42,16 +42,21 @@ class MinioStorageService
         $fullPathFile = $relativePath . '/' . $fileName;
         $contentType = $file->getMimeType();
 
-        $s3 = $this->s3->getInstance();
-        $s3->putObject([
-            'Bucket'        => $tenant,
-            'Key'           => $fullPathFile,
-            'Body'          => file_get_contents($file),
-            'ACL'           => 'public-read',
-            'ContentType'   => $contentType
-        ]);
+        try {
+            $s3 = $this->s3->getInstance();
+            $s3->putObject([
+                'Bucket'        => $tenant,
+                'Key'           => $fullPathFile,
+                'Body'          => file_get_contents($file),
+                'ACL'           => 'public-read',
+                'ContentType'   => $contentType
+            ]);
 
-        return $baseUrl . '/' . $tenant . '/' . $fullPathFile;
+            return $baseUrl . '/' . $tenant . '/' . $fullPathFile;
+
+        } catch (S3Exception $e) {
+            throw new GeneralExceptions(ConnectS3::UPLOAD_FILE_ERROR_S3, 500, $e);
+        }
     }
 
 
