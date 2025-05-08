@@ -54,6 +54,8 @@ class GeneralExceptions extends Exception
         $defaultResponse = [
             'message'   => $this->message,
             'code'      => $this->code,
+            'exception' => get_class($this),
+            'trace'     => $this->getTrace(),
         ];
 
         if($this->e instanceof QueryException)

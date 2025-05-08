@@ -109,6 +109,9 @@ class MovementsData extends DataTransferObject
         return new self(array_merge($data, $additionalData));
     }
 
+
+
+
     /**
      * Create a MovementsData instance from a GroupData object (specifically for initial balance)
      *
