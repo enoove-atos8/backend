@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class MovementRepository extends BaseRepository implements MovementRepositoryInterface
 {
@@ -29,8 +30,8 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     const MOVEMENT_DATE_COLUMN = 'movement_date';
     const REFERENCE_COLUMN = 'reference';
     const IS_INITIAL_BALANCE_COLUMN = 'is_initial_balance';
-    const MOVEMENT_DATE_ORDER_COLUMN = 'movement_date';
     const DELETED_COLUMN = 'deleted';
+    const PAGINATE_NUMBER = 30;
 
     const DISPLAY_SELECT_COLUMNS = [
         'movements.id as id',
@@ -76,37 +77,100 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     }
 
 
-
-
     /**
      * Get movements by group, excluding initial balance movements
      *
      * @param int $groupId
+     * @param string|null $dates
+     * @param bool $paginate
+     * @return Collection|Paginator
+     * @throws BindingResolutionException
+     */
+    public function getMovementsByGroup(int $groupId, ?string $dates = 'all', bool $paginate = true): Collection | Paginator
+    {
+        if($dates != 'all' && $dates != null)
+            $arrDates = explode(',', $dates);
+
+        $query = function () use (
+            $groupId,
+            $arrDates,
+            $paginate) {
+
+            $q = DB::table(MovementRepository::TABLE_NAME)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId)
+                ->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(function ($q) use ($arrDates) {
+                    foreach ($arrDates as $date)
+                    {
+                        $q->orWhere(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
+                    }
+                })
+                ->orderBy(self::MOVEMENT_DATE_COLUMN, 'asc')
+                ->orderBy(self::ID_COLUMN, 'asc');
+
+
+            if($paginate)
+            {
+                $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
+                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => MovementsData::fromResponse((array) $item)));
+            }
+            else
+            {
+                $result = $q->get();
+                return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
+            }
+        };
+
+        return $this->doQuery($query);
+    }
+
+    /**
+     * Get movement indicators (entries, exits, current balance) by group
+     *
+     * @param int $groupId
+     * @param string|null $dates
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getMovementsByGroup(int $groupId): Collection
+    public function getMovementsIndicatorsByGroup(int $groupId, ?string $dates): Collection
     {
-        $this->queryConditions = [];
+        $arrDates = [];
 
-        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
-        $this->queryConditions[] = $this->whereEqual(self::GROUP_ID_COLUMN, $groupId, 'and');
-        $this->queryConditions[] = $this->whereEqual(self::IS_INITIAL_BALANCE_COLUMN, 0, 'and');
+        if($dates != 'all' && $dates != null) {
+            $arrDates = explode(',', $dates);
+        }
 
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryConditions,
-            self::ID_COLUMN
-        );
+        $query = function () use ($groupId, $arrDates) {
+            $q = DB::table(MovementRepository::TABLE_NAME)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId)
+                ->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0);
+
+            if(isset($arrDates)) {
+                $q->where(function ($query) use ($arrDates) {
+                    foreach ($arrDates as $date) {
+                        $query->orWhere(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
+                    }
+                });
+            }
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
     }
 
     /**
      * Get initial balance movement for a group
      *
      * @param int $groupId
-     * @return Movement|null
+     * @return MovementsData|null
      * @throws BindingResolutionException
+     * @throws UnknownProperties
      */
-    public function getInitialMovementsByGroup(int $groupId): ?Movement
+    public function getInitialMovementsByGroup(int $groupId): ?MovementsData
     {
         $this->queryConditions = [];
 
@@ -117,9 +181,9 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         $result = $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
             self::ID_COLUMN
-        );
+        )->first();
 
-        return $result->isNotEmpty() ? $result->first() : null;
+        return MovementsData::fromResponse((array) $result);
     }
 
 
@@ -174,16 +238,17 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
      */
     public function getDeletedMovementsByGroup(int $groupId): Collection
     {
-        // Buscar todas as movimentações que foram marcadas como deletadas para o grupo
         $this->queryConditions = [];
         $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, 1, 'and');
         $this->queryConditions[] = $this->whereEqual(self::GROUP_ID_COLUMN, $groupId, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
-            self::MOVEMENT_DATE_ORDER_COLUMN
+            self::MOVEMENT_DATE_COLUMN
         );
     }
+
+
 
     /**
      * @param int $referenceId

@@ -22,7 +22,6 @@ class GroupResource extends JsonResource
     {
         $result = $this->resource;
 
-        /** @var GroupData $this->resource */
         return [
             'id' => $result->id,
             'divisionId' => $result->divisionId,
@@ -32,6 +31,25 @@ class GroupResource extends JsonResource
             'description' => $result->description,
             'slug' => $result->slug,
             'enabled' => $result->enabled,
+            'transactionsExists' => $result->financialMovement,
+            'leader' => $this->getLeaderData($result),
         ];
+    }
+
+
+    private function getLeaderData($item): ?array
+    {
+
+        if (isset($item->leader)) {
+            return [
+                'id' => $item->leader->id,
+                'fullName' => $item->leader->fullName,
+                'avatar' => $item->leader->avatar,
+                'cellPhone' => $item->leader->cellPhone,
+                'email' => $item->leader->email,
+            ];
+        }
+
+        return null;
     }
 }

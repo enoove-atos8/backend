@@ -103,7 +103,9 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     public function getGroupsByDivision(DivisionData $division): Collection
     {
-        return $this->getGroups($division);
+        $groups = $this->getGroups($division);
+
+        return $groups->map(fn($item) => GroupData::fromResponse((array) $item));
     }
 
 
@@ -203,10 +205,21 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     public function getGroupById(int $id): ?GroupData
     {
+        $displayColumnsFromRelationship = array_merge(
+            self::DISPLAY_SELECT_COLUMNS,
+            MemberRepository::DISPLAY_SELECT_COLUMNS
+        );
+
         $group = $this->model
-            ->select(self::DISPLAY_SELECT_COLUMNS)
-            ->where(self::ID_COLUMN, $id)
-            ->where(self::ENABLED_TABLE_COLUMN, 1)
+            ->select($displayColumnsFromRelationship)
+            ->leftJoin(
+                self::MEMBER_TABLE_NAME,
+                self::LEADER_ID_COLUMN,
+                BaseRepository::OPERATORS['EQUALS'],
+                MemberRepository::ID_COLUMN_JOINED
+            )
+            ->where(self::ID_COLUMN_JOINED, $id)
+            ->where(self::TABLE_NAME . '.' . self::ENABLED_TABLE_COLUMN, 1)
             ->first();
 
         if (!$group) {

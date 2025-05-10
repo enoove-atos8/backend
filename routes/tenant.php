@@ -17,6 +17,7 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryInd
 use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
 use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
+use Application\Api\v1\Financial\Movements\Controllers\MovementController;
 use Application\Api\v1\Financial\ReceiptProcessing\Controllers\ReceiptProcessingController;
 use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Mobile\SyncStorage\Controllers\SyncStorageController;
@@ -692,6 +693,34 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('/', [ReceiptProcessingController::class, 'getReceiptsProcessing']);
             });
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Movements Financial routes
+            |--------------------------------------------------------------------------
+            |
+            */
+            Route::prefix('movements')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get groups by division
+                 */
+
+                Route::get('getMovementsByGroup', [MovementController::class, 'getMovementsByGroup']);
+
+
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get groups by division
+                 */
+
+                Route::get('getIndicatorsByGroup', [MovementController::class, 'getMovementsIndicatorsByGroup']);
+            });
         });
 
 
@@ -1019,6 +1048,25 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::post('/', [GroupController::class, 'createGroup']);
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Details groups routes
+                |--------------------------------------------------------------------------
+                |
+                */
+
+                Route::prefix('details')->group(function () {
+
+
+
+
+                });
+
+
+
+
 
             });
 

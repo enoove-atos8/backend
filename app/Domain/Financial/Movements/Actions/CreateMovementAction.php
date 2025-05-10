@@ -34,23 +34,23 @@ class CreateMovementAction
     {
         $currentBalance = 0.0;
 
-        // 1. Primeiro considera o saldo inicial (se existir)
         $initialBalanceMovement = $this->movementRepository->getInitialMovementsByGroup($groupId);
-        if ($initialBalanceMovement) {
-            $currentBalance = $this->movementRepository->getMovementAmount($initialBalanceMovement);
-        }
 
-        // 2. Depois aplica as movimentações normais (se existirem)
+        if ($initialBalanceMovement)
+            $currentBalance = (float)$initialBalanceMovement->amount;
+
         $movements = $this->movementRepository->getMovementsByGroup($groupId);
-        if (!$movements->isEmpty()) {
-            foreach ($movements as $movement) {
-                $amount = $this->movementRepository->getMovementAmount($movement);
-                if ($movement->type === EntryRepository::ENTRY_TYPE) {
+
+        if (!$movements->isEmpty()){
+            foreach ($movements as $movement)
+
+                $amount = (float)$movement->amount;
+
+                if ($movement->type === EntryRepository::ENTRY_TYPE)
                     $currentBalance += $amount;
-                } else if ($movement->type === ExitRepository::EXIT_TYPE) {
+
+                else if ($movement->type === ExitRepository::EXIT_TYPE)
                     $currentBalance -= $amount;
-                }
-            }
         }
 
         return $currentBalance;

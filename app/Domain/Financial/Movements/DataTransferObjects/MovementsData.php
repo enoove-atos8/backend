@@ -59,15 +59,14 @@ class MovementsData extends DataTransferObject
     {
         return new self([
             'groupId' => $data['group_id'] ?? 0,
-            'entryId' => $data['entry_id'] ?? 0,
-            'exitId' => $data['exit_id'] ?? 0,
+            'entryId' => $data['entry_id'] ?? null,
+            'exitId' => $data['exit_id'] ?? null,
             'type' => $data['type'] ?? null,
             'subType' => $data['sub_type'] ?? null,
             'amount' => $data['amount'] ?? 0.0,
-            'balance' => $data['balance'] ?? 0.0,
+            'balance' => $data['balance'] ?? null,
             'description' => $data['description'] ?? null,
-            'movementDate' => $data['movement_date'] ?? '',
-            'reference' => $data['reference'] ?? null,
+            'movementDate' => $data['movement_date'] ?? null,
             'isInitialBalance' => $data['is_initial_balance'] ?? false,
             'deleted' => $data['deleted'] ?? false,
         ]);
@@ -113,36 +112,32 @@ class MovementsData extends DataTransferObject
 
 
     /**
-     * Create a MovementsData instance from a GroupData object (specifically for initial balance)
+     * Create a MovementsData instance from an existing MovementsData object
      *
-     * @param GroupData $groupData Group data object
+     * @param MovementsData $movementData Existing MovementsData object
      * @param float $totalPreviousMovements Total amount from previous movements (optional)
-     * @param array $additionalData Additional data to override or complement the data
+     * @param array $additionalData Optional additional data to override or add
      * @return self
      * @throws UnknownProperties
      */
-    public static function fromGroupData(GroupData $groupData, float $totalPreviousMovements = 0.0, array $additionalData = []): self
+    public static function fromSelf(MovementsData $movementData, float $totalPreviousMovements = 0.0, bool $initialBalance = false, array $additionalData = []): self
     {
-        // Calcular o saldo inicial considerando movimentações anteriores
-        $initialBalance = !is_null($groupData->initialBalance)
-            ? (float)$groupData->initialBalance + $totalPreviousMovements
-            : $totalPreviousMovements;
-
         $data = [
-            'groupId' => $groupData->id,
-            'entryId' => null,
-            'exitId' => null,
-            'type' => null,
-            'subType' => null,
-            'amount' => $initialBalance,
-            'balance' => null,
-            'description' => 'Saldo Inicial do Grupo',
-            'movementDate' => now()->format('Y-m-d'),
-            'isInitialBalance' => true,
+            'id' => $movementData->id,
+            'groupId' => $initialBalance ? null : $movementData->groupId,
+            'entryId' => $initialBalance ? null : $movementData->entryId,
+            'exitId' => $initialBalance ? null : $movementData->exitId,
+            'type' => $initialBalance ? null : $movementData->type,
+            'subType' => $initialBalance ? null : $movementData->subType,
+            'amount' => $initialBalance ? $movementData->amount : (isset($movementData->amount) ? (float)$movementData->amount + $totalPreviousMovements : $totalPreviousMovements),
+            'balance' => $initialBalance ? null : $movementData->balance,
+            'description' => $initialBalance ? 'Initial movement' : ($movementData->description ?? 'Movimentação do Grupo'),
+            'movementDate' => $movementData->movementDate ?? now()->format('Y-m-d'),
+            'isInitialBalance' => $initialBalance,
             'deleted' => false,
         ];
 
-        // Merge additional data and return new instance
+
         return new self(array_merge($data, $additionalData));
     }
 }
