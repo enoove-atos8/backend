@@ -21,9 +21,20 @@ interface MovementRepositoryInterface
      * Get Movements by group ID (excluding initial balance)
      *
      * @param int $groupId
+     * @param string|null $dates
+     * @param bool $paginate
+     * @return Collection|Paginator
+     */
+    public function getMovementsByGroup(int $groupId, ?string $dates, bool $paginate = true): Collection | Paginator;
+
+    /**
+     * Get movement indicators (entries, exits, current balance) by group
+     *
+     * @param int $groupId
+     * @param string|null $dates
      * @return Collection
      */
-    public function getMovementsByGroup(int $groupId): Collection;
+    public function getMovementsIndicatorsByGroup(int $groupId, ?string $dates): Collection;
 
     /**
      * Get initial balance movement for a group
@@ -31,7 +42,7 @@ interface MovementRepositoryInterface
      * @param int $groupId
      * @return Movement|null
      */
-    public function getInitialMovementsByGroup(int $groupId): ?Movement;
+    public function getInitialMovementsByGroup(int $groupId): ?MovementsData;
 
     /**
      * Get Movement by reference ID
@@ -60,7 +71,7 @@ interface MovementRepositoryInterface
     /**
      * Get total amount of deleted movements for a group
      * This calculates the final balance of all deleted movements
-     * 
+     *
      * @param int $groupId
      * @return float
      */

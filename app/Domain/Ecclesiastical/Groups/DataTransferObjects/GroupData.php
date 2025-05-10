@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\DataTransferObjects;
 
+use Domain\Members\DataTransferObjects\MemberData;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -49,6 +50,9 @@ class GroupData extends DataTransferObject
     /** @var null | string  */
     public ?string $endDate;
 
+    /** @var null | MemberData  */
+    public ?MemberData $leader;
+
     /**
      * Create a GroupData instance from response data
      *
@@ -58,7 +62,7 @@ class GroupData extends DataTransferObject
      */
     public static function fromResponse(array $data): self
     {
-        return new self([
+        $groupData = [
             'id' => $data['groups_id'] ?? null,
             'divisionId' => $data['groups_division_id'] ?? null,
             'parentGroupId' => $data['groups_parent_group_id'] ?? null,
@@ -73,6 +77,12 @@ class GroupData extends DataTransferObject
             'financialGroup' => isset($data['groups_financial_group']) ? (bool)$data['groups_financial_group'] : null,
             'startDate' => $data['groups_start_date'] ?? null,
             'endDate' => $data['groups_end_date'] ?? null,
-        ]);
+        ];
+
+
+        if (isset($data['members_id']))
+            $groupData['leader'] = MemberData::fromResponse($data);
+
+        return new self($groupData);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\Actions;
 
+use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -23,11 +24,20 @@ class GetGroupByIdAction
     /**
      * @param int $id
      * @return GroupData|null
-     * @throws UnknownProperties
+     * @throws UnknownProperties|GeneralExceptions
      */
     public function execute(int $id): ?GroupData
     {
-        return $this->groupsRepository->getGroupById($id);
+        $group = $this->groupsRepository->getGroupById($id);
+
+        if(!is_null($group))
+        {
+            return $group;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::GROUP_NOT_FOUND, 404);
+        }
 
     }
 }
