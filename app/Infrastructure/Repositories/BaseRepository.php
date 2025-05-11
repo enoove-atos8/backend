@@ -323,18 +323,20 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Update a record using the primary key.
      *
-     * @param array $conditions
+     * @param array $conditions Single condition or array of conditions
      * @param $data array
      * @return mixed
      * @throws BindingResolutionException
      */
     public function update(array $conditions, array $data): mixed
     {
-        $query = function () use ($conditions, $data) {
+        $normalizedConditions = isset($conditions['field']) ? [$conditions] : $conditions;
+
+        $query = function () use ($normalizedConditions, $data) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where(function ($query) use ($conditions) {
-                    foreach ($conditions as $condition) {
+                ->where(function ($query) use ($normalizedConditions) {
+                    foreach ($normalizedConditions as $condition) {
                         $query->where($condition['field'], $condition['operator'], $condition['value']);
                     }
                 })

@@ -39,7 +39,7 @@ class ReceiptProcessingController extends Controller
 
 
     /**
-     * @throws GeneralExceptions|BindingResolutionException
+     * @throws GeneralExceptions
      */
     public function deleteReceiptsProcessing($id, DeleteReceiptProcessedAction $deleteReceiptProcessedAction): ResponseFactory|Application|Response
     {

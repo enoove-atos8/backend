@@ -31,7 +31,8 @@ class UpdatePathWithFileNameAction
 
         if($syncStoragePathUpdated)
             return $syncStoragePathUpdated;
+
         else
-            throw new GeneralExceptions('', 500);
+            throw new GeneralExceptions('Houve um erro ao carregar o nome do arquivo', 500);
     }
 }

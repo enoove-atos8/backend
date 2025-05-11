@@ -23,14 +23,14 @@ class Kernel extends ConsoleKernel
         // =============================================================
 
         // Entries
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
-        })->at('11:25');*/
+        })->at('19:42');
 
         // Exits
-        $schedule->call(function () {
+        /*$schedule->call(function () {
             resolve(ProcessingBankExitsTransferReceipts::class)->handle();
-        })->at('16:14');
+        })->at('16:14');*/
 
         // Reports
         /*$schedule->call(function () {
