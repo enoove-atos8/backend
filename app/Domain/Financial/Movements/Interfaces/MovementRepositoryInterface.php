@@ -18,23 +18,15 @@ interface MovementRepositoryInterface
     public function createMovement(MovementsData $movementsData): Movement;
 
     /**
-     * Get Movements by group ID (excluding initial balance)
+     * Get Movements by group ID and optionally format for indicators
      *
      * @param int $groupId
      * @param string|null $dates
      * @param bool $paginate
+     * @param bool $forIndicators
      * @return Collection|Paginator
      */
-    public function getMovementsByGroup(int $groupId, ?string $dates, bool $paginate = true): Collection | Paginator;
-
-    /**
-     * Get movement indicators (entries, exits, current balance) by group
-     *
-     * @param int $groupId
-     * @param string|null $dates
-     * @return Collection
-     */
-    public function getMovementsIndicatorsByGroup(int $groupId, ?string $dates): Collection;
+    public function getMovementsByGroup(int $groupId, ?string $dates, bool $paginate = true, bool $forIndicators = false): Collection | Paginator;
 
     /**
      * Get initial balance movement for a group

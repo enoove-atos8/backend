@@ -78,64 +78,16 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
 
 
     /**
-     * Get movements by group, excluding initial balance movements
+     * Get movements by group and optionally return indicators (entries, exits, current balance)
      *
      * @param int $groupId
      * @param string|null $dates
      * @param bool $paginate
+     * @param bool $forIndicators Quando true, retorna formato adequado para indicadores
      * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getMovementsByGroup(int $groupId, ?string $dates = 'all', bool $paginate = true): Collection | Paginator
-    {
-        $arrDates = [];
-
-        if($dates != 'all' && $dates != null)
-            $arrDates = explode(',', $dates);
-
-        $query = function () use (
-            $groupId,
-            $arrDates,
-            $paginate) {
-
-            $q = DB::table(MovementRepository::TABLE_NAME)
-                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
-                ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId)
-                //->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
-                ->where(function ($q) use ($arrDates) {
-                    foreach ($arrDates as $date)
-                    {
-                        $q->orWhere(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
-                    }
-                })
-                ->orderBy(self::MOVEMENT_DATE_COLUMN)
-                ->orderBy(self::ID_COLUMN);
-
-
-            if($paginate)
-            {
-                $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => MovementsData::fromResponse((array) $item)));
-            }
-            else
-            {
-                $result = $q->get();
-                return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
-            }
-        };
-
-        return $this->doQuery($query);
-    }
-
-    /**
-     * Get movement indicators (entries, exits, current balance) by group
-     *
-     * @param int $groupId
-     * @param string|null $dates
-     * @return Collection
-     * @throws BindingResolutionException
-     */
-    public function getMovementsIndicatorsByGroup(int $groupId, ?string $dates): Collection
+    public function getMovementsByGroup(int $groupId, ?string $dates = 'all', bool $paginate = true, bool $forIndicators = false): Collection | Paginator
     {
         $arrDates = [];
 
@@ -143,13 +95,17 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
             $arrDates = explode(',', $dates);
         }
 
-        $query = function () use ($groupId, $arrDates) {
+        $query = function () use (
+            $groupId,
+            $arrDates,
+            $paginate,
+            $forIndicators) {
+
             $q = DB::table(MovementRepository::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId);
-                //->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0);
 
-            if(isset($arrDates)) {
+            if(isset($arrDates) && count($arrDates) > 0) {
                 $q->where(function ($query) use ($arrDates) {
                     foreach ($arrDates as $date) {
                         $query->orWhere(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
@@ -157,8 +113,21 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
                 });
             }
 
-            $result = $q->get();
-            return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
+            // Se não for para indicadores, aplica ordenação
+            if (!$forIndicators) {
+                $q->orderBy(self::MOVEMENT_DATE_COLUMN)
+                  ->orderBy(self::ID_COLUMN);
+            }
+
+            // Se for para indicadores ou não paginar, retorna collection completa
+            if ($forIndicators || !$paginate) {
+                $result = $q->get();
+                return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
+            } else {
+                // Retorna resultado paginado
+                $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
+                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => MovementsData::fromResponse((array) $item)));
+            }
         };
 
         return $this->doQuery($query);

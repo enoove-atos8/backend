@@ -42,7 +42,7 @@ class GetMovementsIndicatorsAction
         $initialBalance = self::getInitialBalance($this->movementRepository, $groupId);
 
         // Get movements data from repository
-        $movements = $this->movementRepository->getMovementsIndicatorsByGroup($groupId, $dates);
+        $movements = $this->movementRepository->getMovementsByGroup($groupId, $dates, false, true);
 
         if ($movements->isEmpty()) {
             throw new GeneralExceptions(ReturnMessages::MOVEMENTS_NOT_FOUND, 404);
@@ -127,7 +127,7 @@ class GetMovementsIndicatorsAction
         $initialBalance = self::getInitialBalance($repository, $groupId);
 
         // Retrieve all movements for the group
-        $movements = $repository->getMovementsIndicatorsByGroup($groupId, null); // No filters
+        $movements = $repository->getMovementsByGroup($groupId, null, false, true); // No filters
 
         if ($movements->isEmpty()) {
             throw new GeneralExceptions(ReturnMessages::MOVEMENTS_NOT_FOUND, 404);

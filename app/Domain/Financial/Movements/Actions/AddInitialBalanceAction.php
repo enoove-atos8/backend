@@ -48,8 +48,9 @@ class AddInitialBalanceAction
     {
         $existingInitialBalance = $this->movementRepository->getInitialMovementsByGroup($movementsData->groupId);
 
-        if ($existingInitialBalance)
+        if ($existingInitialBalance) {
             throw new GeneralExceptions(ReturnConstants::GROUP_ALREADY_HAS_INITIAL_BALANCE, 422);
+        }
 
         $initialBalance = $this->movementRepository->addInitialBalance($movementsData);
 
