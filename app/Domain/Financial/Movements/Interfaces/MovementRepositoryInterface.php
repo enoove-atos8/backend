@@ -92,4 +92,13 @@ interface MovementRepositoryInterface
      * @return float
      */
     public function getMovementAmount(?Movement $movement): float;
+
+
+    /**
+     * Get the amount from a movement
+     *
+     * @param MovementsData $movementsData
+     * @return Movement
+     */
+    public function addInitialBalance(MovementsData $movementsData): Movement;
 }

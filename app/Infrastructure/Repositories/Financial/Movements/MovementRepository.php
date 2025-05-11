@@ -88,6 +88,8 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
      */
     public function getMovementsByGroup(int $groupId, ?string $dates = 'all', bool $paginate = true): Collection | Paginator
     {
+        $arrDates = [];
+
         if($dates != 'all' && $dates != null)
             $arrDates = explode(',', $dates);
 
@@ -99,15 +101,15 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
             $q = DB::table(MovementRepository::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId)
-                ->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                //->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(function ($q) use ($arrDates) {
                     foreach ($arrDates as $date)
                     {
                         $q->orWhere(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
                     }
                 })
-                ->orderBy(self::MOVEMENT_DATE_COLUMN, 'asc')
-                ->orderBy(self::ID_COLUMN, 'asc');
+                ->orderBy(self::MOVEMENT_DATE_COLUMN)
+                ->orderBy(self::ID_COLUMN);
 
 
             if($paginate)
@@ -144,8 +146,8 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         $query = function () use ($groupId, $arrDates) {
             $q = DB::table(MovementRepository::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
-                ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId)
-                ->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0);
+                ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId);
+                //->where(self::IS_INITIAL_BALANCE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0);
 
             if(isset($arrDates)) {
                 $q->where(function ($query) use ($arrDates) {
@@ -217,12 +219,18 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
      */
     public function deleteMovementsOfGroup(int $groupId): mixed
     {
-        $conditions =
+        $conditions =[
             [
                 'field' => self::GROUP_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => $groupId,
-            ];
+            ],
+            [
+                'field' => self::IS_INITIAL_BALANCE_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => 0,
+            ]
+        ];
 
         return $this->update($conditions, [
             'deleted' => 1,
@@ -279,5 +287,24 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     public function getMovementAmount(?Movement $movement): float
     {
         return $movement ? (float)$movement->amount : 0.0;
+    }
+
+
+
+    public function addInitialBalance(MovementsData $movementsData): Movement
+    {
+        return $this->create([
+            'group_id'             =>   $movementsData->groupId,
+            'entry_id'             =>   $movementsData->entryId,
+            'exit_id'              =>   $movementsData->exitId,
+            'type'                 =>   $movementsData->type,
+            'sub_type'             =>   $movementsData->subType,
+            'amount'               =>   $movementsData->amount,
+            'balance'              =>   $movementsData->balance,
+            'description'          =>   $movementsData->description,
+            'movement_date'        =>   $movementsData->movementDate,
+            'is_initial_balance'   =>   $movementsData->isInitialBalance,
+            'deleted'              =>   $movementsData->deleted,
+        ]);
     }
 }

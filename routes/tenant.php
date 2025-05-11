@@ -720,6 +720,15 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::get('getIndicatorsByGroup', [MovementController::class, 'getMovementsIndicatorsByGroup']);
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /{id}
+                 * Description: Get groups by division
+                 */
+
+                Route::post('addInitialBalance', [MovementController::class, 'addInitialBalance']);
             });
         });
 

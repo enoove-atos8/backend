@@ -2,13 +2,20 @@
 
 namespace Application\Api\v1\Financial\Movements\Controllers;
 
+use Application\Api\v1\Financial\Movements\Requests\AddInitialBalanceRequest;
 use Application\Api\v1\Financial\Movements\Resources\MovementResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Domain\Financial\Movements\Actions\AddInitialBalanceAction;
 use Domain\Financial\Movements\Actions\GetMovementsByGroupAction;
 use Domain\Financial\Movements\Actions\GetMovementsIndicatorsAction;
+use Domain\Financial\Movements\Constants\ReturnMessages;
+use http\Client\Response;
+use Illuminate\Console\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Routing\ResponseFactory;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
 class MovementController extends Controller
@@ -54,6 +61,32 @@ class MovementController extends Controller
             return response()->json($indicators);
         }
         catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * Add initial balance to a group
+     *
+     * @param AddInitialBalanceRequest $addInitialBalanceRequest
+     * @param AddInitialBalanceAction $addInitialBalanceAction
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|\Illuminate\Http\Response
+     * @throws GeneralExceptions
+     * @throws UnknownProperties
+     */
+    public function addInitialBalance(AddInitialBalanceRequest $addInitialBalanceRequest, AddInitialBalanceAction $addInitialBalanceAction): ResponseFactory|Application|\Illuminate\Http\Response
+    {
+        try
+        {
+            $addInitialBalanceAction->execute($addInitialBalanceRequest->movementsData());
+
+            return response([
+                'message'   =>  ReturnMessages::INITIAL_BALANCE_MOVEMENT_CREATED,
+            ], 201);
+        }
+        catch(GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
