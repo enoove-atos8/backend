@@ -127,7 +127,7 @@ class GroupController extends Controller
     /**
      * @param Request $request
      * @param GetAllGroupsWithDivisionsAction $getAllGroupsWithDivisionsAction
-     * @return \App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsWithDivisionsResourceCollection
+     * @return GroupsWithDivisionsResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */
@@ -150,7 +150,7 @@ class GroupController extends Controller
     /**
      * @param Request $request
      * @param GetGroupsByDivisionAction $getGroupsByDivisionAction
-     * @return ResponseFactory|Application|Response|\App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobileAppResourceCollection
+     * @return ResponseFactory|Application|Response|GroupsToMobileAppResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */

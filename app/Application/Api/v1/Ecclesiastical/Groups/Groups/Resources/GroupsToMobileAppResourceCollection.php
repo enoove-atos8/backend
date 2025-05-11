@@ -36,12 +36,12 @@ class GroupsToMobileAppResourceCollection extends ResourceCollection
         foreach ($this->collection as $item)
         {
             $result[] = [
-                'slugPage'       =>  $item->groups_slug,
-                'titleCard'      =>  $item->groups_name,
-                'descCard'       =>  $item->groups_description,
-                'division'       =>  $item->groups_division_id,
-                'divisionId'     =>  $item->groups_division_id,
-                'groupId'        =>  $item->groups_id,
+                'slugPage'       =>  $item->slug,
+                'titleCard'      =>  $item->name,
+                'descCard'       =>  $item->description,
+                'division'       =>  $item->divisionId,
+                'divisionId'     =>  $item->divisionId,
+                'groupId'        =>  $item->id,
             ];
         }
 
