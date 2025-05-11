@@ -26,23 +26,30 @@ class MovementResourceCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
+        $hasInitialBalance = $this->collection->contains(function ($movement) {
+            return (bool)$movement->isInitialBalance;
+        });
+
         return [
-            'data' => $this->collection->map(function ($movement) {
-                return [
-                    'id' => $movement->id,
-                    'groupId' => $movement->groupId,
-                    'entryId' => $movement->entryId,
-                    'exitId' => $movement->exitId,
-                    'type' => $movement->type,
-                    'subType' => $movement->subType,
-                    'amount' => $movement->amount,
-                    'balance' => $movement->balance,
-                    'description' => $movement->description,
-                    'movementDate' => $movement->movementDate,
-                    'isInitialBalance' => (bool) $movement->isInitialBalance,
-                    'deleted' => (bool) $movement->deleted,
-                ];
-            })
+            'data' => [
+                'hasInitialBalance' => $hasInitialBalance,
+                'movements' => $this->collection->map(function ($movement) {
+                    return [
+                        'id' => $movement->id,
+                        'groupId' => $movement->groupId,
+                        'entryId' => $movement->entryId,
+                        'exitId' => $movement->exitId,
+                        'type' => $movement->type,
+                        'subType' => $movement->subType,
+                        'amount' => $movement->amount,
+                        'balance' => $movement->balance,
+                        'description' => $movement->description,
+                        'movementDate' => $movement->movementDate,
+                        'isInitialBalance' => (bool)$movement->isInitialBalance,
+                        'deleted' => (bool)$movement->deleted,
+                    ];
+                })
+            ]
         ];
     }
 }

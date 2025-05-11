@@ -113,18 +113,21 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
                 });
             }
 
-            // Se não for para indicadores, aplica ordenação
-            if (!$forIndicators) {
+
+            if (!$forIndicators)
+            {
                 $q->orderBy(self::MOVEMENT_DATE_COLUMN)
                   ->orderBy(self::ID_COLUMN);
             }
 
-            // Se for para indicadores ou não paginar, retorna collection completa
-            if ($forIndicators || !$paginate) {
+
+            if ($forIndicators || !$paginate)
+            {
                 $result = $q->get();
                 return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
-            } else {
-                // Retorna resultado paginado
+            }
+            else
+            {
                 $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
                 return $paginator->setCollection($paginator->getCollection()->map(fn($item) => MovementsData::fromResponse((array) $item)));
             }

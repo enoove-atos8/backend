@@ -9,7 +9,6 @@ use Domain\Financial\Movements\Actions\AddInitialBalanceAction;
 use Domain\Financial\Movements\Actions\GetMovementsByGroupAction;
 use Domain\Financial\Movements\Actions\GetMovementsIndicatorsAction;
 use Domain\Financial\Movements\Constants\ReturnMessages;
-use http\Client\Response;
 use Illuminate\Console\Application;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;

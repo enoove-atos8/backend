@@ -2,13 +2,11 @@
 
 namespace Domain\Financial\Movements\Actions;
 
-use Domain\Financial\Movements\Actions\DeleteMovementsOfGroupAction;
 use Domain\Financial\Movements\Constants\ReturnConstants;
 use Domain\Financial\Movements\Constants\ReturnMessages;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Domain\Financial\Movements\Models\Movement;
-use Illuminate\Support\Facades\DB;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
 
@@ -48,7 +46,7 @@ class AddInitialBalanceAction
     {
         $existingInitialBalance = $this->movementRepository->getInitialMovementsByGroup($movementsData->groupId);
 
-        if ($existingInitialBalance) {
+        if (!is_null($existingInitialBalance->id)) {
             throw new GeneralExceptions(ReturnConstants::GROUP_ALREADY_HAS_INITIAL_BALANCE, 422);
         }
 
