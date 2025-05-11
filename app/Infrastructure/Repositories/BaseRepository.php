@@ -333,7 +333,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $query = function () use ($conditions, $data) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where($conditions['field'], $conditions['operator'], $conditions['value'])
+                ->where(function ($query) use ($conditions) {
+                    foreach ($conditions as $condition) {
+                        $query->where($condition['field'], $condition['operator'], $condition['value']);
+                    }
+                })
                 ->update($data);
         };
 

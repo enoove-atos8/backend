@@ -2,6 +2,7 @@
 
 namespace Domain\Financial\Movements\Actions;
 
+use Domain\Financial\Movements\Constants\ReturnMessages;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
@@ -23,15 +24,20 @@ class DeleteMovementsOfGroupAction
      * Execute the action to delete all movements of a group
      *
      * @param int $groupId
-     * @return void
+     * @return mixed
      * @throws GeneralExceptions
      */
-    public function execute(int $groupId): void
+    public function execute(int $groupId): mixed
     {
         $result = $this->movementRepository->deleteMovementsOfGroup($groupId);
 
-        if (!$result) {
-            throw new GeneralExceptions("Não foi possível excluir as movimentações do grupo", 500);
+        if($result)
+        {
+            return $result;
+        }
+        else
+        {
+            throw new GeneralExceptions(ReturnMessages::MOVEMENTS_DELETE_ERROR, 500);
         }
     }
 }
