@@ -123,17 +123,13 @@ class GetMovementsIndicatorsAction
      */
     public static function getCurrentBalance(MovementRepositoryInterface $repository, int $groupId): float
     {
-        // Get the initial balance for the group
         $initialBalance = self::getInitialBalance($repository, $groupId);
-
-        // Retrieve all movements for the group
         $movements = $repository->getMovementsByGroup($groupId, null, false, true); // No filters
 
         if ($movements->isEmpty()) {
             throw new GeneralExceptions(ReturnMessages::MOVEMENTS_NOT_FOUND, 404);
         }
 
-        // Calculate the total sum of all amounts
         $finalBalance = $movements->reduce(
             function ($carry, $movement) {
                 if ($movement->type === EntryRepository::ENTRY_TYPE) {
@@ -143,10 +139,9 @@ class GetMovementsIndicatorsAction
                 }
                 return $carry;
             },
-            $initialBalance // Se não existir initialBalance, considera 0
+            $initialBalance
         );
 
-        // If initial balance exists, start from it; otherwise, return sum of amounts
         return $finalBalance;
     }
 }
