@@ -24,4 +24,6 @@ interface ConsolidatedEntriesRepositoryInterface
     public function updateTotalValueConsolidation(string $date, string $amount, string $column): bool;
 
     public function deleteConsolidationEntry(string $date): bool;
+    
+    public function reopenConsolidatedMonth(string $month): bool;
 }

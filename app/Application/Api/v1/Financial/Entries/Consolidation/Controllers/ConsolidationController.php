@@ -8,6 +8,7 @@ use App\Domain\Financial\Entries\Consolidation\Actions\UpdateStatusConsolidatedE
 use App\Domain\Financial\Entries\Consolidation\Constants\ReturnMessages;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use Application\Api\v1\Financial\Entries\Consolidation\Resources\ConsolidationResourceCollection;
+use Domain\Financial\Entries\Consolidation\Actions\ReopenConsolidatedMonthAction;
 use Application\Api\v1\Financial\Entries\Cults\Requests\CultRequest;
 use Application\Api\v1\Financial\Entries\Cults\Resources\CultsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
@@ -75,15 +76,18 @@ class ConsolidationController extends Controller
 
 
     /**
-     * Create new cult
+     * Reopen a consolidated month by resetting all amounts and status
+     * @param Request $request
+     * @param ReopenConsolidatedMonthAction $reopenConsolidatedMonthAction
      * @return Application|ResponseFactory|Response
      * @throws GeneralExceptions
      */
-    public function reopenMonth(): Application|ResponseFactory|Response
+    public function reopenMonth(Request $request, ReopenConsolidatedMonthAction $reopenConsolidatedMonthAction): Application|ResponseFactory|Response
     {
         try
         {
-
+            $date = $request->input('date');
+            $reopenConsolidatedMonthAction->execute($date);
 
             return response([
                 'message'   =>  ReturnMessages::SUCCESS_ENTRIES_CONSOLIDATED,

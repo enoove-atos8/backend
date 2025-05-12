@@ -394,7 +394,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Create a new cult
                      */
 
-                    Route::put('/reopenMonth', [ConsolidationController::class, 'reopenMonth']);
+                    Route::put('/reopenConsolidatedMonth', [ConsolidationController::class, 'reopenMonth']);
 
 
 
