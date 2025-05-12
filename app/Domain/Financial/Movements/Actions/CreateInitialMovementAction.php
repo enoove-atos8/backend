@@ -50,17 +50,12 @@ class CreateInitialMovementAction
     public function execute(MovementsData $movementsData): mixed
     {
         $movementsWithoutInitial = $this->checkGroupMovementsWithoutInitialAction->execute($movementsData->groupId);
-        $totalDeletedMovements = 0.0;
 
-        if ($movementsWithoutInitial) {
-
+        if ($movementsWithoutInitial)
             $this->deleteMovementsOfGroupAction->execute($movementsData->groupId);
-            $totalDeletedMovements = $this->getTotalAmountOfDeletedMovementsByGroupAction->execute($movementsData->groupId);
-        }
 
         $movementData = $this->movementsData::fromSelf(
             $movementsData,
-            $totalDeletedMovements,
             true
         );
 

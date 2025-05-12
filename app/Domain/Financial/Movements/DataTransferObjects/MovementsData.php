@@ -109,28 +109,27 @@ class MovementsData extends DataTransferObject
     }
 
 
-
-
     /**
      * Create a MovementsData instance from an existing MovementsData object
      *
      * @param MovementsData $movementData Existing MovementsData object
      * @param float $totalPreviousMovements Total amount from previous movements (optional)
+     * @param bool $initialBalance
      * @param array $additionalData Optional additional data to override or add
      * @return self
      * @throws UnknownProperties
      */
-    public static function fromSelf(MovementsData $movementData, float $totalPreviousMovements = 0.0, bool $initialBalance = false, array $additionalData = []): self
+    public static function fromSelf(MovementsData $movementData, bool $initialBalance = false, array $additionalData = []): self
     {
         $data = [
             'id' => $movementData->id,
-            'groupId' => $initialBalance ? null : $movementData->groupId,
+            'groupId' => $movementData->groupId,
             'entryId' => $initialBalance ? null : $movementData->entryId,
             'exitId' => $initialBalance ? null : $movementData->exitId,
-            'type' => $initialBalance ? null : $movementData->type,
+            'type' => $movementData->type,
             'subType' => $initialBalance ? null : $movementData->subType,
-            'amount' => $initialBalance ? $movementData->amount : (isset($movementData->amount) ? (float)$movementData->amount + $totalPreviousMovements : $totalPreviousMovements),
-            'balance' => $initialBalance ? null : $movementData->balance,
+            'amount' => $movementData->amount,
+            'balance' => $movementData->balance,
             'description' => $initialBalance ? 'Initial movement' : ($movementData->description ?? 'Movimentação do Grupo'),
             'movementDate' => $movementData->movementDate ?? now()->format('Y-m-d'),
             'isInitialBalance' => $initialBalance,
