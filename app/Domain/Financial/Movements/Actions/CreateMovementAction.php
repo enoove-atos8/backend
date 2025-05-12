@@ -41,9 +41,10 @@ class CreateMovementAction
 
         $movements = $this->movementRepository->getMovementsByGroup($groupId);
 
-        if (!$movements->isEmpty()){
+        if (!$movements->isEmpty())
+        {
             foreach ($movements as $movement)
-
+            {
                 $amount = (float)$movement->amount;
 
                 if ($movement->type === EntryRepository::ENTRY_TYPE)
@@ -51,6 +52,7 @@ class CreateMovementAction
 
                 else if ($movement->type === ExitRepository::EXIT_TYPE)
                     $currentBalance -= $amount;
+            }
         }
 
         return $currentBalance;
@@ -68,6 +70,7 @@ class CreateMovementAction
         {
             if (isset($movementsData->groupId) && $movementsData->groupId > 0)
                 $movementsData->balance = $this->calculateCurrentBalance($movementsData->groupId);
+
             else
                 $movementsData->balance = 0.0;
         }
