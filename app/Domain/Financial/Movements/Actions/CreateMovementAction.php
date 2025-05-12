@@ -78,13 +78,17 @@ class CreateMovementAction
         $currentBalance = $movementsData->balance;
         $amount = $movementsData->amount;
 
-        $newBalance = $movementsData->type === EntryRepository::ENTRY_TYPE
-            ? $currentBalance + $amount
-            : ($movementsData->type === ExitRepository::EXIT_TYPE
-                ? $currentBalance - $amount
-                : $currentBalance);
 
-        $movementsData->balance = $newBalance;
+        if (!$movementsData->isInitialBalance)
+        {
+            $newBalance = $movementsData->type === EntryRepository::ENTRY_TYPE
+                ? $currentBalance + $amount
+                : ($movementsData->type === ExitRepository::EXIT_TYPE
+                    ? $currentBalance - $amount
+                    : $currentBalance);
+
+            $movementsData->balance = $newBalance;
+        }
 
         return $this->movementRepository->createMovement($movementsData);
     }

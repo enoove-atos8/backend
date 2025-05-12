@@ -113,7 +113,6 @@ class MovementsData extends DataTransferObject
      * Create a MovementsData instance from an existing MovementsData object
      *
      * @param MovementsData $movementData Existing MovementsData object
-     * @param float $totalPreviousMovements Total amount from previous movements (optional)
      * @param bool $initialBalance
      * @param array $additionalData Optional additional data to override or add
      * @return self
