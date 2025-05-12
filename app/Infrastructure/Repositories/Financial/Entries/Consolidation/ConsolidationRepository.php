@@ -135,4 +135,28 @@ class ConsolidationRepository extends BaseRepository implements ConsolidatedEntr
     {
         return $this->deleteByColumn(self::DATE_COLUMN, $date);
     }
+
+    /**
+     * Reopen a consolidated month by setting all relevant fields to 0
+     *
+     * @param string $month Month in format YYYY-MM
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function reopenConsolidatedMonth(string $month): bool
+    {
+        $conditions = [
+            'field' => self::DATE_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $month,
+        ];
+
+        return $this->update($conditions, [
+            'consolidated' => 0,
+            'designated_amount' => 0,
+            'offers_amount' => 0,
+            'tithe_amount' => 0,
+            'total_amount' => 0,
+        ]);
+    }
 }

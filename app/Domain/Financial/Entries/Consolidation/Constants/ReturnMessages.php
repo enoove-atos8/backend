@@ -16,6 +16,7 @@ class ReturnMessages
     public const ERROR_REQUIRED_TWO_MONTHS_CONSOLIDATED = "É necessário ao menos 2 meses consolidados...";
     public const ERROR_NOT_COMPENSATED_ENTRIES_FOUNDED = "Existem entradas que ainda não foram compensadas para os meses selecionados, verifique!";
     public const ERROR_NOT_ALLOW_NEW_ENTRY_WITH_PREVIOUS_MONTHS_NOT_CONSOLIDATE = "Não é possível registrar uma nova entrada quando existem meses anteriores não consolidados, verifique!";
+    public const REOPEN_CONSOLIDATED_MONTH_ERROR = "Ocorreu um erro ao tentar reabrir este mês, tente mais tarde!";
 
     // Info messages
 
