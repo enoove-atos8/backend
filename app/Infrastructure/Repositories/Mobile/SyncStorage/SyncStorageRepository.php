@@ -20,6 +20,8 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     const ENTRIES_VALUE_DOC_TYPE = 'entries';
     const EXITS_VALUE_DOC_TYPE = 'exits';
     const TO_PROCESS_VALUE = 'to_process';
+    const IS_CREDIT_CARD_PURCHASE_COLUMN = 'is_credit_card_purchase';
+    const PURCHASE_SUB_TYPE_VALUE = 'purchase';
     const DONE_VALUE = 'done';
 
     const ERROR_VALUE = 'error';
@@ -60,17 +62,20 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     }
 
 
-
     /**
      * @param string $docType
+     * @param bool $getPurchases
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getSyncStorageData(string $docType): Collection
+    public function getSyncStorageData(string $docType, bool $getPurchases = false): Collection
     {
         $this->queryConditions = [];
         $this->queryConditions [] = $this->whereEqual(self::STATUS_COLUMN, self::TO_PROCESS_VALUE, 'and');
         $this->queryConditions [] = $this->whereEqual(self::DOC_TYPE_COLUMN, $docType, 'and');
+
+        if($getPurchases)
+            $this->queryConditions [] = $this->whereEqual(self::IS_CREDIT_CARD_PURCHASE_COLUMN, true, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
