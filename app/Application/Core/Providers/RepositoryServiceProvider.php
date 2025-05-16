@@ -23,6 +23,7 @@ use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
+use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Domain\Financial\Entries\Automation\Interfaces\EntriesAutomationRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountToCompensate\Interfaces\AmountToCompensateRepositoryInterface;
@@ -41,6 +42,7 @@ use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
@@ -89,6 +91,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PaymentCategoryRepositoryInterface::class, PaymentCategoryRepository::class);
         $this->app->bind(PaymentItemRepositoryInterface::class, PaymentItemRepository::class);
         $this->app->bind(MovementRepositoryInterface::class, MovementRepository::class);
+        $this->app->bind(CardRepositoryInterface::class, CardRepository::class);
 
 
     }

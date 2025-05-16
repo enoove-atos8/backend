@@ -9,6 +9,7 @@ use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationContro
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
+use Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers\CardController;
 use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
 use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\EntriesConsolidatedController;
@@ -729,6 +730,60 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::post('addInitialBalance', [MovementController::class, 'addInitialBalance']);
+            });
+
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | Account and Cards Financial routes
+            |--------------------------------------------------------------------------
+            |
+            */
+            Route::prefix('accounts-cards')->group(function () {
+
+
+
+                Route::prefix('cards')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /{id}
+                     * Description: Get groups by division
+                     */
+
+                    Route::get('getCards', [CardController::class, 'getCards']);
+
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /{id}
+                     * Description: Get groups by division
+                     */
+
+                    Route::get('getCardById', [CardController::class, 'getCardById']);
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /{id}
+                     * Description: Get groups by division
+                     */
+
+                    Route::delete('deleteCard', [CardController::class, 'deleteCard']);
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /{id}
+                     * Description: Get groups by division
+                     */
+
+                    Route::post('saveCard', [CardController::class, 'saveCard']);
+
+                });
+
+
+                Route::prefix('account')->group(function () {});
             });
         });
 
