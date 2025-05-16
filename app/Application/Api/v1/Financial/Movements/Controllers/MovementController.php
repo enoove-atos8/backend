@@ -5,7 +5,6 @@ namespace Application\Api\v1\Financial\Movements\Controllers;
 use Application\Api\v1\Financial\Movements\Requests\AddInitialBalanceRequest;
 use Application\Api\v1\Financial\Movements\Resources\MovementResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Financial\Movements\Actions\AddInitialBalanceAction;
 use Domain\Financial\Movements\Actions\CreateInitialMovementAction;
 use Domain\Financial\Movements\Actions\GetMovementsByGroupAction;
 use Domain\Financial\Movements\Actions\GetMovementsIndicatorsAction;
@@ -77,7 +76,7 @@ class MovementController extends Controller
      * @throws GeneralExceptions
      * @throws UnknownProperties
      */
-    public function addInitialBalance(AddInitialBalanceRequest $addInitialBalanceRequest, CreateInitialMovementAction $createInitialMovementAction): ResponseFactory|Application|\Illuminate\Http\Response
+    public function addInitialBalance(AddInitialBalanceRequest $addInitialBalanceRequest, CreateInitialMovementAction $createInitialMovementAction): ResponseFactory|Application|Response
     {
         try
         {
