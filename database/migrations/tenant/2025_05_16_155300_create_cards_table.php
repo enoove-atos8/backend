@@ -20,15 +20,15 @@ return new class extends Migration
                 $table->id();
                 $table->string('name');
                 $table->text('description')->nullable();
-                $table->string('card_number')->nullable();
-                $table->date('expiry_date')->nullable();
-                $table->date('closing_date')->nullable();
-                $table->boolean('status')->default(true);
+                $table->string('card_number')->nullable(false);
+                $table->string('expiry_date')->nullable(false);
+                $table->string('closing_date')->nullable(false);
+                $table->string('status')->nullable(false);
                 $table->boolean('active')->default(true);
-                $table->string('credit_card_brand')->nullable();
+                $table->string('credit_card_brand')->nullable(false);
                 $table->string('person_type')->nullable();
                 $table->string('card_holder_name')->nullable();
-                $table->decimal('limit', 15)->nullable();
+                $table->decimal('limit', 15)->nullable(false);
 
                 $table->timestamps();
             });
