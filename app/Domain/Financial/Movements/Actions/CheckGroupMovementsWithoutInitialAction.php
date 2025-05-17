@@ -29,6 +29,6 @@ class CheckGroupMovementsWithoutInitialAction
         $movements = $this->movementRepository->getMovementsByGroup($groupId);
         $initialMovement = $this->movementRepository->getInitialMovementsByGroup($groupId);
 
-        return !$movements->isEmpty() && is_null($initialMovement);
+        return !$movements->isEmpty() && is_null($initialMovement->id);
     }
 }
