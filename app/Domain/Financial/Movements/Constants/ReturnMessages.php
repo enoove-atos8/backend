@@ -4,7 +4,7 @@ namespace Domain\Financial\Movements\Constants;
 
 class ReturnMessages
 {
-// Success messages
+    // Success messages
 
     public const INITIAL_BALANCE_MOVEMENT_CREATED = 'Movimentação inicial criada com sucesso!';
 

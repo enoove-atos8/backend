@@ -6,7 +6,9 @@ use Domain\Financial\AccountsAndCards\Cards\DataTransferObjects\CardData;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Cards\Models\Card;
 use Domain\Financial\Movements\Models\Movement;
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 
 class CardRepository extends BaseRepository implements CardRepositoryInterface
@@ -16,18 +18,26 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
 
     const TABLE_NAME = 'cards';
     const ID_COLUMN = 'cards.id';
+    const DELETED_COLUMN = 'deleted';
+    const GROUP_ID_COLUMN = 'group_id';
+    const NAME_COLUMN = 'name';
+    const DESCRIPTION_COLUMN = 'description';
     const CARD_NUMBER_COLUMN = 'card_number';
-    const CARD_HOLDER_COLUMN = 'card_holder';
-    const BALANCE_COLUMN = 'balance';
-    const CARD_TYPE_COLUMN = 'card_type';
-    const CARD_EXPIRATION_DATE_COLUMN = 'card_expiration_date';
-    const CARD_IS_ACTIVE_COLUMN = 'card_is_active';
-    const CARD_IS_DEFAULT_COLUMN = 'card_is_default';
-    const CARD_IS_DELETED_COLUMN = 'card_is_deleted';
+    const EXPIRY_DATE_COLUMN = 'expiry_date';
+    const CLOSING_DATE_COLUMN = 'closing_date';
+    const STATUS_COLUMN = 'status';
+    const ACTIVE_COLUMN = 'active';
+    const CREDIT_CARD_BRAND_COLUMN = 'credit_card_brand';
 
     const DISPLAY_SELECT_COLUMNS = [
         'cards.'
     ];
+
+
+    /**
+     * Array of conditions
+     */
+    private array $queryConditions = [];
 
 
     /**
@@ -41,14 +51,14 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
         return $this->create([
             'name' => $cardData->name,
             'description' => $cardData->description,
-            'cardNumber' => $cardData->cardNumber,
-            'expiryDate' => $cardData->expiryDate,
-            'closingDate' => $cardData->closingDate,
+            'card_number' => $cardData->cardNumber,
+            'expiry_date' => $cardData->expiryDate,
+            'closing_date' => $cardData->closingDate,
             'status' => $cardData->status,
             'active' => $cardData->active,
-            'creditCardBrand' => $cardData->creditCardBrand,
-            'personType' => $cardData->personType,
-            'cardHolderName' => $cardData->cardHolderName,
+            'credit_card_brand' => $cardData->creditCardBrand,
+            'person_type' => $cardData->personType,
+            'card_holder_name' => $cardData->cardHolderName,
             'limit' => $cardData->limit,
         ]);
     }
@@ -57,10 +67,22 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      * Get all cards from the database.
      *
      * @return Collection
+     * @throws BindingResolutionException
      */
     public function getCards(): Collection
     {
-        //TODO: Implements here
+        $query = function () {
+
+            $q = DB::table(CardRepository::TABLE_NAME)
+                ->where(self::ACTIVE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1)
+                ->orderBy(self::ID_COLUMN);
+
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => CardData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
     }
 
     /**

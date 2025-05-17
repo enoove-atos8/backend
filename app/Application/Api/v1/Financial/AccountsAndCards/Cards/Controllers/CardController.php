@@ -3,6 +3,7 @@
 namespace Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers;
 
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Requests\CardRequest;
+use Application\Api\v1\Financial\AccountsAndCards\Cards\Resources\CardsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardsAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\SaveCardAction;
@@ -10,6 +11,7 @@ use Exception;
 use Illuminate\Console\Application;
 use Illuminate\Http\Response;
 use Illuminate\Routing\ResponseFactory;
+use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Illuminate\Http\JsonResponse;
 
@@ -42,11 +44,13 @@ class CardController extends Controller
     /**
      * @throws GeneralExceptions
      */
-    public function getCards(GetCardsAction $getCardsAction)
+    public function getCards(GetCardsAction $getCardsAction): CardsResourceCollection
     {
         try
         {
-            return $getCardsAction->execute();
+            $cards = $getCardsAction->execute();
+
+            return new CardsResourceCollection($cards);
         }
         catch (Exception $e)
         {
