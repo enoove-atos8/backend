@@ -8,6 +8,7 @@ use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Movements\Actions\CreateInitialMovementAction;
 use Domain\Financial\Movements\Actions\GetMovementsByGroupAction;
 use Domain\Financial\Movements\Actions\GetMovementsIndicatorsAction;
+use Domain\Financial\Movements\Actions\ResetBalanceAction;
 use Domain\Financial\Movements\Constants\ReturnMessages;
 use Illuminate\Console\Application;
 use Illuminate\Http\JsonResponse;
@@ -85,6 +86,32 @@ class MovementController extends Controller
             return response([
                 'message'   =>  ReturnMessages::INITIAL_BALANCE_MOVEMENT_CREATED,
             ], 201);
+        }
+        catch(GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * Add initial balance to a group
+     *
+     * @param Request $request
+     * @param ResetBalanceAction $resetBalanceAction
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Foundation\Application|Response
+     * @throws GeneralExceptions
+     */
+    public function resetBalance(Request $request, ResetBalanceAction $resetBalanceAction): ResponseFactory|Application|Response
+    {
+        try
+        {
+            $groupId = $request->input('groupId');
+            $resetBalanceAction->execute($groupId);
+
+            return response([
+                'message'   =>  ReturnMessages::RESET_BALANCE_SUCCESS,
+            ], 200);
         }
         catch(GeneralExceptions $e)
         {

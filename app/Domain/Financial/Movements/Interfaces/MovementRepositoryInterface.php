@@ -17,6 +17,15 @@ interface MovementRepositoryInterface
      */
     public function createMovement(MovementsData $movementsData): Movement;
 
+
+    /**
+     * Create a new Movement record
+     *
+     * @param int $groupId
+     * @return bool
+     */
+    public function resetBalance(int $groupId): bool;
+
     /**
      * Get Movements by group ID and optionally format for indicators
      *
