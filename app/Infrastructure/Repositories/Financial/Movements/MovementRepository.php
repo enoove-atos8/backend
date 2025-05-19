@@ -78,6 +78,27 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
 
 
     /**
+     * @param int $groupId
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function resetBalance(int $groupId): bool
+    {
+        $conditions =[
+            [
+                'field' => self::GROUP_ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $groupId,
+            ]
+        ];
+
+        return $this->update($conditions, [
+            'deleted' => 1,
+        ]);
+    }
+
+
+    /**
      * Get movements by group and optionally return indicators (entries, exits, current balance)
      *
      * @param int $groupId

@@ -730,6 +730,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::post('addInitialBalance', [MovementController::class, 'addInitialBalance']);
+
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Reset movements
+                 */
+
+                Route::put('resetBalance', [MovementController::class, 'resetBalance']);
+
             });
 
 
