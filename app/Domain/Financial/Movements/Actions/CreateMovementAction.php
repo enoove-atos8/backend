@@ -87,7 +87,14 @@ class CreateMovementAction
                     ? $currentBalance - $amount
                     : $currentBalance);
 
-            $movementsData->balance = $newBalance;
+            if($movementsData->type === ExitRepository::EXIT_TYPE && $amount > $currentBalance)
+            {
+                $movementsData->balance = 0.0;
+            }
+            else
+            {
+                $movementsData->balance = $newBalance;
+            }
         }
 
         return $this->movementRepository->createMovement($movementsData);
