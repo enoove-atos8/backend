@@ -25,6 +25,7 @@ return new class extends Migration
                 $table->string('closing_date')->nullable(false);
                 $table->string('status')->nullable(false);
                 $table->boolean('active')->default(true);
+                $table->boolean('deleted')->default(false);
                 $table->string('credit_card_brand')->nullable(false);
                 $table->string('person_type')->nullable();
                 $table->string('card_holder_name')->nullable();

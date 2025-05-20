@@ -56,12 +56,15 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
             'closing_date' => $cardData->closingDate,
             'status' => $cardData->status,
             'active' => $cardData->active,
+            'deleted' => $cardData->deleted,
             'credit_card_brand' => $cardData->creditCardBrand,
             'person_type' => $cardData->personType,
             'card_holder_name' => $cardData->cardHolderName,
             'limit' => $cardData->limit,
         ]);
     }
+
+
 
     /**
      * Get all cards from the database.
@@ -74,7 +77,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
         $query = function () {
 
             $q = DB::table(CardRepository::TABLE_NAME)
-                ->where(self::ACTIVE_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->orderBy(self::ID_COLUMN);
 
 
@@ -85,25 +88,38 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
         return $this->doQuery($query);
     }
 
+
+
     /**
      * Get a specific card by ID.
      *
      * @param int $id
      * @return object|null
      */
-    public function getCardById($id)
+    public function getCardById(int $id): ?CardData
     {
         //TODO: Implements here
     }
+
+
 
     /**
      * Delete a card by ID.
      *
      * @param int $id
      * @return bool
+     * @throws BindingResolutionException
      */
-    public function deleteCard($id)
+    public function deleteCard(int $id): bool
     {
-        //TODO: Implements here
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,
+        ];
+
+        return $this->update($conditions, [
+            'deleted' =>   1,
+        ]);
     }
 }

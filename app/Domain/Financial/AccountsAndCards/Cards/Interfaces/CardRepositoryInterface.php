@@ -21,7 +21,7 @@ interface CardRepositoryInterface
      * @param int $id
      * @return CardData|null
      */
-    public function getCardById($id);
+    public function getCardById(int $id): ?CardData;
 
     /**
      * Delete a card by ID.
@@ -29,7 +29,7 @@ interface CardRepositoryInterface
      * @param int $id
      * @return bool
      */
-    public function deleteCard($id);
+    public function deleteCard(int $id): bool;
 
     /**
      * Save a new card or update an existing one.

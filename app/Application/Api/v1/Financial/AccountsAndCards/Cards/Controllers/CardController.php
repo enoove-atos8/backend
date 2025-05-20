@@ -5,10 +5,13 @@ namespace Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Requests\CardRequest;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Resources\CardsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Domain\Financial\AccountsAndCards\Cards\Actions\DeleteCardAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardsAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\SaveCardAction;
+use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
 use Exception;
 use Illuminate\Console\Application;
+use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Collection;
@@ -63,8 +66,23 @@ class CardController extends Controller
         //TODO: Implements here
     }
 
-    public function deleteCard()
+    /**
+     * @throws GeneralExceptions
+     */
+    public function deleteCard(Request $request, DeleteCardAction $deleteCardAction): Response|ResponseFactory
     {
-        //TODO: Implements here
+        try
+        {
+            $id = $request->input('cardId');
+            $deleteCardAction->execute($id);
+
+            return response([
+                'message'   =>  ReturnMessages::CARD_DELETED,
+            ], 200);
+
+        } catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        }
     }
 }

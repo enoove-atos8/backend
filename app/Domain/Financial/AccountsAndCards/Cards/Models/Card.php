@@ -30,6 +30,7 @@ class Card extends Model
         'closing_date',
         'status',
         'active',
+        'deleted',
         'credit_card_brand',
         'person_type',
         'card_holder_name',
@@ -58,7 +59,7 @@ class Card extends Model
     {
         $cardNumber = $this->card_number;
         $lastFourDigits = substr($cardNumber, -4);
-        
+
         return str_repeat('*', strlen($cardNumber) - 4) . $lastFourDigits;
     }
 }

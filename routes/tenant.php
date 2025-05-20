@@ -758,6 +758,15 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 Route::prefix('cards')->group(function () {
 
                     /*
+                     * Action: DELETE
+                     * EndPoint: /{id}
+                     * Description: Delete card by id
+                     */
+
+                    Route::delete('deleteCard', [CardController::class, 'deleteCard']);
+
+
+                    /*
                      * Action: GET
                      * EndPoint: /{id}
                      * Description: Get groups by division
@@ -774,14 +783,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('getCardById', [CardController::class, 'getCardById']);
 
-
-                    /*
-                     * Action: POST
-                     * EndPoint: /{id}
-                     * Description: Get groups by division
-                     */
-
-                    Route::delete('deleteCard', [CardController::class, 'deleteCard']);
 
                     /*
                      * Action: POST
