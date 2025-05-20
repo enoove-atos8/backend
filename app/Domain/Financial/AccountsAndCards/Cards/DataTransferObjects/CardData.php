@@ -32,6 +32,9 @@ class CardData extends DataTransferObject
     /** @var bool|null */
     public ?bool $active;
 
+    /** @var bool|null */
+    public ?bool $deleted;
+
     /** @var string|null */
     public ?string $creditCardBrand;
 
@@ -62,6 +65,7 @@ class CardData extends DataTransferObject
             'closingDate' => $data['closing_date'] ?? null,
             'status' => $data['status'] ?? true,
             'active' => $data['active'] ?? true,
+            'deleted' => $data['deleted'],
             'creditCardBrand' => $data['credit_card_brand'] ?? null,
             'personType' => $data['person_type'] ?? null,
             'cardHolderName' => $data['card_holder_name'] ?? null,
@@ -89,6 +93,7 @@ class CardData extends DataTransferObject
             'closingDate' => $cardData->closingDate,
             'status' => $cardData->status,
             'active' => $cardData->active,
+            'deleted' => $cardData->deleted,
             'creditCardBrand' => $cardData->creditCardBrand,
             'personType' => $cardData->personType,
             'cardHolderName' => $cardData->cardHolderName,
