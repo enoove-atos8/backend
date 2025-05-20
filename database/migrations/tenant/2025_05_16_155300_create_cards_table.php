@@ -22,7 +22,8 @@ return new class extends Migration
                 $table->text('description')->nullable();
                 $table->string('card_number')->nullable(false);
                 $table->string('expiry_date')->nullable(false);
-                $table->string('closing_date')->nullable(false);
+                $table->string('due_day')->nullable(false);
+                $table->string('closing_day')->nullable(false);
                 $table->string('status')->nullable(false);
                 $table->boolean('active')->default(true);
                 $table->boolean('deleted')->default(false);

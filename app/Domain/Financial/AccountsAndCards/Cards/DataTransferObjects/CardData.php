@@ -24,7 +24,11 @@ class CardData extends DataTransferObject
     public ?string $expiryDate;
 
     /** @var string|null */
-    public ?string $closingDate;
+    public ?string $dueDay;
+
+    /** @var string|null */
+    public ?string $closingDay;
+
 
     /** @var bool|null */
     public ?bool $status;
@@ -62,7 +66,8 @@ class CardData extends DataTransferObject
             'description' => $data['description'] ?? null,
             'cardNumber' => $data['card_number'] ?? '',
             'expiryDate' => $data['expiry_date'] ?? null,
-            'closingDate' => $data['closing_date'] ?? null,
+            'dueDay' => $data['due_day'] ?? null,
+            'closingDay' => $data['closing_day'] ?? null,
             'status' => $data['status'] ?? true,
             'active' => $data['active'] ?? true,
             'deleted' => $data['deleted'],
@@ -90,7 +95,8 @@ class CardData extends DataTransferObject
             'description' => $cardData->description,
             'cardNumber' => $cardData->cardNumber,
             'expiryDate' => $cardData->expiryDate,
-            'closingDate' => $cardData->closingDate,
+            'dueDay' => $cardData->dueDay,
+            'closingDay' => $cardData->closingDay,
             'status' => $cardData->status,
             'active' => $cardData->active,
             'deleted' => $cardData->deleted,

@@ -357,7 +357,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     public function updateOrCreate(array $identifiers, array $data): mixed
     {
-        $existing = $this->model->where(array_only($data, $identifiers))->first();
+        $existing = $this->model->where($identifiers['field'], $identifiers['operator'], $identifiers['value'])->first();
 
         if ($existing) {
             $existing->update($data);

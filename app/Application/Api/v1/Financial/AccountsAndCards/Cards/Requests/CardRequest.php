@@ -26,17 +26,19 @@ class CardRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id'                => '',
             'name'              => 'required',
             'description'       => '',
             'cardNumber'        => 'required',
             'expiryDate'        => 'required',
-            'closingDate'       => 'required',
+            'dueDay'            => 'required',
+            'closingDay'        => 'required',
             'status'            => 'required',
             'active'            => 'required',
             'deleted'           => 'required',
             'creditCardBrand'   => 'required',
             'personType'        => '',
-            'cardHolderName'    => 'required',
+            'cardHolderName'    => '',
             'limit'             => 'required',
         ];
     }
@@ -50,11 +52,13 @@ class CardRequest extends FormRequest
     public function cardData(): CardData
     {
         return new CardData(
+            id:   $this->input('id'),
             name:   $this->input('name'),
             description:    $this->input('description'),
             cardNumber: $this->input('cardNumber'),
             expiryDate: $this->input('expiryDate'),
-            closingDate:    $this->input('closingDate'),
+            dueDay:    $this->input('dueDay'),
+            closingDay:    $this->input('closingDay'),
             status: $this->input('status'),
             active: $this->input('active'),
             deleted: $this->input('deleted'),
