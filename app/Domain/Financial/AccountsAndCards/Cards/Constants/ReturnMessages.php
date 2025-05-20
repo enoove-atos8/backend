@@ -7,7 +7,7 @@ class ReturnMessages
 
     // Success messages
 
-    public const CARD_CREATED = 'Cartão criado com sucesso!';
+    public const CARD_CREATED = 'Cartão salvo com sucesso!';
     public const CARD_DELETED = 'Cartão excluído com sucesso!';
 
     // Error messages

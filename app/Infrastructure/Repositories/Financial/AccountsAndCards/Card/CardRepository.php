@@ -10,6 +10,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class CardRepository extends BaseRepository implements CardRepositoryInterface
 {
@@ -17,7 +18,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     protected mixed $model = Card::class;
 
     const TABLE_NAME = 'cards';
-    const ID_COLUMN = 'cards.id';
+    const ID_COLUMN = 'id';
     const DELETED_COLUMN = 'deleted';
     const GROUP_ID_COLUMN = 'group_id';
     const NAME_COLUMN = 'name';
@@ -48,19 +49,31 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      */
     public function saveCard(CardData $cardData): Card
     {
-        return $this->create([
-            'name' => $cardData->name,
-            'description' => $cardData->description,
-            'card_number' => $cardData->cardNumber,
-            'expiry_date' => $cardData->expiryDate,
-            'closing_date' => $cardData->closingDate,
-            'status' => $cardData->status,
-            'active' => $cardData->active,
-            'deleted' => $cardData->deleted,
-            'credit_card_brand' => $cardData->creditCardBrand,
-            'person_type' => $cardData->personType,
-            'card_holder_name' => $cardData->cardHolderName,
-            'limit' => $cardData->limit,
+        $conditions = null;
+
+        if($cardData->id)
+        {
+            $conditions = [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $cardData->id,
+            ];
+        }
+
+        return $this->updateOrCreate($conditions,[
+            'name'                  => $cardData->name,
+            'description'           => $cardData->description,
+            'card_number'           => $cardData->cardNumber,
+            'expiry_date'           => $cardData->expiryDate,
+            'due_day'               => $cardData->dueDay,
+            'closing_day'           => $cardData->closingDay,
+            'status'                => $cardData->status,
+            'active'                => $cardData->active,
+            'deleted'               => $cardData->deleted,
+            'credit_card_brand'     => $cardData->creditCardBrand,
+            'person_type'           => $cardData->personType,
+            'card_holder_name'      => $cardData->cardHolderName,
+            'limit'                 => $cardData->limit,
         ]);
     }
 
@@ -89,16 +102,25 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     }
 
 
-
     /**
      * Get a specific card by ID.
      *
      * @param int $id
      * @return object|null
+     * @throws BindingResolutionException
+     * @throws UnknownProperties
      */
     public function getCardById(int $id): ?CardData
     {
-        //TODO: Implements here
+        $card = $this->getItemByColumn(
+            self::ID_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            $id
+        );
+
+
+        $attributes = $card->getAttributes();
+        return CardData::fromResponse($attributes);
     }
 
 

@@ -2,10 +2,12 @@
 
 namespace Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers;
 
+use App\Application\Api\v1\Financial\AccountsAndCards\Cards\Resources\CardResource;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Requests\CardRequest;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Resources\CardsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\AccountsAndCards\Cards\Actions\DeleteCardAction;
+use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardByIdAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardsAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\SaveCardAction;
 use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
@@ -35,7 +37,7 @@ class CardController extends Controller
             $saveCardAction->execute($request->cardData());
 
             return response([
-                'message'   =>  '',
+                'message'   =>  ReturnMessages::CARD_CREATED,
             ], 201);
 
         } catch (Exception $e)
@@ -61,9 +63,26 @@ class CardController extends Controller
         }
     }
 
-    public function getCardById()
+
+    /**
+     * @param Request $request
+     * @param GetCardByIdAction $getCardByIdAction
+     * @return CardResource
+     * @throws GeneralExceptions
+     */
+    public function getCardById(Request $request, GetCardByIdAction $getCardByIdAction): CardResource
     {
-        //TODO: Implements here
+        try
+        {
+            $id = $request->input('id');
+            $card = $getCardByIdAction->execute($id);
+
+            return new CardResource($card);
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     /**
