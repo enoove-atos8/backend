@@ -124,14 +124,13 @@ interface BaseRepositoryInterface
     public function create(array $data);
 
 
-
     /**
      * Update or crate a record and return the entity
      *
-     * @param array $identifiers columns to search for
      * @param array $data
+     * @param array|null $identifiers columns to search for
      */
-    public function updateOrCreate(array $identifiers, array $data);
+    public function updateOrCreate(array $data, ?array $identifiers = null);
 
 
 

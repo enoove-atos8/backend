@@ -60,7 +60,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
             ];
         }
 
-        return $this->updateOrCreate($conditions,[
+        return $this->updateOrCreate([
             'name'                  => $cardData->name,
             'description'           => $cardData->description,
             'card_number'           => $cardData->cardNumber,
@@ -74,7 +74,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
             'person_type'           => $cardData->personType,
             'card_holder_name'      => $cardData->cardHolderName,
             'limit'                 => $cardData->limit,
-        ]);
+        ], $conditions);
     }
 
 

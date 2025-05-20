@@ -347,17 +347,19 @@ abstract class BaseRepository implements BaseRepositoryInterface
     }
 
 
-
     /**
      * Update or crate a record and return the entity
      *
-     * @param array $identifiers columns to search for
      * @param array $data
+     * @param array|null $identifiers columns to search for
      * @return mixed
      */
-    public function updateOrCreate(array $identifiers, array $data): mixed
+    public function updateOrCreate(array $data, ?array $identifiers = null): mixed
     {
-        $existing = $this->model->where($identifiers['field'], $identifiers['operator'], $identifiers['value'])->first();
+        $existing = false;
+
+        if(!is_null($identifiers))
+            $existing = $this->model->where($identifiers['field'], $identifiers['operator'], $identifiers['value'])->first();
 
         if ($existing) {
             $existing->update($data);
