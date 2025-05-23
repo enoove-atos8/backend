@@ -58,6 +58,7 @@ class MovementsData extends DataTransferObject
     public static function fromResponse(array $data): self
     {
         return new self([
+            'id' => $data['id'] ?? null,
             'groupId' => $data['group_id'] ?? 0,
             'entryId' => $data['entry_id'] ?? null,
             'exitId' => $data['exit_id'] ?? null,
