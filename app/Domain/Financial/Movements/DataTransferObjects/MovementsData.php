@@ -99,7 +99,7 @@ class MovementsData extends DataTransferObject
             'subType' => $isEntry ? ($entryData->entryType ?? '') : ($exitData->exitType ?? ''),
             'amount' => $isEntry ? ($entryData->amount ?? 0.0) : (float)($exitData->amount ?? 0.0),
             'description' => $isEntry ? ($entryData->comments ?? 'Entry movement') : ($exitData->comments ?? 'Exit movement'),
-            'movementDate' => $isEntry ? ($entryData->dateEntryRegister ?? '') : ($exitData->dateExitRegister ?? ''),
+            'movementDate' => $isEntry ? ($entryData->dateTransactionCompensation ?? '') : ($exitData->dateTransactionCompensation ?? ''),
             'isInitialBalance' => false,
             'deleted' => false,
         ];
