@@ -69,6 +69,18 @@ interface MovementRepositoryInterface
      */
     public function deleteMovementsOfGroup(int $groupId): mixed;
 
+
+    /**
+     * Delete movement by entry id or exit id
+     *
+     * @param int|null $entryId
+     * @param int|null $exitId
+     * @return mixed
+     */
+    public function deleteMovementByEntryOrExitId(int $entryId = null, int $exitId = null): mixed;
+
+
+
     /**
      * Get total amount of deleted movements for a group
      * This calculates the final balance of all deleted movements
@@ -102,4 +114,8 @@ interface MovementRepositoryInterface
      * @return Movement
      */
     public function addInitialBalance(MovementsData $movementsData): Movement;
+
+
+
+    public function updateMovementBalance(int $movementId, float $newBalance): void;
 }

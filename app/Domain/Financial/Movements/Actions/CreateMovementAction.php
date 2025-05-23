@@ -13,88 +13,38 @@ class CreateMovementAction
      * @var MovementRepositoryInterface
      */
     private MovementRepositoryInterface $movementRepository;
+    private UpdateMovementBalanceAction $updateMovementBalanceAction;
+    private RecalculateBalanceAction $recalculateBalanceAction;
 
     /**
      * CreateMovementAction constructor.
      *
      * @param MovementRepositoryInterface $movementRepository
+     * @param UpdateMovementBalanceAction $updateMovementBalanceAction
+     * @param RecalculateBalanceAction $recalculateBalanceAction
      */
-    public function __construct(MovementRepositoryInterface $movementRepository)
+    public function __construct(
+        MovementRepositoryInterface $movementRepository,
+        UpdateMovementBalanceAction $updateMovementBalanceAction,
+        RecalculateBalanceAction $recalculateBalanceAction,
+    )
     {
         $this->movementRepository = $movementRepository;
-    }
-
-    /**
-     * Calcula o saldo atual para um grupo específico
-     *
-     * @param int $groupId ID do grupo
-     * @return float Saldo atual calculado
-     */
-    public function calculateCurrentBalance(int $groupId): float
-    {
-        $currentBalance = 0.0;
-
-        $initialBalanceMovement = $this->movementRepository->getInitialMovementsByGroup($groupId);
-
-        if ($initialBalanceMovement)
-            $currentBalance = (float)$initialBalanceMovement->amount;
-
-        $movements = $this->movementRepository->getMovementsByGroup($groupId);
-
-        if (!$movements->isEmpty())
-        {
-            foreach ($movements as $movement)
-            {
-                $amount = (float)$movement->amount;
-
-                if ($movement->type === EntryRepository::ENTRY_TYPE)
-                    $currentBalance += $amount;
-
-                else if ($movement->type === ExitRepository::EXIT_TYPE)
-                    $currentBalance -= $amount;
-            }
-        }
-
-        return $currentBalance;
+        $this->updateMovementBalanceAction = $updateMovementBalanceAction;
+        $this->recalculateBalanceAction = $recalculateBalanceAction;
     }
 
     /**
      * Execute the action.
      *
      * @param MovementsData $movementsData
-     * @return mixed
+     * @return void
      */
-    public function execute(MovementsData $movementsData): mixed
+    public function execute(MovementsData $movementsData): void
     {
-        if (!isset($movementsData->balance))
-        {
-            if (isset($movementsData->groupId) && $movementsData->groupId > 0)
-                $movementsData->balance = $this->calculateCurrentBalance($movementsData->groupId);
+        $movementCreated = $this->movementRepository->createMovement($movementsData);
 
-            else
-                $movementsData->balance = 0.0;
-        }
-
-        $currentBalance = $movementsData->balance;
-        $amount = $movementsData->amount;
-
-
-        if (!$movementsData->isInitialBalance)
-        {
-            $newBalance = $movementsData->type === EntryRepository::ENTRY_TYPE
-                ? $currentBalance + $amount
-                : ($movementsData->type === ExitRepository::EXIT_TYPE
-                    ? $currentBalance - $amount
-                    : $currentBalance);
-
-            if($movementsData->type === ExitRepository::EXIT_TYPE && $amount > $currentBalance) {
-                $movementsData->balance = 0.0;
-            }
-            else {
-                $movementsData->balance = $newBalance;
-            }
-        }
-
-        return $this->movementRepository->createMovement($movementsData);
+        if(!is_null($movementCreated->id))
+            $this->recalculateBalanceAction->execute($movementsData->groupId);
     }
 }

@@ -230,6 +230,28 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         ]);
     }
 
+
+    /**
+     * @param int|null $entryId
+     * @param int|null $exitId
+     * @return mixed
+     * @throws BindingResolutionException
+     */
+    public function deleteMovementByEntryOrExitId(int $entryId = null, int $exitId = null): mixed
+    {
+        $conditions =[
+            [
+                'field' => !is_null($entryId) ? EntryRepository::ENTRY_TYPE : ExitRepository::EXIT_TYPE,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => !is_null($entryId) ? $entryId : $exitId,
+            ],
+        ];
+
+        return $this->update($conditions, [
+            'deleted' => 1,
+        ]);
+    }
+
     /**
      * Get deleted movements for a group
      *
@@ -282,6 +304,27 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         return $movement ? (float)$movement->amount : 0.0;
     }
 
+
+    /**
+     * @param int $movementId
+     * @param float $newBalance
+     * @return void
+     * @throws BindingResolutionException
+     */
+    public function updateMovementBalance(int $movementId, float $newBalance): void
+    {
+        $conditions =[
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $movementId,
+            ]
+        ];
+
+        $this->update($conditions, [
+            'balance' => $newBalance,
+        ]);
+    }
 
 
     public function addInitialBalance(MovementsData $movementsData): Movement
