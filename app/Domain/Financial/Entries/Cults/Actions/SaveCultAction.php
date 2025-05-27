@@ -94,10 +94,14 @@ class SaveCultAction
         $cultData->id = $cultId;
         $entries = array_merge($cultData->tithes, $cultData->designated, $cultData->offer);
 
-        foreach ($entries as $entry){
-            $this->prepareEntryData($entry);
-            $this->transferCultDataToEntryData($cultData);
-            $this->createEntryAction->execute($this->entryData, $consolidationEntriesData);
+        foreach ($entries as $entry)
+        {
+            if(!is_null($entry['amount']))
+            {
+                $this->prepareEntryData($entry);
+                $this->transferCultDataToEntryData($cultData);
+                $this->createEntryAction->execute($this->entryData, $consolidationEntriesData);
+            }
         }
     }
 
