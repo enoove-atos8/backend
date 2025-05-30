@@ -375,7 +375,6 @@ class ProcessingBankEntriesTransferReceipts
             '01-01', // Confraternização Universal (Ano Novo)
             '04-21', // Tiradentes
             '05-01', // Dia do Trabalho
-            '05-30', // Corpus Christi
             '09-07', // Independência do Brasil
             '10-12', // Aparecida
             '11-02', // Finados
