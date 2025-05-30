@@ -91,6 +91,7 @@ class MovementsData extends DataTransferObject
             throw new GeneralExceptions("Não foi informado nem um obejeto EntryData e nem um ExitData, verifique!", 500);
 
         $isEntry = $entryData !== null;
+        $movementDate = $isEntry ? $entryData->dateTransactionCompensation : $exitData->dateTransactionCompensation;
 
         $data = [
             'groupId' => $isEntry ? ($entryData->groupReceivedId ?? 0) : ($exitData->group->id ?? 0),
@@ -100,7 +101,7 @@ class MovementsData extends DataTransferObject
             'subType' => $isEntry ? ($entryData->entryType ?? '') : ($exitData->exitType ?? ''),
             'amount' => $isEntry ? ($entryData->amount ?? 0.0) : (float)($exitData->amount ?? 0.0),
             'description' => $isEntry ? ($entryData->comments ?? 'Entry movement') : ($exitData->comments ?? 'Exit movement'),
-            'movementDate' => $isEntry ? ($entryData->dateTransactionCompensation ?? '') : ($exitData->dateTransactionCompensation ?? ''),
+            'movementDate' => $movementDate,
             'isInitialBalance' => false,
             'deleted' => false,
         ];
