@@ -315,15 +315,14 @@ class ProcessingBankExitsTransferReceipts
     function getNextBusinessDay($date): string
     {
         $holidays = [
-            '01-01',
-            '04-21',
-            '05-01',
-            '05-30',
-            '09-07',
-            '10-12',
-            '11-02',
-            '11-15',
-            '12-25',
+            '01-01', // Confraternização Universal (Ano Novo)
+            '04-21', // Tiradentes
+            '05-01', // Dia do Trabalho
+            '09-07', // Independência do Brasil
+            '10-12', // Aparecida
+            '11-02', // Finados
+            '11-15', // Proclamação da República
+            '12-25', // Natal
         ];
 
         $currentDate = DateTime::createFromFormat('d/m/Y', $date);
