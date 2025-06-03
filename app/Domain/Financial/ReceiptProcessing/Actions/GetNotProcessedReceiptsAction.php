@@ -21,7 +21,6 @@ class GetNotProcessedReceiptsAction
     }
 
     /**
-     * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
     public function execute(string $docType, string $status): Collection | null

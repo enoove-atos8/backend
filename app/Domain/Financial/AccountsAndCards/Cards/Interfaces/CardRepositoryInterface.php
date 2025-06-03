@@ -35,7 +35,7 @@ interface CardRepositoryInterface
      * Save a new card or update an existing one.
      *
      * @param CardData $cardData
-     * @return Card
+     * @return CardData
      */
-    public function saveCard(CardData $cardData): Card;
+    public function saveCard(CardData $cardData): CardData;
 }

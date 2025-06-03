@@ -4,6 +4,7 @@ namespace Application\Core\Providers;
 
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
+use App\Domain\Financial\AccountsAndCards\Cards\Interfaces\CardInstallmentsRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
@@ -13,6 +14,7 @@ use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterfac
 use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Automation\AutomationRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
@@ -23,6 +25,8 @@ use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
+use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardInvoiceRepositoryInterface;
+use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardPurchaseRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Domain\Financial\Entries\Automation\Interfaces\EntriesAutomationRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
@@ -42,6 +46,8 @@ use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInvoiceRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardPurchaseRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
@@ -92,6 +98,9 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(PaymentItemRepositoryInterface::class, PaymentItemRepository::class);
         $this->app->bind(MovementRepositoryInterface::class, MovementRepository::class);
         $this->app->bind(CardRepositoryInterface::class, CardRepository::class);
+        $this->app->bind(CardInvoiceRepositoryInterface::class, CardInvoiceRepository::class);
+        $this->app->bind(CardPurchaseRepositoryInterface::class, CardPurchaseRepository::class);
+        $this->app->bind(CardInstallmentsRepositoryInterface::class, CardInstallmentsRepository::class);
 
 
     }

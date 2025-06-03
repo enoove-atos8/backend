@@ -6,7 +6,6 @@ use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
 use Domain\Financial\AccountsAndCards\Cards\DataTransferObjects\CardData;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Cards\Models\Card;
-use Exception;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class SaveCardAction
@@ -27,10 +26,10 @@ class SaveCardAction
      * Execute the action to save a card.
      *
      * @param CardData $cardData
-     * @return Card The ID of the saved card
+     * @return CardData The ID of the saved card
      * @throws GeneralExceptions
      */
-    public function execute(CardData $cardData): Card
+    public function execute(CardData $cardData): CardData
     {
 
         $card = $this->cardRepository->saveCard($cardData);

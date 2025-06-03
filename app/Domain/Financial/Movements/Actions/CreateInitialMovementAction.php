@@ -44,10 +44,11 @@ class CreateInitialMovementAction
      * Execute the action to create an initial movement for a group, considering deleted movements
      *
      * @param MovementsData $movementsData
-     * @return mixed
-     * @throws UnknownProperties|GeneralExceptions
+     * @return void
+     * @throws GeneralExceptions
+     * @throws UnknownProperties
      */
-    public function execute(MovementsData $movementsData): mixed
+    public function execute(MovementsData $movementsData): void
     {
         $movementsWithoutInitial = $this->checkGroupMovementsWithoutInitialAction->execute($movementsData->groupId);
 
@@ -59,6 +60,6 @@ class CreateInitialMovementAction
             true
         );
 
-        return $this->createMovementAction->execute($movementData);
+        $this->createMovementAction->execute($movementData);
     }
 }

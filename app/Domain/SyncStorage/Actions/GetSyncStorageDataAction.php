@@ -11,7 +11,7 @@ use Throwable;
 
 class GetSyncStorageDataAction
 {
-    private SyncStorageRepository $syncStorageRepository;
+    private SyncStorageRepositoryInterface $syncStorageRepository;
     public function __construct(
         SyncStorageRepositoryInterface  $syncStorageRepositoryInterface,
     )
@@ -24,16 +24,8 @@ class GetSyncStorageDataAction
     /**
      * @throws Throwable
      */
-    public function execute(string $docType): Collection
+    public function execute(string $docType, ?string $docSubType = null): Collection
     {
-        return $this->syncStorageRepository
-            ->getSyncStorageData($docType)
-            ->map(function ($item) {
-                $formattedItem = collect($item)->mapWithKeys(function ($value, $key) {
-                    return [Str::camel($key) => $value];
-                })->all();
-
-                return new SyncStorageData($formattedItem);
-            });
+        return $this->syncStorageRepository->getSyncStorageData($docType, $docSubType);
     }
 }

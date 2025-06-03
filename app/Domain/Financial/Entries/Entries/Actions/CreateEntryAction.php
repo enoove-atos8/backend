@@ -52,7 +52,7 @@ class CreateEntryAction
     /**
      * @throws Throwable
      */
-    public function execute(EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): Entry
+    public function execute(EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): ?Entry
     {
         $dateEntryRegister = $entryData->dateEntryRegister;
         $dateTransactionCompensation = $entryData->dateTransactionCompensation;

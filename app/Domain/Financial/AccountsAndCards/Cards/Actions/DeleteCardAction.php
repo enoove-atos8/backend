@@ -3,9 +3,7 @@
 namespace Domain\Financial\AccountsAndCards\Cards\Actions;
 
 use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
-use Domain\Financial\AccountsAndCards\Cards\DataTransferObjects\CardData;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
-use Domain\Financial\AccountsAndCards\Cards\Models\Card;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class DeleteCardAction

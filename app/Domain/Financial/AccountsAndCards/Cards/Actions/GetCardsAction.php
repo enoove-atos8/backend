@@ -6,7 +6,6 @@ use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardRepository;
 
 class GetCardsAction
 {

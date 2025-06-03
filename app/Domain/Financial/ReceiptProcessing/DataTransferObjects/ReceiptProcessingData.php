@@ -217,7 +217,7 @@ class ReceiptProcessingData extends DataTransferObject
             'division' => new DivisionData(['id' => !is_null($data->divisionId) ? (int) $data->divisionId : null]),
             'groupReceived' => $groupReceived,
             'groupReturned' => $groupReturned,
-            'paymentCategory' => new PaymentCategoryData(['id' => !is_null($data->paymentCategoryId) ? (int) $data->paymentCategoryId : null]),
+            'paymentCategory' => new PaymentCategoryData(['id' => !is_null($data->paymentCategoryId) && $data->paymentCategoryId !== '' ? (int) $data->paymentCategoryId : null]),
             'paymentItem' => new PaymentItemData(['id' => !is_null($data->paymentItemId) ? (int) $data->paymentItemId : null]),
             'amount' => floatval($extractedData['data']['amount'] ?? 0) / 100,
             'reason' => $extractedData['status'] ?? null,

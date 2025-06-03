@@ -24,9 +24,9 @@ return new class extends Migration
                 $table->enum('type', ['entry', 'exit'])->nullable();
                 $table->string('sub_type')->nullable();
                 $table->decimal('amount', 10);
-                $table->decimal('balance', 10);
+                $table->decimal('balance', 10)->nullable();
                 $table->string('description')->nullable();
-                $table->date('movement_date');
+                $table->string('movement_date')->nullable(false);
                 $table->boolean('is_initial_balance')->default(false);
                 $table->timestamps();
 

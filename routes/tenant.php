@@ -18,6 +18,8 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryInd
 use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
 use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
+use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsController;
+use Application\Api\v1\Financial\Exits\Purchases\Controllers\InvoiceController;
 use Application\Api\v1\Financial\Movements\Controllers\MovementController;
 use Application\Api\v1\Financial\ReceiptProcessing\Controllers\ReceiptProcessingController;
 use Application\Api\v1\Members\Controllers\MemberController;
@@ -613,6 +615,59 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
                 });
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Group Purchases Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('purchases')->group(function () {
+
+
+
+                    Route::prefix('cards')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get all cards
+                         */
+
+                        Route::get('/', [CardController::class, 'getCards']);
+
+                    });
+
+
+                    Route::prefix('invoices')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get invoices months by card id
+                         */
+
+                        Route::get('/', [InvoiceController::class, 'getInvoicesByCardId']);
+
+                    });
+
+
+                    Route::prefix('installments')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get installments of invoice by card id and invoice
+                         */
+
+                        Route::get('/', [InstallmentsController::class, 'getInstalments']);
+
+                    });
+
+
+
+                });
             });
 
 
@@ -747,7 +802,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             /*
             |--------------------------------------------------------------------------
-            | Account and Cards Financial routes
+            | Account and Purchases Financial routes
             |--------------------------------------------------------------------------
             |
             */
