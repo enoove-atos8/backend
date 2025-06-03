@@ -5,9 +5,7 @@ namespace Domain\Financial\AccountsAndCards\Cards\Actions;
 use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
 use Domain\Financial\AccountsAndCards\Cards\DataTransferObjects\CardData;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
-use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardRepository;
 
 class GetCardByIdAction
 {

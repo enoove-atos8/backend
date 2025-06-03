@@ -45,9 +45,10 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      * Save a new card or update an existing one.
      *
      * @param CardData $cardData
-     * @return Card
+     * @return CardData
+     * @throws UnknownProperties
      */
-    public function saveCard(CardData $cardData): Card
+    public function saveCard(CardData $cardData): CardData
     {
         $conditions = null;
 
@@ -60,7 +61,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
             ];
         }
 
-        return $this->updateOrCreate([
+        $updatedOrCreated = $this->updateOrCreate([
             'name'                  => $cardData->name,
             'description'           => $cardData->description,
             'card_number'           => $cardData->cardNumber,
@@ -75,6 +76,8 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
             'card_holder_name'      => $cardData->cardHolderName,
             'limit'                 => $cardData->limit,
         ], $conditions);
+
+        return CardData::fromResponse($updatedOrCreated->toArray());
     }
 
 
@@ -89,7 +92,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
     {
         $query = function () {
 
-            $q = DB::table(CardRepository::TABLE_NAME)
+            $q = DB::table(self::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->orderBy(self::ID_COLUMN);
 

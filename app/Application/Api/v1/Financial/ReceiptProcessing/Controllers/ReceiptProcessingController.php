@@ -18,7 +18,7 @@ use Infrastructure\Exceptions\GeneralExceptions;
 class ReceiptProcessingController extends Controller
 {
     /**
-     * @throws GeneralExceptions|BindingResolutionException
+     * @throws GeneralExceptions
      */
     public function getReceiptsProcessing(Request $request, GetNotProcessedReceiptsAction $getNotProcessedReceiptsAction): ReceiptsProcessingErrorResourceCollection
     {

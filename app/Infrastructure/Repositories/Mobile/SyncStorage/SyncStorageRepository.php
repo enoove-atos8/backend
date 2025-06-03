@@ -7,6 +7,7 @@ use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use App\Domain\SyncStorage\Models\SyncStorage;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 
 class SyncStorageRepository extends BaseRepository implements SyncStorageRepositoryInterface
@@ -17,6 +18,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
 
     const STATUS_COLUMN = 'status';
     const DOC_TYPE_COLUMN = 'doc_type';
+    const DOC_SUB_TYPE_COLUMN = 'doc_sub_type';
     const ENTRIES_VALUE_DOC_TYPE = 'entries';
     const EXITS_VALUE_DOC_TYPE = 'exits';
     const TO_PROCESS_VALUE = 'to_process';
@@ -41,47 +43,56 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     public function sendToDataServer(SyncStorageData $syncStorageData): SyncStorage
     {
         return $this->create([
-            'tenant'                        => $syncStorageData->tenant,
-            'module'                        => $syncStorageData->module,
-            'doc_type'                      => $syncStorageData->docType,
-            'doc_sub_type'                  => $syncStorageData->docSubType,
-            'division_id'                   => $syncStorageData->divisionId != '0' ? $syncStorageData->divisionId : null,
-            'group_id'                      => $syncStorageData->groupId != '0' ? $syncStorageData->groupId : null,
-            'payment_category_id'           => $syncStorageData->paymentCategoryId != '0' ? $syncStorageData->paymentCategoryId : null,
-            'payment_item_id'               => $syncStorageData->paymentItemId != '0' ? $syncStorageData->paymentItemId : null,
-            'is_payment'                    => $syncStorageData->isPayment,
-            'is_devolution'                 => $syncStorageData->isDevolution,
-            'is_credit_card_purchase'       => $syncStorageData->isCreditCardPurchase,
-            'credit_card_due_date'          => $syncStorageData->creditCardDueDate,
-            'number_installments'           => $syncStorageData->numberInstallments,
-            'purchase_credit_card_date'     => $syncStorageData->purchaseCreditCardDate,
-            'purchase_credit_card_amount'   => $syncStorageData->purchaseCreditCardAmount,
-            'status'                        => $syncStorageData->status,
-            'path'                          => $syncStorageData->path
+            'tenant'                                        => $syncStorageData->tenant,
+            'module'                                        => $syncStorageData->module,
+            'doc_type'                                      => $syncStorageData->docType,
+            'doc_sub_type'                                  => $syncStorageData->docSubType,
+            'division_id'                                   => $syncStorageData->divisionId != '0' ? $syncStorageData->divisionId : null,
+            'group_id'                                      => $syncStorageData->groupId != '0' ? $syncStorageData->groupId : null,
+            'card_id'                                       => $syncStorageData->cardId,
+            'payment_category_id'                           => $syncStorageData->paymentCategoryId != '0' ? $syncStorageData->paymentCategoryId : null,
+            'payment_item_id'                               => $syncStorageData->paymentItemId != '0' ? $syncStorageData->paymentItemId : null,
+            'is_payment'                                    => $syncStorageData->isPayment,
+            'is_devolution'                                 => $syncStorageData->isDevolution,
+            'is_credit_card_purchase'                       => $syncStorageData->isCreditCardPurchase,
+            'credit_card_due_date'                          => $syncStorageData->creditCardDueDate,
+            'number_installments'                           => $syncStorageData->numberInstallments,
+            'invoice_closed_day'                            => $syncStorageData->invoiceClosedDay,
+            'purchase_credit_card_date'                     => $syncStorageData->purchaseCreditCardDate,
+            'purchase_credit_card_amount'                   => $syncStorageData->purchaseCreditCardAmount,
+            'purchase_credit_card_installment_amount'       => $syncStorageData->purchaseCreditCardInstallmentAmount,
+            'status'                                        => $syncStorageData->status,
+            'path'                                          => $syncStorageData->path
         ]);
     }
 
 
     /**
      * @param string $docType
+     * @param string|null $docSubType
      * @param bool $getPurchases
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getSyncStorageData(string $docType, bool $getPurchases = false): Collection
+    public function getSyncStorageData(string $docType, ?string $docSubType = null, bool $getPurchases = false): Collection
     {
-        $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::STATUS_COLUMN, self::TO_PROCESS_VALUE, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::DOC_TYPE_COLUMN, $docType, 'and');
+        $query = function () use ($docType, $docSubType) {
 
-        if($getPurchases)
-            $this->queryConditions [] = $this->whereEqual(self::IS_CREDIT_CARD_PURCHASE_COLUMN, true, 'and');
+            $q = DB::table(self::TABLE_NAME)
+                ->where(self::STATUS_COLUMN, BaseRepository::OPERATORS['EQUALS'], self::TO_PROCESS_VALUE)
+                ->where(self::DOC_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $docType);
 
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryConditions,
-            self::ID_COLUMN,
-            BaseRepository::ORDERS['ASC']
-        );
+            if(!is_null($docSubType))
+                $q->where(self::DOC_SUB_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $docSubType);
+
+            $q->orderBy(self::ID_COLUMN);
+
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => SyncStorageData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
     }
 
 

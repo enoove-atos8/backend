@@ -11,6 +11,7 @@ use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardByIdAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardsAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\SaveCardAction;
 use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
+use Domain\Financial\Exits\Purchases\Actions\GetInvoiceByIdAction;
 use Exception;
 use Illuminate\Console\Application;
 use Illuminate\Http\Request;
@@ -49,7 +50,7 @@ class CardController extends Controller
     /**
      * @throws GeneralExceptions
      */
-    public function getCards(GetCardsAction $getCardsAction): CardsResourceCollection
+    public function getInvoicesByCardId(GetInvoiceByIdAction $getCardsAction): CardsResourceCollection
     {
         try
         {
@@ -78,6 +79,26 @@ class CardController extends Controller
             $card = $getCardByIdAction->execute($id);
 
             return new CardResource($card);
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param GetCardsAction $getCardsAction
+     * @return CardsResourceCollection
+     * @throws GeneralExceptions
+     */
+    public function getCards(GetCardsAction $getCardsAction): CardsResourceCollection
+    {
+        try
+        {
+            $cards = $getCardsAction->execute();
+
+            return new CardsResourceCollection($cards);
         }
         catch (Exception $e)
         {
