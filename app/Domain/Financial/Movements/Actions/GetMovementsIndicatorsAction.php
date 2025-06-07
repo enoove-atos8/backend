@@ -40,22 +40,13 @@ class GetMovementsIndicatorsAction
     {
         // Get the initial balance for the group
         $initialBalance = self::getInitialBalance($this->movementRepository, $groupId);
-
-        // Get movements data from repository
         $movements = $this->movementRepository->getMovementsByGroup($groupId, $dates, false, true);
 
-        if ($movements->isEmpty()) {
+        if ($movements->isEmpty())
             throw new GeneralExceptions(ReturnMessages::MOVEMENTS_NOT_FOUND, 404);
-        }
 
-        // Calculate entries and exits
         $financialSummary = self::calculateFinancialSummary($movements);
-
-        // Calculate current balance
-        $currentBalance = self::getCurrentBalance(
-            $this->movementRepository,
-            $groupId
-        );
+        $currentBalance = self::getCurrentBalance($this->movementRepository, $groupId);
 
 
         return [
@@ -124,7 +115,7 @@ class GetMovementsIndicatorsAction
     public static function getCurrentBalance(MovementRepositoryInterface $repository, int $groupId): float
     {
         $initialBalance = self::getInitialBalance($repository, $groupId);
-        $movements = $repository->getMovementsByGroup($groupId, null, false, true); // No filters
+        $movements = $repository->getMovementsByGroup($groupId, 'all', false, true); // No filters
 
         if ($movements->isEmpty()) {
             throw new GeneralExceptions(ReturnMessages::MOVEMENTS_NOT_FOUND, 404);
