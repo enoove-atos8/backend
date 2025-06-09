@@ -5,6 +5,7 @@ namespace Application\Core\Console;
 use App\Application\Core\Jobs\Financial\Entries\ReceiptsProcessing\ProcessingBankEntriesTransferReceipts;
 use App\Application\Core\Jobs\Financial\Exits\ReceiptsProcessing\ProcessingBankExitsTransferReceipts;
 use Application\Core\Jobs\Financial\Entries\Reports\HandlerEntriesReports;
+use Application\Core\Jobs\Financial\Purchases\ProcessingPurchaseCards;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -36,6 +37,11 @@ class Kernel extends ConsoleKernel
         $schedule->call(function () {
             resolve(HandlerEntriesReports::class)->handle();
         })->everyMinute();
+
+        // Purchases
+        $schedule->call(function () {
+            resolve(ProcessingPurchaseCards::class)->handle();
+        })->everyFifteenMinutes();
     }
 
 
@@ -45,7 +51,7 @@ class Kernel extends ConsoleKernel
      *
      * @return void
      */
-    protected function commands()
+    protected function commands(): void
     {
         require base_path('routes/console.php');
     }
