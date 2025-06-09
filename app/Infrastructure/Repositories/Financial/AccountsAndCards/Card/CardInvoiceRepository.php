@@ -27,13 +27,13 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
     const DELETED_COLUMN = 'deleted';
 
     const DISPLAY_SELECT_COLUMNS = [
-        'cards_invoices.id as cards_invoices_card_id',
-        'cards_invoices.card_id as cards_invoices_status',
-        'cards_invoices.status as cards_invoices_amount',
-        'cards_invoices.amount as cards_invoices_reference_date',
-        'cards_invoices.reference_date as cards_invoices_is_closed',
-        'cards_invoices.is_closed as cards_invoices_deleted',
-        'cards_invoices.deleted as cards_invoices_',
+        'cards_invoices.id as cards_invoices_id',
+        'cards_invoices.card_id as cards_invoices_card_id',
+        'cards_invoices.status as cards_invoices_status',
+        'cards_invoices.amount as cards_invoices_amount',
+        'cards_invoices.reference_date as cards_invoices_reference_date',
+        'cards_invoices.is_closed as cards_invoices_is_closed',
+        'cards_invoices.deleted as cards_invoices_deleted',
     ];
 
 

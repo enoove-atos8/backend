@@ -4,6 +4,7 @@ namespace Domain\Financial\Exits\Purchases\Actions;
 
 use App\Domain\Financial\Exits\Purchases\DataTransferObjects\CardInvoiceData;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardInvoiceRepositoryInterface;
+use Illuminate\Support\Collection;
 
 class GetInvoicesByCardIdAction
 {
@@ -20,7 +21,7 @@ class GetInvoicesByCardIdAction
      * @param int $cardId
      * @return CardInvoiceData|null
      */
-    public function execute(int $cardId): ?CardInvoiceData
+    public function execute(int $cardId): ?Collection
     {
         $invoice = $this->cardInvoiceRepository->getInvoicesByCardId($cardId);
 
