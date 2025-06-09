@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Financial\Exits\Purchases\Resources;
 
+use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -16,6 +17,21 @@ class InvoicesResourceCollection extends ResourceCollection
      */
     public static $wrap = 'invoices';
 
+    private array $monthNames = [
+        1 => 'Jan',
+        2 => 'Fev',
+        3 => 'Mar',
+        4 => 'Abr',
+        5 => 'Mai',
+        6 => 'Jun',
+        7 => 'Jul',
+        8 => 'Ago',
+        9 => 'Set',
+        10 => 'Out',
+        11 => 'Nov',
+        12 => 'Dez',
+    ];
+
 
     /**
      * Transform the resource collection into an array.
@@ -27,11 +43,17 @@ class InvoicesResourceCollection extends ResourceCollection
     {
 
         return $this->collection->map(function ($invoice) {
+            $date = Carbon::parse($invoice->referenceDate);
+            $monthIndex = (int) $date->format('m');
+
             return [
                 'id' => $invoice->id,
-                'date' => $invoice->date,
+                'display' => $this->monthNames[$monthIndex],
+                'year' => (int) $date->format('Y'),
+                'monthIndex' => (int) $date->format('m') - 1, // 0-based index
+                'stringMonth' => $date->format('m'), // 01, 02, ...
                 'status' => $invoice->status,
             ];
-        });
+        })->values()->all();
     }
 }

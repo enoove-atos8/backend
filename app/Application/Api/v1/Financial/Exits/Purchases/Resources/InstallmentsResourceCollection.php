@@ -33,26 +33,28 @@ class InstallmentsResourceCollection extends ResourceCollection
             $result[] = [
                 'id' => $installment->id,
                 'invoice'   =>  [
-                    'id' => $installment->invoice->id,
-                    'status' => $installment->invoice->status,
-                    'amount' => $installment->invoice->amount
+                    'id' => $installment->cardInvoiceData->id,
+                    'status' => $installment->cardInvoiceData->status,
+                    'amount' => $installment->cardInvoiceData->amount
                 ],
                 'purchase'   => [
-                    'id' => $installment->purchase->id,
-                    'cardId' => $installment->purchase->cardId,
-                    'status' => $installment->purchase->status,
-                    'amount' => $installment->purchase->amount,
-                    'installments' => $installment->purchase->installments,
-                    'installmentsAmount' => $installment->purchase->installmentsAmount,
-                    'date' => $installment->purchase->date,
-                    'deleted' => $installment->purchase->deleted,
-                    'receipt' => $installment->purchase->receipt,
+                    'id' => $installment->cardPurchaseData->id,
+                    'cardId' => $installment->cardPurchaseData->cardId,
+                    'status' => $installment->cardPurchaseData->status,
+                    'amount' => $installment->cardPurchaseData->amount,
+                    'installments' => $installment->cardPurchaseData->installments,
+                    'installmentAmount' => $installment->cardPurchaseData->installmentAmount,
+                    'date' => $installment->cardPurchaseData->date,
+                    'deleted' => $installment->cardPurchaseData->deleted,
+                    'receipt' => $installment->cardPurchaseData->receipt,
                 ],
-                'status'    =>  $installment->status,
-                'installment' => $installment->installment,
-                'installmentAmount' => $installment->installmentAmount,
-                'date'  =>  $installment->date,
-                'deleted'  =>  $installment->deleted
+                'installment' => [
+                    'status'    =>  $installment->status,
+                    'installment' => $installment->installment,
+                    'installmentAmount' => $installment->installmentAmount,
+                    'date'  =>  $installment->date,
+                    'deleted'  =>  $installment->deleted
+                ]
             ];
         }
 

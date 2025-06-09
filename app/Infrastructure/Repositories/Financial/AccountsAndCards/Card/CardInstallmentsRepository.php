@@ -20,13 +20,14 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
 
     protected mixed $model = CardInstallment::class;
 
-    const TABLE_NAME = 'cards_invoices';
+    const TABLE_NAME = 'cards_installments';
 
     const ID_COLUMN = 'id';
     const CARD_ID_COLUMN = 'card_id';
 
     const PURCHASE_ID_COLUMN = 'purchase_id';
     const INVOICE_ID_COLUMN = 'invoice_id';
+    const INSTALLMENT_ID_COLUMN = 'installment_id';
     const DATE_COLUMN = 'date';
     const DELETED_COLUMN = 'deleted';
 
@@ -35,7 +36,8 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
         'cards_installments.invoice_id as cards_installments_invoice_id',
         'cards_installments.purchase_id as cards_installments_purchase_id',
         'cards_installments.status as cards_installments_status',
-        'cards_installments.installments_amount as cards_installments_installments_amount',
+        'cards_installments.installment as cards_installments_installment',
+        'cards_installments.installment_amount as cards_installments_installment_amount',
         'cards_installments.date as cards_installments_date',
         'cards_installments.deleted as cards_installments_deleted',
     ];
@@ -66,14 +68,14 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
                 ->select($displayColumnsFromRelationship)
                 ->leftJoin(CardPurchaseRepository::TABLE_NAME, self::PURCHASE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
-                    CardPurchaseRepository::ID_COLUMN)
+                    CardPurchaseRepository::TABLE_NAME . '.' . CardPurchaseRepository::ID_COLUMN)
                 ->leftJoin(CardInvoiceRepository::TABLE_NAME, self::INVOICE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
-                    CardInvoiceRepository::ID_COLUMN)
-                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
-                ->where(self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
-                ->where(self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date)
-                ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['ASC']);
+                    CardInvoiceRepository::TABLE_NAME . '.' . CardInvoiceRepository::ID_COLUMN)
+                ->where(self::TABLE_NAME . '.' . self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(self::TABLE_NAME . '.' . self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
+                ->where(self::TABLE_NAME . '.' . self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date)
+                ->orderBy(self::TABLE_NAME . '.' . self::ID_COLUMN);
 
 
             $result = $q->get();

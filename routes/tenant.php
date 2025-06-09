@@ -648,7 +648,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          * Description: Get invoices months by card id
                          */
 
-                        Route::get('/', [InvoiceController::class, 'getInvoicesByCardId']);
+                        Route::get('/getInvoices', [InvoiceController::class, 'getInvoicesByCardId']);
 
                     });
 
@@ -661,7 +661,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          * Description: Get installments of invoice by card id and invoice
                          */
 
-                        Route::get('/', [InstallmentsController::class, 'getInstalments']);
+                        Route::get('/getInstallments', [InstallmentsController::class, 'getInstalments']);
 
                     });
 
