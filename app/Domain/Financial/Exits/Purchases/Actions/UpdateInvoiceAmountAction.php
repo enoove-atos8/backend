@@ -2,9 +2,8 @@
 
 namespace Domain\Financial\Exits\Purchases\Actions;
 
+use App\Domain\Financial\Exits\Purchases\Interfaces\CardInvoiceRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
-use Domain\Financial\AccountsAndCards\Cards\DataTransferObjects\CardInvoiceData;
-use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardInvoiceRepositoryInterface;
 use Exception;
 use Infrastructure\Exceptions\GeneralExceptions;
 
