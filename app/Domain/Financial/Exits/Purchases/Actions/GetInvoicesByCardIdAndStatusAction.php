@@ -6,7 +6,7 @@ use App\Domain\Financial\Exits\Purchases\DataTransferObjects\CardInvoiceData;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardInvoiceRepositoryInterface;
 use Illuminate\Support\Collection;
 
-class GetInvoicesByCardIdAction
+class GetInvoicesByCardIdAndStatusAction
 {
     private CardInvoiceRepositoryInterface $cardInvoiceRepository;
 
@@ -19,11 +19,12 @@ class GetInvoicesByCardIdAction
 
     /**
      * @param int $cardId
+     * @param string $status
      * @return CardInvoiceData|null
      */
-    public function execute(int $cardId): ?Collection
+    public function execute(int $cardId, string $status): ?Collection
     {
-        $invoices = $this->cardInvoiceRepository->getInvoicesByCardId($cardId);
+        $invoices = $this->cardInvoiceRepository->getInvoicesByCardIdAndStatus($cardId, $status);
 
         if(!is_null($invoices))
             return $invoices;

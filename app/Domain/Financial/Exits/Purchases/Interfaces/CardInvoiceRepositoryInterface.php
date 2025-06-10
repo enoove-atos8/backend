@@ -36,6 +36,16 @@ interface CardInvoiceRepositoryInterface
 
 
     /**
+     * Returns the card invoice data by card id
+     *
+     * @param int $cardId
+     * @param string $status
+     * @return CardInvoiceData|null
+     */
+    public function getInvoicesByCardIdAndStatus(int $cardId, string $status): ?Collection;
+
+
+    /**
      * Returns the card invoice created
      *
      * @param CardInvoiceData $cardInvoiceData
@@ -45,11 +55,21 @@ interface CardInvoiceRepositoryInterface
 
 
     /**
-     * Returns the card invoice created
+     * Update the amount of invoice
      *
      * @param int $invoiceId
      * @param float $amount
      * @return void
      */
     public function updateInvoiceAmount(int $invoiceId, float $amount): void;
+
+
+    /**
+     * Update the status of invoice
+     *
+     * @param int $invoiceId
+     * @param string $status
+     * @return void
+     */
+    public function updateInvoiceStatus(int $invoiceId, string $status): void;
 }
