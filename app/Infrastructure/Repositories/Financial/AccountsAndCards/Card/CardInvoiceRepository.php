@@ -23,8 +23,14 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
 
     const ID_COLUMN = 'id';
     const CARD_ID_COLUMN = 'card_id';
+    const STATUS_COLUMN = 'status';
     const REFERENCE_DATE_COLUMN = 'reference_date';
     const DELETED_COLUMN = 'deleted';
+    const INVOICE_CLOSED_VALUE = 'closed';
+    const INVOICE_OPEN_VALUE = 'open';
+    const INVOICE_FUTURE_VALUE = 'future';
+    const INVOICE_PAID_VALUE = 'paid';
+
 
     const DISPLAY_SELECT_COLUMNS = [
         'cards_invoices.id as cards_invoices_id',
@@ -135,6 +141,28 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
 
 
     /**
+     * @param int $invoiceId
+     * @param string $status
+     * @return void
+     * @throws BindingResolutionException
+     */
+    public function updateInvoiceStatus(int $invoiceId, string $status): void
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $invoiceId,
+        ];
+
+        $this->update($conditions, [
+            'status' =>   $status,
+        ]);
+    }
+
+
+
+
+    /**
      * @param int $cardId
      * @return CardInvoiceData|null
      * @throws BindingResolutionException
@@ -146,6 +174,31 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
             $q = DB::table(self::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
+                ->orderBy(self::REFERENCE_DATE_COLUMN, BaseRepository::ORDERS['ASC']);
+
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => CardInvoiceData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
+     * @param int $cardId
+     * @param string $status
+     * @return CardInvoiceData|null
+     * @throws BindingResolutionException
+     */
+    public function getInvoicesByCardIdAndStatus(int $cardId, string $status): ?Collection
+    {
+        $query = function () use ($cardId, $status) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
+                ->where(self::STATUS_COLUMN, BaseRepository::OPERATORS['EQUALS'], $status)
                 ->orderBy(self::REFERENCE_DATE_COLUMN, BaseRepository::ORDERS['ASC']);
 
 
