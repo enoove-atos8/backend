@@ -11,6 +11,7 @@ use Domain\Financial\Exits\Purchases\Actions\CreatePurchaseAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardByIdAction;
 use Domain\Financial\Exits\Purchases\Actions\GetInvoiceAction;
 use Domain\SyncStorage\Actions\GetSyncStorageDataAction;
+use Domain\SyncStorage\Actions\UpdateStatusAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -31,6 +32,8 @@ class ProcessingPurchaseCards
     private GetCardByIdAction $getCardByIdAction;
     private CreateInvoiceAction $createInvoiceAction;
 
+    private UpdateStatusAction $updateStatusAction;
+
     protected Collection $syncStorageData;
 
     public function __construct(
@@ -39,7 +42,8 @@ class ProcessingPurchaseCards
         GetChurchesAction $getChurchesAction,
         GetSyncStorageDataAction $getSyncStorageDataAction,
         CreateInvoiceAction $createInvoiceAction,
-        GetCardByIdAction $getCardByIdAction
+        GetCardByIdAction $getCardByIdAction,
+        UpdateStatusAction $updateStatusAction
     )
     {
         $this->createPurchaseAction = $createPurchaseAction;
@@ -48,6 +52,7 @@ class ProcessingPurchaseCards
         $this->getSyncStorageDataAction = $getSyncStorageDataAction;
         $this->createInvoiceAction = $createInvoiceAction;
         $this->getCardByIdAction = $getCardByIdAction;
+        $this->updateStatusAction = $updateStatusAction;
     }
 
 
@@ -70,7 +75,10 @@ class ProcessingPurchaseCards
             foreach ($this->syncStorageData as $data)
             {
                 $purchaseData = CardPurchaseData::fromSyncStorageData($data, (int) $data->cardId);
-                $this->createPurchaseAction->execute($purchaseData);
+                $purchase = $this->createPurchaseAction->execute($purchaseData);
+
+                if(!is_null($purchase->id))
+                    $this->updateStatusAction->execute($data->id, SyncStorageRepository::DONE_VALUE);
             }
         }
 
