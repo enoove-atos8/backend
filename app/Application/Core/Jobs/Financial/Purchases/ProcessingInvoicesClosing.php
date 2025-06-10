@@ -65,7 +65,7 @@ class ProcessingInvoicesClosing
                     $referenceDate = Carbon::createFromFormat('Y-m-d', $referenceYearMonth.'-'.$card->closingDay);
 
                     // Calculate next month's closing date
-                    $nextMonthYearMonth = Carbon::parse($invoice->referenceDate)->addMonth()->format('Y-m');
+                    $nextMonthYearMonth = Carbon::parse($currentDate)->addMonth()->format('Y-m');
                     $closingDateNextMonth = Carbon::createFromFormat('Y-m-d', $nextMonthYearMonth.'-'.$card->closingDay);
 
                     // If current date is greater than the reference closing date, close the invoice
