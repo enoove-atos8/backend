@@ -36,6 +36,7 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
         'cards_installments.invoice_id as cards_installments_invoice_id',
         'cards_installments.purchase_id as cards_installments_purchase_id',
         'cards_installments.status as cards_installments_status',
+        'cards_installments.amount as cards_installments_amount',
         'cards_installments.installment as cards_installments_installment',
         'cards_installments.installment_amount as cards_installments_installment_amount',
         'cards_installments.date as cards_installments_date',
@@ -98,12 +99,13 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
             'invoice_id'            =>  $cardInstallmentData->cardInvoiceData->id,
             'purchase_id'           =>  $cardInstallmentData->cardPurchaseData->id,
             'status'                =>  $cardInstallmentData->status,
+            'amount'                =>  $cardInstallmentData->amount,
             'installment'           =>  $cardInstallmentData->installment,
             'installment_amount'    =>  $cardInstallmentData->installmentAmount,
             'date'                  =>  $cardInstallmentData->date,
             'deleted'               =>  $cardInstallmentData->deleted,
         ]);
 
-        return CardInstallmentData::fromResponse($created->toArray());
+        return CardInstallmentData::fromSelf($created->toArray());
     }
 }
