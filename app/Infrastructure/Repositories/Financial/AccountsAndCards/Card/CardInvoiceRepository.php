@@ -146,7 +146,7 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
             $q = DB::table(self::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
-                ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['ASC']);
+                ->orderBy(self::REFERENCE_DATE_COLUMN, BaseRepository::ORDERS['ASC']);
 
 
             $result = $q->get();
