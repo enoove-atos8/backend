@@ -79,6 +79,13 @@ class CreateInstallmentAction
 
 
 
+    /**
+     * @param Carbon $purchaseDate
+     * @param int $closingDay
+     * @param bool $isFirstInstallment
+     * @param string|null $previousReference
+     * @return string
+     */
     public function calculateReferenceDate(Carbon $purchaseDate, int $closingDay, bool $isFirstInstallment, ?string $previousReference = null): string
     {
         $closingDateCurrent = $purchaseDate->copy()->day($closingDay);
