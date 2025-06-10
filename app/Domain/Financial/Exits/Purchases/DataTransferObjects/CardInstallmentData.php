@@ -24,6 +24,9 @@ class CardInstallmentData extends DataTransferObject
     public ?string $status;
 
     /** @var int|null */
+    public ?int $amount;
+
+    /** @var int|null */
     public ?int $installment;
 
     /** @var int|null */
@@ -68,6 +71,7 @@ class CardInstallmentData extends DataTransferObject
                 'receipt' => $data['cards_purchases_receipt'] ?? null,
             ]),
             status: $data['cards_installments_status'] ?? null,
+            amount: $data['cards_installments_amount'] ?? null,
             installment: $data['cards_installments_installment'] ?? null,
             installmentAmount: $data['cards_installments_installment_amount'] ?? null,
             date: $data['cards_installments_date'] ?? null,
@@ -78,30 +82,24 @@ class CardInstallmentData extends DataTransferObject
     /**
      * Create a CardInstallmentData instance from another CardInstallmentData object.
      *
-     * @param CardInstallmentData $installmentData
-     * @param CardInvoiceData $cardInvoiceData
-     * @param CardPurchaseData $cardPurchaseData
+     * @param array $data
      * @param array $additionalData
      * @return self
      * @throws UnknownProperties
      */
-    public static function fromSelf(
-        CardInstallmentData $installmentData,
-        CardInvoiceData $cardInvoiceData,
-        CardPurchaseData $cardPurchaseData,
-        array $additionalData = []): self
+    public static function fromSelf(array $data, array $additionalData = []): self
     {
         $data = [
-            'id' => $installmentData->id,
-            'cardId' => $installmentData->cardId,
-            'invoice' => new CardInvoiceData(['id' => $cardInvoiceData->id]),
-            'purchase' => new CardPurchaseData(['id' => $cardPurchaseData->id]),
-            'status' => $installmentData->status,
-            'installment' => $installmentData->installment,
-            'installmentAmount' => $installmentData->installmentAmount,
-            'date' => $installmentData->date,
-            'deleted' => $installmentData->deleted,
-            'isFirstInstallment' => $installmentData->isFirstInstallment,
+            'id' => $data['id'],
+            'cardId' => $data['card_id'],
+            'cardPurchaseData' => new CardPurchaseData(['id' => $data['purchase_id']]),
+            'cardInvoiceData' => new CardInvoiceData(['id' => $data['invoice_id']]),
+            'status' => $data['status'],
+            'amount' => $data['amount'],
+            'installment' => $data['installment'],
+            'installmentAmount' => $data['installment_amount'],
+            'date' => $data['date'],
+            'deleted' => $data['deleted'],
         ];
 
         return new self(array_merge($data, $additionalData));
@@ -127,8 +125,8 @@ class CardInstallmentData extends DataTransferObject
 
         $data = [
             'cardId' => $cardPurchaseData->cardId,
-            'invoiceId' => null,
-            'purchaseId' => $purchaseId,
+            'cardInvoiceData' => new CardPurchaseData(['id' => null]),
+            'cardPurchaseData' => new CardPurchaseData(['id' => $purchaseId]),
             'status' => $cardPurchaseData->status,
             'amount' => $cardPurchaseData->amount,
             'installment' => $currentInstallment,
