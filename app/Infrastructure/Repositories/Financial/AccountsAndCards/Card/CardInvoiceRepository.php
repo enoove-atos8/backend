@@ -96,6 +96,29 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
     }
 
 
+    /**
+     * @param int $cardId
+     * @param int $invoiceId
+     * @return CardInvoiceData|null
+     * @throws UnknownProperties
+     */
+    public function getInvoiceIndicators(int $cardId, int $invoiceId): ?array
+    {
+        $result = $this->model
+            ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+            ->where(self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
+            ->where(self::ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $invoiceId)
+            ->first();
+
+        if (!$result) {
+            return null;
+        }
+
+        $attributes = $result->getAttributes();
+        return CardInvoiceData::fromResponse($attributes);
+    }
+
+
 
 
     /**
