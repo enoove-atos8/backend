@@ -15,7 +15,7 @@ class GeneralExceptions extends Exception
     protected ?Exception $e;
 
 
-    public function __construct($message, $code, Exception $e = null)
+    public function __construct($message, $code = 0, Exception|Throwable $e = null)
     {
         $this->message = $message;
         $this->code = $code;
@@ -32,7 +32,7 @@ class GeneralExceptions extends Exception
      */
     public function report(): void
     {
-        if (app()->bound('sentry')) {
+        if (app()->bound('sentry') && $this->e instanceof Throwable) {
             app('sentry')->captureException($this->e);
         }
     }

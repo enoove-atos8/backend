@@ -9,6 +9,7 @@ use Application\Core\Jobs\Financial\Purchases\ProcessingInvoicesClosing;
 use Application\Core\Jobs\Financial\Purchases\ProcessingPurchaseCards;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Infrastructure\Exceptions\GeneralExceptions;
 
 class Kernel extends ConsoleKernel
 {
@@ -26,27 +27,47 @@ class Kernel extends ConsoleKernel
 
         // Entries
         $schedule->call(function () {
-            resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
+            try{
+                resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
+            }catch (\Throwable $e){
+                throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankEntriesTransferReceipts', 500, $e);
+            }
         })->everyFifteenMinutes();
 
         // Exits
         $schedule->call(function () {
-            resolve(ProcessingBankExitsTransferReceipts::class)->handle();
+            try{
+                resolve(ProcessingBankExitsTransferReceipts::class)->handle();
+            }catch (\Throwable $e){
+                throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankExitsTransferReceipts', 500, $e);
+            }
         })->everyFifteenMinutes();
 
         // Reports
         $schedule->call(function () {
-            resolve(HandlerEntriesReports::class)->handle();
+            try{
+                resolve(HandlerEntriesReports::class)->handle();
+            }catch (\Throwable $e){
+                throw new GeneralExceptions('Erro na execução do agendamento HandlerEntriesReports', 500, $e);
+            }
         })->everyMinute();
 
         // Purchases
         $schedule->call(function () {
-            resolve(ProcessingPurchaseCards::class)->handle();
+            try{
+                resolve(ProcessingPurchaseCards::class)->handle();
+            }catch (\Throwable $e){
+                throw new GeneralExceptions('Erro na execução do agendamento ProcessingPurchaseCards', 500, $e);
+            }
         })->everyFifteenMinutes();
 
         // Update invoice closing
         $schedule->call(function () {
-            resolve(ProcessingInvoicesClosing::class)->handle();
+            try{
+                resolve(ProcessingInvoicesClosing::class)->handle();
+            }catch (\Throwable $e){
+                throw new GeneralExceptions('Erro na execução do agendamento ProcessingInvoicesClosing', 500, $e);
+            }
         })->hourly();
     }
 
