@@ -4,6 +4,7 @@ namespace Domain\Financial\Exits\Purchases\Actions;
 
 use App\Domain\Financial\Exits\Purchases\DataTransferObjects\CardInvoiceData;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardInvoiceRepositoryInterface;
+use Carbon\Carbon;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardByIdAction;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -39,9 +40,13 @@ class GetInvoiceIndicatorsAction
         if(!is_null($invoice))
         {
             $totalInvoice = $invoice->amount;
+
+            $referenceDate = Carbon::createFromFormat('Y-m', $invoice->referenceDate)->addMonth();
+            $dueDate = $referenceDate->format('Y-m') . '-' . $card->dueDay;
+
             $result = [
                 'total'     => $totalInvoice,
-                'dueDate'   =>  $card->dueDay,
+                'dueDate'   =>  $dueDate,
                 'closingDay'   =>  $card->closingDay,
             ];
         }
