@@ -120,12 +120,8 @@ class HandlerEntriesReports
         {
             foreach ($tenants as $tenant)
                 $arrTenants[] = $tenant->tenant_id;
+        }
 
-            return $arrTenants;
-        }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::NOT_FOUND_CHURCHES, 404);
-        }
+        return $arrTenants;
     }
 }
