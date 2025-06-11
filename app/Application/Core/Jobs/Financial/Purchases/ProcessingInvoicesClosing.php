@@ -57,18 +57,14 @@ class ProcessingInvoicesClosing
 
                 foreach ($invoices as $invoice)
                 {
-                    // Get current date for comparison
                     $currentDate = Carbon::now();
 
-                    // Format reference date by using the year-month from invoice and the closingDay from card
                     $referenceYearMonth = Carbon::parse($invoice->referenceDate)->format('Y-m');
                     $referenceDate = Carbon::createFromFormat('Y-m-d', $referenceYearMonth.'-'.$card->closingDay);
 
-                    // Calculate next month's closing date
                     $nextMonthYearMonth = Carbon::parse($currentDate)->addMonth()->format('Y-m');
                     $closingDateNextMonth = Carbon::createFromFormat('Y-m-d', $nextMonthYearMonth.'-'.$card->closingDay);
 
-                    // If current date is greater than the reference closing date, close the invoice
                     if ($currentDate->greaterThan($referenceDate) && $currentDate->lessThan($closingDateNextMonth))
                         $this->updateStatusInvoiceAction->execute($invoice->id, CardInvoiceRepository::INVOICE_CLOSED_VALUE);
                 }
@@ -90,12 +86,8 @@ class ProcessingInvoicesClosing
         {
             foreach ($tenants as $tenant)
                 $arrTenants[] = $tenant->tenant_id;
+        }
 
-            return $arrTenants;
-        }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::NOT_FOUND_CHURCHES, 404);
-        }
+        return $arrTenants;
     }
 }
