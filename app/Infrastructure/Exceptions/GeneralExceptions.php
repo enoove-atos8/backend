@@ -62,7 +62,7 @@ class GeneralExceptions extends Exception
         {
 
             $itemsResponse = [
-                'message' => 'Houve um erro interno na aplicação, em alguns instantes este problama será resolvido!',
+                'message' => 'Houve um erro interno na aplicação, em alguns instantes este problema será resolvido!',
                 'code'         => 500,
                 'file'         => $this->getFile(),
                 'line'         => $this->getLine(),

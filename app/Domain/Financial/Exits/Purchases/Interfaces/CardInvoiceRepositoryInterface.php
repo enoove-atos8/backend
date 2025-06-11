@@ -27,6 +27,16 @@ interface CardInvoiceRepositoryInterface
 
 
     /**
+     * Returns the indicators invoice
+     *
+     * @param int $cardId
+     * @param int $invoiceId
+     * @return CardInvoiceData|null
+     */
+    public function getInvoiceIndicators(int $cardId, int $invoiceId): ?array;
+
+
+    /**
      * Returns the card invoice data by card id
      *
      * @param int $cardId

@@ -650,6 +650,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::get('/getInvoices', [InvoiceController::class, 'getInvoicesByCardId']);
 
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get invoice indicators
+                         */
+
+                        Route::get('/getInvoiceIndicators', [InvoiceController::class, 'getInvoiceIndicators']);
+
                     });
 
 
