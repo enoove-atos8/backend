@@ -23,14 +23,14 @@ class CardInstallmentData extends DataTransferObject
     /** @var string|null */
     public ?string $status;
 
-    /** @var int|null */
-    public ?int $amount;
+    /** @var float|null */
+    public ?float $amount;
 
     /** @var int|null */
     public ?int $installment;
 
-    /** @var int|null */
-    public ?int $installmentAmount;
+    /** @var float|null */
+    public ?float $installmentAmount;
 
     /** @var string|null */
     public ?string $date;
