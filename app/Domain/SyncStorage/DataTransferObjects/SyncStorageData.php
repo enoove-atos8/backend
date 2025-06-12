@@ -29,13 +29,13 @@ class SyncStorageData extends DataTransferObject
     public ?string $groupId;
 
     /** @var ?string | null */
+    public ?string $cardId;
+
+    /** @var ?string | null */
     public ?string $paymentCategoryId;
 
     /** @var ?string | null */
     public ?string $paymentItemId;
-
-    /** @var ?string | null */
-    public ?string $cardId;
 
     /** @var ?string | null */
     public ?string $invoiceClosedDay;
@@ -50,7 +50,7 @@ class SyncStorageData extends DataTransferObject
     public ?bool $isCreditCardPurchase;
 
     /** @var ?string | null */
-    public ?string $creditCardDueDate;
+    public ?string $closingDay;
 
     /** @var ?string | null */
     public ?string $numberInstallments;
@@ -89,6 +89,7 @@ class SyncStorageData extends DataTransferObject
             'docSubType' => $data['doc_sub_type'] ?? null,
             'divisionId' => $data['division_id'] ?? null,
             'groupId' => $data['group_id'] ?? null,
+            'cardDay' => $data['cardDay'] ?? null,
             'paymentCategoryId' => $data['payment_category_id'] ?? false,
             'paymentItemId' => $data['payment_item_id'] ?? null,
             'cardId' => $data['card_id'] ?? null,
@@ -96,7 +97,7 @@ class SyncStorageData extends DataTransferObject
             'isPayment' => $data['is_payment'] ?? null,
             'isDevolution' => $data['is_devolution'] ?? null,
             'isCreditCardPurchase' => $data['is_credit_card_purchase'] ?? null,
-            'creditCardDueDate' => $data['credit_card_due_date'] ?? null,
+            'closingDay' => $data['closing_day'] ?? null,
             'numberInstallments' => $data['number_installments'] ?? null,
             'purchaseCreditCardDate' => $data['purchase_credit_card_date'] ?? null,
             'purchaseCreditCardAmount' => $data['purchase_credit_card_amount'] ?? null,

@@ -55,7 +55,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'is_payment'                                    => $syncStorageData->isPayment,
             'is_devolution'                                 => $syncStorageData->isDevolution,
             'is_credit_card_purchase'                       => $syncStorageData->isCreditCardPurchase,
-            'credit_card_due_date'                          => $syncStorageData->creditCardDueDate,
+            'closing_day'                                   => $syncStorageData->closingDay,
             'number_installments'                           => $syncStorageData->numberInstallments,
             'invoice_closed_day'                            => $syncStorageData->invoiceClosedDay,
             'purchase_credit_card_date'                     => $syncStorageData->purchaseCreditCardDate,
