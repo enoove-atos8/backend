@@ -57,7 +57,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'is_credit_card_purchase'                       => $syncStorageData->isCreditCardPurchase,
             'closing_day'                                   => $syncStorageData->closingDay,
             'number_installments'                           => $syncStorageData->numberInstallments,
-            'invoice_closed_day'                            => $syncStorageData->invoiceClosedDay,
+            'invoice_closed_day'                            => $syncStorageData->closingDay,
             'purchase_credit_card_date'                     => $syncStorageData->purchaseCreditCardDate,
             'purchase_credit_card_amount'                   => ($syncStorageData->purchaseCreditCardAmount * $syncStorageData->numberInstallments),
             'purchase_credit_card_installment_amount'       => $syncStorageData->purchaseCreditCardAmount,
