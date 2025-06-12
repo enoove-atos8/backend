@@ -19,6 +19,8 @@ class SyncStorage extends Model
         'doc_sub_type',
         'division_id',
         'group_id',
+        'card_id',
+        'invoice_closed_day',
         'payment_category_id',
         'payment_item_id',
         'is_payment',
@@ -28,6 +30,7 @@ class SyncStorage extends Model
         'number_installments',
         'purchase_credit_card_date',
         'purchase_credit_card_amount',
+        'purchase_credit_card_installment_amount',
         'status',
         'path',
     ];

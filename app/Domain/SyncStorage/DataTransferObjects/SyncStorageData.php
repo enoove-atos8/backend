@@ -37,9 +37,6 @@ class SyncStorageData extends DataTransferObject
     /** @var ?string | null */
     public ?string $paymentItemId;
 
-    /** @var ?string | null */
-    public ?string $invoiceClosedDay;
-
     /** @var ?bool */
     public ?bool $isPayment;
 
@@ -93,11 +90,10 @@ class SyncStorageData extends DataTransferObject
             'paymentCategoryId' => $data['payment_category_id'] ?? false,
             'paymentItemId' => $data['payment_item_id'] ?? null,
             'cardId' => $data['card_id'] ?? null,
-            'invoiceClosedDay' => $data['invoice_closed_day'] ?? null,
             'isPayment' => $data['is_payment'] ?? null,
             'isDevolution' => $data['is_devolution'] ?? null,
             'isCreditCardPurchase' => $data['is_credit_card_purchase'] ?? null,
-            'closingDay' => $data['closing_day'] ?? null,
+            'closingDay' => $data['invoice_closing_day'] ?? null,
             'numberInstallments' => $data['number_installments'] ?? null,
             'purchaseCreditCardDate' => $data['purchase_credit_card_date'] ?? null,
             'purchaseCreditCardAmount' => $data['purchase_credit_card_amount'] ?? null,
