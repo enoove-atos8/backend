@@ -37,7 +37,6 @@ class ReceiptDataRequest extends FormRequest
             'cardId'                                => '',
             'paymentCategoryId'                     => '',
             'paymentItemId'                         => '',
-            'cardId'                                => '',
             'invoiceClosedDay'                      => '',
             'isPayment'                             => 'required',
             'isDevolution'                          => '',
