@@ -70,7 +70,9 @@ class ProcessingPurchaseCards
         foreach ($tenants as $tenant)
         {
             tenancy()->initialize($tenant);
-            $this->syncStorageData = $this->getSyncStorageDataAction->execute(ExitRepository::EXITS_VALUE, SyncStorageRepository::PURCHASE_SUB_TYPE_VALUE);
+            $this->syncStorageData = $this->getSyncStorageDataAction->execute(
+                                ExitRepository::EXITS_VALUE,
+                            SyncStorageRepository::PURCHASE_SUB_TYPE_VALUE);
 
             foreach ($this->syncStorageData as $data)
             {

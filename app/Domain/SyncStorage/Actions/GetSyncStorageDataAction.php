@@ -24,8 +24,8 @@ class GetSyncStorageDataAction
     /**
      * @throws Throwable
      */
-    public function execute(string $docType, ?string $docSubType = null): Collection
+    public function execute(string $docType, ?string $docSubType = null, array|string|null $exceptDocSubType = null): Collection
     {
-        return $this->syncStorageRepository->getSyncStorageData($docType, $docSubType);
+        return $this->syncStorageRepository->getSyncStorageData($docType, $docSubType, $exceptDocSubType);
     }
 }

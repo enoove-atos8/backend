@@ -70,13 +70,13 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     /**
      * @param string $docType
      * @param string|null $docSubType
-     * @param bool $getPurchases
+     * @param array|string|null $exceptDocSubType
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getSyncStorageData(string $docType, ?string $docSubType = null, bool $getPurchases = false): Collection
+    public function getSyncStorageData(string $docType, ?string $docSubType = null, array|string|null $exceptDocSubType = null): Collection
     {
-        $query = function () use ($docType, $docSubType) {
+        $query = function () use ($docType, $docSubType, $exceptDocSubType) {
 
             $q = DB::table(self::TABLE_NAME)
                 ->where(self::STATUS_COLUMN, BaseRepository::OPERATORS['EQUALS'], self::TO_PROCESS_VALUE)
@@ -85,8 +85,12 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             if(!is_null($docSubType))
                 $q->where(self::DOC_SUB_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $docSubType);
 
-            $q->orderBy(self::ID_COLUMN);
+            if(!is_null($exceptDocSubType)){
+                $exceptValues = is_array($exceptDocSubType) ? $exceptDocSubType : [$exceptDocSubType];
+                $q->whereNotIn(self::DOC_SUB_TYPE_COLUMN, $exceptValues);
+            }
 
+            $q->orderBy(self::ID_COLUMN);
 
             $result = $q->get();
             return collect($result)->map(fn($item) => SyncStorageData::fromResponse((array) $item));
