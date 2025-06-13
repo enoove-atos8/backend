@@ -18,9 +18,10 @@ interface SyncStorageRepositoryInterface
     /**
      * @param string $docType
      * @param string|null $docSubType
+     * @param array|string|null $exceptDocSubType
      * @return Collection
      */
-    public function getSyncStorageData(string $docType, ?string $docSubType = null): Collection;
+    public function getSyncStorageData(string $docType, ?string $docSubType, array|string|null $exceptDocSubType): Collection;
 
 
 

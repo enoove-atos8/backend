@@ -129,7 +129,10 @@ class ProcessingBankExitsTransferReceipts
             foreach ($tenants as $tenant) {
                 tenancy()->initialize($tenant);
 
-                $this->syncStorageData = $this->getSyncStorageDataAction->execute(SyncStorageRepository::EXITS_VALUE_DOC_TYPE);
+                $this->syncStorageData = $this->getSyncStorageDataAction->execute(
+                                    SyncStorageRepository::EXITS_VALUE_DOC_TYPE,
+                                    null,
+                                    SyncStorageRepository::PURCHASE_SUB_TYPE_VALUE);
 
                 foreach ($this->syncStorageData as $data) {
                     $this->process($data, $tenant);
