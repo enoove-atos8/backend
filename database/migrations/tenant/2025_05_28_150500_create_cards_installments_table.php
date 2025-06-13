@@ -22,7 +22,7 @@ return new class extends Migration
                 $table->string('status')->nullable(false); // Ex: 'open', 'closed', 'paid', 'overdue'
                 $table->decimal('amount', 15)->nullable(false);
                 $table->integer('installment')->nullable(false);
-                $table->integer('installment_amount')->nullable(false);
+                $table->decimal('installment_amount', 15)->nullable(false);
                 $table->string('date')->nullable(false);
                 $table->boolean('deleted')->default(false);
 
