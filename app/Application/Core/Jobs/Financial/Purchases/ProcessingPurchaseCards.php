@@ -17,6 +17,7 @@ use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
+use Infrastructure\Services\External\minIO\MinioStorageService;
 use Throwable;
 
 class ProcessingPurchaseCards
@@ -34,7 +35,13 @@ class ProcessingPurchaseCards
 
     private UpdateStatusAction $updateStatusAction;
 
+    private MinioStorageService $minioStorageService;
+
     protected Collection $syncStorageData;
+
+    const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
+    const SHARED_RECEIPTS_FOLDER_NAME = 'shared_receipts';
+    const STORED_RECEIPTS_FOLDER_NAME = 'stored_receipts';
 
     public function __construct(
         GetInvoiceAction $getInvoiceAction,
@@ -43,7 +50,8 @@ class ProcessingPurchaseCards
         GetSyncStorageDataAction $getSyncStorageDataAction,
         CreateInvoiceAction $createInvoiceAction,
         GetCardByIdAction $getCardByIdAction,
-        UpdateStatusAction $updateStatusAction
+        UpdateStatusAction $updateStatusAction,
+        MinioStorageService $minioStorageService,
     )
     {
         $this->createPurchaseAction = $createPurchaseAction;
@@ -53,6 +61,7 @@ class ProcessingPurchaseCards
         $this->createInvoiceAction = $createInvoiceAction;
         $this->getCardByIdAction = $getCardByIdAction;
         $this->updateStatusAction = $updateStatusAction;
+        $this->minioStorageService = $minioStorageService;
     }
 
 
@@ -76,6 +85,8 @@ class ProcessingPurchaseCards
 
             foreach ($this->syncStorageData as $data)
             {
+                $data->path = $this->uploadReceipt($data, $tenant);
+
                 $purchaseData = CardPurchaseData::fromSyncStorageData($data, (int) $data->cardId);
                 $purchase = $this->createPurchaseAction->execute($purchaseData);
 
@@ -103,5 +114,31 @@ class ProcessingPurchaseCards
         }
 
         return $arrTenants;
+    }
+
+
+    /**
+     * @param mixed $data
+     * @param string $tenant
+     * @return string
+     * @throws GeneralExceptions
+     */
+    public function uploadReceipt(mixed $data, string $tenant): string
+    {
+        $basePathTemp = self::STORAGE_BASE_PATH . "tenants/{$tenant}/temp";
+        $this->minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
+        $downloadedFile = $this->minioStorageService->downloadFile($data->path, $tenant, $basePathTemp);
+
+        $sharedPath = $data->path;
+        $data->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $data->path);
+        $urlParts = explode('/', $data->path);
+        array_pop($urlParts);
+        $path = implode('/', $urlParts);
+        $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
+
+        if(!empty($fileUrl))
+            $this->minioStorageService->delete($sharedPath, $tenant);
+
+        return $fileUrl;
     }
 }
