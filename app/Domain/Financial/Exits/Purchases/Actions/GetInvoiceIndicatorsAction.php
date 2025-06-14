@@ -41,7 +41,7 @@ class GetInvoiceIndicatorsAction
         {
             $totalInvoice = $invoice->amount;
 
-            $referenceDate = Carbon::createFromFormat('Y-m', $invoice->referenceDate)->addMonth();
+            $referenceDate = Carbon::createFromFormat('Y-m', $invoice->referenceDate);
             $dueDate = $referenceDate->format('Y-m') . '-' . $card->dueDay;
 
             $result = [
