@@ -132,6 +132,21 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 Route::get('/{id}', [PaymentsController::class, 'getPaymentItems']);
             });
         });
+
+        Route::prefix('purchases')->group(function () {
+
+            Route::prefix('cards')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get all cards
+                 */
+
+                Route::get('/', [CardController::class, 'getCards']);
+
+            });
+        });
     });
 
 
