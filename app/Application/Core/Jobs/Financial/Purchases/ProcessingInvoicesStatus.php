@@ -16,7 +16,7 @@ use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInvoiceRepos
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
 use Throwable;
 
-class ProcessingInvoicesClosing
+class ProcessingInvoicesStatus
 {
     private UpdateStatusInvoiceAction $updateStatusInvoiceAction;
     private GetInvoicesByCardIdAndStatusAction $getInvoicesByCardIdAndStatusAction;
@@ -53,12 +53,12 @@ class ProcessingInvoicesClosing
 
             foreach ($cards as $card)
             {
-                $invoices = $this->getInvoicesByCardIdAndStatusAction->execute($card->id, CardInvoiceRepository::INVOICE_OPEN_VALUE);
+                $openInvoices = $this->getInvoicesByCardIdAndStatusAction->execute($card->id, CardInvoiceRepository::INVOICE_OPEN_VALUE);
+                $closedInvoices = $this->getInvoicesByCardIdAndStatusAction->execute($card->id, CardInvoiceRepository::INVOICE_CLOSED_VALUE);
+                $currentDate = Carbon::now();
 
-                foreach ($invoices as $invoice)
+                foreach ($openInvoices as $invoice)
                 {
-                    $currentDate = Carbon::now();
-
                     $referenceYearMonth = Carbon::parse($invoice->referenceDate)->format('Y-m');
                     $referenceDate = Carbon::createFromFormat('Y-m-d', $referenceYearMonth.'-'.$card->closingDay);
 
@@ -67,6 +67,15 @@ class ProcessingInvoicesClosing
 
                     if ($currentDate->greaterThan($referenceDate) && $currentDate->lessThan($closingDateNextMonth))
                         $this->updateStatusInvoiceAction->execute($invoice->id, CardInvoiceRepository::INVOICE_CLOSED_VALUE);
+                }
+
+                foreach ($closedInvoices as $invoice)
+                {
+                    $referenceYearMonth = Carbon::parse($invoice->referenceDate)->format('Y-m');
+                    $referenceDate = Carbon::createFromFormat('Y-m-d', $referenceYearMonth.'-'.$card->dueDay);
+
+                    if ($currentDate->greaterThan($referenceDate))
+                        $this->updateStatusInvoiceAction->execute($invoice->id, CardInvoiceRepository::INVOICE_LATE_VALUE);
                 }
             }
         }

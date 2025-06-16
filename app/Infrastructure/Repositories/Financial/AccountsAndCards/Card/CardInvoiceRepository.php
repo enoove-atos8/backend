@@ -28,7 +28,7 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
     const DELETED_COLUMN = 'deleted';
     const INVOICE_CLOSED_VALUE = 'closed';
     const INVOICE_OPEN_VALUE = 'open';
-    const INVOICE_FUTURE_VALUE = 'future';
+    const INVOICE_LATE_VALUE = 'late';
     const INVOICE_PAID_VALUE = 'paid';
 
 
