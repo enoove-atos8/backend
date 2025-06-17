@@ -183,22 +183,23 @@ class CardInvoiceRepository extends BaseRepository implements CardInvoiceReposit
     }
 
 
-
-
     /**
      * @param int $cardId
+     * @param bool $getClosedInvoices
      * @return CardInvoiceData|null
      * @throws BindingResolutionException
      */
-    public function getInvoicesByCardId(int $cardId): ?Collection
+    public function getInvoicesByCardId(int $cardId, bool $getClosedInvoices = false): ?Collection
     {
-        $query = function () use ($cardId) {
+        $query = function () use ($cardId, $getClosedInvoices) {
 
             $q = DB::table(self::TABLE_NAME)
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
                 ->orderBy(self::REFERENCE_DATE_COLUMN, BaseRepository::ORDERS['ASC']);
 
+            if($getClosedInvoices)
+                $q->whereIn(self::STATUS_COLUMN, [self::INVOICE_CLOSED_VALUE, self::INVOICE_LATE_VALUE]);
 
             $result = $q->get();
             return collect($result)->map(fn($item) => CardInvoiceData::fromResponse((array) $item));

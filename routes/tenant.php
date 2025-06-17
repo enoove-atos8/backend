@@ -146,6 +146,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 Route::get('/', [CardController::class, 'getCards']);
 
             });
+
+            Route::prefix('invoices')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get invoices by card id
+                 */
+
+                Route::get('/getInvoicesByCardId', [InvoiceController::class, 'getInvoicesByCardId']);
+
+            });
         });
     });
 
