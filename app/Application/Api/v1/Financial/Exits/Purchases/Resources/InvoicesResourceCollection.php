@@ -53,6 +53,7 @@ class InvoicesResourceCollection extends ResourceCollection
                 'monthIndex' => (int) $date->format('m') - 1, // 0-based index
                 'stringMonth' => $date->format('m'), // 01, 02, ...
                 'status' => $invoice->status,
+                'amount' => $invoice->amount,
             ];
         })->values()->all();
     }
