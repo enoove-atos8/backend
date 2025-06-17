@@ -21,7 +21,11 @@ class InvoiceController extends Controller
         try
         {
             $cardId = $request->get('cardId');
-            $invoices = $getInvoicesByCardIdAction->execute($cardId);
+            $getClosedInvoices = $request->boolean('getClosedInvoices');
+
+            $invoices = $getClosedInvoices
+                ? $getInvoicesByCardIdAction->execute($cardId, $getClosedInvoices)
+                : $getInvoicesByCardIdAction->execute($cardId);
 
             return new InvoicesResourceCollection($invoices);
         }

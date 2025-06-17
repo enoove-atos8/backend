@@ -40,9 +40,10 @@ interface CardInvoiceRepositoryInterface
      * Returns the card invoice data by card id
      *
      * @param int $cardId
+     * @param bool $getClosedInvoices
      * @return CardInvoiceData|null
      */
-    public function getInvoicesByCardId(int $cardId): ?Collection;
+    public function getInvoicesByCardId(int $cardId, bool $getClosedInvoices): ?Collection;
 
 
     /**

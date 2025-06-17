@@ -19,11 +19,12 @@ class GetInvoicesByCardIdAction
 
     /**
      * @param int $cardId
+     * @param bool $getClosedInvoices
      * @return CardInvoiceData|null
      */
-    public function execute(int $cardId): ?Collection
+    public function execute(int $cardId, bool $getClosedInvoices = false): ?Collection
     {
-        $invoices = $this->cardInvoiceRepository->getInvoicesByCardId($cardId);
+        $invoices = $this->cardInvoiceRepository->getInvoicesByCardId($cardId, $getClosedInvoices);
 
         if(!is_null($invoices))
             return $invoices;
