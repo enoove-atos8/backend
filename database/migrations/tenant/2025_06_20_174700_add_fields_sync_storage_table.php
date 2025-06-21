@@ -18,7 +18,11 @@ return new class extends Migration
         {
             Schema::table('sync_storage', function (Blueprint $table)
             {
-                $table->boolean('invoice_id')->nullable()->after('payment_category_id');
+                $table->unsignedBigInteger('invoice_id')->nullable()->after('payment_category_id');
+
+                $table->foreign('invoice_id')
+                    ->references('id')
+                    ->on('cards_invoices');
             });
         }
 
@@ -35,7 +39,7 @@ return new class extends Migration
         {
             Schema::table('sync_storage', function (Blueprint $table)
             {
-                $table->boolean('establishment_name')->nullable()->after('invoice_id');
+                $table->string('establishment_name')->nullable()->after('invoice_id');
             });
         }
 
@@ -44,7 +48,7 @@ return new class extends Migration
         {
             Schema::table('sync_storage', function (Blueprint $table)
             {
-                $table->boolean('purchase_description')->nullable()->after('invoice_id');
+                $table->string('purchase_description')->nullable()->after('invoice_id');
             });
         }
     }
