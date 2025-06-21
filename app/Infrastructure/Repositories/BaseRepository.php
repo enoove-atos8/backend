@@ -578,7 +578,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
      */
     protected function doQuery($callback): mixed
     {
-        $previousMethod = debug_backtrace(null, 2)[1];
+        $previousMethod = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1];
         $methodName = $previousMethod['function'];
         $arguments = $previousMethod['args'];
 
