@@ -17,6 +17,7 @@ use Domain\Financial\Exits\Exits\Actions\GetExitByTimestampAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateReceiptLinkAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateTimestampAction;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
+use Domain\Financial\Exits\Purchases\Actions\UpdateStatusInvoiceAction;
 use Domain\Financial\ReceiptProcessing\Actions\CreateReceiptProcessing;
 use Domain\Financial\ReceiptProcessing\DataTransferObjects\ReceiptProcessingData;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
@@ -27,6 +28,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInvoiceRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
 use Infrastructure\Services\External\minIO\MinioStorageService;
@@ -38,7 +40,7 @@ class ProcessingBankExitsTransferReceipts
     //Properties
 
     private GetPlanByNameAction $getPlanByNameAction;
-    protected Collection $syncStorageData;
+    protected Collection $syncStorageCollection;
     private GetSyncStorageDataAction $getSyncStorageDataAction;
     private MinioStorageService $minioStorageService;
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
@@ -57,6 +59,8 @@ class ProcessingBankExitsTransferReceipts
     private GetReviewerAction $getReviewerAction;
     private CreateReceiptProcessing $createReceiptProcessing;
     private ReceiptProcessingData $receiptProcessingData;
+    private SyncStorageData $syncStorageData;
+    private UpdateStatusInvoiceAction $updateStatusInvoiceAction;
     private
 
 
@@ -88,7 +92,9 @@ class ProcessingBankExitsTransferReceipts
         DivisionData                     $divisionData,
         FinancialReviewerData            $financialReviewerData,
         CreateReceiptProcessing          $createReceiptProcessing,
-        ReceiptProcessingData            $receiptProcessingData
+        ReceiptProcessingData            $receiptProcessingData,
+        SyncStorageData                  $syncStorageData,
+        UpdateStatusInvoiceAction        $updateStatusInvoiceAction
     )
     {
         $this->getPlanByNameAction = $getPlanByNameAction;
@@ -110,6 +116,8 @@ class ProcessingBankExitsTransferReceipts
         $this->financialReviewerData = $financialReviewerData;
         $this->createReceiptProcessing = $createReceiptProcessing;
         $this->receiptProcessingData = $receiptProcessingData;
+        $this->syncStorageData = $syncStorageData;
+        $this->updateStatusInvoiceAction = $updateStatusInvoiceAction;
     }
 
 
@@ -126,16 +134,22 @@ class ProcessingBankExitsTransferReceipts
         {
             $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
 
-            foreach ($tenants as $tenant) {
+            foreach ($tenants as $tenant)
+            {
                 tenancy()->initialize($tenant);
 
-                $this->syncStorageData = $this->getSyncStorageDataAction->execute(
+                $this->syncStorageCollection = $this->getSyncStorageDataAction->execute(
                                     SyncStorageRepository::EXITS_VALUE_DOC_TYPE,
                                     null,
                                     SyncStorageRepository::PURCHASE_SUB_TYPE_VALUE);
 
-                foreach ($this->syncStorageData as $data) {
+                foreach ($this->syncStorageCollection as $data)
+                {
+                    $this->syncStorageData = $data;
                     $this->process($data, $tenant);
+
+                    if($this->syncStorageData->creditCardPayment)
+                        $this->updateStatusInvoiceAction->execute($this->syncStorageData->invoiceId, CardInvoiceRepository::INVOICE_PAID_VALUE);
                 }
             }
         }
@@ -259,14 +273,10 @@ class ProcessingBankExitsTransferReceipts
             {
                 foreach ($tenants as $tenant)
                     $arrTenants[] = $tenant->tenant_id;
-
-                return $arrTenants;
             }
         }
-        else
-        {
-            return $arrTenants;
-        }
+
+        return $arrTenants;
     }
 
 

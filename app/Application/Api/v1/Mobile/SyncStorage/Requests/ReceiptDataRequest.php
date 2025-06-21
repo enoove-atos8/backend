@@ -48,6 +48,10 @@ class ReceiptDataRequest extends FormRequest
             'status'                                => 'required',
             'path'                                  => 'required',
             'file'                                  => 'required',
+            'invoiceId'                             => 'required',
+            'creditCardPayment'                     => 'required',
+            'establishmentName'                     => 'required',
+            'purchaseDescription'                   => 'required',
         ];
     }
 
@@ -98,6 +102,10 @@ class ReceiptDataRequest extends FormRequest
             purchaseCreditCardAmount:               $this->input('purchaseCreditCardAmount'),
             status:                                 $this->input('status'),
             path:                                   $this->input('path'),
+            invoiceId:                              $this->integer('invoiceId'),
+            creditCardPayment:                      $this->boolean('creditCardPayment'),
+            establishmentName:                      $this->input('establishmentName'),
+            purchaseDescription:                    $this->input('purchaseDescription'),
         );
     }
 }
