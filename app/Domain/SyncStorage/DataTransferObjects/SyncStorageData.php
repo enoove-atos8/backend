@@ -67,6 +67,18 @@ class SyncStorageData extends DataTransferObject
     /** @var ?string */
     public ?string $path;
 
+    /** @var ?string */
+    public ?string $invoiceId;
+
+    /** @var ?string */
+    public ?string $creditCardPayment;
+
+    /** @var ?string */
+    public ?string $establishmentName;
+
+    /** @var ?string */
+    public ?string $purchaseDescription;
+
 
 
     /**
@@ -100,6 +112,10 @@ class SyncStorageData extends DataTransferObject
             'purchaseCreditCardInstallmentAmount' => $data['purchase_credit_card_installment_amount'] ?? null,
             'status' => $data['status'] ?? null,
             'path' => $data['path'] ?? null,
+            'invoiceId' => $data['invoice_id'] ?? null,
+            'creditCardPayment' => $data['credit_card_payment'] ?? null,
+            'establishmentName' => $data['establishment_name'] ?? null,
+            'purchaseDescription' => $data['purchase_description'] ?? null,
         ]);
     }
 }

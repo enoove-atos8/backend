@@ -50,6 +50,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'division_id'                                   => $syncStorageData->divisionId != '0' ? $syncStorageData->divisionId : null,
             'group_id'                                      => $syncStorageData->groupId != '0' ? $syncStorageData->groupId : null,
             'card_id'                                       => $syncStorageData->cardId != '0' ? $syncStorageData->cardId : null,
+            'invoiceId'                                     => $syncStorageData->invoiceId,
             'payment_category_id'                           => $syncStorageData->paymentCategoryId != '0' ? $syncStorageData->paymentCategoryId : null,
             'payment_item_id'                               => $syncStorageData->paymentItemId != '0' ? $syncStorageData->paymentItemId : null,
             'is_payment'                                    => $syncStorageData->isPayment,
@@ -60,9 +61,12 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'invoice_closed_day'                            => $syncStorageData->closingDay,
             'purchase_credit_card_date'                     => $syncStorageData->purchaseCreditCardDate,
             'purchase_credit_card_amount'                   => ($syncStorageData->purchaseCreditCardAmount * $syncStorageData->numberInstallments),
+            'credit_card_payment'                           => $syncStorageData->creditCardPayment,
+            'establishment_name'                            => $syncStorageData->es,
+            'purchase_description'                          => $syncStorageData->creditCardPayment,
             'purchase_credit_card_installment_amount'       => $syncStorageData->purchaseCreditCardAmount,
             'status'                                        => $syncStorageData->status,
-            'path'                                          => $syncStorageData->path
+            'path'                                          => $syncStorageData->path,
         ]);
     }
 
