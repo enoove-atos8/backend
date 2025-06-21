@@ -145,11 +145,10 @@ class ProcessingBankExitsTransferReceipts
 
                 foreach ($this->syncStorageCollection as $data)
                 {
-                    $this->syncStorageData = $data;
                     $this->process($data, $tenant);
 
-                    if($this->syncStorageData->creditCardPayment)
-                        $this->updateStatusInvoiceAction->execute($this->syncStorageData->invoiceId, CardInvoiceRepository::INVOICE_PAID_VALUE);
+                    if($data->creditCardPayment)
+                        $this->updateStatusInvoiceAction->execute($data->invoiceId, CardInvoiceRepository::INVOICE_PAID_VALUE);
                 }
             }
         }
