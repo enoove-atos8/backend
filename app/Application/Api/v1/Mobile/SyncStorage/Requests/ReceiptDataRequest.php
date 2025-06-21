@@ -48,10 +48,10 @@ class ReceiptDataRequest extends FormRequest
             'status'                                => 'required',
             'path'                                  => 'required',
             'file'                                  => 'required',
-            'invoiceId'                             => 'required',
-            'creditCardPayment'                     => 'required',
-            'establishmentName'                     => 'required',
-            'purchaseDescription'                   => 'required',
+            'invoiceId'                             => '',
+            'creditCardPayment'                     => '',
+            'establishmentName'                     => '',
+            'purchaseDescription'                   => '',
         ];
     }
 

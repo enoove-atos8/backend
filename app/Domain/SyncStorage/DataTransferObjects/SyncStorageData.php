@@ -70,8 +70,8 @@ class SyncStorageData extends DataTransferObject
     /** @var ?string */
     public ?string $invoiceId;
 
-    /** @var ?string */
-    public ?string $creditCardPayment;
+    /** @var ?bool */
+    public ?bool $creditCardPayment;
 
     /** @var ?string */
     public ?string $establishmentName;
