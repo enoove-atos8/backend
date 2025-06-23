@@ -36,6 +36,8 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
         'cards_purchases.amount as cards_purchases_amount',
         'cards_purchases.installments as cards_purchases_installments',
         'cards_purchases.installment_amount as cards_purchases_installment_amount',
+        'cards_purchases.establishment_name as cards_purchases_establishment_name',
+        'cards_purchases.purchase_description as cards_purchases_purchase_description',
         'cards_purchases.date as cards_purchases_date',
         'cards_purchases.deleted as cards_purchases_deleted',
         'cards_purchases.receipt as cards_purchases_receipt',
@@ -49,21 +51,23 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
 
 
     /**
-     * @param CardPurchaseData $cardInvoiceData
+     * @param CardPurchaseData $cardPurchaseData
      * @return CardPurchaseData
      * @throws UnknownProperties
      */
-    public function createPurchase(CardPurchaseData $cardInvoiceData): CardPurchaseData
+    public function createPurchase(CardPurchaseData $cardPurchaseData): CardPurchaseData
     {
         $created = $this->create([
-            'card_id'               =>  $cardInvoiceData->cardId,
-            'status'                =>  $cardInvoiceData->status,
-            'amount'                =>  $cardInvoiceData->amount,
-            'installments'          =>  $cardInvoiceData->installments,
-            'installment_amount'    =>  $cardInvoiceData->installmentAmount,
-            'date'                  =>  $cardInvoiceData->date,
-            'deleted'               =>  $cardInvoiceData->deleted,
-            'receipt'               =>  $cardInvoiceData->receipt,
+            'card_id'               =>  $cardPurchaseData->cardId,
+            'status'                =>  $cardPurchaseData->status,
+            'amount'                =>  $cardPurchaseData->amount,
+            'installments'          =>  $cardPurchaseData->installments,
+            'installment_amount'    =>  $cardPurchaseData->installmentAmount,
+            'establishment_name'    =>  $cardPurchaseData->establishmentName,
+            'purchase_description'  =>  $cardPurchaseData->purchaseDescription,
+            'date'                  =>  $cardPurchaseData->date,
+            'deleted'               =>  $cardPurchaseData->deleted,
+            'receipt'               =>  $cardPurchaseData->receipt,
         ]);
 
         return CardPurchaseData::fromResponse($created->toArray());

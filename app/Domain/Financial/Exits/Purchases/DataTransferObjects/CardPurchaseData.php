@@ -28,6 +28,12 @@ class CardPurchaseData extends DataTransferObject
     public ?float $installmentAmount;
 
     /** @var string|null */
+    public ?string $establishmentName;
+
+    /** @var string|null */
+    public ?string $purchaseDescription;
+
+    /** @var string|null */
     public ?string $date;
 
     /** @var bool|null */
@@ -55,6 +61,8 @@ class CardPurchaseData extends DataTransferObject
             'amount' => isset($data['amount']) ? (float) $data['amount'] : null,
             'installments' => $data['installments'] ?? null,
             'installmentAmount' => $data['installment_amount'] ?? null,
+            'establishmentName' => $data['establishment_name'] ?? null,
+            'purchaseDescription' => $data['purchase_description'] ?? null,
             'date' => $data['date'] ?? null,
             'deleted' => $data['deleted'] ?? false,
             'receipt' => $data['receipt'] ?? null,
@@ -81,6 +89,8 @@ class CardPurchaseData extends DataTransferObject
             'amount' => $purchaseData->amount,
             'installments' => $purchaseData->installments,
             'installmentAmount' => $purchaseData->installmentAmount,
+            'establishmentName' => $purchaseData->establishmentName,
+            'purchaseDescription' => $purchaseData->purchaseDescription,
             'date' => $purchaseData->date,
             'deleted' => $purchaseData->deleted,
             'receipt' => $purchaseData->receipt,
@@ -107,6 +117,8 @@ class CardPurchaseData extends DataTransferObject
             'amount' => $syncStorageData->purchaseCreditCardAmount,
             'installments' => $syncStorageData->numberInstallments,
             'installmentAmount' => $syncStorageData->purchaseCreditCardInstallmentAmount,
+            'establishmentName' => $syncStorageData->establishmentName,
+            'purchaseDescription' => $syncStorageData->purchaseDescription,
             'date' => $syncStorageData->purchaseCreditCardDate,
             'deleted' => false,
             'receipt' => $syncStorageData->path ?? null,

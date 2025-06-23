@@ -74,7 +74,6 @@ class ProcessingPurchaseCards
     public function handle(): void
     {
         $tenants = $this->getActiveTenants();
-        //$tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
 
         foreach ($tenants as $tenant)
         {
