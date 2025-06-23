@@ -44,6 +44,8 @@ class InstallmentsResourceCollection extends ResourceCollection
                     'amount' => $installment->cardPurchaseData->amount,
                     'installments' => $installment->cardPurchaseData->installments,
                     'installmentAmount' => $installment->cardPurchaseData->installmentAmount,
+                    'establishmentName' => $installment->cardPurchaseData->establishmentName,
+                    'purchaseDescription' => $installment->cardPurchaseData->purchaseDescription,
                     'date' => $installment->cardPurchaseData->date,
                     'deleted' => $installment->cardPurchaseData->deleted,
                     'receipt' => $installment->cardPurchaseData->receipt,

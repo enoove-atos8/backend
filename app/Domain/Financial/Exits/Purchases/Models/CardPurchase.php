@@ -29,6 +29,8 @@ class CardPurchase extends Model
         'amount',
         'installments',
         'installment_amount',
+        'establishment_name',
+        'purchase_description',
         'date',
         'deleted',
         'receipt',

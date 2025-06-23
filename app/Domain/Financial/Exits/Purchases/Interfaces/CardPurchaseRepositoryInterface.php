@@ -20,8 +20,8 @@ interface CardPurchaseRepositoryInterface
     /**
      * Create a new purchase
      *
-     * @param CardPurchaseData $cardInvoiceData
+     * @param CardPurchaseData $cardPurchaseData
      * @return CardPurchaseData
      */
-    public function createPurchase(CardPurchaseData $cardInvoiceData): CardPurchaseData;
+    public function createPurchase(CardPurchaseData $cardPurchaseData): CardPurchaseData;
 }
