@@ -25,6 +25,7 @@ class CardPurchase extends Model
     protected $fillable = [
         'id',
         'card_id',
+        'group_id',
         'status',
         'amount',
         'installments',
