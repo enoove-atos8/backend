@@ -20,6 +20,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 {
     protected mixed $model = Group::class;
     const TABLE_NAME = 'ecclesiastical_divisions_groups';
+    const ID_COLUMN = 'id';
     const GROUP_RECEIVED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_received';
     const GROUP_RETURNED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_returned';
     const MEMBER_TABLE_NAME = 'members';
@@ -39,7 +40,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions_groups.id as groups_id',
-        'ecclesiastical_divisions_groups.ecclesiastical_division_id  as groups_division_id',
+        'ecclesiastical_divisions_groups.ecclesiastical_division_id as groups_division_id',
         'ecclesiastical_divisions_groups.parent_group_id as groups_parent_group_id',
         'ecclesiastical_divisions_groups.leader_id as groups_leader_id',
         'ecclesiastical_divisions_groups.name as groups_name',

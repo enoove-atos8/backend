@@ -11,6 +11,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInvoiceRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardPurchaseRepository;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -27,6 +28,7 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
 
     const PURCHASE_ID_COLUMN = 'purchase_id';
     const INVOICE_ID_COLUMN = 'invoice_id';
+    const GROUP_ID_COLUMN = 'group)id';
     const INSTALLMENT_ID_COLUMN = 'installment_id';
     const DATE_COLUMN = 'date';
     const DELETED_COLUMN = 'deleted';
@@ -61,6 +63,7 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             CardPurchaseRepository::DISPLAY_SELECT_COLUMNS,
             CardInvoiceRepository::DISPLAY_SELECT_COLUMNS,
+            GroupsRepository::DISPLAY_SELECT_COLUMNS,
         );
 
         $query = function () use ($cardId, $date, $displayColumnsFromRelationship) {
@@ -73,6 +76,9 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
                 ->leftJoin(CardInvoiceRepository::TABLE_NAME, self::INVOICE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
                     CardInvoiceRepository::TABLE_NAME . '.' . CardInvoiceRepository::ID_COLUMN)
+                ->leftJoin(GroupsRepository::TABLE_NAME, self::GROUP_ID_COLUMN,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    GroupsRepository::TABLE_NAME . '.' . GroupsRepository::ID_COLUMN)
                 ->where(self::TABLE_NAME . '.' . self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::TABLE_NAME . '.' . self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
                 ->where(self::TABLE_NAME . '.' . self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date)

@@ -15,6 +15,9 @@ class CardPurchaseData extends DataTransferObject
     /** @var int|null */
     public ?int $cardId;
 
+    /** @var int|null */
+    public ?int $groupId;
+
     /** @var string|null */
     public ?string $status;
 
@@ -57,6 +60,7 @@ class CardPurchaseData extends DataTransferObject
         return new self([
             'id' => $data['id'] ?? null,
             'cardId' => $data['card_id'] ?? null,
+            'groupId' => $data['group_id'] ?? null,
             'status' => $data['status'] ?? null,
             'amount' => isset($data['amount']) ? (float) $data['amount'] : null,
             'installments' => $data['installments'] ?? null,
@@ -85,6 +89,7 @@ class CardPurchaseData extends DataTransferObject
         $data = [
             'id' => $purchaseData->id,
             'cardId' => $purchaseData->cardId,
+            'groupId' => $purchaseData->groupId,
             'status' => $purchaseData->status,
             'amount' => $purchaseData->amount,
             'installments' => $purchaseData->installments,
@@ -113,6 +118,7 @@ class CardPurchaseData extends DataTransferObject
     {
         $data = [
             'cardId' => $cardId,
+            'groupId' => $syncStorageData->groupId,
             'status' => CardPurchaseRepository::INVOICED_VALUE,
             'amount' => $syncStorageData->purchaseCreditCardAmount,
             'installments' => $syncStorageData->numberInstallments,

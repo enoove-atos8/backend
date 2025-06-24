@@ -2,6 +2,7 @@
 
 namespace App\Domain\Financial\Exits\Purchases\DataTransferObjects;
 
+use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Illuminate\Support\Carbon;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
@@ -13,6 +14,12 @@ class CardInstallmentData extends DataTransferObject
 
     /** @var int|null */
     public ?int $cardId;
+
+    /** @var int|null */
+    public ?int $groupId;
+
+    /** @var GroupData|null */
+    public ?GroupData $groupData;
 
     /** @var CardPurchaseData|null */
     public ?CardPurchaseData $cardPurchaseData;
@@ -62,6 +69,7 @@ class CardInstallmentData extends DataTransferObject
             cardPurchaseData: new CardPurchaseData([
                 'id' => $data['cards_purchases_id'] ?? null,
                 'cardId' => $data['cards_purchases_card_id'] ?? null,
+                'groupId' => $data['cards_purchases_group_id'] ?? null,
                 'status' => $data['cards_purchases_status'] ?? null,
                 'amount' => isset($data['cards_purchases_amount']) ? (float) $data['cards_purchases_amount'] : null,
                 'installments' => $data['cards_purchases_installments'] ?? null,
@@ -71,6 +79,10 @@ class CardInstallmentData extends DataTransferObject
                 'date' => $data['cards_purchases_date'] ?? null,
                 'deleted' => $data['cards_purchases_deleted'] ?? false,
                 'receipt' => $data['cards_purchases_receipt'] ?? null,
+            ]),
+            groupData: new groupData([
+                'id' => $data['groups_id'] ?? null,
+                'name' => $data['groups_name'] ?? null,
             ]),
             status: $data['cards_installments_status'] ?? null,
             amount: $data['cards_installments_amount'] ?? null,
@@ -94,14 +106,14 @@ class CardInstallmentData extends DataTransferObject
         $data = [
             'id' => $data['id'],
             'cardId' => $data['card_id'],
+            'groupId' => $data['group_id'],
             'cardPurchaseData' => new CardPurchaseData(['id' => $data['purchase_id']]),
             'cardInvoiceData' => new CardInvoiceData(['id' => $data['invoice_id']]),
+            'groupData' => new groupData(['id' => $data['group_id']]),
             'status' => $data['status'],
             'amount' => $data['amount'],
             'installment' => $data['installment'],
             'installmentAmount' => $data['installment_amount'],
-            'establishmentName' => $data['establishment_name'] != '' ? $data['establishment_name'] : null,
-            'purchaseDescription' => $data['purchase_description'] != '' ? $data['purchase_description'] : null,
             'date' => $data['date'],
             'deleted' => $data['deleted'],
         ];
@@ -129,14 +141,14 @@ class CardInstallmentData extends DataTransferObject
 
         $data = [
             'cardId' => $cardPurchaseData->cardId,
+            'groupId' => $cardPurchaseData->groupId,
             'cardInvoiceData' => new CardPurchaseData(['id' => null]),
             'cardPurchaseData' => new CardPurchaseData(['id' => $purchaseId]),
+            'groupData' => new GroupData(['id' => $cardPurchaseData->groupId]),
             'status' => $cardPurchaseData->status,
             'amount' => $cardPurchaseData->amount,
             'installment' => $currentInstallment,
             'installmentAmount'  => $cardPurchaseData->installmentAmount,
-            'establishmentName'  => $cardPurchaseData->establishmentName,
-            'purchaseDescription'  => $cardPurchaseData->purchaseDescription,
             'date' => $date,
             'deleted' => false,
             'isFirstInstallment' => $isFirstInstallment,

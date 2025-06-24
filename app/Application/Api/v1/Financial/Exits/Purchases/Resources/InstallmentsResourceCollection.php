@@ -56,6 +56,10 @@ class InstallmentsResourceCollection extends ResourceCollection
                     'installmentAmount' => $installment->installmentAmount,
                     'date'  =>  $installment->date,
                     'deleted'  =>  $installment->deleted
+                ],
+                'group' => [
+                    'id'    =>  $installment->groupData->id,
+                    'name' => $installment->groupData->name,
                 ]
             ];
         }

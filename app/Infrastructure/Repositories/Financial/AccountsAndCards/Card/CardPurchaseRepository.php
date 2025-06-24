@@ -32,6 +32,7 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
     const DISPLAY_SELECT_COLUMNS = [
         'cards_purchases.id as cards_purchases_id',
         'cards_purchases.card_id as cards_purchases_card_id',
+        'cards_purchases.group_id as cards_purchases_group_id',
         'cards_purchases.status as cards_purchases_status',
         'cards_purchases.amount as cards_purchases_amount',
         'cards_purchases.installments as cards_purchases_installments',
@@ -59,6 +60,7 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
     {
         $created = $this->create([
             'card_id'               =>  $cardPurchaseData->cardId,
+            'group_id'              =>  $cardPurchaseData->groupId,
             'status'                =>  $cardPurchaseData->status,
             'amount'                =>  $cardPurchaseData->amount,
             'installments'          =>  $cardPurchaseData->installments,
