@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('cards_purchases', function (Blueprint $table)
             {
-                $table->unsignedBigInteger('group_id')->nullable()->after('card_id');
+                $table->integer('group_id')->nullable()->after('card_id');
 
                 $table->foreign('group_id')
                     ->references('id')
