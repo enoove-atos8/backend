@@ -106,10 +106,8 @@ class CardInstallmentData extends DataTransferObject
         $data = [
             'id' => $data['id'],
             'cardId' => $data['card_id'],
-            'groupId' => $data['group_id'],
             'cardPurchaseData' => new CardPurchaseData(['id' => $data['purchase_id']]),
             'cardInvoiceData' => new CardInvoiceData(['id' => $data['invoice_id']]),
-            'groupData' => new groupData(['id' => $data['group_id']]),
             'status' => $data['status'],
             'amount' => $data['amount'],
             'installment' => $data['installment'],
