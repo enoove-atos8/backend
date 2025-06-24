@@ -29,7 +29,7 @@ class InstallmentsController extends Controller
         }
         catch (Exception $e)
         {
-            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+            throw new GeneralExceptions($e->getMessage(), 500, $e);
         }
     }
 }

@@ -28,7 +28,7 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
 
     const PURCHASE_ID_COLUMN = 'purchase_id';
     const INVOICE_ID_COLUMN = 'invoice_id';
-    const GROUP_ID_COLUMN = 'group)id';
+    const GROUP_ID_COLUMN = 'group_id';
     const INSTALLMENT_ID_COLUMN = 'installment_id';
     const DATE_COLUMN = 'date';
     const DELETED_COLUMN = 'deleted';
@@ -70,15 +70,18 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
 
             $q = DB::table(self::TABLE_NAME)
                 ->select($displayColumnsFromRelationship)
-                ->leftJoin(CardPurchaseRepository::TABLE_NAME, self::PURCHASE_ID_COLUMN,
+                ->leftJoin(CardPurchaseRepository::TABLE_NAME, self::TABLE_NAME . '.' . self::PURCHASE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
                     CardPurchaseRepository::TABLE_NAME . '.' . CardPurchaseRepository::ID_COLUMN)
-                ->leftJoin(CardInvoiceRepository::TABLE_NAME, self::INVOICE_ID_COLUMN,
+
+                ->leftJoin(CardInvoiceRepository::TABLE_NAME, self::TABLE_NAME . '.' . self::INVOICE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
                     CardInvoiceRepository::TABLE_NAME . '.' . CardInvoiceRepository::ID_COLUMN)
-                ->leftJoin(GroupsRepository::TABLE_NAME, self::GROUP_ID_COLUMN,
+
+                ->leftJoin(GroupsRepository::TABLE_NAME, CardPurchaseRepository::TABLE_NAME . '.' . self::GROUP_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
                     GroupsRepository::TABLE_NAME . '.' . GroupsRepository::ID_COLUMN)
+
                 ->where(self::TABLE_NAME . '.' . self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::TABLE_NAME . '.' . self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
                 ->where(self::TABLE_NAME . '.' . self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date)
