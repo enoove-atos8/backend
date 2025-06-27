@@ -6,6 +6,7 @@ use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCa
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
+use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Services\Atos8\Financial\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
@@ -17,6 +18,8 @@ use Domain\Financial\Exits\Exits\Actions\GetExitByTimestampAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateReceiptLinkAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateTimestampAction;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
+use Domain\Financial\Exits\Purchases\Actions\GetInvoiceByIdAction;
+use Domain\Financial\Exits\Purchases\Actions\UpdateStatusInstallmentAction;
 use Domain\Financial\Exits\Purchases\Actions\UpdateStatusInvoiceAction;
 use Domain\Financial\ReceiptProcessing\Actions\CreateReceiptProcessing;
 use Domain\Financial\ReceiptProcessing\DataTransferObjects\ReceiptProcessingData;
@@ -61,7 +64,8 @@ class ProcessingBankExitsTransferReceipts
     private ReceiptProcessingData $receiptProcessingData;
     private SyncStorageData $syncStorageData;
     private UpdateStatusInvoiceAction $updateStatusInvoiceAction;
-    private
+    private UpdateStatusInstallmentAction $updateStatusInstallmentAction;
+    private GetInvoiceByIdAction $getInvoiceByIdAction;
 
 
 
@@ -94,7 +98,9 @@ class ProcessingBankExitsTransferReceipts
         CreateReceiptProcessing          $createReceiptProcessing,
         ReceiptProcessingData            $receiptProcessingData,
         SyncStorageData                  $syncStorageData,
-        UpdateStatusInvoiceAction        $updateStatusInvoiceAction
+        UpdateStatusInvoiceAction        $updateStatusInvoiceAction,
+        UpdateStatusInstallmentAction   $updateStatusInstallmentAction,
+        GetInvoiceByIdAction            $getInvoiceByIdAction
     )
     {
         $this->getPlanByNameAction = $getPlanByNameAction;
@@ -118,6 +124,8 @@ class ProcessingBankExitsTransferReceipts
         $this->receiptProcessingData = $receiptProcessingData;
         $this->syncStorageData = $syncStorageData;
         $this->updateStatusInvoiceAction = $updateStatusInvoiceAction;
+        $this->updateStatusInstallmentAction = $updateStatusInstallmentAction;
+        $this->getInvoiceByIdAction = $getInvoiceByIdAction;
     }
 
 
@@ -147,8 +155,11 @@ class ProcessingBankExitsTransferReceipts
                 {
                     $this->process($data, $tenant);
 
-                    if($data->creditCardPayment)
+                    if($data->creditCardPayment){
+                        $invoiceData = $this->getInvoiceByIdAction->execute($data->invoiceId);
                         $this->updateStatusInvoiceAction->execute($data->invoiceId, CardInvoiceRepository::INVOICE_PAID_VALUE);
+                        $this->updateStatusInstallmentAction->execute($data->invoiceId, $invoiceData->referenceDate, CardInstallmentsRepository::PAID_VALUE);
+                    }
                 }
             }
         }

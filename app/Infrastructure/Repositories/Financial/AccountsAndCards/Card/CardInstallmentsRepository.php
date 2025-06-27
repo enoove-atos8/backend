@@ -32,6 +32,9 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
     const INSTALLMENT_ID_COLUMN = 'installment_id';
     const DATE_COLUMN = 'date';
     const DELETED_COLUMN = 'deleted';
+    const PAID_VALUE = 'paid';
+    const OPEN_VALUE = 'open';
+    const LATE_VALUE = 'late';
 
     const DISPLAY_SELECT_COLUMNS = [
         'cards_installments.id as cards_installments_id',
@@ -93,6 +96,59 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
         };
 
         return $this->doQuery($query);
+    }
+
+
+
+
+    /**
+     * @param int $purchaseId
+     * @return CardInvoiceData|null
+     * @throws BindingResolutionException
+     */
+    public function getInstallmentsByPurchaseId(int $purchaseId): ?Collection
+    {
+        $query = function () use ($purchaseId) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(self::PURCHASE_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $purchaseId)
+                ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['ASC']);
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => CardInstallmentData::fromSelf((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+
+    /**
+     * @param int $invoiceId
+     * @param string $date
+     * @param string $status
+     * @return void
+     * @throws BindingResolutionException
+     */
+    public function updateStatusInstallment(int $invoiceId, string $date, string $status): void
+    {
+        $conditions =[
+            [
+                'field' => self::INVOICE_ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $invoiceId,
+            ],
+            [
+                'field' => self::DATE_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $date,
+            ]
+        ];
+
+        $this->update($conditions, [
+            'status' => $status,
+        ]);
     }
 
 
