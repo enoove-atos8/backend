@@ -2,10 +2,12 @@
 
 namespace Application\Api\v1\Financial\Exits\Purchases\Controllers;
 
+use Application\Api\v1\Financial\Exits\Purchases\Resources\InstallmentsByPurchaseResourceCollection;
 use Application\Api\v1\Financial\Exits\Purchases\Resources\InstallmentsResourceCollection;
 use Application\Api\v1\Financial\Exits\Purchases\Resources\PurchaseResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Exits\Purchases\Actions\GetInstallmentsAction;
+use Domain\Financial\Exits\Purchases\Actions\GetInstallmentsByPurchaseAction;
 use Domain\Financial\Exits\Purchases\Actions\GetPurchasesAction;
 use Exception;
 use Illuminate\Http\Request;
@@ -23,9 +25,31 @@ class InstallmentsController extends Controller
         {
             $cardId = $request->get('cardId');
             $date = $request->get('date');
-            $purchases = $getInstallmentsAction->execute($cardId, $date);
+            $installments = $getInstallmentsAction->execute($cardId, $date);
 
-            return new InstallmentsResourceCollection($purchases);
+            return new InstallmentsResourceCollection($installments);
+        }
+        catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), 500, $e);
+        }
+    }
+
+
+
+
+    /**
+     **
+     * @throws GeneralExceptions
+     */
+    public function getInstallmentsByPurchase(Request $request, GetInstallmentsByPurchaseAction $getInstallmentsByPurchaseAction): InstallmentsByPurchaseResourceCollection
+    {
+        try
+        {
+            $purchaseId = $request->get('purchaseId');
+            $installments = $getInstallmentsByPurchaseAction->execute($purchaseId);
+
+            return new InstallmentsByPurchaseResourceCollection($installments);
         }
         catch (Exception $e)
         {

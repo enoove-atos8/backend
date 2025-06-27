@@ -700,6 +700,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::get('/getInstallments', [InstallmentsController::class, 'getInstalments']);
 
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /
+                         * Description: Get installments by purchase id
+                         */
+
+                        Route::get('/getInstallmentsByPurchase', [InstallmentsController::class, 'getInstallmentsByPurchase']);
+
                     });
 
 

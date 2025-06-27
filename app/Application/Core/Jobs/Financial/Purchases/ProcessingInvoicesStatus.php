@@ -9,6 +9,7 @@ use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardsAction;
 use Domain\Financial\Exits\Purchases\Actions\GetInvoicesByCardIdAction;
 use Domain\Financial\Exits\Purchases\Actions\GetInvoicesByCardIdAndStatusAction;
+use Domain\Financial\Exits\Purchases\Actions\UpdateStatusInstallmentAction;
 use Domain\Financial\Exits\Purchases\Actions\UpdateStatusInvoiceAction;
 use Domain\SyncStorage\Actions\UpdateStatusAction;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -27,7 +28,7 @@ class ProcessingInvoicesStatus
         UpdateStatusInvoiceAction $updateStatusInvoiceAction,
         GetInvoicesByCardIdAndStatusAction $getInvoicesByCardIdAndStatusAction,
         GetCardsAction $getCardsAction,
-        GetChurchesAction $getChurchesAction,
+        GetChurchesAction $getChurchesAction
     )
     {
         $this->updateStatusInvoiceAction = $updateStatusInvoiceAction;
@@ -66,7 +67,9 @@ class ProcessingInvoicesStatus
                     $closingDateNextMonth = Carbon::createFromFormat('Y-m-d', $nextMonthYearMonth.'-'.$card->closingDay);
 
                     if ($currentDate->greaterThan($referenceDate) && $currentDate->lessThan($closingDateNextMonth))
+                    {
                         $this->updateStatusInvoiceAction->execute($invoice->id, CardInvoiceRepository::INVOICE_CLOSED_VALUE);
+                    }
                 }
 
                 foreach ($closedInvoices as $invoice)

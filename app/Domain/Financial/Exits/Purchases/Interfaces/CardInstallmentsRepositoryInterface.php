@@ -19,6 +19,26 @@ interface CardInstallmentsRepositoryInterface
 
 
     /**
+     * Returns the card installments by card id and date reference
+     *
+     * @param int $purchaseId
+     * @return CardInvoiceData|null
+     */
+    public function getInstallmentsByPurchaseId(int $purchaseId): ?Collection;
+
+
+    /**
+     * Update the status of installment
+     *
+     * @param int $invoiceId
+     * @param string $date
+     * @param string $status
+     * @return void
+     */
+    public function updateStatusInstallment(int $invoiceId, string $date, string $status): void;
+
+
+    /**
      * Returns the card invoice created
      *
      * @param CardInstallmentData $cardInstallmentData
