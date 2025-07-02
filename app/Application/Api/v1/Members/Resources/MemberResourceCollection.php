@@ -39,24 +39,24 @@ class MemberResourceCollection extends ResourceCollection
                 'deleted'             =>  $item->deleted,
                 'personDataAndIdentification' => [
                     'avatar'        => $item->avatar,
-                    'fullName'      => $item->full_name,
+                    'fullName'      => $item->fullName,
                     'gender'        => $item->gender,
                     'cpf'           => $item->cpf,
                     'rg'            => $item->rg,
                     'work'          => $item->work,
-                    'bornDate'      => $item->born_date,
+                    'bornDate'      => $item->bornDate,
                 ],
                 'addressAndContact' => [
                     'email'         => $item->email,
                     'phone'         => $item->phone,
-                    'cellPhone'     => $item->cell_phone,
+                    'cellPhone'     => $item->cellPhone,
                     'address'       => $item->address,
                     'district'      => $item->district,
                     'city'          => $item->city,
                     'uf'            => $item->uf,
                 ],
                 'parentageAndMaritalStatus' => [
-                    'maritalStatus'  => $item->marital_status,
+                    'maritalStatus'  => $item->maritalStatus,
                     'spouse'         => $item->spouse,
                     'father'         => $item->father,
                     'mother'         => $item->mother,
@@ -64,11 +64,11 @@ class MemberResourceCollection extends ResourceCollection
                 'ecclesiasticalInformation' => [
                     'ecclesiasticalFunction'    => $ecclesiasticalFunction,
                     'ministries'                => $ministries,
-                    'memberType'                => $item->member_type,
-                    'baptismDate'               => $item->baptism_date,
+                    'memberType'                => $item->memberType,
+                    'baptismDate'               => $item->baptismDate,
                 ],
                 'otherInformation' => [
-                    'bloodType'         => $item->blood_type,
+                    'bloodType'         => $item->bloodType,
                     'education'         => $item->education,
                 ]
             ];

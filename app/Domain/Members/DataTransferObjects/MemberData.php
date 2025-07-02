@@ -92,13 +92,11 @@ class MemberData extends DataTransferObject
      * Create a MemberData instance from response data
      *
      * @param array $data Response data from repository
-     * @return self New MemberData instance
-     * @throws UnknownProperties
+     * @return array New MemberData instance
      */
-    public static function fromResponse(array $data): self
+    private static function getMemberPrefixedData(array $data): array
     {
-        return new self([
-            'id' => $data['members_id'] ?? 0,
+        return [
             'activated' => isset($data['members_activated']) ? (bool)$data['members_activated'] : null,
             'deleted' => isset($data['members_deleted']) ? (bool)$data['members_deleted'] : null,
             'avatar' => $data['members_avatar'] ?? null,
@@ -125,7 +123,56 @@ class MemberData extends DataTransferObject
             'baptismDate' => $data['members_baptism_date'] ?? null,
             'bloodType' => $data['members_blood_type'] ?? null,
             'education' => $data['members_education'] ?? null,
-        ]);
+        ];
+    }
+
+    private static function getNonPrefixedData(array $data): array
+    {
+        return [
+            'activated' => isset($data['activated']) ? (bool)$data['activated'] : null,
+            'deleted' => isset($data['deleted']) ? (bool)$data['deleted'] : null,
+            'avatar' => $data['avatar'] ?? null,
+            'fullName' => $data['full_name'] ?? null,
+            'gender' => $data['gender'] ?? null,
+            'cpf' => $data['cpf'] ?? null,
+            'middleCpf' => $data['middle_cpf'] ?? null,
+            'rg' => $data['rg'] ?? null,
+            'work' => $data['work'] ?? null,
+            'bornDate' => $data['born_date'] ?? null,
+            'email' => $data['email'] ?? null,
+            'phone' => $data['phone'] ?? null,
+            'cellPhone' => $data['cell_phone'] ?? null,
+            'address' => $data['address'] ?? null,
+            'district' => $data['district'] ?? null,
+            'city' => $data['city'] ?? null,
+            'uf' => $data['uf'] ?? null,
+            'maritalStatus' => $data['marital_status'] ?? null,
+            'spouse' => $data['spouse'] ?? null,
+            'father' => $data['father'] ?? null,
+            'mother' => $data['mother'] ?? null,
+            'ecclesiasticalFunction' => $data['ecclesiastical_function'] ?? null,
+            'memberType' => $data['member_type'] ?? null,
+            'baptismDate' => $data['baptism_date'] ?? null,
+            'bloodType' => $data['blood_type'] ?? null,
+            'education' => $data['education'] ?? null,
+        ];
+    }
+
+    /**
+     * @throws UnknownProperties
+     */
+    public static function fromResponse(array $data): self
+    {
+        $prefixedData = self::getMemberPrefixedData($data);
+        $nonPrefixedData = self::getNonPrefixedData($data);
+
+        $mergedData = array_merge(
+            ['id' => $data['id'] ?? 0],
+            array_filter($prefixedData, fn($value) => $value !== null) ?:
+                array_filter($nonPrefixedData, fn($value) => $value !== null)
+        );
+
+        return new self($mergedData);
     }
 }
 
