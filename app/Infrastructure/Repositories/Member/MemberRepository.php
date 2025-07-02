@@ -7,8 +7,10 @@ use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Members\Models\Member;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Throwable;
@@ -20,6 +22,9 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const ID_COLUMN_JOINED = 'members.id';
     const MEMBER_TYPE_COLUMN_JOINED = 'members.member_type';
     const MEMBER_TYPE_COLUMN = 'member_type';
+    const PAGINATE_NUMBER = 30;
+
+    const DELETED_COLUMN = 'deleted';
     const MEMBER_GENDER_COLUMN_JOINED = 'members.gender';
     const MEMBER_GENDER_COLUMN = 'gender';
     const ID_COLUMN = 'id';
@@ -108,19 +113,36 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
 
     /**
-     * @param null $id
+     * @param array $filters
+     * @param bool $paginate
      * @return Collection|Model
      * @throws BindingResolutionException
      */
-    public function getMembers($id = null): Collection|Member
+    public function getMembers(array $filters, bool $paginate): Collection | Paginator
     {
-        if($id != null)
-            return $this->getById($id);
-        else
-            return $this->getAll(
-                self::ALL_COLUMNS,
-                self::FULL_NAME_COLUMN,
-                BaseRepository::ORDERS['ASC']);
+        $query = function () use ($paginate) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->orderBy(self::FULL_NAME_COLUMN);
+
+
+            if($paginate)
+            {
+                $result = $q->simplePaginate(self::PAGINATE_NUMBER);
+
+                $result->setCollection(
+                    $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
+                );
+                return $result;
+            }
+            else
+            {
+                $result = $q->get();
+                return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+            }
+        };
+
+        return $this->doQuery($query);
     }
 
 

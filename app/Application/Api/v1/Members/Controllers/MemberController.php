@@ -55,18 +55,21 @@ class MemberController extends Controller
     }
 
 
-
     /**
+     * @param Request $request
      * @param GetMembersAction $getMembersAction
      * @return MemberResourceCollection
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getMembers(GetMembersAction $getMembersAction): MemberResourceCollection
+    public function getMembers(Request $request, GetMembersAction $getMembersAction): MemberResourceCollection
     {
         try
         {
-            $response = $getMembersAction->execute();
+            $filters = $request->except(['page']);
+            $paginate = $request->input('page') == true;
+            $response = $getMembersAction->execute($filters, $paginate);
+
             return new MemberResourceCollection($response);
         }
         catch (GeneralExceptions $e)

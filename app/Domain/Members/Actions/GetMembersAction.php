@@ -6,6 +6,7 @@ use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Members\Models\Member;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Member\MemberRepository;
@@ -25,17 +26,11 @@ class GetMembersAction
     /**
      * @throws Throwable
      */
-    public function execute(): Member|Model|Collection
+    public function execute(array $filters, bool $paginate): Collection | Paginator
     {
-        $members = $this->memberRepository->getMembers();
-
-        if($members->count() > 0)
-        {
-            return $members;
-        }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::INFO_NO_MEMBERS_FOUNDED, 404);
-        }
+        return $this->memberRepository->getMembers(
+            $filters,
+            $paginate
+        );
     }
 }
