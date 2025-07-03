@@ -475,20 +475,13 @@ class ReceiptModelByInstitution
 
         $arrDateParts = preg_split('/[\/ ]/', $date);
         $day = $arrDateParts[0];
-        $monthText = strtolower($arrDateParts[1]);
+        $month = strtolower($arrDateParts[1]);
+        $year = strlen($arrDateParts[2]) == 2 ? '20' . $arrDateParts[2] : $arrDateParts[2];
 
-        if(key_exists($monthText, $arrMonthTextToNumber))
-        {
-            $monthNumber = $arrMonthTextToNumber[$monthText];
-            $year = strlen($arrDateParts[2]) == 2 ? '20' . $arrDateParts[2] : $arrDateParts[2];
+        if(key_exists($month, $arrMonthTextToNumber))
+            $month = $arrMonthTextToNumber[$month];
 
-            return $day . '/' . $monthNumber . '/' . $year;
-        }
-        else
-        {
-            return $date;
-        }
-
+        return $day . '/' . $month . '/' . $year;
     }
 
     private function resetResponseArray(): void
