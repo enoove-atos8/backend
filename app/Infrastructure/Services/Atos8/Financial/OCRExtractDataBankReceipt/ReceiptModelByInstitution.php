@@ -65,6 +65,7 @@ class ReceiptModelByInstitution
             self::BANK_PICPAY => $this->extractData($text, $docType, $docSubType , self::BANK_PICPAY),
             self::BANK_CEF_APP => $this->extractData($text, $docType, $docSubType , self::BANK_CEF_APP),
             self::BANK_CEF_GER => $this->extractData($text, $docType, $docSubType , self::BANK_CEF_GER),
+            self::BANK_CEF_IB => $this->extractData($text, $docType, $docSubType , self::BANK_CEF_IB),
             self::BANK_BRADESCO => $this->extractData($text, $docType, $docSubType , self::BANK_BRADESCO),
             self::BANK_SANTANDER => $this->extractData($text, $docType, $docSubType , self::BANK_SANTANDER),
             self::BANK_SICREDI => $this->extractData($text, $docType, $docSubType , self::BANK_SICREDI),
@@ -176,7 +177,18 @@ class ReceiptModelByInstitution
                     '/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/',
                 ],
                 'name' => ['/Origem\s+Nome:\s*(.+)$/'],
-                'date' => ['/(\d{2}\/\d{2}\/\d{4}) as/'],
+                'date' => ['/Data\s*\n\s*(\d{2}\/\d{2}\/\d{2,4})/'],
+                'cpf' => [
+                    '/CPF:\s?(\d{11})/',
+                ],
+                'timestamp' => '/(\d{2}\/\d{2}\/\d{4})[^\d]*(\d{2}:\d{2}:\d{2})/'
+            ],
+            self::BANK_CEF_IB => [
+                'amount' => [
+                    '/R\$\s?\d{1,3}(?:\.\d{3})*(?:,\d{2})/',
+                ],
+                'name' => ['/Origem\s+Nome:\s*(.+)$/'],
+                'date' => ['/Data\s*\n\s*(\d{2}\/\d{2}\/\d{2,4})/'],
                 'cpf' => [
                     '/CPF:\s?(\d{11})/',
                 ],
@@ -468,7 +480,7 @@ class ReceiptModelByInstitution
         if(key_exists($monthText, $arrMonthTextToNumber))
         {
             $monthNumber = $arrMonthTextToNumber[$monthText];
-            $year = $arrDateParts[2];
+            $year = strlen($arrDateParts[2]) == 2 ? '20' . $arrDateParts[2] : $arrDateParts[2];
 
             return $day . '/' . $monthNumber . '/' . $year;
         }

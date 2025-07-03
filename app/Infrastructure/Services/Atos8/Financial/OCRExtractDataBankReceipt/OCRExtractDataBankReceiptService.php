@@ -12,7 +12,7 @@ class OCRExtractDataBankReceiptService
         'bb'        => 'SISBB',
         'cef_app'   => 'CAIXA',
         'cef_ger'   => 'Gerenciador CAIXA',
-        'cef_ib'    => 'Internet Banking CAIXA',
+        'cef_ib'    => ['Internet Banking CAIXA', 'Comprovante Boleto'],
         'cef_tem'   => 'NSU',
         'bradesco'  => ['Bradesco', 'BRADESCO'],
         'santander' => 'SANTANDER',
