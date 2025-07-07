@@ -12,7 +12,7 @@ interface MemberRepositoryInterface
 {
     public function createMember(MemberData $memberData): Member;
 
-    public function getMembers(array $filters, bool $paginate): Collection | Paginator;
+    public function getMembers(array $filters, string | null $term, bool $paginate): Collection | Paginator;
     public function getMembersByMiddleCpf(string $cpf): Model | null;
     public function getMembersByCpf(string $cpf): Model | null;
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;

@@ -38,12 +38,7 @@ class GetMovementsIndicatorsAction
      */
     public function execute(int $groupId, string $dates): array
     {
-        // Get the initial balance for the group
-        $initialBalance = self::getInitialBalance($this->movementRepository, $groupId);
         $movements = $this->movementRepository->getMovementsByGroup($groupId, $dates, false, true);
-
-        if ($movements->isEmpty())
-            throw new GeneralExceptions(ReturnMessages::MOVEMENTS_NOT_FOUND, 404);
 
         $financialSummary = self::calculateFinancialSummary($movements);
         $currentBalance = self::getCurrentBalance($this->movementRepository, $groupId);

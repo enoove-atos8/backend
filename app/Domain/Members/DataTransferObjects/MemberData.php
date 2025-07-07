@@ -7,6 +7,34 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class MemberData extends DataTransferObject
 {
+    public const ID = 'id';
+    public const ACTIVATED = 'activated';
+    public const DELETED = 'deleted';
+    public const AVATAR = 'avatar';
+    public const FULL_NAME = 'fullName';
+    public const GENDER = 'gender';
+    public const CPF = 'cpf';
+    public const MIDDLE_CPF = 'middleCpf';
+    public const RG = 'rg';
+    public const WORK = 'work';
+    public const BORN_DATE = 'bornDate';
+    public const EMAIL = 'email';
+    public const PHONE = 'phone';
+    public const CELL_PHONE = 'cellPhone';
+    public const ADDRESS = 'address';
+    public const DISTRICT = 'district';
+    public const CITY = 'city';
+    public const UF = 'uf';
+    public const MARITAL_STATUS = 'maritalStatus';
+    public const SPOUSE = 'spouse';
+    public const FATHER = 'father';
+    public const MOTHER = 'mother';
+    public const ECCLESIASTICAL_FUNCTION = 'ecclesiasticalFunction';
+    public const MEMBER_TYPE = 'memberType';
+    public const BAPTISM_DATE = 'baptismDate';
+    public const BLOOD_TYPE = 'bloodType';
+    public const EDUCATION = 'education';
+
     /** @var integer  */
     public int $id = 0;
 

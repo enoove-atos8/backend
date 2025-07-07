@@ -2,8 +2,10 @@
 
 namespace Domain\Members\Actions;
 
+use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMembersCountersAction
@@ -17,23 +19,30 @@ class GetMembersCountersAction
 
 
     /**
-     * @param string $key
      * @return array
-     * @throws BindingResolutionException
      */
-    public function execute(string $key): array
+    public function execute(): array
     {
-        $counters = null;
-        $members = $this->memberRepository->getMembers();
+        $data = $this->memberRepository->getMembers([], null, false);
 
-        if($key == 'member' or $key == 'congregate')
-            $counters = $members->where('member_type', '=', $key)->count();
+        $members = $data->where(MemberData::MEMBER_TYPE,
+                                    BaseRepository::OPERATORS['EQUALS'],
+                                MemberRepository::MEMBER_VALUE)->count();
 
-        elseif($key == 'inactive')
-            $counters = $members->where('activated', '=', 0)->count();
+        $congregates = $data->where(MemberData::MEMBER_TYPE,
+            BaseRepository::OPERATORS['EQUALS'],
+            MemberRepository::CONGREGATE_VALUE)->count();
+
+        $inactives = $data->where(MemberRepository::ACTIVATED_COLUMN,
+            BaseRepository::OPERATORS['EQUALS'],
+            false)->count();
 
         return [
-            'counter'  => $counters,
+            'indicators'  => [
+                'members'   =>  $members,
+                'congregates'   =>  $congregates,
+                'inactives'   =>  $inactives,
+            ],
         ];
     }
 }

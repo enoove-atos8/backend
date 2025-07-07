@@ -67,8 +67,9 @@ class MemberController extends Controller
         try
         {
             $filters = $request->except(['page']);
+            $term = $request->input('term');
             $paginate = $request->input('page') == true;
-            $response = $getMembersAction->execute($filters, $paginate);
+            $response = $getMembersAction->execute($filters, $term, $paginate);
 
             return new MemberResourceCollection($response);
         }
@@ -80,24 +81,20 @@ class MemberController extends Controller
 
 
     /**
-     * @param Request $request
      * @param GetMembersCountersAction $getMembersCountersAction
      * @return Response
-     * @throws Throwable
+     * @throws GeneralExceptions
      */
-    public function getCounters(Request $request, GetMembersCountersAction $getMembersCountersAction): Response
+    public function getMembersIndicators(GetMembersCountersAction $getMembersCountersAction): Response
     {
         try
         {
-            $response = $getMembersCountersAction->execute($request->input('key'));
+            $response = $getMembersCountersAction->execute();
 
             if($response)
             {
                 return response(
-                    [
-                    'data'   =>  [
-                        'counter'   =>  $response['counter']
-                    ]], 200);
+                    $response, 200);
             }
 
         }

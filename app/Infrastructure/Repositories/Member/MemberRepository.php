@@ -19,6 +19,9 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 {
     protected mixed $model = Member::class;
     const TABLE_NAME = 'members';
+    const MEMBER_VALUE = 'member';
+    const CONGREGATE_VALUE = 'congregate';
+
     const ID_COLUMN_JOINED = 'members.id';
     const MEMBER_TYPE_COLUMN_JOINED = 'members.member_type';
     const MEMBER_TYPE_COLUMN = 'member_type';
@@ -114,15 +117,20 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     /**
      * @param array $filters
+     * @param string|null $term
      * @param bool $paginate
      * @return Collection|Model
      * @throws BindingResolutionException
      */
-    public function getMembers(array $filters, bool $paginate): Collection | Paginator
+    public function getMembers(array $filters, string | null $term, bool $paginate): Collection | Paginator
     {
-        $query = function () use ($paginate) {
+        $query = function () use ($filters, $term, $paginate) {
 
             $q = DB::table(self::TABLE_NAME)
+                ->where(function ($q) use($term){
+                    if($term != null)
+                        $q->where(self::FULL_NAME_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$term}%");
+                })
                 ->orderBy(self::FULL_NAME_COLUMN);
 
 
