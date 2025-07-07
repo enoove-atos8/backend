@@ -982,91 +982,86 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         /*
         |--------------------------------------------------------------------------
-        | Members routes
-        |------------------------------------------------------------------------------------------
-        | Resource Group: general
-        | Resource: Members
-        | EndPoints: /v1/general/members
+        | Secretary routes
+        |--------------------------------------------------------------------------
         |
-        |   1 - GET - /members - OK
-        |   2 - GET - /members/{id} - OK
-        |   3 - GET - /members/getCounters - OK
-        |   4 - POST - /members - OK
-        |   5 - PUT - /members/{id} - OK
-        |   6 - PUT - /members/{id}/status - OK
-        |   7 - POST - /files/assets/avatar - OK
-        |------------------------------------------------------------------------------------------
         */
 
-        Route::prefix('members')->group(function () {
+        Route::prefix('secretary')->group(function () {
 
-            /*
-             * Action: GET
-             * EndPoint: /
-             * Description: Get All members
-             */
+            Route::prefix('members')->group(function () {
 
-            Route::get('/', [MemberController::class, 'getMembers']);
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get All members
+                 */
 
-
-
-            /*
-             * Action: GET
-             * EndPoint: /getCounters
-             * Description: Get counters of members registered
-             */
-
-            Route::get('/getCounters/', [MemberController::class, 'getCounters']);
+                Route::get('/', [MemberController::class, 'getMembers']);
 
 
 
+                /*
+                 * Action: GET
+                 * EndPoint: /getMembersIndicators
+                 * Description: Get members and congregates quantities
+                 */
 
-            /*
-             * Action: GET
-             * EndPoint: /{id}
-             * Description: Get member by id
-             */
-
-            Route::get('/{id}', [MemberController::class, 'getMemberById']);
-
-
-
-            /*
-             * Action: POST
-             * EndPoint: /
-             * Description: Create a member
-             */
-
-            Route::post('/', [MemberController::class, 'createMember']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}/status
-             * Description: Update status of activation member
-             */
-
-            Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
-
-
-            /*
-             * Action: PUT
-             * EndPoint: /{id}
-             * Description: Update a member
-             */
-
-            Route::put('/{id}', [MemberController::class, 'updateMember']);
+                Route::get('/getMembersIndicators/', [MemberController::class, 'getMembersIndicators']);
 
 
 
-            /*
-             * Action: PUT
-             * EndPoint: /files/assets/avatar
-             * Description: Upload a avatar member image
-             */
 
-            Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+                /*
+                 * Action: GET
+                 * EndPoint: /{id}
+                 * Description: Get member by id
+                 */
+
+                Route::get('/{id}', [MemberController::class, 'getMemberById']);
+
+
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Create a member
+                 */
+
+                Route::post('/', [MemberController::class, 'createMember']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}/status
+                 * Description: Update status of activation member
+                 */
+
+                Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /{id}
+                 * Description: Update a member
+                 */
+
+                Route::put('/{id}', [MemberController::class, 'updateMember']);
+
+
+
+                /*
+                 * Action: PUT
+                 * EndPoint: /files/assets/avatar
+                 * Description: Upload a avatar member image
+                 */
+
+                Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+            });
+
         });
+
+
 
 
         /*

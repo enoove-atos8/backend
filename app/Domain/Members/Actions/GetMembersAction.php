@@ -26,10 +26,11 @@ class GetMembersAction
     /**
      * @throws Throwable
      */
-    public function execute(array $filters, bool $paginate): Collection | Paginator
+    public function execute(array $filters, string | null $term, bool $paginate): Collection | Paginator
     {
         return $this->memberRepository->getMembers(
             $filters,
+            $term,
             $paginate
         );
     }
