@@ -45,6 +45,16 @@ interface MovementRepositoryInterface
      */
     public function getInitialMovementsByGroup(int $groupId): ?MovementsData;
 
+
+    /**
+     * Get movement by entry id
+     *
+     * @param int $entryId
+     * @return Movement|null
+     */
+    public function getMovementsByEntryIdAction(int $entryId): ?MovementsData;
+
+
     /**
      * Get Movement by reference ID
      *
@@ -118,4 +128,6 @@ interface MovementRepositoryInterface
 
 
     public function updateMovementBalance(int $movementId, float $newBalance): void;
+
+    public function updateMovementAmount(int $movementId, float $newAmount): void;
 }
