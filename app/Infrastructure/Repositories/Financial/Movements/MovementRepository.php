@@ -31,6 +31,7 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     const REFERENCE_COLUMN = 'reference';
     const IS_INITIAL_BALANCE_COLUMN = 'is_initial_balance';
     const DELETED_COLUMN = 'deleted';
+    const ENTRY_ID_COLUMN = 'entry_id';
     const PAGINATE_NUMBER = 30;
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -157,6 +158,9 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         return $this->doQuery($query);
     }
 
+
+
+
     /**
      * Get initial balance movement for a group
      *
@@ -179,6 +183,29 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         )->first();
 
         return MovementsData::fromResponse((array) $result);
+    }
+
+
+    /**
+     * Get movement by entry id
+     *
+     * @param int $entryId
+     * @return MovementsData|null
+     * @throws BindingResolutionException
+     * @throws UnknownProperties
+     */
+    public function getMovementsByEntryIdAction(int $entryId): ?MovementsData
+    {
+        $movement = $this->model
+            ->where(self::ENTRY_ID_COLUMN, $entryId)
+            ->first();
+
+        if (!$movement) {
+            return null;
+        }
+
+        $attributes = $movement->getAttributes();
+        return MovementsData::fromResponse($attributes);
     }
 
 
@@ -323,6 +350,28 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
 
         $this->update($conditions, [
             'balance' => $newBalance,
+        ]);
+    }
+
+
+    /**
+     * @param int $movementId
+     * @param float $newAmount
+     * @return void
+     * @throws BindingResolutionException
+     */
+    public function updateMovementAmount(int $movementId, float $newAmount): void
+    {
+        $conditions =[
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $movementId,
+            ]
+        ];
+
+        $this->update($conditions, [
+            'amount' => $newAmount,
         ]);
     }
 
