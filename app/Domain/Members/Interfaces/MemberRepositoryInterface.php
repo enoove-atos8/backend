@@ -15,6 +15,8 @@ interface MemberRepositoryInterface
     public function getMembers(array $filters, string | null $term, bool $paginate): Collection | Paginator;
     public function getMembersByMiddleCpf(string $cpf): Model | null;
     public function getMembersByCpf(string $cpf): Model | null;
+
+    public function getMemberById(string $id): MemberData | null;
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
     public function updateStatus($id, $status): mixed;
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed;

@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
 class MemberRepository extends BaseRepository implements MemberRepositoryInterface
@@ -179,6 +180,27 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             self::CPF_COLUMN,
             BaseRepository::OPERATORS['LIKE'],
             $cpf);
+    }
+
+
+    /**
+     * @param string $id
+     * @return Model|null
+     * @throws BindingResolutionException
+     * @throws UnknownProperties
+     */
+    public function getMemberById(string $id): MemberData | null
+    {
+        $group = $this->model
+            ->where(self::ID_COLUMN_JOINED, $id)
+            ->first();
+
+        if (!$group) {
+            return null;
+        }
+
+        $attributes = $group->getAttributes();
+        return MemberData::fromResponse($attributes);
     }
 
 
