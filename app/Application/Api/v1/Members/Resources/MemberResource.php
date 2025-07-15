@@ -36,25 +36,25 @@ class MemberResource extends JsonResource
             'deleted'             =>  $member->deleted,
             'personDataAndIdentification' => [
                 'avatar'        => $member->avatar,
-                'fullName'      => $member->full_name,
-                'memberType'    => $member->member_type,
+                'fullName'      => $member->fullName,
+                'memberType'    => $member->memberType,
                 'gender'        => $member->gender,
                 'cpf'           => $member->cpf,
                 'rg'            => $member->rg,
                 'work'          => $member->work,
-                'bornDate'      => $member->born_date,
+                'bornDate'      => $member->bornDate,
             ],
             'addressAndContact' => [
                 'email'         => $member->email,
                 'phone'         => $member->phone,
-                'cellPhone'     => $member->cell_phone,
+                'cellPhone'     => $member->cellPhone,
                 'address'       => $member->address,
                 'district'      => $member->district,
                 'city'          => $member->city,
                 'uf'            => $member->uf,
             ],
             'parentageAndMaritalStatus' => [
-                'maritalStatus'  => $member->marital_status,
+                'maritalStatus'  => $member->maritalStatus,
                 'spouse'         => $member->spouse,
                 'father'         => $member->father,
                 'mother'         => $member->mother,
@@ -62,11 +62,11 @@ class MemberResource extends JsonResource
             'ecclesiasticalInformation' => [
                 'ecclesiasticalFunction'    => $ecclesiasticalFunction,
                 'ministries'                => $ministries,
-                'memberType'                => $member->member_type,
-                'baptismDate'               => $member->baptism_date,
+                'memberType'                => $member->memberType,
+                'baptismDate'               => $member->baptismDate,
             ],
             'otherInformation' => [
-                'bloodType'         => $member->blood_type,
+                'bloodType'         => $member->bloodType,
                 'education'         => $member->education,
             ]
         ];

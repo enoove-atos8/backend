@@ -3,6 +3,7 @@
 namespace Domain\Members\Actions;
 
 use App\Domain\SyncStorage\Constants\ReturnMessages;
+use Domain\Members\DataTransferObjects\MemberData;
 use Domain\Members\Interfaces\MemberRepositoryInterface;
 use Domain\Members\Models\Member;
 use Illuminate\Contracts\Container\BindingResolutionException;
@@ -23,14 +24,14 @@ class GetMemberByIdAction
 
     /**
      * @param null $id
-     * @return Collection|Member|Model
-     * @throws GeneralExceptions|BindingResolutionException
+     * @return MemberData
+     * @throws GeneralExceptions
      */
-    public function execute($id = null): Member|Model|Collection
+    public function execute($id = null): MemberData
     {
-        $member = $this->memberRepository->getMembers($id);
+        $member = $this->memberRepository->getMemberById($id);
 
-        if($member->count() > 0)
+        if(!is_null($member))
         {
             return $member;
         }
