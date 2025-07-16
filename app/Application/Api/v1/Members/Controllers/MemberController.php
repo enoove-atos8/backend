@@ -11,6 +11,7 @@ use Application\Core\Http\Controllers\Controller;
 use Domain\Members\Actions\CreateMemberAction;
 use Domain\Members\Actions\GetMemberByIdAction;
 use Domain\Members\Actions\GetMembersAction;
+use Domain\Members\Actions\GetMembersByBornMonthAction;
 use Domain\Members\Actions\GetMembersCountersAction;
 use Domain\Members\Actions\UpdateMemberAction;
 use Domain\Members\Actions\UpdateStatusMemberAction;
@@ -115,6 +116,26 @@ class MemberController extends Controller
         {
             $response = $getMemberByIdAction->execute($id);
             return new MemberResource($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function getMembersByBornMonth(Request $request, GetMembersByBornMonthAction $getMembersByBornMonthAction): MemberResourceCollection
+    {
+        try
+        {
+            $date = $request->input('date');
+            $response = $getMembersByBornMonthAction->execute($date);
+            return new MemberResourceCollection($response);
 
         }
         catch (GeneralExceptions $e)

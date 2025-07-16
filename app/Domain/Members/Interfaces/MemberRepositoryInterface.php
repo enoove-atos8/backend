@@ -17,6 +17,9 @@ interface MemberRepositoryInterface
     public function getMembersByCpf(string $cpf): Model | null;
 
     public function getMemberById(string $id): MemberData | null;
+
+    public function getMembersByBornMonth(string $date): Collection | null;
+
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
     public function updateStatus($id, $status): mixed;
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed;

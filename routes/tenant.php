@@ -989,74 +989,90 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::prefix('secretary')->group(function () {
 
-            Route::prefix('members')->group(function () {
+            Route::prefix('membership')->group(function () {
 
-                /*
-                 * Action: GET
-                 * EndPoint: /
-                 * Description: Get All members
-                 */
+                Route::prefix('membership')->group(function () {
 
-                Route::get('/', [MemberController::class, 'getMembers']);
+                    /*
+                     * Action: GET
+                     * EndPoint: /
+                     * Description: Get All members
+                     */
 
-
-
-                /*
-                 * Action: GET
-                 * EndPoint: /getMembersIndicators
-                 * Description: Get members and congregates quantities
-                 */
-
-                Route::get('/getMembersIndicators/', [MemberController::class, 'getMembersIndicators']);
+                    Route::get('/', [MemberController::class, 'getMembers']);
 
 
 
+                    /*
+                     * Action: GET
+                     * EndPoint: /getMembersIndicators
+                     * Description: Get members and congregates quantities
+                     */
 
-                /*
-                 * Action: GET
-                 * EndPoint: /{id}
-                 * Description: Get member by id
-                 */
-
-                Route::get('/{id}', [MemberController::class, 'getMemberById']);
-
-
-
-                /*
-                 * Action: POST
-                 * EndPoint: /
-                 * Description: Create a member
-                 */
-
-                Route::post('/', [MemberController::class, 'createMember']);
-
-
-                /*
-                 * Action: PUT
-                 * EndPoint: /{id}/status
-                 * Description: Update status of activation member
-                 */
-
-                Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
-
-
-                /*
-                 * Action: PUT
-                 * EndPoint: /{id}
-                 * Description: Update a member
-                 */
-
-                Route::put('/{id}', [MemberController::class, 'updateMember']);
+                    Route::get('/getMembersIndicators/', [MemberController::class, 'getMembersIndicators']);
 
 
 
-                /*
-                 * Action: PUT
-                 * EndPoint: /files/assets/avatar
-                 * Description: Upload a avatar member image
-                 */
 
-                Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+                    /*
+                     * Action: GET
+                     * EndPoint: /{id}
+                     * Description: Get member by id
+                     */
+
+                    Route::get('/{id}', [MemberController::class, 'getMemberById']);
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /
+                     * Description: Create a member
+                     */
+
+                    Route::post('/', [MemberController::class, 'createMember']);
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /{id}/status
+                     * Description: Update status of activation member
+                     */
+
+                    Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /{id}
+                     * Description: Update a member
+                     */
+
+                    Route::put('/{id}', [MemberController::class, 'updateMember']);
+
+
+
+                    /*
+                     * Action: PUT
+                     * EndPoint: /files/assets/avatar
+                     * Description: Upload a avatar member image
+                     */
+
+                    Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+                });
+
+                Route::prefix('birthdays')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getMembersByBornMonth
+                     * Description: Get members birthdays
+                     */
+
+                    Route::get('/getMembersByBornMonth', [MemberController::class, 'getMembersByBornMonth']);
+
+                });
+
             });
 
         });
