@@ -36,6 +36,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
       'IS' => 'IS',
     ];
 
+    const SQL_FUNCTIONS = [
+        'SUBSTRING' =>  'SUBSTRING'
+    ];
+
     const ORDERS = [
         'ASC' => 'ASC',
         'DESC' => 'DESC',

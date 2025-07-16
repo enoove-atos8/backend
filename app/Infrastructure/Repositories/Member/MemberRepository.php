@@ -37,6 +37,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const CPF_COLUMN = 'cpf';
     const ALL_COLUMNS = '*';
     const FULL_NAME_COLUMN = 'full_name';
+    const BORN_DATE_COLUMN = 'born_date';
     const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
     const GROUP_LEADER_COLUMN = 'group_leader';
 
@@ -201,6 +202,31 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
         $attributes = $group->getAttributes();
         return MemberData::fromResponse($attributes);
+    }
+
+
+    /**
+     * @param string $date
+     * @return Model|null
+     * @throws UnknownProperties|BindingResolutionException
+     */
+    public function getMembersByBornMonth(string $date): Collection | null
+    {
+        $query = function () use ($date) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->where(function ($q) use($date){
+                    if($date != null)
+                        $q->whereRaw("SUBSTRING(" . self::BORN_DATE_COLUMN . ", 3, 2) = ?", [$date]);
+                })
+                ->orderBy(self::FULL_NAME_COLUMN);
+
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
     }
 
 
