@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Members\Requests;
+namespace Application\Api\v1\Secretary\Membership\Membership\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 

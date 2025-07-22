@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Members\Constants;
+namespace Domain\Secretary\Membership\Constants;
 
 class ReturnMessages
 {
