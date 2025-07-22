@@ -22,8 +22,8 @@ use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsControl
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InvoiceController;
 use Application\Api\v1\Financial\Movements\Controllers\MovementController;
 use Application\Api\v1\Financial\ReceiptProcessing\Controllers\ReceiptProcessingController;
-use Application\Api\v1\Members\Controllers\MemberController;
 use Application\Api\v1\Mobile\SyncStorage\Controllers\SyncStorageController;
+use Application\Api\v1\Secretary\Membership\Membership\Controllers\MemberController;
 use Application\Api\v1\Users\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
@@ -1070,6 +1070,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('/getMembersByBornMonth', [MemberController::class, 'getMembersByBornMonth']);
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /exportBirthdaysData
+                     * Description: Export data
+                     */
+
+                    Route::get('/exportBirthdaysData', [MemberController::class, 'exportBirthdaysData']);
 
                 });
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Members\Resources;
+namespace Application\Api\v1\Secretary\Membership\Membership\Resources;
 
 use Carbon\Carbon;
 use Illuminate\Contracts\Support\Arrayable;

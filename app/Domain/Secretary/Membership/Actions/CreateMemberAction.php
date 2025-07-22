@@ -1,11 +1,11 @@
 <?php
 
-namespace Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
-use Domain\Members\Models\Member;
-use Infrastructure\Repositories\Member\MemberRepository;
-use Domain\Members\DataTransferObjects\MemberData;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
+
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
+use Domain\Secretary\Membership\Models\Member;
 use Throwable;
 
 class CreateMemberAction

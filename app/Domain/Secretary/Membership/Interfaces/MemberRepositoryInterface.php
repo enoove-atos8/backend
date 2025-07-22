@@ -1,12 +1,13 @@
 <?php
 
-namespace Domain\Members\Interfaces;
+namespace Domain\Secretary\Membership\Interfaces;
 
-use Domain\Members\DataTransferObjects\MemberData;
+
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use Domain\Members\Models\Member;
 
 interface MemberRepositoryInterface
 {
@@ -18,7 +19,7 @@ interface MemberRepositoryInterface
 
     public function getMemberById(string $id): MemberData | null;
 
-    public function getMembersByBornMonth(string $date): Collection | null;
+    public function getMembersByBornMonth(string $month, string $fields): Collection | null;
 
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
     public function updateStatus($id, $status): mixed;

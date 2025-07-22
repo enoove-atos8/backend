@@ -1,10 +1,9 @@
 <?php
 
-namespace Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
-use Domain\Members\DataTransferObjects\MemberData;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 

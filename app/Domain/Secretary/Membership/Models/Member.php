@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Members\Models;
+namespace Domain\Secretary\Membership\Models;
 
 use Domain\Ecclesiastical\Groups\Models\Group;
 use Illuminate\Database\Eloquent\Model;

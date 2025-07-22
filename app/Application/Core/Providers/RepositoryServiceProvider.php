@@ -36,7 +36,7 @@ use Domain\Financial\Exits\Payments\Categories\Interfaces\PaymentCategoryReposit
 use Domain\Financial\Exits\Payments\Items\Interfaces\PaymentItemRepositoryInterface;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Domain\Financial\ReceiptProcessing\Interfaces\ReceiptProcessingRepositoryInterface;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;

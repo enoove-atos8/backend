@@ -2,7 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\Actions;
 
-use App\Domain\Members\Actions\GetMemberLeaderAction;
+
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;

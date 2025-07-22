@@ -9,7 +9,6 @@
         "barryvdh/laravel-dompdf": "^3.0",
         "darkaonline/l5-swagger": "^8.6",
         "fedeisas/laravel-mail-css-inliner": "^5.3",
-        "google/apiclient": "^2.15.0",
         "guzzlehttp/guzzle": "^7.9",
         "laravel/framework": "^11.9",
         "laravel/octane": "^v2.5.2",

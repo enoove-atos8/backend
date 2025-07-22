@@ -1,14 +1,12 @@
 <?php
 
-namespace App\Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
 use App\Domain\SyncStorage\Constants\ReturnMessages;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Member\MemberRepository;
 
-class UpdateMiddleCpfMemberAction
+class UpdateStatusMemberAction
 {
     private MemberRepositoryInterface $memberRepository;
 
@@ -18,17 +16,16 @@ class UpdateMiddleCpfMemberAction
     }
 
     /**
-     * @param int $memberId
-     * @param string $middleCpf
+     * @param $memberId
+     * @param $activated
      * @return true
-     * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
-    public function execute(int $memberId, string $middleCpf): mixed
+    public function execute($memberId, $activated): bool
     {
-        $updatedMember = $this->memberRepository->updateMiddleCpf($memberId, $middleCpf);
+        $activated = $this->memberRepository->updateStatus($memberId, $activated);
 
-        if($updatedMember)
+        if($activated)
         {
             return true;
         }

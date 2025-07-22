@@ -1,16 +1,11 @@
 <?php
 
-namespace Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
 use App\Domain\SyncStorage\Constants\ReturnMessages;
-use Domain\Members\DataTransferObjects\MemberData;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Model;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMembersByBornMonthAction
 {
@@ -23,13 +18,14 @@ class GetMembersByBornMonthAction
 
 
     /**
-     * @param string $date
+     * @param string $month
+     * @param string $fields
      * @return Collection
      * @throws GeneralExceptions
      */
-    public function execute(string $date): Collection
+    public function execute(string $month, string $fields = null): Collection
     {
-        $members = $this->memberRepository->getMembersByBornMonth($date);
+        $members = $this->memberRepository->getMembersByBornMonth($month, $fields);
 
         if(count($members) > 0)
         {

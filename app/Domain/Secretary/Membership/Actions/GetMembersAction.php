@@ -1,15 +1,11 @@
 <?php
 
-namespace Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
-use App\Domain\SyncStorage\Constants\ReturnMessages;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
-use Illuminate\Database\Eloquent\Model;
+
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
 
 class GetMembersAction
