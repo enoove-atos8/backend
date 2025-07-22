@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
 use App\Domain\SyncStorage\Constants\ReturnMessages;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMemberLeaderAction
 {
@@ -25,7 +24,6 @@ class GetMemberLeaderAction
      * @param int $groupId
      * @param bool $groupLeader
      * @return Collection|Member|Model
-     * @throws BindingResolutionException
      * @throws GeneralExceptions
      */
     public function execute(int $groupId, bool $groupLeader = true): Member|Model|Collection

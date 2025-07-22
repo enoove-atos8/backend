@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
-use Domain\Members\Interfaces\MemberRepositoryInterface;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Repositories\Member\MemberRepository;
 
-class GetMemberByMiddleCPFAction
+class GetMemberByCPFAction
 {
     private MemberRepositoryInterface $memberRepository;
 
@@ -19,12 +19,12 @@ class GetMemberByMiddleCPFAction
 
     /**
      * @param string $cpf
+     * @param bool $searchWithMiddleCpf
      * @return Model|null
-     * @throws BindingResolutionException
      */
-    public function execute(string $cpf): Model | null
+    public function execute(string $cpf, bool $searchWithMiddleCpf = false): Model | null
     {
-        $member = $this->memberRepository->getMembersByMiddleCpf($cpf);
+        $member = $this->memberRepository->getMembersByCpf($cpf, $searchWithMiddleCpf);
 
         if(!is_null($member))
         {

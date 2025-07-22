@@ -2,14 +2,10 @@
 
 namespace App\Domain\Financial\Entries\Entries\Actions;
 
-use App\Domain\Financial\Entries\Entries\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use Domain\Members\Actions\GetMembersAction;
-use Illuminate\Support\Collection;
-use Infrastructure\Exceptions\GeneralExceptions;
+use Domain\Secretary\Membership\Actions\GetMembersAction;
 use Infrastructure\Repositories\BaseRepository;
-use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
 
 class GetAmountByEntryTypeAction

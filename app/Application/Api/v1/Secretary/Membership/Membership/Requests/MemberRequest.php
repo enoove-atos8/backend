@@ -1,8 +1,8 @@
 <?php
 
-namespace Application\Api\v1\Members\Requests;
+namespace Application\Api\v1\Secretary\Membership\Membership\Requests;
 
-use Domain\Members\DataTransferObjects\MemberData;
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

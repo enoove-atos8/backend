@@ -2,9 +2,11 @@
 
 namespace Infrastructure\Repositories\Member;
 
-use Domain\Members\DataTransferObjects\MemberData;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
+;
+
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
@@ -206,21 +208,35 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
 
     /**
-     * @param string $date
+     * @param string $month
+     * @param string|null $fields
      * @return Model|null
-     * @throws UnknownProperties|BindingResolutionException
+     * @throws BindingResolutionException
      */
-    public function getMembersByBornMonth(string $date): Collection | null
+    public function getMembersByBornMonth(string $month, string $fields = null): Collection | null
     {
-        $query = function () use ($date) {
+        $arrFields = explode(',', $fields);
+
+        if(($key = array_search('age', $arrFields)) !== false)
+        {
+            unset($arrFields[$key]);
+            $arrFields = array_values($arrFields);
+        }
+
+        $query = function () use ($month, $fields, $arrFields) {
 
             $q = DB::table(self::TABLE_NAME)
-                ->where(function ($q) use($date){
-                    if($date != null)
-                        $q->whereRaw("SUBSTRING(" . self::BORN_DATE_COLUMN . ", 3, 2) = ?", [$date]);
+                ->where(function ($q) use($month){
+                    if($month != null)
+                        $q->whereRaw("SUBSTRING(" . self::BORN_DATE_COLUMN . ", 3, 2) = ?", [$month]);
                 })
-                ->orderBy(self::FULL_NAME_COLUMN);
+                ->where(self::ACTIVATED_COLUMN, 1);
 
+            if ($fields !== null && count($arrFields) > 0) {
+                $q = $q->select($arrFields);
+            }
+
+            $q = $q->orderBy(self::FULL_NAME_COLUMN);
 
             $result = $q->get();
             return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));

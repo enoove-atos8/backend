@@ -1,6 +1,6 @@
 <?php
 
-namespace Domain\Members\DataTransferObjects;
+namespace Domain\Secretary\Membership\DataTransferObjects;
 
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

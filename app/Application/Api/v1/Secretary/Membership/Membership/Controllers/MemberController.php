@@ -1,21 +1,21 @@
 <?php
 
-namespace Application\Api\v1\Members\Controllers;
+namespace Application\Api\v1\Secretary\Membership\Membership\Controllers;
 
 use App\Domain\SyncStorage\Constants\ReturnMessages;
-use Application\Api\v1\Members\Requests\MemberAvatarRequest;
-use Application\Api\v1\Members\Requests\MemberRequest;
-use Application\Api\v1\Members\Resources\MemberResource;
-use Application\Api\v1\Members\Resources\MemberResourceCollection;
+use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberAvatarRequest;
+use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberRequest;
+use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResource;
+use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Members\Actions\CreateMemberAction;
-use Domain\Members\Actions\GetMemberByIdAction;
-use Domain\Members\Actions\GetMembersAction;
-use Domain\Members\Actions\GetMembersByBornMonthAction;
-use Domain\Members\Actions\GetMembersCountersAction;
-use Domain\Members\Actions\UpdateMemberAction;
-use Domain\Members\Actions\UpdateStatusMemberAction;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Domain\Secretary\Membership\Actions\CreateMemberAction;
+use Domain\Secretary\Membership\Actions\ExportBirthdaysAction;
+use Domain\Secretary\Membership\Actions\GetMemberByIdAction;
+use Domain\Secretary\Membership\Actions\GetMembersAction;
+use Domain\Secretary\Membership\Actions\GetMembersByBornMonthAction;
+use Domain\Secretary\Membership\Actions\GetMembersCountersAction;
+use Domain\Secretary\Membership\Actions\UpdateMemberAction;
+use Domain\Secretary\Membership\Actions\UpdateStatusMemberAction;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -73,6 +73,37 @@ class MemberController extends Controller
             $response = $getMembersAction->execute($filters, $term, $paginate);
 
             return new MemberResourceCollection($response);
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param ExportBirthdaysAction $exportBirthdaysAction
+     * @return Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function exportBirthdaysData(Request $request, ExportBirthdaysAction $exportBirthdaysAction): Response
+    {
+        try
+        {
+            $month = $request->input('month');
+            $type = $request->input('type');
+            $fields = $request->input('fields');
+
+            $result = $exportBirthdaysAction->execute($month, $type, $fields);
+
+            return response([
+                'success' => true,
+                'message' => 'Relatório gerado com sucesso',
+                'fileUrl' => $result['fileUrl'] ?? null,
+                'fileName' => $result['fileName'] ?? null,
+            ], 200);
         }
         catch (GeneralExceptions $e)
         {
@@ -151,7 +182,7 @@ class MemberController extends Controller
      * @param $id
      * @param UpdateStatusMemberAction $updateStatusMemberAction
      * @return Response
-     * @throws GeneralExceptions|BindingResolutionException
+     * @throws GeneralExceptions
      */
     public function updateStatus(Request $request, $id, UpdateStatusMemberAction $updateStatusMemberAction): Response
     {
@@ -180,7 +211,7 @@ class MemberController extends Controller
      * @param UpdateMemberAction $updateMemberAction
      * @return Response
      * @throws GeneralExceptions
-     * @throws UnknownProperties|BindingResolutionException
+     * @throws UnknownProperties
      */
     public function updateMember(MemberRequest $memberRequest, $id, UpdateMemberAction $updateMemberAction): Response
     {

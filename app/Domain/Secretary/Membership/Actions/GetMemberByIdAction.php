@@ -1,16 +1,11 @@
 <?php
 
-namespace Domain\Members\Actions;
+namespace Domain\Secretary\Membership\Actions;
 
 use App\Domain\SyncStorage\Constants\ReturnMessages;
-use Domain\Members\DataTransferObjects\MemberData;
-use Domain\Members\Interfaces\MemberRepositoryInterface;
-use Domain\Members\Models\Member;
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
+use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMemberByIdAction
 {
