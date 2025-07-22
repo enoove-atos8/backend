@@ -28,8 +28,7 @@ RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
     software-properties-common \
     tesseract-ocr \
     tesseract-ocr-por \
-    poppler-utils \
-    docker-php-ext-install zip
+    poppler-utils
 
 #Set Memory limit to 2GB
 RUN echo "memory_limit = 2G" > /usr/local/etc/php/conf.d/memory-limit.ini
