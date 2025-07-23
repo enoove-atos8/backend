@@ -57,7 +57,7 @@ class ProcessingBankEntriesTransferReceipts
     private UploadFile $uploadFile;
     private ConsolidationEntriesData $consolidationEntriesData;
     private EntryData $entryData;
-    private  MemberData $memberData;
+    private MemberData $memberData;
     private GetPlansAction $getPlansAction;
     private GetPlanByNameAction $getPlanByNameAction;
     private ReceiptProcessingData $receiptProcessingData;
