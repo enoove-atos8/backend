@@ -2,7 +2,7 @@
 
 namespace App\Domain\Financial\Reviewers\Models;
 
-use Domain\Members\Models\Member;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
