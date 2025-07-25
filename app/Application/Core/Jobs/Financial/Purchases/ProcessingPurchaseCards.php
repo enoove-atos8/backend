@@ -85,12 +85,16 @@ class ProcessingPurchaseCards
             foreach ($this->syncStorageData as $data)
             {
                 $data->path = $this->uploadReceipt($data, $tenant);
+                $uploaded = $data->path;
 
-                $purchaseData = CardPurchaseData::fromSyncStorageData($data, (int) $data->cardId);
-                $purchase = $this->createPurchaseAction->execute($purchaseData);
+                if($uploaded)
+                {
+                    $purchaseData = CardPurchaseData::fromSyncStorageData($data, (int) $data->cardId);
+                    $purchase = $this->createPurchaseAction->execute($purchaseData);
 
-                if(!is_null($purchase->id))
-                    $this->updateStatusAction->execute($data->id, SyncStorageRepository::DONE_VALUE);
+                    if(!is_null($purchase->id))
+                        $this->updateStatusAction->execute($data->id, SyncStorageRepository::DONE_VALUE);
+                }
             }
         }
 
@@ -119,24 +123,34 @@ class ProcessingPurchaseCards
     /**
      * @param mixed $data
      * @param string $tenant
-     * @return string
+     * @return string|bool
      * @throws GeneralExceptions
+     * @throws BindingResolutionException
      */
-    public function uploadReceipt(mixed $data, string $tenant): string
+    public function uploadReceipt(mixed $data, string $tenant): string | bool
     {
         $basePathTemp = self::STORAGE_BASE_PATH . "tenants/{$tenant}/temp";
         $this->minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
         $downloadedFile = $this->minioStorageService->downloadFile($data->path, $tenant, $basePathTemp);
 
-        $sharedPath = $data->path;
-        $data->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $data->path);
-        $urlParts = explode('/', $data->path);
-        array_pop($urlParts);
-        $path = implode('/', $urlParts);
-        $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
+        if(is_array($downloadedFile))
+        {
+            $sharedPath = $data->path;
+            $data->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $data->path);
+            $urlParts = explode('/', $data->path);
+            array_pop($urlParts);
+            $path = implode('/', $urlParts);
+            $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
 
-        if(!empty($fileUrl))
-            $this->minioStorageService->delete($sharedPath, $tenant);
+            if(!empty($fileUrl))
+                $this->minioStorageService->delete($sharedPath, $tenant);
+        }
+        else
+        {
+            $this->updateStatusAction->execute($data->id, SyncStorageRepository::UPLOAD_ERROR_VALUE);
+            return false;
+        }
+
 
         return $fileUrl;
     }
