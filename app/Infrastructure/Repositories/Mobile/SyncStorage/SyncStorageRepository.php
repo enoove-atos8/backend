@@ -25,6 +25,7 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
     const IS_CREDIT_CARD_PURCHASE_COLUMN = 'is_credit_card_purchase';
     const PURCHASE_SUB_TYPE_VALUE = 'purchase';
     const DONE_VALUE = 'done';
+    const UPLOAD_ERROR_VALUE = 'upload_error';
 
     const ERROR_VALUE = 'error';
     const DUPLICATED_RECEIPT_VALUE = 'duplicated';
