@@ -4,7 +4,7 @@ namespace App\Domain\Financial\Entries\Entries\Models;
 
 use App\Domain\Financial\Reviewers\Models\FinancialReviewer;
 use Domain\Ecclesiastical\Groups\Models\Group;
-use Domain\Members\Models\Member;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
