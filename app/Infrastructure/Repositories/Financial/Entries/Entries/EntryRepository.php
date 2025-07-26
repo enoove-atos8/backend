@@ -98,6 +98,11 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     ];
 
 
+    const DISPLAY_SUM_AMOUNT_COLUMN = [
+        'SUM(entries.amount) as tithe_amount'
+    ];
+
+
     /**
      * Array of conditions
      */

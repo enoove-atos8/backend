@@ -70,7 +70,8 @@ class MemberResourceCollection extends ResourceCollection
                 'otherInformation' => [
                     'bloodType'         => $item->bloodType,
                     'education'         => $item->education,
-                ]
+                ],
+                'titheAmount' => $item->titheAmount,
             ];
         });
     }
