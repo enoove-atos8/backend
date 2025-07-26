@@ -14,6 +14,7 @@ use Domain\Secretary\Membership\Actions\GetMemberByIdAction;
 use Domain\Secretary\Membership\Actions\GetMembersAction;
 use Domain\Secretary\Membership\Actions\GetMembersByBornMonthAction;
 use Domain\Secretary\Membership\Actions\GetMembersCountersAction;
+use Domain\Secretary\Membership\Actions\GetTithersByMonthAction;
 use Domain\Secretary\Membership\Actions\UpdateMemberAction;
 use Domain\Secretary\Membership\Actions\UpdateStatusMemberAction;
 use Illuminate\Http\Request;
@@ -166,6 +167,28 @@ class MemberController extends Controller
         {
             $date = $request->input('date');
             $response = $getMembersByBornMonthAction->execute($date);
+            return new MemberResourceCollection($response);
+
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function getTithersByDate(Request $request, GetTithersByMonthAction $getTithersByMonthAction): MemberResourceCollection
+    {
+        try
+        {
+            $month = $request->input('month');
+            $response = $getTithersByMonthAction->execute($month);
+
             return new MemberResourceCollection($response);
 
         }

@@ -116,6 +116,9 @@ class MemberData extends DataTransferObject
     /** @var string|null  */
     public string | null $education;
 
+    /** @var float|null  */
+    public float | null $titheAmount;
+
     /**
      * Create a MemberData instance from response data
      *
@@ -151,6 +154,7 @@ class MemberData extends DataTransferObject
             'baptismDate' => $data['members_baptism_date'] ?? null,
             'bloodType' => $data['members_blood_type'] ?? null,
             'education' => $data['members_education'] ?? null,
+            'titheAmount' => $data['tithe_amount'] ?? null,
         ];
     }
 

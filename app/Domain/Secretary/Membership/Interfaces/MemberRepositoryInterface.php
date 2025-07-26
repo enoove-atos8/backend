@@ -20,6 +20,7 @@ interface MemberRepositoryInterface
     public function getMemberById(string $id): MemberData | null;
 
     public function getMembersByBornMonth(string $month, string $fields): Collection | null;
+    public function getTithersByMonth(string $month): Collection | Paginator;
 
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
     public function updateStatus($id, $status): mixed;

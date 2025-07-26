@@ -1083,6 +1083,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
+                Route::prefix('tithers')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getTithersByMonth
+                     * Description: Get tithers by month
+                     */
+
+                    Route::get('/getTithersByDate', [MemberController::class, 'getTithersByDate']);
+
+                });
+
             });
 
         });

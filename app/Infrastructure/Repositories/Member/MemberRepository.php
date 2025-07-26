@@ -4,6 +4,7 @@ namespace Infrastructure\Repositories\Member;
 
 ;
 
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Domain\Secretary\Membership\Models\Member;
@@ -244,6 +245,73 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
         return $this->doQuery($query);
     }
+
+
+    /**
+     * @param string $month
+     * @return Collection|Paginator
+     * @throws BindingResolutionException
+     */
+    public function getTithersByMonth(string $month): Collection | Paginator
+    {
+        $selectColumns  = array_merge(
+            self::DISPLAY_SELECT_COLUMNS,
+            EntryRepository::DISPLAY_SUM_AMOUNT_COLUMN,
+        );
+
+        $selectColumns = array_map(function ($col) {
+            return str_contains($col, 'SUM(')
+                ? DB::raw($col)
+                : $col;
+        }, $selectColumns);
+
+        $query = function () use ($month, $selectColumns) {
+            $q = DB::table(self::TABLE_NAME)
+                ->select($selectColumns)
+                ->leftJoin(
+                    EntryRepository::TABLE_NAME,
+                    EntryRepository::MEMBER_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    self::TABLE_NAME . '.' . self::ID_COLUMN
+                )
+                ->where(function ($q) use ($month) {
+                    $q->where(
+                        EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                        BaseRepository::OPERATORS['LIKE'],
+                        "%{$month}%"
+                    );
+                });
+
+            // Adicionando o groupBy com todas as colunas de members.*
+            $groupByColumns = array_map(function ($column) {
+                // remove alias (e.g. "members.id as members_id" -> "members.id")
+                return trim(explode(' as ', $column)[0]);
+            }, self::DISPLAY_SELECT_COLUMNS);
+
+            $q->groupBy(...$groupByColumns);
+
+            $q = $q->orderBy(self::FULL_NAME_COLUMN);
+
+            $result = $q->simplePaginate(self::PAGINATE_NUMBER);
+
+            $result->setCollection(
+                $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
+            );
+            return $result;
+        };
+
+        return $this->doQuery($query);
+
+        /*
+         * $result = $q->simplePaginate(self::PAGINATE_NUMBER);
+
+                $result->setCollection(
+                    $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
+                );
+                return $result;
+         */
+    }
+
 
 
     /**
