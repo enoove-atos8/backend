@@ -1,8 +1,8 @@
 <?php
 
-namespace Application\Api\v1\Financial\Entries\Automation\Resources;
+namespace Application\Api\v1\Financial\Entries\ReceiptProcessing\Resources;
 
-use Domain\Members\Models\Member;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;

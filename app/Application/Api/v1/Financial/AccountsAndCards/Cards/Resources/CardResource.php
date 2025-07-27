@@ -2,7 +2,7 @@
 
 namespace App\Application\Api\v1\Financial\AccountsAndCards\Cards\Resources;
 
-use Domain\Members\Models\Member;
+use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
