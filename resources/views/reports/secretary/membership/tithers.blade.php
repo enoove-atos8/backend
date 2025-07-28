@@ -76,6 +76,7 @@
 <div class="header">
     <img src="{{ $logo }}" style="width: 200px;" alt="Logo">
     <h1>Relatório de dizimistas</h1>
+    <h1>{{ ucfirst(Carbon::now()->translatedFormat('F')) }}</h1>
 </div>
 <div class="svg-modal">
     <!-- SVG Giftbox Confetti -->
