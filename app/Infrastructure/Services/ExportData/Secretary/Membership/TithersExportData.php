@@ -14,13 +14,15 @@ class TithersExportData
 {
     private string $month;
     private string $type;
+    private float $monthlyTarget;
 
     private const ALLOWED_TYPES = ['PDF', 'XLSX'];
 
-    public function __construct(string $month, string $type)
+    public function __construct(string $month, string $type, mixed $monthlyTarget)
     {
         $this->month = $month;
         $this->type = strtoupper($type);
+        $this->monthlyTarget = $monthlyTarget;
 
         if (!in_array($this->type, self::ALLOWED_TYPES)) {
             throw new GeneralExceptions('Invalid export type. Allowed types are: ' . implode(', ', self::ALLOWED_TYPES));
@@ -60,6 +62,7 @@ class TithersExportData
             'month' => $this->month,
             'totalAmount' => $totalAmount,
             'qtdTithers' => count($data['data']),
+            'monthlyTarget' => $this->monthlyTarget,
         ])->render();
 
         $dompdf->loadHtml($html);
