@@ -2,6 +2,7 @@
 
 namespace App\Domain\Secretary\Membership\Actions;
 
+use App\Domain\Financial\Settings\Actions\GetFinancialSettingsAction;
 use App\Infrastructure\Services\ExportData\Secretary\Membership\TithersExportData;
 use Domain\Secretary\Membership\Actions\GetTithersByMonthAction;
 use Domain\Secretary\Membership\Actions\UploadDataExportedReportAction;
@@ -13,6 +14,7 @@ class ExportTithersAction
 {
     private MemberRepositoryInterface $memberRepository;
     private GetTithersByMonthAction $getTithersByMonthAction;
+    private GetFinancialSettingsAction $getFinancialSettingsAction;
     private MinioStorageService $minioStorageService;
     private UploadDataExportedReportAction $uploadDataExportedReportAction;
 
@@ -20,13 +22,15 @@ class ExportTithersAction
         MemberRepositoryInterface $memberRepositoryInterface,
         GetTithersByMonthAction $getTithersByMonthAction,
         MinioStorageService $minioStorageService,
-        UploadDataExportedReportAction $uploadDataExportedReportAction
+        UploadDataExportedReportAction $uploadDataExportedReportAction,
+        GetFinancialSettingsAction $getFinancialSettingsAction
     )
     {
         $this->memberRepository = $memberRepositoryInterface;
         $this->getTithersByMonthAction = $getTithersByMonthAction;
         $this->minioStorageService = $minioStorageService;
         $this->uploadDataExportedReportAction = $uploadDataExportedReportAction;
+        $this->getFinancialSettingsAction = $getFinancialSettingsAction;
     }
 
     /**
@@ -35,12 +39,14 @@ class ExportTithersAction
     public function execute(string $month, string $type): mixed
     {
         $members = $this->getTithersByMonthAction->execute($month);
+        $monthlyTarget = $this->getFinancialSettingsAction->execute();
 
         if($members->count() > 0)
         {
             $exportData = new TithersExportData(
                 $month,
-                $type
+                $type,
+                $monthlyTarget->monthly_budget_tithes
             );
 
             $fileContent = $exportData->export($members->toArray());
