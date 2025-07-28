@@ -241,12 +241,8 @@
                 <td>R$ {{ number_format($totalAmount, 2, ',', '.') }}</td>
             </tr>
             <tr>
-                <td>Total</td>
+                <td>Alvo mensal</td>
                 <td>R$ {{ number_format($monthlyTarget, 2, ',', '.') }}</td>
-            </tr>
-            <tr>
-                <td>Data de geração</td>
-                <td>{{ date('d/m/Y H:i:s') }}</td>
             </tr>
         </tbody>
     </table>
