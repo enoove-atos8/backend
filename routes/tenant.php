@@ -1093,6 +1093,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/getTithersByDate', [MemberController::class, 'getTithersByDate']);
 
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /exportTithersData
+                     * Description: Export data
+                     */
+
+                    Route::get('/exportTithersData', [MemberController::class, 'exportTithersData']);
+
                 });
 
             });

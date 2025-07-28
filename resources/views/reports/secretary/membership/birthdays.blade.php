@@ -1,3 +1,11 @@
+@php
+    use Carbon\Carbon;Carbon::setLocale('pt_BR');
+
+    $path = public_path('img/logo/atos8_.png');
+    $type = pathinfo($path, PATHINFO_EXTENSION);
+    $contentImage = file_get_contents($path);
+    $logo = 'data:image/' . $type . ';base64,' . base64_encode($contentImage);
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -56,7 +64,7 @@
 </head>
 <body>
     <div class="header">
-        <img src="https://s3-api.atos8.com/atos8/assets/images/logo/atos8_.png" alt="Logo">
+        <img src="{{ $logo }}" style="width: 200px;" alt="Logo">
         <h1>Relatório de aniversariantes</h1>
     </div>
     <div class="svg-modal">

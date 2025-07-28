@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Secretary\Membership\Membership\Controllers;
 
+use App\Domain\Secretary\Membership\Actions\ExportTithersAction;
 use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberAvatarRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberRequest;
@@ -98,6 +99,36 @@ class MemberController extends Controller
             $fields = $request->input('fields');
 
             $result = $exportBirthdaysAction->execute($month, $type, $fields);
+
+            return response([
+                'success' => true,
+                'message' => 'Relatório gerado com sucesso',
+                'fileUrl' => $result['fileUrl'] ?? null,
+                'fileName' => $result['fileName'] ?? null,
+            ], 200);
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param Request $request
+     * @param ExportTithersAction $exportTithersAction
+     * @return Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function exportTithersData(Request $request, ExportTithersAction $exportTithersAction): Response
+    {
+        try
+        {
+            $month = $request->input('month');
+            $type = $request->input('type');
+
+            $result = $exportTithersAction->execute($month, $type);
 
             return response([
                 'success' => true,
