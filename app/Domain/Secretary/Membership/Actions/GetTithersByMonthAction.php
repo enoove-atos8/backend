@@ -20,12 +20,13 @@ class GetTithersByMonthAction
 
     /**
      * @param string $month
+     * @param bool $paginate
      * @return Collection|Paginator
      * @throws GeneralExceptions
      */
-    public function execute(string $month): Collection | Paginator
+    public function execute(string $month, bool $paginate = false): Collection | Paginator
     {
-        $tithers = $this->memberRepository->getTithersByMonth($month);
+        $tithers = $this->memberRepository->getTithersByMonth($month, $paginate);
 
         if(count($tithers) > 0)
         {

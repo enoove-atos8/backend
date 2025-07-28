@@ -249,10 +249,11 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     /**
      * @param string $month
+     * @param bool $paginate
      * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getTithersByMonth(string $month): Collection | Paginator
+    public function getTithersByMonth(string $month, bool $paginate = false): Collection | Paginator
     {
         $selectColumns  = array_merge(
             self::DISPLAY_SELECT_COLUMNS,
@@ -265,7 +266,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 : $col;
         }, $selectColumns);
 
-        $query = function () use ($month, $selectColumns) {
+        $query = function () use ($month, $selectColumns, $paginate) {
             $q = DB::table(self::TABLE_NAME)
                 ->select($selectColumns)
                 ->leftJoin(
@@ -282,34 +283,31 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     );
                 });
 
-            // Adicionando o groupBy com todas as colunas de members.*
+
             $groupByColumns = array_map(function ($column) {
-                // remove alias (e.g. "members.id as members_id" -> "members.id")
                 return trim(explode(' as ', $column)[0]);
             }, self::DISPLAY_SELECT_COLUMNS);
 
             $q->groupBy(...$groupByColumns);
-
             $q = $q->orderBy(self::FULL_NAME_COLUMN);
 
-            $result = $q->simplePaginate(self::PAGINATE_NUMBER);
-
-            $result->setCollection(
-                $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
-            );
-            return $result;
-        };
-
-        return $this->doQuery($query);
-
-        /*
-         * $result = $q->simplePaginate(self::PAGINATE_NUMBER);
+            if($paginate)
+            {
+                $result = $q->simplePaginate(self::PAGINATE_NUMBER);
 
                 $result->setCollection(
                     $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
                 );
                 return $result;
-         */
+            }
+            else
+            {
+                $result = $q->get();
+                return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+            }
+        };
+
+        return $this->doQuery($query);
     }
 
 

@@ -218,7 +218,7 @@ class MemberController extends Controller
         try
         {
             $month = $request->input('month');
-            $response = $getTithersByMonthAction->execute($month);
+            $response = $getTithersByMonthAction->execute($month, true);
 
             return new MemberResourceCollection($response);
 
