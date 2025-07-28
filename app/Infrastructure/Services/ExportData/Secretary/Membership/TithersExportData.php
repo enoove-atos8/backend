@@ -52,16 +52,17 @@ class TithersExportData
 
         $dompdf = new Dompdf($options);
         $totalAmount = 0;
+        $data = $data['data'] ?? $data;
 
-        foreach ($data['data'] as $key => $value) {
+        foreach ($data as $key => $value) {
             $totalAmount += $value->titheAmount;
         }
 
         $html = view('reports.secretary.membership.tithers', [
-            'data' => $data['data'],
+            'data' => $data,
             'month' => $this->month,
             'totalAmount' => $totalAmount,
-            'qtdTithers' => count($data['data']),
+            'qtdTithers' => count($data),
             'monthlyTarget' => $this->monthlyTarget,
         ])->render();
 
