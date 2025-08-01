@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\ExportData\Secretary\Membership;
 
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\UploadedFile;
@@ -15,14 +16,16 @@ class TithersExportData
     private string $month;
     private string $type;
     private float $monthlyTarget;
+    private float $totalTithes;
 
     private const ALLOWED_TYPES = ['PDF', 'XLSX'];
 
-    public function __construct(string $month, string $type, mixed $monthlyTarget)
+    public function __construct(string $month, string $type, mixed $monthlyTarget, float $totalTithes)
     {
         $this->month = $month;
         $this->type = strtoupper($type);
         $this->monthlyTarget = $monthlyTarget;
+        $this->totalTithes = $totalTithes;
 
         if (!in_array($this->type, self::ALLOWED_TYPES)) {
             throw new GeneralExceptions('Invalid export type. Allowed types are: ' . implode(', ', self::ALLOWED_TYPES));
@@ -51,17 +54,12 @@ class TithersExportData
         $options->set('isPhpEnabled', true);
 
         $dompdf = new Dompdf($options);
-        $totalAmount = 0;
         $data = $data['data'] ?? $data;
-
-        foreach ($data as $key => $value) {
-            $totalAmount += $value->titheAmount;
-        }
 
         $html = view('reports.secretary.membership.tithers', [
             'data' => $data,
-            'month' => $this->month,
-            'totalAmount' => $totalAmount,
+            'month' => Carbon::createFromFormat('Y-m', $this->month)->translatedFormat('F'),
+            'totalTithes' => $this->totalTithes,
             'qtdTithers' => count($data),
             'monthlyTarget' => $this->monthlyTarget,
         ])->render();

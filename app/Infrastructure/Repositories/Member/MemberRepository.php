@@ -275,6 +275,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     BaseRepository::OPERATORS['EQUALS'],
                     self::TABLE_NAME . '.' . self::ID_COLUMN
                 )
+                ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED, EntryRepository::TITHE_VALUE)
+                ->where(EntryRepository::DELETED_COLUMN_JOINED, false)
                 ->where(function ($q) use ($month) {
                     $q->where(
                         EntryRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
