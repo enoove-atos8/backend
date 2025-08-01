@@ -105,6 +105,10 @@
                 <td>Alvo mensal</td>
                 <td>R$ {{ number_format($monthlyTarget, 2, ',', '.') }}</td>
             </tr>
+            <tr>
+                <td>Porcentagm</td>
+                <td>R$ {{ number_format($monthlyTarget/$totalTithes, 2, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
 </div>
