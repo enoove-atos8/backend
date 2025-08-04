@@ -205,18 +205,32 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                             }
                         }
 
-                        if(Arr::exists($filters, 'ageFrom'))
-                        {
+                        if (Arr::exists($filters, 'ageFrom') && Arr::exists($filters, 'ageTo')) {
                             $ageFrom = $filters['ageFrom'];
-                            $q->where(DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"), '<=', now()->subYears($ageFrom)->toDateString());
-                        }
-
-                        if(Arr::exists($filters, 'ageTo'))
-                        {
                             $ageTo = $filters['ageTo'];
-                            $q->where(DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"), '>=', now()->subYears($ageTo)->toDateString());
-                        }
 
+                            $q->whereBetween(
+                                DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                [
+                                    now()->subYears($ageTo)->toDateString(),
+                                    now()->subYears($ageFrom)->toDateString(),
+                                ]
+                            );
+                        }
+                        elseif (Arr::exists($filters, 'ageFrom')) {
+                            $ageFrom = $filters['ageFrom'];
+                            $q->where(
+                                DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                '<=', now()->subYears($ageFrom)->toDateString()
+                            );
+                        }
+                        elseif (Arr::exists($filters, 'ageTo')) {
+                            $ageTo = $filters['ageTo'];
+                            $q->where(
+                                DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                '>=', now()->subYears($ageTo)->toDateString()
+                            );
+                        }
                     }
                 })
                 ->orderBy(self::FULL_NAME_COLUMN);
