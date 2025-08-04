@@ -163,8 +163,42 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                         {
                             $ageGroupMembers = explode(',', $filters['ageGroupMembers']);
 
-                            //foreach ($ageGroupMembers as $ageGroupMember)
-                                // $q->where(self::MEMBER_GENDER_COLUMN, BaseRepository::OPERATORS['EQUALS'], $ageGroupMember);
+                            foreach ($ageGroupMembers as $ageGroupMember)
+                            {
+                                if($ageGroupMember == 'young')
+                                {
+                                    $q->whereBetween(
+                                        DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                        [
+                                            now()->subYears(35)->toDateString(),
+                                            now()->subYears(18)->toDateString(),
+                                        ]
+                                    );
+
+                                }
+
+                                if($ageGroupMember == 'teen')
+                                {
+                                    $q->whereBetween(
+                                        DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                        [
+                                            now()->subYears(18)->toDateString(),
+                                            now()->subYears(12)->toDateString(),
+                                        ]
+                                    );
+                                }
+
+                                if($ageGroupMember == 'children')
+                                {
+                                    $q->whereBetween(
+                                        DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                        [
+                                            now()->subYears(11)->toDateString(),
+                                            now()->subYears(0)->toDateString(),
+                                        ]
+                                    );
+                                }
+                            }
                         }
 
                     }
