@@ -132,9 +132,42 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         $query = function () use ($filters, $term, $paginate) {
 
             $q = DB::table(self::TABLE_NAME)
-                ->where(function ($q) use($term){
+                ->where(function ($q) use($filters, $term){
                     if($term != null)
                         $q->where(self::FULL_NAME_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$term}%");
+
+                    if(count($filters) > 0)
+                    {
+                        if(Arr::exists($filters, 'memberTypes'))
+                        {
+                            $memberTypes = explode(',', $filters['memberTypes']);
+
+                            foreach ($memberTypes as $memberType)
+                            {
+                                if($memberType == 'inactive')
+                                    $q->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false);
+                                else
+                                    $q->where(self::MEMBER_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $memberType);
+                            }
+                        }
+
+                        if(Arr::exists($filters, 'membersGenders'))
+                        {
+                            $membersGenders = explode(',', $filters['membersGenders']);
+
+                            foreach ($membersGenders as $membersGender)
+                                $q->where(self::MEMBER_GENDER_COLUMN, BaseRepository::OPERATORS['EQUALS'], $membersGender);
+                        }
+
+                        if(Arr::exists($filters, 'ageGroupMembers'))
+                        {
+                            $ageGroupMembers = explode(',', $filters['ageGroupMembers']);
+
+                            //foreach ($ageGroupMembers as $ageGroupMember)
+                                // $q->where(self::MEMBER_GENDER_COLUMN, BaseRepository::OPERATORS['EQUALS'], $ageGroupMember);
+                        }
+
+                    }
                 })
                 ->orderBy(self::FULL_NAME_COLUMN);
 

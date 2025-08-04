@@ -69,7 +69,7 @@ class MemberController extends Controller
     {
         try
         {
-            $filters = $request->except(['page']);
+            $filters = $request->except(['page', 'term']);
             $term = $request->input('term');
             $paginate = $request->input('page') == true;
             $response = $getMembersAction->execute($filters, $term, $paginate);
