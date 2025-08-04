@@ -16,7 +16,8 @@ return [
     |
     */
 
-    'domain' => config('telescope.domain'),
+    //'domain' => config('telescope.domain'),
+    'domain' => env('TELESCOPE_DOMAIN', null),
 
     /*
     |--------------------------------------------------------------------------
