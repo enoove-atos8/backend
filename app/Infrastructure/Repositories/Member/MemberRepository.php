@@ -44,6 +44,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
     const GROUP_LEADER_COLUMN = 'group_leader';
 
+    const CHILDREN_VALUE = 'children';
+    const YOUNG_VALUE = 'young';
+    const TEEN_VALUE = 'TEEN';
+
     const DISPLAY_SELECT_COLUMNS = [
         'members.id as members_id',
         'members.activated as members_activated',
@@ -165,7 +169,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
                             foreach ($ageGroupMembers as $ageGroupMember)
                             {
-                                if($ageGroupMember == 'young')
+                                if($ageGroupMember == self::YOUNG_VALUE)
                                 {
                                     $q->whereBetween(
                                         DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
@@ -177,7 +181,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
                                 }
 
-                                if($ageGroupMember == 'teen')
+                                if($ageGroupMember == self::TEEN_VALUE)
                                 {
                                     $q->whereBetween(
                                         DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
@@ -188,7 +192,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                                     );
                                 }
 
-                                if($ageGroupMember == 'children')
+                                if($ageGroupMember == self::CHILDREN_VALUE)
                                 {
                                     $q->whereBetween(
                                         DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
