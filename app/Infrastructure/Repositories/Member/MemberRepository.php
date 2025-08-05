@@ -334,7 +334,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 $q = $q->select($arrFields);
             }
 
-            $q = $q->orderBy(self::FULL_NAME_COLUMN);
+            $q = $q->orderByRaw("SUBSTRING(" . self::BORN_DATE_COLUMN . ", 1, 2)");
 
             $result = $q->get();
             return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
