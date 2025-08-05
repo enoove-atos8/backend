@@ -46,7 +46,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     const CHILDREN_VALUE = 'children';
     const YOUNG_VALUE = 'young';
-    const TEEN_VALUE = 'TEEN';
+    const TEEN_VALUE = 'teen';
 
     const DISPLAY_SELECT_COLUMNS = [
         'members.id as members_id',
@@ -186,7 +186,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                                     $q->whereBetween(
                                         DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
                                         [
-                                            now()->subYears(18)->toDateString(),
+                                            now()->subYears(17)->toDateString(),
                                             now()->subYears(12)->toDateString(),
                                         ]
                                     );
