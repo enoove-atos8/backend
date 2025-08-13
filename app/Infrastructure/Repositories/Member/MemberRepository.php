@@ -128,10 +128,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
      * @param array $filters
      * @param string|null $term
      * @param bool $paginate
-     * @return Collection|Model
+     * @return array
      * @throws BindingResolutionException
      */
-    public function getMembers(array $filters, string | null $term, bool $paginate): Collection | Paginator
+    public function getMembers(array $filters, string | null $term, bool $paginate): array
     {
         $query = function () use ($filters, $term, $paginate) {
 
@@ -238,17 +238,29 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
             if($paginate)
             {
+                $countRows = count($q->get());
                 $result = $q->simplePaginate(self::PAGINATE_NUMBER);
 
                 $result->setCollection(
                     $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
                 );
-                return $result;
+
+                return [
+                    'results' => $result,
+                    'countRows' => $countRows,
+                ];
+
             }
             else
             {
+                $countRows = count($q->get());
                 $result = $q->get();
-                return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+                $results = collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+
+                return [
+                    'results' => $results,
+                    'countRows' => $countRows,
+                ];
             }
         };
 

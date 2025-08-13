@@ -11,12 +11,23 @@ use function Webmozart\Assert\Tests\StaticAnalysis\length;
 
 class MemberResourceCollection extends ResourceCollection
 {
+    private int $countRows;
+
     /**
      * Replace the 'data' key in the JSON response
      * with the one declared in the 'wrap' variable
      * @var string
      */
     public static $wrap = 'members';
+
+
+    public function __construct($resource, int $countRows)
+    {
+        parent::__construct($resource);
+
+        $this->countRows = $countRows;
+    }
+
 
 
     /**
@@ -81,7 +92,8 @@ class MemberResourceCollection extends ResourceCollection
     public function with($request): array
     {
         return [
-            'total' => count($this)
+            'total' => count($this),
+            'countRows' => $this->countRows,
         ];
     }
 }
