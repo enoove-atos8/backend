@@ -72,9 +72,10 @@ class MemberController extends Controller
             $filters = $request->except(['page', 'term']);
             $term = $request->input('term');
             $paginate = $request->input('page') == true;
-            $response = $getMembersAction->execute($filters, $term, $paginate);
+            $response = $getMembersAction->execute($filters, $term, $paginate)['results'];
+            $countRows = $getMembersAction->execute($filters, $term, $paginate)['countRows'];
 
-            return new MemberResourceCollection($response);
+            return new MemberResourceCollection($response, $countRows);
         }
         catch (GeneralExceptions $e)
         {

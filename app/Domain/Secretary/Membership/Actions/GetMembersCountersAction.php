@@ -22,7 +22,7 @@ class GetMembersCountersAction
      */
     public function execute(): array
     {
-        $data = $this->memberRepository->getMembers([], null, false);
+        $data = $this->memberRepository->getMembers([], null, false)['results'];
 
         $members = $data->where(MemberData::MEMBER_TYPE,
                                     BaseRepository::OPERATORS['EQUALS'],

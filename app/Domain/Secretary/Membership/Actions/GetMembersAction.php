@@ -22,12 +22,13 @@ class GetMembersAction
     /**
      * @throws Throwable
      */
-    public function execute(array $filters, string | null $term, bool $paginate): Collection | Paginator
+    public function execute(array $filters, string | null $term, bool $paginate): array
     {
-        return $this->memberRepository->getMembers(
-            $filters,
-            $term,
-            $paginate
-        );
+        $members = $this->memberRepository->getMembers($filters, $term, $paginate);
+
+        return [
+            'results' => $members['results'],
+            'countRows' => $members['countRows'],
+        ];
     }
 }

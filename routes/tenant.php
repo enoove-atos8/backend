@@ -9,6 +9,7 @@ use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationContro
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
+use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountController;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers\CardController;
 use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
 use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
@@ -888,7 +889,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     /*
                      * Action: POST
-                     * EndPoint: /{id}
                      * Description: Get groups by division
                      */
 
@@ -897,7 +897,24 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 });
 
 
-                Route::prefix('account')->group(function () {});
+                Route::prefix('accounts')->group(function () {
+
+                    /*
+                    * Action: GET
+                    * Description: Get accounts
+                    */
+
+                    Route::get('getAccounts', [AccountController::class, 'getAccounts']);
+
+
+                    /*
+                     * Action: POST
+                     * Description: Save a new Account
+                     */
+
+                    Route::post('saveAccount', [AccountController::class, 'saveAccount']);
+
+                });
             });
         });
 
