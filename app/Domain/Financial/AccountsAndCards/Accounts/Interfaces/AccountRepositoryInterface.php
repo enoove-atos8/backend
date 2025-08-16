@@ -17,6 +17,15 @@ interface AccountRepositoryInterface
 
 
     /**
+     * Save a new account or update an existing one.
+     *
+     * @param int $accountId
+     * @return mixed
+     */
+    public function deactivateAccount(int $accountId): mixed;
+
+
+    /**
      * Get accounts
      *
      * @return Collection

@@ -8,7 +8,7 @@ class ReturnMessages
     // Success messages
 
     public const ACCOUNT_CREATED = 'Conta salva com sucesso!';
-    public const ACCOUNT_DEACTIVATED = 'Cartão desativado com sucesso!';
+    public const ACCOUNT_DEACTIVATED = 'Conta desativada com sucesso!';
 
     // Error messages
 

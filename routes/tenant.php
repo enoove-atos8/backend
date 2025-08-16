@@ -160,6 +160,33 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             });
         });
+
+        Route::prefix('accounts')->group(function () {
+
+            /*
+            * Action: GET
+            * Description: Get accounts
+            */
+
+            Route::get('getAccounts', [AccountController::class, 'getAccounts']);
+
+
+            /*
+             * Action: POST
+             * Description: Save a new Account
+             */
+
+            Route::post('saveAccount', [AccountController::class, 'saveAccount']);
+
+
+            /*
+             * Action: DELETE
+             * Description: Deactivate an Account
+             */
+
+            Route::delete('deactivateAccount/{id}', [AccountController::class, 'deactivateAccount']);
+
+        });
     });
 
 
@@ -913,6 +940,14 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::post('saveAccount', [AccountController::class, 'saveAccount']);
+
+
+                    /*
+                     * Action: DELETE
+                     * Description: Deactivate an Account
+                     */
+
+                    Route::delete('deactivateAccount/{id}', [AccountController::class, 'deactivateAccount']);
 
                 });
             });

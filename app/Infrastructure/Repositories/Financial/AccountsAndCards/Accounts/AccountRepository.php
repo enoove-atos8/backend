@@ -47,6 +47,20 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
     }
 
 
+    /**
+     * @throws BindingResolutionException
+     */
+    public function deactivateAccount(int $accountId): mixed
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $accountId
+        ];
+        return $this->update($conditions, ['activated' =>  false]);
+    }
+
+
 
 
     /**
