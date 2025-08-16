@@ -19,7 +19,7 @@ class GetMembersByBornMonthAction
 
     /**
      * @param string $month
-     * @param string $fields
+     * @param string|null $fields
      * @return Collection
      * @throws GeneralExceptions
      */

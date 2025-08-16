@@ -11,7 +11,7 @@ use function Webmozart\Assert\Tests\StaticAnalysis\length;
 
 class MemberResourceCollection extends ResourceCollection
 {
-    private int $countRows;
+    private ?int $countRows;
 
     /**
      * Replace the 'data' key in the JSON response
@@ -21,7 +21,7 @@ class MemberResourceCollection extends ResourceCollection
     public static $wrap = 'members';
 
 
-    public function __construct($resource, int $countRows)
+    public function __construct($resource, ?int $countRows = null)
     {
         parent::__construct($resource);
 
