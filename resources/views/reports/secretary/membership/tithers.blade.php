@@ -106,7 +106,7 @@
                 <td>R$ {{ number_format($monthlyTarget, 2, ',', '.') }}</td>
             </tr>
             <tr>
-                <td>Porcentagm</td>
+                <td>Porcentagem</td>
                 <td>{{ number_format(($totalTithes / $monthlyTarget) * 100, 2, ',', '.') }}%</td>
             </tr>
         </tbody>
