@@ -30,7 +30,7 @@ class AccountsResourcesCollection extends ResourceCollection
             return [
                 'id' => $account->id,
                 'accountType' => $account->accountType,
-                'bankName' => $account->bankName,
+                'bankName' => ucwords(str_replace('-', ' ', $account->bankName)),
                 'agencyNumber' => $account->agencyNumber,
                 'accountNumber' => $account->accountNumber,
                 'activated' => $account->activated,
