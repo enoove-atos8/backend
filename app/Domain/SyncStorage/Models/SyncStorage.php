@@ -20,6 +20,7 @@ class SyncStorage extends Model
         'division_id',
         'group_id',
         'card_id',
+        'account_id',
         'invoice_id',
         'invoice_closed_day',
         'payment_category_id',
