@@ -3,6 +3,8 @@
 namespace Application\Api\v1\Mobile\SyncStorage\Requests;
 
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Application\Api\v1\Financial\Entries\Entries\Requests\EntryRequest;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -35,7 +37,7 @@ class ReceiptDataRequest extends FormRequest
             'divisionId'                            => '',
             'groupId'                               => '',
             'cardId'                                => '',
-            'accountId'                             => 'required',
+            'accountId'                             => $this->validateAccountId(),
             'paymentCategoryId'                     => '',
             'paymentItemId'                         => '',
             'isPayment'                             => 'required',
@@ -60,6 +62,22 @@ class ReceiptDataRequest extends FormRequest
     /**
      * Custom message for validation
      *
+     * @return string
+     */
+    public function validateAccountId(): string
+    {
+        $docType = $this->input('docType');
+
+        if($docType == EntryRepository::ENTRIES_VALUE)
+            return 'required';
+        else
+            return '';
+    }
+
+
+    /**
+     * Custom message for validation
+     *
      * @return array
      */
     public function messages(): array
@@ -70,7 +88,7 @@ class ReceiptDataRequest extends FormRequest
             'docType.required'              => "O campo docType é obrigatório.",
             'docSubType.required'           => "O campo docSubType é obrigatório.",
             'cardId.required'               => "O campo cardId é obrigatório.",
-            'accountId.required'               => "O campo accountId é obrigatório.",
+            'accountId.required'            => "O campo accountId é obrigatório.",
             'isPayment.required'            => "O campo isPayment é obrigatório.",
             'isCreditCardPurchase.required' => "O campo isCreditCardPurchase é obrigatório.",
             'status.required'               => "O campo status é obrigatório.",
