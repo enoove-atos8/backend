@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountRepository;
 use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
 
@@ -42,6 +43,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
     const TIMESTAMP_VALUE_CPF_COLUMN = 'timestamp_value_cpf';
     const MEMBER_ID_COLUMN_JOINED = 'entries.member_id';
+    const ACCOUNT_ID_COLUMN_JOINED = 'entries.account_id';
     const MEMBER_ID_COLUMN = 'member_id';
     const ID_COLUMN_JOINED = 'entries.id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
@@ -77,6 +79,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const DISPLAY_SELECT_COLUMNS = [
         'entries.id as entries_id',
         'entries.member_id as entries_member_id',
+        'entries.account_id as entries_account_id',
         'entries.reviewer_id as entries_reviewer_id',
         'entries.cult_id as entries_cult_id',
         'entries.group_returned_id as entries_group_returned_id',
@@ -119,6 +122,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     {
         return $this->create([
             'member_id'                                         =>   $entryData->memberId,
+            'account_id'                                        =>   $entryData->accountId,
             'reviewer_id'                                       =>   $entryData->reviewerId,
             'cult_id'                                           =>   $entryData->cultId,
             'group_returned_id'                                 =>   $entryData->groupReturnedId,
@@ -212,7 +216,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS,
-            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
+            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS,
+            AccountRepository::DISPLAY_SELECT_COLUMNS
         );
 
         if($dates != 'all' && $dates != null)
@@ -437,6 +442,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
         return $this->update($conditions, [
             'member_id'                                         =>   $entryData->memberId,
+            'account_id'                                        =>   $entryData->accountId,
             'reviewer_id'                                       =>   $entryData->reviewerId,
             'group_returned_id'                                 =>   $entryData->groupReturnedId,
             'group_received_id'                                 =>   $entryData->groupReceivedId,
@@ -606,6 +612,11 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     EntryRepository::REVIEWER_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     FinancialReviewerRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    AccountRepository::TABLE_NAME,
+                    EntryRepository::ACCOUNT_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    AccountRepository::ID_COLUMN_JOINED)
                 ->where(function ($q) use($queryClausesAndConditions){
                     if(count($queryClausesAndConditions) > 0){
                         foreach ($queryClausesAndConditions as $key => $clause) {

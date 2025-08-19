@@ -43,6 +43,7 @@ class EntryResourceCollection extends ResourceCollection
             $result[] = [
                 'id'                            =>  $item->entries_id,
                 'member'                        =>  $this->getMember($item),
+                'account'                        =>  $this->getAccount($item),
                 'reviewer'                      =>  $this->getReviewer($item),
                 'cultId'                        =>  $item->entries_cult_id,
                 'groupReturned'                 =>  $this->getGroup($this->groups, $item->entries_group_returned_id),
@@ -115,6 +116,31 @@ class EntryResourceCollection extends ResourceCollection
                     'bloodType'         => $entry->members_blood_type,
                     'education'         => $entry->members_education,
                 ]
+            ];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+
+    /**
+     * @param mixed $entry $
+     * @return array|null
+     */
+    public function getAccount(mixed $entry): ?array
+    {
+        if(!is_null($entry->accounts_id))
+        {
+            return [
+                'id'            =>  $entry->accounts_id,
+                'accountType'   =>  $entry->accounts_account_type,
+                'bankName'      =>  $entry->accounts_bank_name,
+                'agencyNumber'  =>  $entry->accounts_agency_number,
+                'accountNumber' =>  $entry->accounts_account_number,
+                'activated'     =>  $entry->accounts_activated,
             ];
         }
         else

@@ -121,7 +121,10 @@ class GetMovementsIndicatorsAction
                 if ($movement->type === EntryRepository::ENTRY_TYPE) {
                     return $carry + (float) $movement->amount;
                 } elseif ($movement->type === ExitRepository::EXIT_TYPE) {
-                    return $carry - (float) $movement->amount;
+                    if($movement->amount > $carry)
+                        return 0;
+                    else
+                        return $carry - (float) $movement->amount;
                 }
                 return $carry;
             },
