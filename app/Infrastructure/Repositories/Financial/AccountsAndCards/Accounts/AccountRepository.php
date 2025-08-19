@@ -18,6 +18,18 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
     const TABLE_NAME = 'accounts';
     const ACTIVATED_COLUMN = 'activated';
 
+    const ID_COLUMN_JOINED = 'accounts.id';
+
+
+    const DISPLAY_SELECT_COLUMNS = [
+        'accounts.id as accounts_id',
+        'accounts.account_type as accounts_account_type',
+        'accounts.bank_name as accounts_bank_name',
+        'accounts.agency_number as accounts_agency_number',
+        'accounts.account_number as accounts_account_number',
+        'accounts.activated as accounts_activated',
+    ];
+
     /**
      * @inheritDoc
      * @throws UnknownProperties

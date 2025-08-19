@@ -23,6 +23,8 @@
         "spatie/pdf-to-text": "^1.54",
         "stancl/tenancy": "^3.8",
         "symfony/css-selector": "^7.1",
+        "symfony/http-client": "^7.3",
+        "symfony/mailgun-mailer": "^7.3",
         "thiagoalessio/tesseract_ocr": "^2.13",
         "zircote/swagger-php": "^4.10"
     },

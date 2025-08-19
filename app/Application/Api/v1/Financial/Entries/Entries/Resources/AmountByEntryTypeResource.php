@@ -21,10 +21,59 @@ class AmountByEntryTypeResource extends JsonResource
         $result = $this->resource;
 
         return [
-            'tithes'        => $result['tithes'],
-            'offer'         => $result['offer'],
-            'designated'    => $result['designated'],
-            'devolution'    => $result['devolution'],
+            'tithes'        => [
+                'total' => $result['tithes']['total'],
+                'accounts' => self::validateTithes($result['tithes']),
+            ],
+            'offers'        => [
+                'total' => $result['offers']['total'],
+                'accounts' => self::validateOffers($result['offers']),
+            ],
+            'designated'        => [
+                'total' => $result['designated']['total'],
+                'accounts' => self::validateDesignated($result['designated']),
+            ],
         ];
+    }
+
+
+    public function validateTithes(array $result)
+    {
+        foreach ($result['accounts'] as $key => $value) {
+            if($value != null)
+            {
+                return $result['accounts'];
+            }
+        }
+
+        return null;
+    }
+
+
+
+    public function validateOffers(array $result)
+    {
+        foreach ($result['accounts'] as $key => $value) {
+            if($value != null)
+            {
+                return $result['accounts'];
+            }
+        }
+
+        return null;
+    }
+
+
+
+    public function validateDesignated(array $result)
+    {
+        foreach ($result['accounts'] as $key => $value) {
+            if($value != null)
+            {
+                return $result['accounts'];
+            }
+        }
+
+        return null;
     }
 }

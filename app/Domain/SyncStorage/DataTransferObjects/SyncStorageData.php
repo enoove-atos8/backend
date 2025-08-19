@@ -32,6 +32,9 @@ class SyncStorageData extends DataTransferObject
     public ?string $cardId;
 
     /** @var ?string | null */
+    public ?string $accountId;
+
+    /** @var ?string | null */
     public ?string $paymentCategoryId;
 
     /** @var ?string | null */
@@ -102,6 +105,7 @@ class SyncStorageData extends DataTransferObject
             'paymentCategoryId' => $data['payment_category_id'] ?? false,
             'paymentItemId' => $data['payment_item_id'] ?? null,
             'cardId' => $data['card_id'] ?? null,
+            'accountId' => $data['account_id'] ?? null,
             'isPayment' => $data['is_payment'] ?? null,
             'isDevolution' => $data['is_devolution'] ?? null,
             'isCreditCardPurchase' => $data['is_credit_card_purchase'] ?? null,

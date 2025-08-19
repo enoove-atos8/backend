@@ -5,6 +5,7 @@ namespace App\Domain\Financial\Entries\Entries\DataTransferObjects;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use DateTime;
+use Exception;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -15,6 +16,9 @@ class EntryData extends DataTransferObject
 
     /** @var integer | null  */
     public ?int $memberId;
+
+    /** @var integer | null  */
+    public ?int $accountId;
 
     /** @var integer | null  */
     public ?int $cultId;
@@ -81,6 +85,7 @@ class EntryData extends DataTransferObject
      * @param string|null $nextBusinessDay Function to get next business day from a date
      * @return self New EntryData instance
      * @throws UnknownProperties
+     * @throws Exception
      */
     public static function fromExtractedData(
         array $extractedData,
@@ -106,6 +111,7 @@ class EntryData extends DataTransferObject
             'deleted' => 0,
             'entryType' => $data->docSubType,
             'memberId' => $member?->id,
+            'accountId' => $data?->accountId,
             'receipt' => null,
             'devolution' => 0,
             'residualValue' => 0,
