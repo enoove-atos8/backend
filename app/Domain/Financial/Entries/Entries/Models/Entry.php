@@ -19,6 +19,7 @@ class Entry extends Model
      */
     protected $fillable = [
         'member_id',
+        'account_id',
         'reviewer_id',
         'cult_id',
         'group_returned_id',

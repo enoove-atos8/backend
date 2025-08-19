@@ -35,6 +35,7 @@ class EntryRequest extends FormRequest
     {
         return [
             'memberId'                      =>  '',
+            'accountId'                      =>  '',
             'reviewerId'                    =>  'required',
             'cultId'                        =>  '',
             'groupReturnedId'               =>  '',
@@ -153,6 +154,7 @@ class EntryRequest extends FormRequest
     {
         return new EntryData(
             memberId:                       $this->input('memberId'),
+            accountId:                       $this->input('accountId'),
             reviewerId:                     $this->input('reviewerId'),
             cultId:                         $this->input('cultId'),
             groupReturnedId:                $this->input('groupReturnedId'),
