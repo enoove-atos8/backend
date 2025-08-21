@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Financial\Entries\Entries\Resources;
 
+use Domain\Financial\AccountsAndCards\Accounts\Models\Accounts;
 use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
@@ -24,6 +25,7 @@ class EntryResource extends JsonResource
         return [
             'id'                            =>  $entry->id,
             'member'                        =>  $this->getMember($entry),
+            'account'                       =>  $this->getAccounts($entry),
             'reviewer'                      =>  $this->getReviewer($entry),
             'cultId'                        =>  $entry->cult_id,
             'groupReturnedId'               =>  $entry->group_returned_id,
@@ -125,6 +127,33 @@ class EntryResource extends JsonResource
                     'work'          => $reviewerMember->work,
                     'bornDate'      => $reviewerMember->born_date,
                 ],
+            ];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+
+
+    /**
+     * @param mixed $data
+     * @return array|null
+     */
+    public function getAccounts(mixed $data): ?array
+    {
+        $accountId = $data->account_id;
+        $account = Accounts::find($accountId);
+
+        if(!is_null($account))
+        {
+            return [
+                'id'             =>  $account->id,
+                'accountType'    =>  $account->account_type,
+                'bankName'       =>  $account->bank_name,
+                'agencyNumber'   =>  $account->agency_number,
+                'accountNumber'  =>  $account->account_number,
             ];
         }
         else
