@@ -37,7 +37,7 @@ class ReceiptDataRequest extends FormRequest
             'divisionId'                            => '',
             'groupId'                               => '',
             'cardId'                                => '',
-            'accountId'                             => $this->validateAccountId(),
+            'accountId'                             => '',
             'paymentCategoryId'                     => '',
             'paymentItemId'                         => '',
             'isPayment'                             => 'required',
