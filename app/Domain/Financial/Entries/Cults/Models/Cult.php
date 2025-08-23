@@ -26,6 +26,7 @@ class Cult extends Model
         'cult_day',
         'cult_date',
         'date_transaction_compensation',
+        'account_id',
         'transaction_type',
         'tithes_amount',
         'designated_amount',
