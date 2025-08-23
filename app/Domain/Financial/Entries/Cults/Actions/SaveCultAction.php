@@ -179,6 +179,7 @@ class SaveCultAction
         $this->entryData->dateTransactionCompensation = $cultData->dateTransactionCompensation;
         $this->entryData->deleted = $cultData->deleted;
         $this->entryData->receipt = $cultData->receipt;
+        $this->entryData->accountId = $cultData->accountId;
         $this->entryData->devolution = 0;
     }
 

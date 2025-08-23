@@ -40,6 +40,7 @@ class CultsResourceCollection extends ResourceCollection
                 'id'                    =>  $item->id,
                 'worshipWithoutEntries' =>  $item->worship_without_entries,
                 'cultDay'               =>  $item->cult_day,
+                'accountId'             =>  $item->account_id,
                 'cultDate'              =>  $item->cult_date,
                 'depositCultDate'       =>  $item->date_transaction_compensation,
                 'amountTithes'          =>  $tithesAmount,

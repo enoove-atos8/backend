@@ -25,6 +25,9 @@ class CultData extends DataTransferObject
     /** @var string|null */
     public string|null $dateTransactionCompensation;
 
+    /** @var integer|null */
+    public int|null $accountId;
+
     /** @var string|null */
     public string|null $transactionType;
 
