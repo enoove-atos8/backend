@@ -7,6 +7,7 @@ use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
@@ -24,16 +25,16 @@ class GetCultsAction
 
 
     /**
-     * @throws GeneralExceptions|BindingResolutionException
+     * @throws GeneralExceptions
      */
-    public function execute(): Collection | null
+    public function execute(bool $paginate = true): Collection | Paginator
     {
-        $cults = $this->cultRepository->getCults();
+        $cults = $this->cultRepository->getCults($paginate);
 
         if(count($cults) > 0)
         {
             foreach ($cults as $cult)
-                $cult->entries = $this->entryRepository->getEntriesByCultId($cult->id);
+                $cult->entries = $this->entryRepository->getEntriesByCultId($cult->cults_id);
 
             return $cults;
         }

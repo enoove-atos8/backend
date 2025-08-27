@@ -30,29 +30,27 @@ class CultsResourceCollection extends ResourceCollection
 
         foreach ($this->collection as $item)
         {
-            $tithesAmount = $item->tithes_amount;
-            $designatedAmount = $item->designated_amount;
-            $offerAmount = $item->offer_amount;
-
-            $reviewer = $item->reviewer()->get()[0];
+            $tithesAmount = $item->cults_tithes_amount;
+            $designatedAmount = $item->cults_designated_amount;
+            $offerAmount = $item->cults_offer_amount;
 
             $result[] = [
-                'id'                    =>  $item->id,
-                'worshipWithoutEntries' =>  $item->worship_without_entries,
-                'cultDay'               =>  $item->cult_day,
-                'accountId'             =>  $item->account_id,
-                'cultDate'              =>  $item->cult_date,
-                'depositCultDate'       =>  $item->date_transaction_compensation,
+                'id'                    =>  $item->cults_id,
+                'worshipWithoutEntries' =>  $item->cults_worship_without_entries,
+                'cultDay'               =>  $item->cults_cult_day,
+                'accountId'             =>  $item->cults_account_id,
+                'cultDate'              =>  $item->cults_cult_date,
+                'depositCultDate'       =>  $item->cults_date_transaction_compensation,
                 'amountTithes'          =>  $tithesAmount,
                 'amountDesignated'      =>  $designatedAmount,
                 'amountOffer'           =>  $offerAmount,
                 'totalAmount'           =>  $tithesAmount + $designatedAmount + $offerAmount,
-                'receipt'               =>  $item->receipt,
+                'receipt'               =>  $item->cults_receipt,
                 'entries'               =>  $item->entries,
                 'reviewer'              =>  [
-                    'id'            =>  $reviewer->id,
-                    'fullName'      =>  $reviewer->full_name,
-                    'avatar'        =>  $reviewer->avatar,
+                    'id'            =>  $item->financial_reviewers_id,
+                    'fullName'      =>  $item->financial_reviewers_full_name,
+                    'avatar'        =>  $item->financial_reviewers_avatar,
                 ],
             ];
         }
