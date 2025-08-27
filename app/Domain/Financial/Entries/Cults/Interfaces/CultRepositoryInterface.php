@@ -4,6 +4,7 @@ namespace App\Domain\Financial\Entries\Cults\Interfaces;
 
 use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
 interface CultRepositoryInterface
@@ -12,7 +13,7 @@ interface CultRepositoryInterface
 
     public function updateCult($id, CultData $cultData): mixed;
 
-    public function getCults(): Collection;
+    public function getCults(bool $paginate = true): Collection | Paginator;
 
     public function getCultById(int $id): Model;
 

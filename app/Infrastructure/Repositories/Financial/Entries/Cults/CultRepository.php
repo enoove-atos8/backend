@@ -5,9 +5,12 @@ namespace Infrastructure\Repositories\Financial\Entries\Cults;
 use App\Domain\Financial\Entries\Cults\DataTransferObjects\CultData;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Models\Cult;
+use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 
 class CultRepository extends BaseRepository implements CultRepositoryInterface
@@ -16,7 +19,27 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
 
     const TABLE_NAME = 'cults';
     const DELETED_COLUMN = 'deleted';
-    const ENTRIES_CULT_ID_COLUMN = 'entries.cult_id';
+    const ID_COLUMN = 'cults.id';
+    const PAGINATE_NUMBER = 30;
+    const REVIEWER__ID_COLUMN = 'cults.reviewer_id';
+
+
+    const DISPLAY_SELECT_COLUMNS = [
+        'cults.id as cults_id',
+        'cults.reviewer_id as cults_reviewer_id',
+        'cults.worship_without_entries as cults_worship_without_entries',
+        'cults.cult_day as cults_cult_day',
+        'cults.cult_date as cults_cult_date',
+        'cults.date_transaction_compensation as cults_date_transaction_compensation',
+        'cults.account_id as cults_account_id',
+        'cults.transaction_type as cults_transaction_type',
+        'cults.tithes_amount as cults_tithes_amount',
+        'cults.designated_amount as cults_designated_amount',
+        'cults.offer_amount as cults_offer_amount',
+        'cults.deleted as cults_deleted',
+        'cults.receipt as cults_receipt',
+        'cults.comments as cults_comments',
+    ];
 
 
     /**
@@ -81,23 +104,34 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
     }
 
 
-
     /**
-     * @return Collection
+     * @param bool $paginate
+     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getCults(): Collection
+    public function getCults(bool $paginate = true): Collection | Paginator
     {
-        $this->requiredRelationships = ['reviewer'];
-
-        $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, 0, 'and');
-
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryConditions,
-            self::ID_COLUMN,
-            BaseRepository::ORDERS['DESC']
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
+
+        $query = function () use ($paginate, $displayColumnsFromRelationship) {
+            $q = DB::table(CultRepository::TABLE_NAME)
+                ->select($displayColumnsFromRelationship)
+                ->leftJoin(
+                    FinancialReviewerRepository::TABLE_NAME,
+                    self::REVIEWER__ID_COLUMN,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    FinancialReviewerRepository::ID_COLUMN_JOINED)
+                ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['DESC']);
+
+            if($paginate)
+                return $q->simplePaginate(self::PAGINATE_NUMBER);
+            else
+                return $q->get();
+        };
+
+        return $this->doQuery($query);
     }
 
 
