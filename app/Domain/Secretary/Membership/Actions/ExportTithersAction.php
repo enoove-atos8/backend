@@ -55,7 +55,7 @@ class ExportTithersAction
                 $month,
                 $type,
                 $monthlyTarget->monthly_budget_tithes,
-                $totalAmount['tithes']
+                $totalAmount['tithes']['total']
             );
 
             $fileContent = $exportData->export($members->toArray());
