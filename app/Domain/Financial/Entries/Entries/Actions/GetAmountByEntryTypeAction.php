@@ -62,36 +62,17 @@ class GetAmountByEntryTypeAction
                 ->values();
         };
 
-        // === DÍZIMOS ===
-        $tithes = $entries->where(
-            EntryRepository::ENTRY_TYPE_COLUMN,
-            BaseRepository::OPERATORS['EQUALS'],
-            EntryRepository::TITHE_VALUE
-        );
+
+        $tithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], EntryRepository::TITHE_VALUE);
         $totalTithesAmount = $tithes->sum(EntryRepository::AMOUNT_COLUMN);
 
-        // === OFERTAS ===
-        $offers = $entries->where(
-            EntryRepository::ENTRY_TYPE_COLUMN,
-            BaseRepository::OPERATORS['EQUALS'],
-            EntryRepository::OFFER_VALUE
-        );
+        $offers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], EntryRepository::OFFER_VALUE);
         $totalOfferAmount = $offers->sum(EntryRepository::AMOUNT_COLUMN);
 
-        // === DESIGNADAS ===
-        $designated = $entries->where(
-            EntryRepository::ENTRY_TYPE_COLUMN,
-            BaseRepository::OPERATORS['EQUALS'],
-            EntryRepository::DESIGNATED_VALUE
-        );
+        $designated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], EntryRepository::DESIGNATED_VALUE);
         $totalDesignatedAmount = $designated->sum(EntryRepository::AMOUNT_COLUMN);
 
-        // === DEVOLUÇÕES (não faz sentido por conta, apenas total) ===
-        $totalDevolutionAmount = $entries->where(
-            EntryRepository::DEVOLUTION_COLUMN,
-            BaseRepository::OPERATORS['EQUALS'],
-            1
-        )->sum(EntryRepository::AMOUNT_COLUMN);
+        $totalDevolutionAmount = $entries->where(EntryRepository::DEVOLUTION_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1)->sum(EntryRepository::AMOUNT_COLUMN);
 
         return [
             'tithes'     => [
