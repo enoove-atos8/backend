@@ -14,6 +14,7 @@ use Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers\CardControll
 use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
 use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\EntriesConsolidatedController;
+use Application\Api\v1\Financial\Entries\Entries\Controllers\DuplicityAnalisys\DuplicityAnalisysController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
 use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
@@ -496,6 +497,106 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Receipts routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('receipts')->group(function () {
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Overview receipts routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('overview')->group(function () {
+
+                    });
+
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Processed receipts routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('processed')->group(function () {
+
+
+                    });
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Not processed receipts routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+                    Route::prefix('not-processed')->group(function () {
+
+                         /*
+                         * Action: DELETE
+                         * EndPoint: /
+                         */
+
+                        Route::delete('deleteReceiptsProcessing/{id}', [ReceiptProcessingController::class, 'deleteReceiptsProcessing'])->whereNumber('id');
+
+                        /*
+                        * Action: GET
+                        * EndPoint: /
+                        */
+
+                        Route::get('getReceiptsProcessing/', [ReceiptProcessingController::class, 'getReceiptsProcessing']);
+
+                    });
+
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | Duplicities analysis receipts routes
+                    |--------------------------------------------------------------------------
+                    |
+                    */
+
+                    Route::prefix('duplicities-analysis')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getDuplicitiesEntries
+                         * Description: Get duplicities entries
+                         */
+
+                        Route::get('/getDuplicitiesEntries', [DuplicityAnalisysController::class, 'getDuplicitiesEntries']);
+
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getReceiptsByEntriesIdsAction
+                         * Description: Get receipts entries by id
+                         */
+
+                        Route::get('/getReceiptsByEntriesIds', [DuplicityAnalisysController::class, 'getReceiptsByEntriesIds']);
+
+
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getReceiptsByEntriesIdsAction
+                         * Description: Get receipts entries by id
+                         */
+
+                        Route::post('/saveDuplicityAnalysis', [DuplicityAnalisysController::class, 'saveDuplicityAnalysis']);
+
+                    });
+                });
+
             });
 
 
@@ -799,30 +900,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
-            });
-
-
-            /*
-            |--------------------------------------------------------------------------
-            | ReceiptProcessing Financial routes
-            |--------------------------------------------------------------------------
-            |
-            */
-            Route::prefix('receiptsProcessing')->group(function () {
-
-                /*
-                 * Action: DELETE
-                 * EndPoint: /
-                 */
-
-                Route::delete('/{id}', [ReceiptProcessingController::class, 'deleteReceiptsProcessing'])->whereNumber('id');
-
-                /*
-                 * Action: GET
-                 * EndPoint: /
-                 */
-
-                Route::get('/', [ReceiptProcessingController::class, 'getReceiptsProcessing']);
             });
 
 

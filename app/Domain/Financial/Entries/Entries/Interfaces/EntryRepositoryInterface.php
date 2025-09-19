@@ -17,11 +17,14 @@ interface EntryRepositoryInterface
     public function updateTimestampValueCpf(int $entryId, string $timestampValueCpf): mixed;
     public function updateReceiptLink(int $entryId, string $receiptLink): mixed;
 
+    public function setDuplicityAnalysis(int $entryId, string $action = 'kept' | 'exclude'): void;
+
     public function deleteEntry(int $id): bool;
 
     public function getAllEntriesWithMembersAndReviewers(string|null $dates, string $transactionCompensation, array $filters, array $orderBy): Collection | Paginator;
 
     public function getAllEntries(string|null $dates): Collection;
+    public function getDuplicitiesEntries(string $date): Collection;
 
     public function getDevolutionEntries(string|null $dates, bool $devolutionStatus, array $orderBy): Collection | Paginator;
 

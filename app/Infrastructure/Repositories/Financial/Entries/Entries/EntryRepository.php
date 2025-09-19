@@ -2,10 +2,12 @@
 
 namespace App\Infrastructure\Repositories\Financial\Entries\Entries;
 
+use App\Domain\Financial\Entries\DuplicitiesAnalisys\DataTransferObjects\DuplicityAnalisysEntriesData;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
+use Domain\Financial\Entries\DuplicitiesAnalisys\DataTransferObjects\ReceiptsByIdsData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
@@ -75,6 +77,44 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const MEMBERS_GENDERS_FILTER = 'membersGenders';
     const TITHES_NOT_IDENTIFIER_FILTER = 'tithesNotIdentifies';
 
+    const EXCLUDED_ENTRIES_DUPLICATE_KEY = 'excluded';
+    const KEPT_ENTRIES_DUPLICATE_KEY = 'kept';
+
+    const DUP_ENTRY_TYPE_COLUMN          = 'dup.entry_type';
+    const DUP_AMOUNT_COLUMN              = 'dup.amount';
+    const DUP_TRANSACTION_TYPE_COLUMN    = 'dup.transaction_type';
+    const DUP_DATE_TRANSACTION_COLUMN    = 'dup.date_transaction_compensation';
+    const DUP_MEMBER_ID_COLUMN           = 'dup.member_id';
+    const DUP_REPETITION_COUNT_COLUMN    = 'dup.repetition_count';
+    const REPETITION_COUNT_COLUMN    = 'repetition_count';
+
+    const MEMBER_FULL_NAME_COLUMN        = 'm.full_name';
+    const GROUP_RECEIVED_NAME_COLUMN     = 'g.name';
+
+    // Aliases usados na query
+    const MEMBER_FULL_NAME_ALIAS         = 'member_full_name';
+    const GROUP_RECEIVED_NAME_ALIAS      = 'group_received_name';
+    const GROUP_RETURNED_ID_ALIAS        = 'group_returned_id';
+    const GROUP_RECEIVED_ID_ALIAS        = 'group_received_id';
+    const DUPLICATE_IDS_ALIAS            = 'duplicate_ids';
+
+    const DUPLICITY_VERIFIED_COLUMN            = 'duplicity_verified';
+    const DUPLICITY_VERIFIED_COLUMN_JOINED     = 'entries.duplicity_verified';
+
+    const DUPLICATES_DISPLAY_SELECT_COLUMNS = [
+        'dup.entry_type',
+        'dup.amount',
+        'dup.transaction_type',
+        'dup.date_transaction_compensation',
+        'dup.member_id',
+        'MIN(m.full_name) AS member_full_name',
+        'dup.repetition_count',
+        'MIN(e.group_returned_id) AS group_returned_id',
+        'MIN(e.group_received_id) AS group_received_id',
+        'MIN(g.name) AS group_received_name',
+        'JSON_ARRAYAGG(e.id) AS duplicate_ids',
+    ];
+
 
     const DISPLAY_SELECT_COLUMNS = [
         'entries.id as entries_id',
@@ -93,6 +133,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         'entries.amount as entries_amount',
         'entries.timestamp_value_cpf as entries_timestamp_value_cpf',
         'entries.recipient as entries_recipient',
+        'entries.duplicity_verified as entries_duplicity_verified',
         'entries.devolution as entries_devolution',
         'entries.residual_value as entries_residual_value',
         'entries.deleted as entries_deleted',
@@ -135,6 +176,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'date_entry_register'                               =>   $entryData->dateEntryRegister,
             'amount'                                            =>   floatval($entryData->amount),
             'recipient'                                         =>   $entryData->recipient,
+            'duplicity_verified'                                =>   $entryData->duplicityVerified,
             'timestamp_value_cpf'                               =>   $entryData->timestampValueCpf,
             'devolution'                                        =>   $entryData->devolution,
             'residual_value'                                    =>   $entryData->residualValue,
@@ -143,6 +185,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'receipt_link'                                      =>   $entryData->receipt,
         ]);
     }
+
 
 
     /**
@@ -162,6 +205,94 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
+
+
+
+
+    /**
+     * @param string $date
+     * @return Collection
+     * @throws BindingResolutionException
+     */
+    public function getDuplicitiesEntries(string $date): Collection
+    {
+        $query = function () use ($date) {
+            $dupSub = DB::table(self::TABLE_NAME)
+                ->select([
+                    self::ENTRY_TYPE_COLUMN,
+                    self::AMOUNT_COLUMN,
+                    self::TRANSACTION_TYPE_COLUMN,
+                    self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                    self::MEMBER_ID_COLUMN,
+                    DB::raw('COUNT(*) AS ' . self::REPETITION_COUNT_COLUMN) // alias simples
+                ])
+                ->where(self::DELETED_COLUMN, 0)
+                ->where(self::COMPENSATED_COLUMN, self::COMPENSATED_VALUE) // Laravel já coloca binding correto
+                ->where(self::DUPLICITY_VERIFIED_COLUMN, 0)
+                ->where(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
+                ->groupBy([
+                    self::ENTRY_TYPE_COLUMN,
+                    self::AMOUNT_COLUMN,
+                    self::TRANSACTION_TYPE_COLUMN,
+                    self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                    self::MEMBER_ID_COLUMN
+                ])
+                ->havingRaw('COUNT(*) > 1');
+
+            $q = DB::table(self::TABLE_NAME . ' AS e')
+                ->select([
+                    self::DUP_ENTRY_TYPE_COLUMN,
+                    self::DUP_AMOUNT_COLUMN,
+                    self::DUP_TRANSACTION_TYPE_COLUMN,
+                    self::DUP_DATE_TRANSACTION_COLUMN,
+                    self::DUP_MEMBER_ID_COLUMN,
+                    DB::raw('MIN(' . self::MEMBER_FULL_NAME_COLUMN . ') AS ' . self::MEMBER_FULL_NAME_ALIAS),
+                    'dup.' . self::REPETITION_COUNT_COLUMN,
+                    DB::raw('MIN(e.group_returned_id) AS ' . self::GROUP_RETURNED_ID_ALIAS),
+                    DB::raw('MIN(e.group_received_id) AS ' . self::GROUP_RECEIVED_ID_ALIAS),
+                    DB::raw('MIN(' . self::GROUP_RECEIVED_NAME_COLUMN . ') AS ' . self::GROUP_RECEIVED_NAME_ALIAS),
+                    DB::raw('MIN(e.' . self::DUPLICITY_VERIFIED_COLUMN . ') AS ' . self::DUPLICITY_VERIFIED_COLUMN),
+                    DB::raw('JSON_ARRAYAGG(e.id) AS ' . self::DUPLICATE_IDS_ALIAS),
+                ])
+                ->leftJoin(MemberRepository::TABLE_NAME . ' AS m', 'e.member_id', '=', 'm.id')
+                ->leftJoin(GroupsRepository::TABLE_NAME . ' AS g', 'e.group_received_id', '=', 'g.id')
+                ->joinSub($dupSub, 'dup', function ($join) {
+                    $join->on(self::DUP_ENTRY_TYPE_COLUMN, '=', 'e.' . self::ENTRY_TYPE_COLUMN)
+                        ->on(self::DUP_AMOUNT_COLUMN, '=', 'e.' . self::AMOUNT_COLUMN)
+                        ->on(self::DUP_TRANSACTION_TYPE_COLUMN, '=', 'e.' . self::TRANSACTION_TYPE_COLUMN)
+                        ->on(self::DUP_DATE_TRANSACTION_COLUMN, '=', 'e.' . self::DATE_TRANSACTIONS_COMPENSATION_COLUMN)
+                        ->where(function ($cond) {
+                            $cond->where(function ($q) {
+                                $q->whereNull(self::DUP_MEMBER_ID_COLUMN)
+                                    ->whereNull('e.' . self::MEMBER_ID_COLUMN);
+                            })
+                                ->orWhereColumn(self::DUP_MEMBER_ID_COLUMN, 'e.' . self::MEMBER_ID_COLUMN);
+                        });
+                })
+                ->where('e.' . self::DELETED_COLUMN, 0)
+                ->where('e.' . self::COMPENSATED_COLUMN, self::COMPENSATED_VALUE)
+                ->where('e.' . self::DUPLICITY_VERIFIED_COLUMN, 0)
+                ->where('e.' . self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
+                ->groupBy([
+                    self::DUP_ENTRY_TYPE_COLUMN,
+                    self::DUP_AMOUNT_COLUMN,
+                    self::DUP_TRANSACTION_TYPE_COLUMN,
+                    self::DUP_DATE_TRANSACTION_COLUMN,
+                    self::DUP_MEMBER_ID_COLUMN,
+                    'dup.' . self::REPETITION_COUNT_COLUMN,
+                ])
+                ->orderByDesc(self::DUP_DATE_TRANSACTION_COLUMN)
+                ->orderByDesc(self::DUP_ENTRY_TYPE_COLUMN);
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => DuplicityAnalisysEntriesData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+
 
 
     /**
@@ -256,6 +387,13 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
+
+    /**
+     * @param array $filters
+     * @param bool $joinQuery
+     * @param bool $returnConditions
+     * @return array|void
+     */
     public function applyFilters(array $filters, bool $joinQuery = false, bool $returnConditions = false)
     {
         $this->queryConditions = count($this->queryConditions) > 0 ? $this->queryConditions : [];
@@ -356,6 +494,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
 
+
     /**
      * @throws BindingResolutionException
      */
@@ -409,6 +548,28 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions [] = $this->whereEqual(self::CULT_ID_COLUMN_JOINED, $id, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+    }
+
+
+    /**
+     * @param array $ids
+     * @return Model|null
+     * @throws BindingResolutionException
+     */
+    public function getReceiptsEntriesByIds(array $ids): Collection | null
+    {
+
+        $query = function () use (
+            $ids) {
+
+            $q = DB::table(EntryRepository::TABLE_NAME)
+                ->whereIn(self::ID_COLUMN_JOINED, $ids);
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => ReceiptsByIdsData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
     }
 
 
@@ -524,6 +685,37 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         return $this->update($conditions, [
             'receipt_link'  =>   $receiptLink,
         ]);
+    }
+
+
+    /**
+     * @param int $entryId
+     * @param string $action
+     * @return void
+     * @throws BindingResolutionException
+     */
+    public function setDuplicityAnalysis(int $entryId, string $action = 'kept' | 'exclude'): void
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $entryId,
+            ];
+
+        if($action == self::KEPT_ENTRIES_DUPLICATE_KEY)
+        {
+            $this->update($conditions, [
+                'duplicity_verified'  =>   true,
+            ]);
+        }
+        if($action == self::EXCLUDED_ENTRIES_DUPLICATE_KEY)
+        {
+            $this->update($conditions, [
+                'duplicity_verified'    =>   true,
+                'deleted'               =>   true,
+            ]);
+        }
     }
 
 
