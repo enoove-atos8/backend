@@ -32,6 +32,7 @@ class Entry extends Model
         'date_entry_register',
         'amount',
         'recipient',
+        'duplicity_verified',
         'timestamp_value_cpf',
         'devolution',
         'residual_value',

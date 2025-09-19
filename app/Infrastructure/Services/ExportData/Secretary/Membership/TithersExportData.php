@@ -20,6 +20,9 @@ class TithersExportData
 
     private const ALLOWED_TYPES = ['PDF', 'XLSX'];
 
+    /**
+     * @throws GeneralExceptions
+     */
     public function __construct(string $month, string $type, mixed $monthlyTarget, float $totalTithes)
     {
         $this->month = $month;
