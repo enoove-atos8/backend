@@ -2,18 +2,13 @@
 
 namespace Domain\Financial\Entries\Reports\Actions;
 
-use App\Domain\Financial\Entries\Reports\Constants\ReturnMessages;
-use App\Domain\Financial\Entries\Reports\DataTransferObjects\ReportRequestsData;
 use App\Domain\Financial\Entries\Reports\Interfaces\ReportRequestsRepositoryInterface;
-use App\Domain\Financial\Entries\Reports\Models\ReportRequests;
-use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
-use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
 
 class GetReportsRequestsAction
 {
-    private ReportRequestsRepository $reportRequestsRepository;
+    private ReportRequestsRepositoryInterface $reportRequestsRepository;
 
     public function __construct(ReportRequestsRepositoryInterface $reportRequestsRepositoryInterface)
     {
@@ -22,16 +17,10 @@ class GetReportsRequestsAction
 
 
     /**
-     * @throws GeneralExceptions
-     * @throws BindingResolutionException
+     * @return Collection|Paginator
      */
-    public function execute(): Collection
+    public function execute(): Collection | Paginator
     {
-        $reports = $this->reportRequestsRepository->getReports();
-
-        if(count($reports) > 0)
-            return $reports;
-        else
-            throw new GeneralExceptions(ReturnMessages::NO_REPORT_FOUNDED, 404);
+        return $this->reportRequestsRepository->getReports();
     }
 }

@@ -32,26 +32,26 @@ class ReportsRequestsResourceCollection extends ResourceCollection
         {
             $result[] = [
                 'id'                    =>  $item->id,
-                'reportName'            =>  $item->report_name,
-                'detailedReport'        =>  $item->detailed_report,
-                'generationDate'        =>  $item->generation_date,
+                'reportName'            =>  $item->reportName,
+                'detailedReport'        =>  $item->detailedReport,
+                'generationDate'        =>  $item->generationDate,
                 'dates'                 =>  $item->dates,
                 'status'                =>  $item->status,
                 'startedBy'             =>  [
-                    'id'    =>  $item->user->id,
-                    'name'  =>  $item->user->detail->full_name,
-                    'avatar'  =>  $item->user->detail->avatar,
+                    'id'        =>  $item->userDetail->id,
+                    'name'      =>  $item->userDetail->name,
+                    'avatar'    =>  $item->userDetail->avatar,
                 ],
-                'entryTypes'            =>  $item->entry_types,
-                'groupReceivedId'       =>  $item->group_received_id,
+                'entryTypes'            =>  $item->entryTypes,
+                'groupReceivedId'       =>  $item->groupReceivedId,
                 'group'                 =>  $this->getGroups($item),
-                'dateOrder'             =>  $item->date_order,
-                'includedCashDeposit'   =>  $item->include_cash_deposit,
-                'linkReport'            =>  $item->link_report,
+                'dateOrder'             =>  $item->dateOrder,
+                'includedCashDeposit'   =>  $item->includeCashDeposit,
+                'linkReport'            =>  $item->linkReport,
                 'entryTypesAmounts'     =>  [
-                    'titheAmount'       =>  $item->tithe_amount,
-                    'designatedAmount'  =>  $item->designated_amount,
-                    'offerAmount'       =>  $item->offers_amount,
+                    'titheAmount'       =>  $item->titheAmount,
+                    'designatedAmount'  =>  $item->designatedAmount,
+                    'offerAmount'       =>  $item->offerAmount,
                 ],
             ];
         }
@@ -67,11 +67,11 @@ class ReportsRequestsResourceCollection extends ResourceCollection
      */
     public function getGroups(mixed $requestReport): ?array
     {
-        if(!is_null($requestReport->group_received_id))
+        if(!is_null($requestReport->groupReceivedId))
         {
             return [
-                'id'             =>  $requestReport->group->id,
-                'name'           =>  $requestReport->group->name,
+                'id'     =>  $requestReport->group->id,
+                'name'   =>  $requestReport->group->name,
             ];
         }
         else

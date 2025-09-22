@@ -12,7 +12,23 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
 {
     protected mixed $model = UserDetail::class;
 
+    const TABLE_NAME = 'user_details';
     const USER_ID_COLUMN = 'user_id';
+
+    const DISPLAY_SELECT_COLUMNS = [
+        'user_details.user_id as user_detail_user_id',
+        'user_details.full_name as user_detail_full_name',
+        'user_details.avatar as user_detail_avatar',
+        'user_details.type as user_detail_type',
+        'user_details.title as user_detail_title',
+        'user_details.gender as user_detail_gender',
+        'user_details.phone as user_detail_phone',
+        'user_details.address as user_detail_address',
+        'user_details.district as user_detail_district',
+        'user_details.city as user_detail_city',
+        'user_details.country as user_detail_country',
+        'user_details.birthday as user_detail_birthday',
+    ];
 
 
     /**

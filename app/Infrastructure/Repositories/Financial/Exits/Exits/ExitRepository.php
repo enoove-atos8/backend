@@ -200,20 +200,6 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     }
 
 
-    /*public function applyFilters(array $filters, bool $returnConditions = false)
-    {
-        $this->queryConditions = count($this->queryConditions) > 0 ? $this->queryConditions : [];
-
-        foreach ($filters as $key => $filter)
-        {
-
-        }
-
-        if($returnConditions)
-            return $this->queryConditions;
-    }*/
-
-
     /**
      * @param int $exitId
      * @param string $timestamp

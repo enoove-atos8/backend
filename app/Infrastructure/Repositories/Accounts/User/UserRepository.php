@@ -14,12 +14,14 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
     protected mixed $model = User::class;
 
+    const TABLE_NAME = 'users';
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
     const DELETED_COLUMN = 'deleted';
     const ENTRY_TYPE_COLUMN = 'entry_type';
     const AMOUNT_COLUMN = 'amount';
     const DEVOLUTION_COLUMN = 'devolution';
     const ID_COLUMN = 'id';
+    const ID_COLUMN_JOINED = 'users.id';
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
