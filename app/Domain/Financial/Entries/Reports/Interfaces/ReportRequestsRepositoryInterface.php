@@ -12,7 +12,7 @@ interface ReportRequestsRepositoryInterface
 {
     public function generateReport(ReportRequestsData $reportJobData): ReportRequests;
 
-    public function getReports(): Collection;
+    public function getReports(bool $paginate): Collection | Paginator;
     public function getReportsByStatus(string $status): Collection;
     public function updateStatus($id, string $status): mixed;
     public function updateLinkReport($id, string $link): mixed;

@@ -7,10 +7,10 @@ use Spatie\DataTransferObject\DataTransferObject;
 class UserDetailData extends DataTransferObject
 {
     /** @var integer  */
-    public int $user_id = 0;
+    public int $id = 0;
 
-    /** @var string  */
-    public string $full_name;
+    /** @var string|null  */
+    public string|null $name;
 
     /** @var string|null|array  */
     public string|null|array $avatar;
@@ -21,14 +21,14 @@ class UserDetailData extends DataTransferObject
     /** @var string|null  */
     public string|null $title;
 
-    /** @var string  */
-    public string $gender;
+    /** @var string|null  */
+    public string|null $gender;
 
-    /** @var string  */
-    public string $phone;
+    /** @var string|null  */
+    public string|null $phone;
 
-    /** @var string  */
-    public string $address;
+    /** @var string|null  */
+    public string|null $address;
 
     /** @var string|null  */
     public string|null $district;
@@ -39,6 +39,6 @@ class UserDetailData extends DataTransferObject
     /** @var string|null  */
     public string|null $country;
 
-    /** @var string  */
-    public string $birthday;
+    /** @var string|null  */
+    public string|null $birthday;
 }

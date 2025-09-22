@@ -21,6 +21,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     protected mixed $model = Group::class;
     const TABLE_NAME = 'ecclesiastical_divisions_groups';
     const ID_COLUMN = 'id';
+
+    const ID_COLUMN_JOINED = 'ecclesiastical_divisions_groups.id';
     const GROUP_RECEIVED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_received';
     const GROUP_RETURNED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_returned';
     const MEMBER_TABLE_NAME = 'members';
@@ -30,7 +32,6 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
-    const ID_COLUMN_JOINED = 'ecclesiastical_divisions_groups.id';
     const LEADER_ID_COLUMN = 'ecclesiastical_divisions_groups.leader_id';
     const MEMBER_ECCLESIASTICAL_DIVISION_GROUPS_ID_COLUMN = 'members.ecclesiastical_divisions_group_id';
     const MEMBER_ID_COLUMN = 'members.id';
