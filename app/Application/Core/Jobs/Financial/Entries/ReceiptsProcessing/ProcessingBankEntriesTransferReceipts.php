@@ -320,6 +320,7 @@ class ProcessingBankEntriesTransferReceipts
 
         $entry = $this->getEntryByTimestampValueCpfAction->execute($timestampValueCpf);
         if ($entry) {
+            $this->entryData->duplicityVerified = true;
             return true;
         }
 

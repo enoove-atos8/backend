@@ -57,7 +57,7 @@ class EntryData extends DataTransferObject
     public ?string $recipient;
 
     /** @var boolean | null  */
-    public ?bool $duplicityVerified;
+    public ?bool $duplicityVerified = false;
 
     /** @var string | null  */
     public ?string $timestampValueCpf;
@@ -116,7 +116,6 @@ class EntryData extends DataTransferObject
             'memberId' => $member?->id,
             'accountId' => $data?->accountId,
             'receipt' => null,
-            'duplicity_verified' => false,
             'devolution' => 0,
             'residualValue' => 0,
             'identificationPending' => 0,
