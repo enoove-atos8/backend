@@ -125,7 +125,7 @@ class GenerateMonthlyReceiptsReport
                 $this->updateLinkReportRequestsAction->execute($report->id, $pathReportUploaded);
                 $this->updateAmountsReportRequestsAction->execute($report->id, $entryTypesAmount);
 
-                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR);
+                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR);
 
                 $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::DONE_STATUS_VALUE);
             }
@@ -186,7 +186,7 @@ class GenerateMonthlyReceiptsReport
     private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group, array $entryTypesAmount): string
     {
         $timestamp = date('YmdHis');
-        $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR;
+        $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR;
 
         $html = view(self::MONTHLY_RECEIPTS_BLADE_VIEW, [
             'tenant' => $tenant,
