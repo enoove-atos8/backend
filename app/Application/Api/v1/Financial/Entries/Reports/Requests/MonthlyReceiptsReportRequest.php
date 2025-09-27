@@ -4,11 +4,11 @@ namespace Application\Api\v1\Financial\Entries\Reports\Requests;
 
 use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
-use App\Domain\Financial\Entries\Reports\DataTransferObjects\ReportRequestsData;
+use App\Domain\Financial\Entries\Reports\DataTransferObjects\MonthlyReportData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
-class ReportRequestsRequest extends FormRequest
+class MonthlyReceiptsReportRequest extends FormRequest
 {
 
     /**
@@ -69,12 +69,12 @@ class ReportRequestsRequest extends FormRequest
     /**
      * Function to data transfer objects to EntryData class
      *
-     * @return ReportRequestsData
+     * @return MonthlyReportData
      * @throws UnknownProperties
      */
-    public function reportJobData(): ReportRequestsData
+    public function monthlyReportData(): MonthlyReportData
     {
-        return new ReportRequestsData(
+        return new MonthlyReportData(
             reportName:             $this->input('reportName'),
             detailedReport:         $this->input('detailedReport'),
             generationDate:         $this->input('generationDate'),

@@ -2,16 +2,16 @@
 
 namespace App\Domain\Financial\Entries\Reports\Interfaces;
 
-use App\Domain\Financial\Entries\Reports\DataTransferObjects\ReportRequestsData;
+use App\Domain\Financial\Entries\Reports\DataTransferObjects\MonthlyReportData;
 use App\Domain\Financial\Entries\Reports\Models\ReportRequests;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
-interface ReportRequestsRepositoryInterface
+interface MonthlyReportsRepositoryInterface
 {
-    public function generateReport(ReportRequestsData $reportJobData): ReportRequests;
-
+    public function generateMonthlyReceiptsReport(MonthlyReportData $monthlyReportData): ReportRequests;
+    public function generateMonthlyEntriesReport(MonthlyReportData $monthlyReportData): ReportRequests;
     public function getReports(bool $paginate): Collection | Paginator;
     public function getReportsByStatus(string $status): Collection;
     public function updateStatus($id, string $status): mixed;

@@ -7,7 +7,7 @@ use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
-class ReportRequestsData extends DataTransferObject
+class MonthlyReportData extends DataTransferObject
 {
     /** @var integer | null  */
     public int | null $id;
@@ -62,6 +62,16 @@ class ReportRequestsData extends DataTransferObject
     /** @var string|null  */
     public string | null $titheAmount;
 
+    /** @var boolean|null  */
+    public bool | null $includeGroupsEntries;
+
+
+    /** @var boolean|null  */
+    public bool | null $includeAnonymousOffers;
+
+    /** @var boolean|null  */
+    public bool | null $includeTransfersBetweenAccounts;
+
     /** @var UserDetailData | null  */
     public ?UserDetailData $userDetail;
 
@@ -79,7 +89,7 @@ class ReportRequestsData extends DataTransferObject
         return new self(
             id: $data['reports_id'] ?? null,
             reportName: $data['reports_report_name'] ?? null,
-            detailedReport: $data['reports_detailed_report'] ?? null,
+            detailedReport: $data['reports_detailed_report'] ?? false,
             generationDate: $data['reports_generation_date'] ?? null,
             dates: json_decode($data['reports_dates'], true) ?? null,
             status: $data['reports_status'] ?? null,
@@ -87,13 +97,16 @@ class ReportRequestsData extends DataTransferObject
             startedBy: $data['reports_started_by'] ?? null,
             entryTypes: json_decode($data['reports_entry_types'], true) ?? null,
             groupReceivedId: $data['reports_group_received_id'] ?? null,
-            dateOrder: $data['reports_date_order'] ?? false,
+            dateOrder: $data['reports_date_order'] ?? null,
             allGroupsReceipts: $data['reports_all_groups_receipts'] ?? false,
             includeCashDeposit: $data['reports_include_cash_deposit'] ?? false,
-            linkReport: $data['reports_link_report'] ?? false,
-            designatedAmount: $data['reports_designated_amount'] ?? false,
-            offerAmount: $data['reports_offer_amount'] ?? false,
-            titheAmount: $data['reports_tithe_amount'] ?? false,
+            linkReport: $data['reports_link_report'] ?? null,
+            designatedAmount: $data['reports_designated_amount'] ?? null,
+            offerAmount: $data['reports_offer_amount'] ?? null,
+            titheAmount: $data['reports_tithe_amount'] ?? null,
+            includeGroupsEntries: $data['reports_include_groups_entries'] ?? false,
+            includeAnonymousOffers: $data['reports_include_anonymous_offers'] ?? false,
+            includeTransfersBetweenAccounts: $data['reports_include_transfers_between_accounts'] ?? false,
 
             userDetail: new UserDetailData([
                 'id' => $data['user_detail_user_id'] ?? null,
@@ -107,5 +120,4 @@ class ReportRequestsData extends DataTransferObject
             ]),
         );
     }
-
 }

@@ -17,7 +17,7 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\Entrie
 use Application\Api\v1\Financial\Entries\Entries\Controllers\DuplicityAnalisys\DuplicityAnalisysController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
-use Application\Api\v1\Financial\Entries\Reports\Controllers\ReportsRequestsController;
+use Application\Api\v1\Financial\Entries\Reports\Controllers\MonthlyReportsController;
 use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsController;
@@ -479,11 +479,20 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     /*
                      * Action: POST
-                     * EndPoint: /generateReport
+                     * EndPoint: /generateMonthlyReceiptsReport
                      * Description: Include report to be process by job schedule
                      */
 
-                    Route::post('/generateReport', [ReportsRequestsController::class, 'generateReport']);
+                    Route::post('/generateMonthlyReceiptsReport', [MonthlyReportsController::class, 'generateMonthlyReceiptsReport']);
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyEntriesReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyEntriesReport', [MonthlyReportsController::class, 'generateMonthlyEntriesReport']);
 
 
 
@@ -493,7 +502,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Include report to be process by job schedule
                      */
 
-                    Route::get('/getReports', [ReportsRequestsController::class, 'getReports']);
+                    Route::get('/getReports', [MonthlyReportsController::class, 'getReports']);
 
                 });
 

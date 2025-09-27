@@ -2,15 +2,15 @@
 
 namespace Domain\Financial\Entries\Reports\Actions;
 
-use App\Domain\Financial\Entries\Reports\Interfaces\ReportRequestsRepositoryInterface;
+use App\Domain\Financial\Entries\Reports\Interfaces\MonthlyReportsRepositoryInterface;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 
 class GetReportsRequestsAction
 {
-    private ReportRequestsRepositoryInterface $reportRequestsRepository;
+    private MonthlyReportsRepositoryInterface $reportRequestsRepository;
 
-    public function __construct(ReportRequestsRepositoryInterface $reportRequestsRepositoryInterface)
+    public function __construct(MonthlyReportsRepositoryInterface $reportRequestsRepositoryInterface)
     {
         $this->reportRequestsRepository = $reportRequestsRepositoryInterface;
     }

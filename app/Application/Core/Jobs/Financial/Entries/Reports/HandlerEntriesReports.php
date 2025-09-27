@@ -17,7 +17,7 @@ use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
-use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
+use Infrastructure\Repositories\Financial\Entries\Reports\MonthlyReportsRepository;
 use Throwable;
 
 class HandlerEntriesReports
@@ -71,32 +71,32 @@ class HandlerEntriesReports
         {
             tenancy()->initialize($tenant);
 
-            $toProcessRequests = $this->getReportsRequestsByStatusAction->execute(ReportRequestsRepository::TO_PROCESS_STATUS_VALUE);
+            $reports = $this->getReportsRequestsByStatusAction->execute(MonthlyReportsRepository::TO_PROCESS_STATUS_VALUE);
 
-            if(count($toProcessRequests) > 0)
+            if(count($reports) > 0)
             {
-                foreach ($toProcessRequests as $report)
+                foreach ($reports as $report)
                 {
                     try
                     {
-                        $this->updateStatusReportRequestsAction->execute($report->id, ReportRequestsRepository::IN_PROGRESS_STATUS_VALUE);
+                        $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::IN_PROGRESS_STATUS_VALUE);
 
-                        if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
+                        if($report->reportName == MonthlyReportsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
                             $this->generateMonthlyReceiptsReport->execute($report, $tenant);
 
-                        //if($report->report_name == ReportRequestsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
-                        //    $this->generateMonthlyReceiptsReport->execute();
+                        if($report->reportName == MonthlyReportsRepository::MONTHLY_ENTRIES_REPORT_NAME)
+                            $this->generateMonthlyEntriesReport->execute($report, $tenant);
 
-                        //if($report->report_name == ReportRequestsRepository::MONTHLY_ENTRIES_REPORT_NAME)
+                        //if($report->report_name == MonthlyReportsRepository::MONTHLY_ENTRIES_REPORT_NAME)
                         //    $this->generateQuarterlyEntriesReports->execute();
                     }
                     catch(GeneralExceptions $e)
                     {
                         if($e->getCode() == 404)
-                            $this->updateStatusReportRequestsAction->execute($report->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
+                            $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
 
                         if($e->getCode() == 500)
-                            $this->updateStatusReportRequestsAction->execute($report->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
+                            $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::ERROR_STATUS_VALUE);
 
                         throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
                     }

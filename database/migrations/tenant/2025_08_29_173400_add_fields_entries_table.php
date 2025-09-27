@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('entries', function (Blueprint $table)
             {
-                $table->boolean('duplicity_verified')->default(false)->nullable()->after('recipient');
+                $table->boolean('duplicity_verified')->default(false)->after('recipient');
             });
         }
     }

@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Services\Atos8\Financial\Entries\Reports;
 
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
+use App\Domain\Financial\Entries\Reports\DataTransferObjects\MonthlyReportData;
 use App\Domain\Financial\Entries\Reports\Models\ReportRequests;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use DateTime;
@@ -13,7 +14,7 @@ use Domain\Financial\Entries\Reports\Actions\UpdateStatusReportRequestsAction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Http;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\Entries\Reports\ReportRequestsRepository;
+use Infrastructure\Repositories\Financial\Entries\Reports\MonthlyReportsRepository;
 use Infrastructure\Util\Storage\S3\UploadFile;
 use Throwable;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -32,8 +33,15 @@ class GenerateMonthlyReceiptsReport
 
     private UploadFile $uploadFile;
 
+    const TENANTS_DIR = '/tenants';
+    const REPORTS_TEMP_DIR = '/reports/temp/';
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
     const PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS = 'entries/reports/monthly_receipts';
+    const PIX = 'pix';
+    const CASH = 'cash';
+
+    const MONTHLY_RECEIPTS_BLADE_VIEW = 'reports/entries/monthlyReceipts/monthly_receipts';
+    const MONTHLY_RECEIPTS_REPORT_NAME = 'monthly_receipts.pdf';
 
 
 
@@ -59,13 +67,9 @@ class GenerateMonthlyReceiptsReport
     /**
      * @throws Throwable
      */
-    public function execute(ReportRequests $requests, string $tenant): void
+    public function execute(MonthlyReportData $report, string $tenant): void
     {
-        $dates = $requests->dates;
-
-        /*usort($dates, function($a, $b) {
-            return strtotime($a) - strtotime($b);
-        });*/
+        $dates = $report->dates;
 
         if(count($dates) > 0)
         {
@@ -77,13 +81,13 @@ class GenerateMonthlyReceiptsReport
                 'offerAmount' => 0,
             ];
 
-            if(!is_null($requests->group_received_id))
-                $group = $this->getGroupsByIdAction->execute($requests->group_received_id);
+            if(!is_null($report->groupReceivedId))
+                $group = $this->getGroupsByIdAction->execute($report->groupReceivedId);
 
             $filters = [
-              'entryTypes'      => implode(',', $requests->entry_types),
-              'groupReceivedId' => $requests->group_received_id,
-              'transactionType' => $requests->include_cash_deposit == 1 ? 'pix,cash' : 'pix',
+              'entryTypes'      => implode(',', $report->entryTypes),
+              'groupReceivedId' => $report->groupReceivedId,
+              'transactionType' => $report->includeCashDeposit == 1 ? self::PIX . ',' . self::CASH : self::PIX,
             ];
 
 
@@ -94,11 +98,11 @@ class GenerateMonthlyReceiptsReport
                 $linkReceiptEntries = [];
 
                 foreach ($entries as $entry){
-                    if($requests->include_cash_deposit == 1)
+                    if($report->includeCashDeposit == 1)
                         $linkReceiptEntries [] = $entry->entries_receipt_link;
 
-                    else if($requests->include_cash_deposit == 0)
-                        if($entry->entries_transaction_type == 'pix')
+                    else if($report->includeCashDeposit == 0)
+                        if($entry->entries_transaction_type == self::PIX)
                             $linkReceiptEntries [] = $entry->entries_receipt_link;
 
 
@@ -118,21 +122,21 @@ class GenerateMonthlyReceiptsReport
             {
                 $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group, $entryTypesAmount);
                 $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS, $tenant);
-                $this->updateLinkReportRequestsAction->execute($requests->id, $pathReportUploaded);
-                $this->updateAmountsReportRequestsAction->execute($requests->id, $entryTypesAmount);
+                $this->updateLinkReportRequestsAction->execute($report->id, $pathReportUploaded);
+                $this->updateAmountsReportRequestsAction->execute($report->id, $entryTypesAmount);
 
-                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/reports/temp/');
+                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR);
 
-                $this->updateStatusReportRequestsAction->execute($requests->id, ReportRequestsRepository::DONE_STATUS_VALUE);
+                $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::DONE_STATUS_VALUE);
             }
             else
             {
-                $this->updateStatusReportRequestsAction->execute($requests->id, ReportRequestsRepository::NO_RECEIPTS_STATUS_VALUE);
+                $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
             }
         }
         else
         {
-            $this->updateStatusReportRequestsAction->execute($requests->id, ReportRequestsRepository::ERROR_STATUS_VALUE);
+            $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::ERROR_STATUS_VALUE);
         }
     }
 
@@ -152,7 +156,7 @@ class GenerateMonthlyReceiptsReport
         {
             $response = Http::get($link);
             $imageName = time() . '_' . $counter . '_' .  basename($link);
-            $imagePath = self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/reports/temp/' . $imageName;
+            $imagePath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR . $imageName;
             $directoryName = dirname($imagePath);
 
             if (!is_dir($directoryName))
@@ -182,9 +186,9 @@ class GenerateMonthlyReceiptsReport
     private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group, array $entryTypesAmount): string
     {
         $timestamp = date('YmdHis');
-        $directoryPath = self::STORAGE_BASE_PATH . 'tenants/' . $tenant . '/reports/temp/';
+        $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR;
 
-        $html = view('reports/entries/monthlyReceipts/monthly_receipts', [
+        $html = view(self::MONTHLY_RECEIPTS_BLADE_VIEW, [
             'tenant' => $tenant,
             'links' => $links,
             'filters' => $filters,
@@ -194,7 +198,7 @@ class GenerateMonthlyReceiptsReport
         ])->render();
 
         $pdf = Pdf::loadHTML($html);
-        $pdfPath = $directoryPath . $timestamp . '_monthly_receipts.pdf';
+        $pdfPath = $directoryPath . $timestamp . '_' . self::MONTHLY_RECEIPTS_REPORT_NAME;
 
         $pdf->save($pdfPath);
 

@@ -2,8 +2,8 @@
 
 namespace Infrastructure\Repositories\Financial\Entries\Reports;
 
-use App\Domain\Financial\Entries\Reports\DataTransferObjects\ReportRequestsData;
-use App\Domain\Financial\Entries\Reports\Interfaces\ReportRequestsRepositoryInterface;
+use App\Domain\Financial\Entries\Reports\DataTransferObjects\MonthlyReportData;
+use App\Domain\Financial\Entries\Reports\Interfaces\MonthlyReportsRepositoryInterface;
 use App\Domain\Financial\Entries\Reports\Models\ReportRequests;
 use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
@@ -16,7 +16,7 @@ use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 
-class ReportRequestsRepository extends BaseRepository implements ReportRequestsRepositoryInterface
+class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsRepositoryInterface
 {
 
     protected mixed $model = ReportRequests::class;
@@ -57,6 +57,9 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
         'entries_report_requests.tithe_amount as reports_tithe_amount',
         'entries_report_requests.designated_amount as reports_designated_amount',
         'entries_report_requests.offers_amount as reports_offer_amount',
+        'entries_report_requests.include_groups_entries as reports_include_groups_entries',
+        'entries_report_requests.include_anonymous_offers as reports_include_anonymous_offers',
+        'entries_report_requests.include_transfers_between_accounts as reports_include_transfers_between_accounts',
         'entries_report_requests.link_report as reports_link_report',
     ];
 
@@ -67,26 +70,46 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
     private array $queryConditions = [];
 
 
-
     /**
-     * @param ReportRequestsData $reportJobData
+     * @param MonthlyReportData $monthlyReportData
      * @return ReportRequests
      */
-    public function generateReport(ReportRequestsData $reportJobData): ReportRequests
+    public function generateMonthlyReceiptsReport(MonthlyReportData $monthlyReportData): ReportRequests
     {
         return $this->create([
-            'group_received_id'     => $reportJobData->groupReceivedId,
-            'started_by'            => $reportJobData->startedBy,
-            'report_name'           => $reportJobData->reportName,
-            'detailed_report'       => $reportJobData->detailedReport,
-            'generation_date'       => $reportJobData->generationDate,
-            'dates'                 => $reportJobData->dates,
-            'status'                => $reportJobData->status,
-            'error'                 => $reportJobData->error,
-            'entry_types'           => $reportJobData->entryTypes,
-            'date_order'            => $reportJobData->dateOrder,
-            'all_groups_receipts'   => $reportJobData->allGroupsReceipts,
-            'include_cash_deposit'  => $reportJobData->includeCashDeposit
+            'group_received_id'     => $monthlyReportData->groupReceivedId,
+            'started_by'            => $monthlyReportData->startedBy,
+            'report_name'           => $monthlyReportData->reportName,
+            'detailed_report'       => $monthlyReportData->detailedReport,
+            'generation_date'       => $monthlyReportData->generationDate,
+            'dates'                 => $monthlyReportData->dates,
+            'status'                => $monthlyReportData->status,
+            'error'                 => $monthlyReportData->error,
+            'entry_types'           => $monthlyReportData->entryTypes,
+            'date_order'            => $monthlyReportData->dateOrder,
+            'all_groups_receipts'   => $monthlyReportData->allGroupsReceipts,
+            'include_cash_deposit'  => $monthlyReportData->includeCashDeposit
+        ]);
+    }
+
+
+
+
+    /**
+     * @param MonthlyReportData $monthlyReportData
+     * @return ReportRequests
+     */
+    public function generateMonthlyEntriesReport(MonthlyReportData $monthlyReportData): ReportRequests
+    {
+        return $this->create([
+            'started_by'                            => $monthlyReportData->startedBy,
+            'report_name'                           => $monthlyReportData->reportName,
+            'generation_date'                       => $monthlyReportData->generationDate,
+            'dates'                                 => $monthlyReportData->dates,
+            'status'                                => $monthlyReportData->status,
+            'include_groups_entries'                => $monthlyReportData->includeGroupsEntries,
+            'include_anonymous_offers'              => $monthlyReportData->includeAnonymousOffers,
+            'include_transfers_between_accounts'    => $monthlyReportData->includeTransfersBetweenAccounts,
         ]);
     }
 
@@ -106,32 +129,32 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
         $query = function () use (
             $paginate, $displayColumnsFromRelationship) {
 
-            $q = DB::table(ReportRequestsRepository::TABLE_NAME)
+            $q = DB::table(MonthlyReportsRepository::TABLE_NAME)
                 ->select($displayColumnsFromRelationship)
                 ->leftJoin(
                     UserDetailRepository::TABLE_NAME,
-                    ReportRequestsRepository::START_BY_COLUMN,
+                    MonthlyReportsRepository::START_BY_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
                     UserDetailRepository::USER_ID_COLUMN)
                 ->leftJoin(
                     GroupsRepository::TABLE_NAME,
-                    ReportRequestsRepository::GROUP_RECEIVED_ID_JOINED,
+                    MonthlyReportsRepository::GROUP_RECEIVED_ID_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     GroupsRepository::ID_COLUMN_JOINED)
-                ->orderByDesc(ReportRequestsRepository::ID_JOINED);
+                ->orderByDesc(MonthlyReportsRepository::ID_JOINED);
 
 
             if (!$paginate)
             {
                 $result = $q->get();
-                return collect($result)->map(fn($item) => ReportRequestsData::fromResponse((array) $item));
+                return collect($result)->map(fn($item) => MonthlyReportData::fromResponse((array) $item));
             }
             else
             {
                 $result = $q->simplePaginate(self::PAGINATE_NUMBER);
 
                 $result->setCollection(
-                    $result->getCollection()->map(fn($item) => ReportRequestsData::fromResponse((array) $item))
+                    $result->getCollection()->map(fn($item) => MonthlyReportData::fromResponse((array) $item))
                 );
 
                 return $result;
@@ -149,16 +172,34 @@ class ReportRequestsRepository extends BaseRepository implements ReportRequestsR
      */
     public function getReportsByStatus(string $status): Collection
     {
-        $this->requiredRelationships = ['user'];
-
-        $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::STATUS_COLUMN, $status, 'and');
-
-        return $this->getItemsWithRelationshipsAndWheres(
-            $this->queryConditions,
-            self::ID_COLUMN,
-            BaseRepository::ORDERS['DESC']
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            UserDetailRepository::DISPLAY_SELECT_COLUMNS,
+            GroupsRepository::DISPLAY_SELECT_COLUMNS,
         );
+
+        $query = function () use ($status, $displayColumnsFromRelationship)
+        {
+            $q = DB::table(MonthlyReportsRepository::TABLE_NAME)
+                ->select($displayColumnsFromRelationship)
+                ->leftJoin(
+                    UserDetailRepository::TABLE_NAME,
+                    MonthlyReportsRepository::START_BY_COLUMN,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    UserDetailRepository::USER_ID_COLUMN)
+                ->leftJoin(
+                    GroupsRepository::TABLE_NAME,
+                    MonthlyReportsRepository::GROUP_RECEIVED_ID_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    GroupsRepository::ID_COLUMN_JOINED)
+                ->where(self::STATUS_COLUMN, BaseRepository::OPERATORS['EQUALS'], $status)
+                ->orderByDesc(MonthlyReportsRepository::ID_JOINED);
+
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => MonthlyReportData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
     }
 
 
