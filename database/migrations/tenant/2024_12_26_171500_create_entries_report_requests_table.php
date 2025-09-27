@@ -27,10 +27,10 @@ return new class extends Migration
                 $table->json('dates');
                 $table->string('status');
                 $table->string('error')->nullable();
-                $table->json('entry_types');
+                $table->json('entry_types')->nullable();
                 $table->string('link_report')->nullable();
-                $table->boolean('date_order');
-                $table->boolean('all_groups_receipts');
+                $table->boolean('date_order')->nullable();
+                $table->boolean('all_groups_receipts')->nullable();
 
 
                 $table->timestamps();

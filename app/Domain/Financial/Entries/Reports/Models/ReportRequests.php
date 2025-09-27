@@ -46,5 +46,8 @@ class ReportRequests extends Model
         'tithe_amount',
         'designated_amount',
         'offer_amount',
+        'include_groups_entries',
+        'include_anonymous_offers',
+        'include_transfers_between_accounts',
     ];
 }

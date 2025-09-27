@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('entries_report_requests', function (Blueprint $table)
             {
-                $table->boolean('include_cash_deposit')->default(0)->after('all_groups_receipts');
+                $table->boolean('include_cash_deposit')->default(0)->nullable()->after('all_groups_receipts');
             });
         }
     }
