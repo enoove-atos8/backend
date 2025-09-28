@@ -34,8 +34,9 @@ class GenerateMonthlyReceiptsReport
     private UploadFile $uploadFile;
 
     const TENANTS_DIR = '/tenants';
-    const REPORTS_TEMP_DIR = '/reports/temp/';
-    const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
+    const REPORTS_TEMP_DIR = '/reports/temp';
+    const REPORTS_DIR = '/reports';
+    const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
     const PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS = 'entries/reports/monthly_receipts';
     const PIX = 'pix';
     const CASH = 'cash';
@@ -126,6 +127,7 @@ class GenerateMonthlyReceiptsReport
                 $this->updateAmountsReportRequestsAction->execute($report->id, $entryTypesAmount);
 
                 $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR);
+                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_DIR);
 
                 $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::DONE_STATUS_VALUE);
             }
@@ -156,7 +158,7 @@ class GenerateMonthlyReceiptsReport
         {
             $response = Http::get($link);
             $imageName = time() . '_' . $counter . '_' .  basename($link);
-            $imagePath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR . $imageName;
+            $imagePath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR . '/' . $imageName;
             $directoryName = dirname($imagePath);
 
             if (!is_dir($directoryName))
@@ -186,7 +188,7 @@ class GenerateMonthlyReceiptsReport
     private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group, array $entryTypesAmount): string
     {
         $timestamp = date('YmdHis');
-        $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . $tenant . self::REPORTS_TEMP_DIR;
+        $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR;
 
         $html = view(self::MONTHLY_RECEIPTS_BLADE_VIEW, [
             'tenant' => $tenant,
@@ -198,7 +200,7 @@ class GenerateMonthlyReceiptsReport
         ])->render();
 
         $pdf = Pdf::loadHTML($html);
-        $pdfPath = $directoryPath . $timestamp . '_' . self::MONTHLY_RECEIPTS_REPORT_NAME;
+        $pdfPath = $directoryPath . '_' . $timestamp . '_' . self::MONTHLY_RECEIPTS_REPORT_NAME;
 
         $pdf->save($pdfPath);
 
