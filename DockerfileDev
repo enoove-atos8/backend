@@ -76,6 +76,10 @@ COPY ./.env.dev ./.env
 
 RUN chmod -R 777 storage
 RUN composer install --no-interaction --no-ansi
+
+# Install npm dependencies (including puppeteer)
+RUN npm install
+
 RUN php artisan optimize:clear
 RUN php artisan config:cache
 
