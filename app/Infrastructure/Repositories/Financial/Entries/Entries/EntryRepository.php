@@ -46,6 +46,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const TIMESTAMP_VALUE_CPF_COLUMN = 'timestamp_value_cpf';
     const MEMBER_ID_COLUMN_JOINED = 'entries.member_id';
     const ACCOUNT_ID_COLUMN_JOINED = 'entries.account_id';
+    const ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE = 'entries_account_id';
     const MEMBER_ID_COLUMN = 'member_id';
     const ID_COLUMN_JOINED = 'entries.id';
     const ENTRY_TYPE_COLUMN = 'entry_type';
