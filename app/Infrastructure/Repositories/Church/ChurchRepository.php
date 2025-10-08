@@ -8,13 +8,16 @@ use Domain\CentralDomain\Churches\Church\Models\Church;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
 class ChurchRepository extends BaseRepository implements ChurchRepositoryInterface
 {
     protected mixed $model = Church::class;
 
+    const TABLE_NAME = 'churches';
     const TENANT_ID_COLUMN = 'tenant_id';
     const PLAN_ID_COLUMN = 'plan_id';
     const ACTIVATED_COLUMN = 'activated';
@@ -53,13 +56,18 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
 
     /**
      * @param string $tenantId
-     * @return Church|Model
-     * @throws BindingResolutionException
+     * @return ChurchData|null
+     * @throws UnknownProperties
      */
-    public function getChurch(string $tenantId): Church | Model
+    public function getChurch(string $tenantId): ?ChurchData
     {
         return tenancy()->central(function () use ($tenantId){
-            return $this->getItemByColumn(self::TENANT_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $tenantId);
+            $result = DB::table(ChurchRepository::TABLE_NAME)
+                ->where(self::TENANT_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $tenantId)
+                ->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], true)
+                ->first();
+
+            return $result ? ChurchData::fromResponse((array) $result) : null;
         });
     }
 

@@ -37,9 +37,9 @@ class AccountData extends DataTransferObject
     {
         return new self([
             'id' => $data['id'] ?? null,
-            'accountType' => $data['account_type'] ?? '',
+            'accountType' => $data['account_type'] ?? null,
             'bankName' => $data['bank_name'] ?? null,
-            'agencyNumber' => $data['agency_number'] ?? '',
+            'agencyNumber' => $data['agency_number'] ?? null,
             'accountNumber' => $data['account_number'] ?? null,
             'activated' => $data['activated'] ?? null,
         ]);

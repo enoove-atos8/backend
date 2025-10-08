@@ -1,0 +1,346 @@
+/* ============================================
+   ARQUIVO CSS COM CLASSES TAILWIND DO HTML
+   ============================================ */
+
+/* LAYOUT & DISPLAY */
+.inline-block {
+    display: inline-block;
+}
+
+.flex {
+    display: flex;
+}
+
+.grid {
+    display: grid;
+}
+
+/* FLEX */
+.flex-col {
+    flex-direction: column;
+}
+
+.items-start {
+    align-items: flex-start;
+}
+
+.items-center {
+    align-items: center;
+}
+
+.justify-between {
+    justify-content: space-between;
+}
+
+.flex-0 {
+    flex: 0 0 auto;
+}
+
+/* GRID */
+.grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-cols-12 {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.col-span-2 {
+    grid-column: span 2 / span 2;
+}
+
+.col-span-8 {
+    grid-column: span 8 / span 8;
+}
+
+.col-span-10 {
+    grid-column: span 10 / span 10;
+}
+
+.col-span-12 {
+    grid-column: span 12 / span 12;
+}
+
+.gap-x-1 {
+    column-gap: 0.25rem; /* 4px */
+}
+
+.gap-x-4 {
+    column-gap: 1rem; /* 16px */
+}
+
+.gap-x-8 {
+    column-gap: 2rem; /* 32px */
+}
+
+.gap-y-1 {
+    row-gap: 0.25rem; /* 4px */
+}
+
+.auto-cols-max {
+    grid-auto-columns: max-content;
+}
+
+.grid-flow-col {
+    grid-auto-flow: column;
+}
+
+/* SPACING - PADDING */
+.p-6 {
+    padding: 1.5rem; /* 24px */
+}
+
+.p-16 {
+    padding: 4rem; /* 64px */
+}
+
+.px-8 {
+    padding-left: 2rem; /* 32px */
+    padding-right: 2rem;
+}
+
+.py-6 {
+    padding-top: 1.5rem; /* 24px */
+    padding-bottom: 1.5rem;
+}
+
+.pl-10 {
+    padding-left: 2.5rem; /* 40px */
+}
+
+/* SPACING - MARGIN */
+.mt-2 {
+    margin-top: 0.5rem; /* 8px */
+}
+
+.mt-4 {
+    margin-top: 1rem; /* 16px */
+}
+
+.mt-12 {
+    margin-top: 3rem; /* 48px */
+}
+
+.mt-16 {
+    margin-top: 4rem; /* 64px */
+}
+
+.my-3 {
+    margin-top: 0.75rem; /* 12px */
+    margin-bottom: 0.75rem;
+}
+
+.my-4 {
+    margin-top: 1rem; /* 16px */
+    margin-bottom: 1rem;
+}
+
+.ml-6 {
+    margin-left: 1.5rem; /* 24px */
+}
+
+.-mr-16 {
+    margin-right: -4rem; /* -64px */
+}
+
+/* SIZING - WIDTH */
+.w-10 {
+    width: 2.5rem; /* 40px */
+}
+
+.w-24 {
+    width: 6rem; /* 96px */
+}
+
+.w-240 {
+    width: 60rem; /* 960px */
+}
+
+/* TYPOGRAPHY - FONT SIZE */
+.text-sm {
+    font-size: 0.875rem; /* 14px */
+    line-height: 1.25rem; /* 20px */
+}
+
+.text-md {
+    font-size: 1rem; /* 16px */
+    line-height: 1.5rem; /* 24px */
+}
+
+.text-lg {
+    font-size: 1.125rem; /* 18px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.text-xl {
+    font-size: 1.25rem; /* 20px */
+    line-height: 1.75rem; /* 28px */
+}
+
+.text-2xl {
+    font-size: 1.5rem; /* 24px */
+    line-height: 2rem; /* 32px */
+}
+
+.text-4xl {
+    font-size: 2.25rem; /* 36px */
+    line-height: 2.5rem; /* 40px */
+}
+
+/* TYPOGRAPHY - FONT WEIGHT */
+.font-medium {
+    font-weight: 500;
+}
+
+/* TYPOGRAPHY - TEXT ALIGN */
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+/* TYPOGRAPHY - LETTER SPACING */
+.tracking-tight {
+    letter-spacing: -0.025em;
+}
+
+/* TYPOGRAPHY - TEXT COLOR */
+.text-secondary {
+    /* Cor secundária - varia de acordo com o tema */
+    color: rgb(107 114 128); /* gray-500 no light mode */
+}
+
+/* BACKGROUNDS */
+.bg-card {
+    /* Cor de fundo do card - varia de acordo com o tema */
+    background-color: #ffffff;
+}
+
+.bg-accent {
+    /* Cor de destaque - varia de acordo com o tema */
+    background-color: rgb(249 250 251); /* gray-50 */
+}
+
+/* BORDERS */
+.border-b {
+    border-bottom-width: 1px;
+}
+
+.border-l {
+    border-left-width: 1px;
+}
+
+.rounded-2xl {
+    border-radius: 1rem; /* 16px */
+}
+
+.rounded-l-2xl {
+    border-top-left-radius: 1rem; /* 16px */
+    border-bottom-left-radius: 1rem;
+}
+
+/* EFFECTS - SHADOW */
+.shadow {
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+/* POSITIONING */
+.self-center {
+    align-self: center;
+}
+
+.place-self-center {
+    place-self: center;
+}
+
+/* RESPONSIVE - SMALL SCREENS (sm: min-width: 640px) */
+@media (min-width: 640px) {
+    .sm\:p-10 {
+        padding: 2.5rem; /* 40px */
+    }
+}
+
+/* DARK MODE */
+.dark {
+    /* Classe para aplicar estilos dark mode */
+    color-scheme: dark;
+}
+
+/* PRINT MODE */
+@media print {
+    .print\:p-0 {
+        padding: 0;
+    }
+
+    .print\:w-auto {
+        width: auto;
+    }
+
+    .print\:rounded-none {
+        border-radius: 0;
+    }
+
+    .print\:bg-transparent {
+        background-color: transparent;
+    }
+
+    .print\:shadow-none {
+        box-shadow: none;
+    }
+}
+
+/* ============================================
+   NOTAS SOBRE AS CLASSES
+   ============================================
+
+   LAYOUT:
+   - inline-block: elemento em linha que pode ter dimensões
+   - flex: container flexível para layouts responsivos
+   - grid: sistema de grade para layouts complexos
+
+   FLEXBOX:
+   - flex-col: itens em coluna vertical
+   - items-start/center: alinhamento vertical dos itens
+   - justify-between: espaço distribuído entre itens
+
+   GRID:
+   - grid-cols-X: define número de colunas
+   - col-span-X: elemento ocupa X colunas
+   - gap-x/y-X: espaçamento entre colunas/linhas
+
+   SPACING:
+   - p-X: padding em todos os lados
+   - px/py-X: padding horizontal/vertical
+   - m-X: margin em todos os lados
+   - mt/ml/mr-X: margin em lados específicos
+   - Valores negativos com "-" (ex: -mr-16)
+
+   SIZING:
+   - w-X: largura (1 unidade = 0.25rem = 4px)
+   - w-240 = 60rem = 960px
+
+   TYPOGRAPHY:
+   - text-{size}: tamanho da fonte
+   - font-medium: peso da fonte (500)
+   - tracking-tight: espaçamento entre letras
+   - text-left/right: alinhamento
+
+   COLORS:
+   - text-secondary: cor do texto secundário
+   - bg-card: fundo do cartão
+   - bg-accent: cor de destaque
+
+   BORDERS:
+   - border-b/l: borda inferior/esquerda
+   - rounded-2xl: bordas arredondadas
+
+   RESPONSIVE:
+   - sm: aplica em telas ≥ 640px
+   - print: aplica ao imprimir
+
+   DARK MODE:
+   - dark: ativa modo escuro
+
+   ============================================ */

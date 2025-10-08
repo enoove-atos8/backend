@@ -1,7 +1,10 @@
 #!/bin/bash
 
-# Start cron in foreground
-cron -f &
+# Start cron in background
+cron &
 
-# Start PHP-FPM
-php-fpm
+# Start nginx in background
+#nginx -g "daemon off;" &
+
+# Start PHP-FPM in foreground
+exec php-fpm

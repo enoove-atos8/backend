@@ -2,6 +2,7 @@
 
 namespace Domain\CentralDomain\Churches\Church\Actions;
 
+use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Churches\Church\Models\Church;
 use Exception;
@@ -12,7 +13,7 @@ use Throwable;
 
 class GetChurchAction
 {
-    private ChurchRepository $churchRepository;
+    private ChurchRepositoryInterface $churchRepository;
 
     public function __construct(
         ChurchRepositoryInterface  $churchRepositoryInterface,
@@ -25,7 +26,7 @@ class GetChurchAction
     /**
      * @throws Throwable
      */
-    public function execute(string $tenant): Model
+    public function execute(string $tenant): ?ChurchData
     {
         try
         {

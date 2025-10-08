@@ -54,6 +54,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE = 'entries_entry_type';
     const AMOUNT_COLUMN = 'amount';
     const AMOUNT_COLUMN_JOINED = 'entries.amount';
+    const AMOUNT_COLUMN_WITH_ENTRIES_ALIAS = 'entries_amount';
     const AMOUNT_COLUMN_JOINED_WITH_UNDERLINE = 'entries_amount';
     const GROUP_RECEIVED_ID_COLUMN_JOINED = 'entries.group_received_id';
     const GROUP_RECEIVED_ID_COLUMN = 'group_received_id';

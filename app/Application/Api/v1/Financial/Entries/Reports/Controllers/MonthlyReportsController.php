@@ -27,7 +27,7 @@ class MonthlyReportsController extends Controller
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function getReports(Request $request, GetReportsRequestsAction $getReportsAction): ReportsRequestsResourceCollection
+    public function getReports(GetReportsRequestsAction $getReportsAction): ReportsRequestsResourceCollection
     {
         try
         {

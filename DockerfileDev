@@ -28,7 +28,25 @@ RUN apt-get update -y && apt-get upgrade -y && apt-get install -y \
     software-properties-common \
     tesseract-ocr \
     tesseract-ocr-por \
-    poppler-utils
+    poppler-utils \
+    && docker-php-ext-configure zip \
+    && docker-php-ext-install zip
+
+
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y nodejs
+
+# ========================================
+# INSTALAÇÃO DO GOOGLE CHROME
+# ========================================
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
+    && sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-khmeros fonts-kacst fonts-freefont-ttf libxss1 \
+    --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
+
 
 #Set Memory limit to 2GB
 RUN echo "memory_limit = 2G" > /usr/local/etc/php/conf.d/memory-limit.ini

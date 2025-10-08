@@ -32,6 +32,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
+    const GROUP_ID_WITH_UNDERLINE = 'groups_id';
     const LEADER_ID_COLUMN = 'ecclesiastical_divisions_groups.leader_id';
     const MEMBER_ECCLESIASTICAL_DIVISION_GROUPS_ID_COLUMN = 'members.ecclesiastical_divisions_group_id';
     const MEMBER_ID_COLUMN = 'members.id';

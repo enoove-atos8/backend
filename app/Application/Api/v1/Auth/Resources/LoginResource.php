@@ -36,11 +36,10 @@ class LoginResource extends JsonResource
                 'details'               =>  $this->mountUserDetailsArray($userDetail)
             ],
             'church'    =>  [
-                'id'                =>  $church->tenant_id,
+                'id'                =>  $church->tenantId,
                 'name'              =>  $church->name,
                 'logo'              =>  $church->logo,
                 'activated'         =>  $church->activated,
-                'aws_s3_bucket'     =>  $church->aws_s3_bucket,
             ]
         ];
     }

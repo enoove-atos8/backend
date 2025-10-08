@@ -31,4 +31,13 @@ interface AccountRepositoryInterface
      * @return Collection
      */
     public function getAccounts(): Collection;
+
+
+    /**
+     * Get account by id
+     *
+     * @param int $id
+     * @return AccountData|null
+     */
+    public function getAccountsById(int $id): ?AccountData;
 }

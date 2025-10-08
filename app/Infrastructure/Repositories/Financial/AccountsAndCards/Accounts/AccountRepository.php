@@ -96,4 +96,27 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
 
         return $this->doQuery($query);
     }
+
+
+    /**
+     * Get an account by id
+     *
+     * @param int $id
+     * @return AccountData|null
+     * @throws BindingResolutionException
+     */
+    public function getAccountsById(int $id): ?AccountData
+    {
+        $query = function () use ($id){
+
+            $q = DB::table(self::TABLE_NAME)
+                ->where(self::ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $id);
+
+
+            $result = $q->first();
+            return $result ? AccountData::fromResponse((array) $result) : null;
+        };
+
+        return $this->doQuery($query);
+    }
 }
