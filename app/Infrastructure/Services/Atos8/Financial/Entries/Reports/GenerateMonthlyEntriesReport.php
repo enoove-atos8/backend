@@ -319,7 +319,8 @@ class GenerateMonthlyEntriesReport
 
             try
             {
-                $entries = $this->getEntriesAction->execute($dates, [], false);
+                $entries = $this->getEntriesAction->execute($dates, [], false)
+                    ->where(EntryRepository::ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], $report->accountId);
 
                 $reportDataInfo = $this->prepareGeneralReportData($entries, $report, $dates, $tenant);
                 $entriesData = $this->prepareEntriesData($entries);
