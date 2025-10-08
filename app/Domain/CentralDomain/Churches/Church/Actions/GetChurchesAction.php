@@ -13,7 +13,7 @@ use Throwable;
 
 class GetChurchesAction
 {
-    private ChurchRepository $churchRepository;
+    private ChurchRepositoryInterface $churchRepository;
 
     public function __construct(
         ChurchRepositoryInterface  $churchRepositoryInterface,

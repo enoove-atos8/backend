@@ -4,21 +4,18 @@ namespace App\Infrastructure\Services\Atos8\Financial\Entries\Reports;
 
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
 use App\Domain\Financial\Entries\Reports\DataTransferObjects\MonthlyReportData;
-use App\Domain\Financial\Entries\Reports\Models\ReportRequests;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use DateTime;
+use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByIdAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateAmountsReportRequestsAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateLinkReportRequestsAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateStatusReportRequestsAction;
-use Illuminate\Support\Collection;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Entries\Reports\MonthlyReportsRepository;
 use Infrastructure\Util\Storage\S3\UploadFile;
 use Throwable;
-use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Support\Facades\Storage;
 
 class GenerateMonthlyReceiptsReport
 {
@@ -37,7 +34,7 @@ class GenerateMonthlyReceiptsReport
     const REPORTS_TEMP_DIR = '/reports/temp';
     const REPORTS_DIR = '/reports';
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
-    const PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS = 'entries/reports/monthly_receipts';
+    const S3_PATH_MONTHLY_RECEIPTS_REPORTS = 'reports/financial/entries/monthly_receipts';
     const PIX = 'pix';
     const CASH = 'cash';
 
@@ -74,66 +71,91 @@ class GenerateMonthlyReceiptsReport
 
         if(count($dates) > 0)
         {
-            $arrPathReceiptsLocal = [];
-            $group = null;
-            $entryTypesAmount = [
-                'titheAmount' => 0,
-                'designatedAmount' => 0,
-                'offerAmount' => 0,
-            ];
-
-            if(!is_null($report->groupReceivedId))
-                $group = $this->getGroupsByIdAction->execute($report->groupReceivedId);
-
-            $filters = [
-              'entryTypes'      => implode(',', $report->entryTypes),
-              'groupReceivedId' => $report->groupReceivedId,
-              'transactionType' => $report->includeCashDeposit == 1 ? self::PIX . ',' . self::CASH : self::PIX,
-            ];
-
-
-
-            foreach ($dates as $date)
+            try
             {
-                $entries = $this->getEntriesAction->execute($date, $filters, false);
-                $linkReceiptEntries = [];
+                $arrPathReceiptsLocal = [];
+                $group = null;
+                $entryTypesAmount = [
+                    'titheAmount' => 0,
+                    'designatedAmount' => 0,
+                    'offerAmount' => 0,
+                ];
 
-                foreach ($entries as $entry){
-                    if($report->includeCashDeposit == 1)
-                        $linkReceiptEntries [] = $entry->entries_receipt_link;
+                if(!is_null($report->group->id))
+                    $group = $this->getGroupsByIdAction->execute($report->group->id);
 
-                    else if($report->includeCashDeposit == 0)
-                        if($entry->entries_transaction_type == self::PIX)
-                            $linkReceiptEntries [] = $entry->entries_receipt_link;
+                $filters = [
+                  'entryTypes'      => implode(',', $report->entryTypes),
+                  'groupReceivedId' => $report->group->id,
+                  'transactionType' => $report->includeCashDeposit == 1 ? self::PIX . ',' . self::CASH : self::PIX,
+                ];
 
 
-                    $entryTypesAmount['titheAmount'] += $entry->entries_entry_type == EntryRepository::TITHE_VALUE ? $entry->entries_amount : 0;
-                    $entryTypesAmount['designatedAmount'] += $entry->entries_entry_type == EntryRepository::DESIGNATED_VALUE ? $entry->entries_amount : 0;
-                    $entryTypesAmount['offerAmount'] += $entry->entries_entry_type == EntryRepository::OFFER_VALUE ? $entry->entries_amount : 0;
 
+                $cashCultReceipts = [];
+
+                foreach ($dates as $date)
+                {
+                    $entries = $this->getEntriesAction->execute($date, $filters, false);
+                    $linkReceiptEntries = [];
+
+                    foreach ($entries as $entry){
+                        $entryTypesAmount['titheAmount'] += $entry->entries_entry_type == EntryRepository::TITHE_VALUE ? $entry->entries_amount : 0;
+                        $entryTypesAmount['designatedAmount'] += $entry->entries_entry_type == EntryRepository::DESIGNATED_VALUE ? $entry->entries_amount : 0;
+                        $entryTypesAmount['offerAmount'] += $entry->entries_entry_type == EntryRepository::OFFER_VALUE ? $entry->entries_amount : 0;
+
+                        if($report->includeCashDeposit == 1)
+                        {
+                            if($entry->entries_transaction_type == self::CASH)
+                            {
+                                $cultId = $entry->entries_cult_id ?? 'no_cult';
+                                if(!isset($cashCultReceipts[$cultId]))
+                                {
+                                    $cashCultReceipts[$cultId] = $entry->entries_receipt_link;
+                                    $linkReceiptEntries[] = $entry->entries_receipt_link;
+                                }
+                            }
+                            else
+                            {
+                                $linkReceiptEntries[] = $entry->entries_receipt_link;
+                            }
+                        }
+                        else if($report->includeCashDeposit == 0)
+                        {
+                            if($entry->entries_transaction_type == self::PIX)
+                                $linkReceiptEntries[] = $entry->entries_receipt_link;
+                        }
+                    }
+
+                    if(count($linkReceiptEntries) > 0)
+                        $arrPathReceiptsLocal = array_merge(
+                            $arrPathReceiptsLocal,
+                            $this->downloadImage($linkReceiptEntries, $tenant));
                 }
 
-                if(count($linkReceiptEntries) > 0)
-                    $arrPathReceiptsLocal = array_merge(
-                        $arrPathReceiptsLocal,
-                        $this->downloadImage($linkReceiptEntries, $tenant));
+                if(count($arrPathReceiptsLocal) > 0)
+                {
+                    $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group, $entryTypesAmount);
+                    $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::S3_PATH_MONTHLY_RECEIPTS_REPORTS, $tenant);
+                    $this->updateLinkReportRequestsAction->execute($report->id, $pathReportUploaded);
+                    $this->updateAmountsReportRequestsAction->execute($report->id, $entryTypesAmount);
+
+                    $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR);
+                    $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_DIR);
+
+                    $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::DONE_STATUS_VALUE);
+                }
+                else
+                {
+                    $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
+                }
             }
-
-            if(count($arrPathReceiptsLocal) > 0)
+            catch (Exception $e)
             {
-                $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group, $entryTypesAmount);
-                $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::PATH_ENTRIES_MONTHLY_RECEIPTS_REPORTS, $tenant);
-                $this->updateLinkReportRequestsAction->execute($report->id, $pathReportUploaded);
-                $this->updateAmountsReportRequestsAction->execute($report->id, $entryTypesAmount);
-
-                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR);
-                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_DIR);
-
-                $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::DONE_STATUS_VALUE);
-            }
-            else
-            {
-                $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
+                throw new GeneralExceptions(
+                    'Houve um erro ao gerar o relatório: ' . $e->getMessage(),
+                    500
+                );
             }
         }
         else
@@ -183,12 +205,17 @@ class GenerateMonthlyReceiptsReport
      * @param mixed $group
      * @param array $entryTypesAmount
      * @return string
-     * @throws GeneralExceptions
      */
     private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group, array $entryTypesAmount): string
     {
         $timestamp = date('YmdHis');
         $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR;
+
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0775, true);
+        }
+
+        $pdfPath = $directoryPath . '/' . $timestamp . '_' . self::MONTHLY_RECEIPTS_REPORT_NAME;
 
         $html = view(self::MONTHLY_RECEIPTS_BLADE_VIEW, [
             'tenant' => $tenant,
@@ -199,16 +226,9 @@ class GenerateMonthlyReceiptsReport
             'entryTypesAmount' => $entryTypesAmount,
         ])->render();
 
-        $pdf = Pdf::loadHTML($html);
-        $pdfPath = $directoryPath . '_' . $timestamp . '_' . self::MONTHLY_RECEIPTS_REPORT_NAME;
+        PdfGenerator::save($html, $pdfPath);
 
-        $pdf->save($pdfPath);
-
-        if ($pdf instanceof \Barryvdh\DomPDF\PDF) {
-            return $pdfPath;
-        } else {
-            throw new GeneralExceptions('Houve um erro ao gerar o relatório, tente novamente mais tarde!', 500);
-        }
+        return $pdfPath;
     }
 
 

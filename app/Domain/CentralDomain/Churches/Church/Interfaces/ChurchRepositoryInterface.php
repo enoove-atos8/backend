@@ -11,7 +11,7 @@ interface ChurchRepositoryInterface
 {
     public function newChurch(ChurchData $churchData, string $awsS3Bucket): Church;
 
-    public function getChurch(string $tenantId): Church | Model;
+    public function getChurch(string $tenantId): ?ChurchData;
 
     public function getChurches(): Collection;
 

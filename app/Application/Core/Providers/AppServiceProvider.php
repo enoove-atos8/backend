@@ -3,7 +3,7 @@
 namespace Application\Core\Providers;
 
 
-use App\Providers\TelescopeServiceProvider;
+use App\Application\Core\Providers\TelescopeServiceProvider;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;

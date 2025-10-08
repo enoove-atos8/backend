@@ -53,6 +53,14 @@ class ReportsRequestsResourceCollection extends ResourceCollection
                     'designatedAmount'  =>  $item->designatedAmount,
                     'offerAmount'       =>  $item->offerAmount,
                 ],
+                'monthlyEntriesAmount'    =>  $item->monthlyEntriesAmount,
+                'account'     =>  [
+                    'id'            =>  $item->account->id,
+                    'accountType'   =>  $item->account->accountType,
+                    'bankName'      =>  $item->account->bankName,
+                    'agencyNumber'  =>  $item->account->agencyNumber,
+                    'accountNumber' =>  $item->account->accountNumber,
+                ],
             ];
         }
 
@@ -67,7 +75,7 @@ class ReportsRequestsResourceCollection extends ResourceCollection
      */
     public function getGroups(mixed $requestReport): ?array
     {
-        if(!is_null($requestReport->groupReceivedId))
+        if(!is_null($requestReport->group))
         {
             return [
                 'id'     =>  $requestReport->group->id,

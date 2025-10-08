@@ -17,4 +17,6 @@ interface MonthlyReportsRepositoryInterface
     public function updateStatus($id, string $status): mixed;
     public function updateLinkReport($id, string $link): mixed;
     public function updateEntryTypesAmount($id, array $entryTypesAmount): mixed;
+
+    public function updateMonthlyEntriesAmount($id, string $amount): mixed;
 }

@@ -31,6 +31,7 @@ class ReportRequests extends Model
      * @var array<int, string>
      */
     protected $fillable = [
+        'account_id',
         'group_received_id',
         'started_by',
         'report_name',

@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountRepository;
 use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 
 class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsRepositoryInterface
@@ -34,6 +35,7 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
     const MONTHLY_RECEIPTS_REPORT_NAME = 'monthly_receipts';
     const GROUP_RECEIVED_ID = 'group_received_id';
     const GROUP_RECEIVED_ID_JOINED = 'entries_report_requests.group_received_id';
+    const ACCOUNT_ID_JOINED = 'entries_report_requests.account_id';
     const START_BY_COLUMN = 'entries_report_requests.started_by';
     const QUARTERLY_ENTRIES_REPORT_NAME = 'quarterly_entries';
 
@@ -42,6 +44,7 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
 
     const DISPLAY_SELECT_COLUMNS = [
         'entries_report_requests.id as reports_id',
+        'entries_report_requests.account_id as reports_account_id',
         'entries_report_requests.group_received_id as reports_group_received_id',
         'entries_report_requests.started_by as reports_started_by',
         'entries_report_requests.report_name as reports_report_name',
@@ -57,6 +60,7 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
         'entries_report_requests.tithe_amount as reports_tithe_amount',
         'entries_report_requests.designated_amount as reports_designated_amount',
         'entries_report_requests.offers_amount as reports_offer_amount',
+        'entries_report_requests.monthly_entries_amount as reports_monthly_entries_amount',
         'entries_report_requests.include_groups_entries as reports_include_groups_entries',
         'entries_report_requests.include_anonymous_offers as reports_include_anonymous_offers',
         'entries_report_requests.include_transfers_between_accounts as reports_include_transfers_between_accounts',
@@ -77,18 +81,19 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
     public function generateMonthlyReceiptsReport(MonthlyReportData $monthlyReportData): ReportRequests
     {
         return $this->create([
-            'group_received_id'     => $monthlyReportData->groupReceivedId,
-            'started_by'            => $monthlyReportData->startedBy,
-            'report_name'           => $monthlyReportData->reportName,
-            'detailed_report'       => $monthlyReportData->detailedReport,
-            'generation_date'       => $monthlyReportData->generationDate,
-            'dates'                 => $monthlyReportData->dates,
-            'status'                => $monthlyReportData->status,
-            'error'                 => $monthlyReportData->error,
-            'entry_types'           => $monthlyReportData->entryTypes,
-            'date_order'            => $monthlyReportData->dateOrder,
-            'all_groups_receipts'   => $monthlyReportData->allGroupsReceipts,
-            'include_cash_deposit'  => $monthlyReportData->includeCashDeposit
+            'account_id'                            => $monthlyReportData->accountId,
+            'group_received_id'                     => $monthlyReportData->groupReceivedId,
+            'started_by'                            => $monthlyReportData->startedBy,
+            'report_name'                           => $monthlyReportData->reportName,
+            'detailed_report'                       => $monthlyReportData->detailedReport,
+            'generation_date'                       => $monthlyReportData->generationDate,
+            'dates'                                 => $monthlyReportData->dates,
+            'status'                                => $monthlyReportData->status,
+            'error'                                 => $monthlyReportData->error,
+            'entry_types'                           => $monthlyReportData->entryTypes,
+            'date_order'                            => $monthlyReportData->dateOrder,
+            'all_groups_receipts'                   => $monthlyReportData->allGroupsReceipts,
+            'include_cash_deposit'                  => $monthlyReportData->includeCashDeposit,
         ]);
     }
 
@@ -102,6 +107,7 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
     public function generateMonthlyEntriesReport(MonthlyReportData $monthlyReportData): ReportRequests
     {
         return $this->create([
+            'account_id'                            => $monthlyReportData->accountId,
             'started_by'                            => $monthlyReportData->startedBy,
             'report_name'                           => $monthlyReportData->reportName,
             'generation_date'                       => $monthlyReportData->generationDate,
@@ -124,6 +130,7 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             UserDetailRepository::DISPLAY_SELECT_COLUMNS,
             GroupsRepository::DISPLAY_SELECT_COLUMNS,
+            AccountRepository::DISPLAY_SELECT_COLUMNS,
         );
 
         $query = function () use (
@@ -141,6 +148,11 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
                     MonthlyReportsRepository::GROUP_RECEIVED_ID_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     GroupsRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    AccountRepository::TABLE_NAME,
+                    MonthlyReportsRepository::ACCOUNT_ID_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    AccountRepository::ID_COLUMN_JOINED)
                 ->orderByDesc(MonthlyReportsRepository::ID_JOINED);
 
 
@@ -243,6 +255,20 @@ class MonthlyReportsRepository extends BaseRepository implements MonthlyReportsR
             'tithe_amount'          =>   $entryTypesAmount['titheAmount'],
             'designated_amount'     =>   $entryTypesAmount['designatedAmount'],
             'offers_amount'         =>   $entryTypesAmount['offerAmount'],
+        ]);
+    }
+
+
+
+    public function updateMonthlyEntriesAmount($id, string $amount): mixed
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,];
+
+        return $this->update($conditions, [
+            'monthly_entries_amount'  =>   $amount,
         ]);
     }
 }
