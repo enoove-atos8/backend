@@ -10,6 +10,7 @@ use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountController;
+use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\files\AccountFilesController;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers\CardController;
 use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
 use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
@@ -161,33 +162,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             });
         });
-
-        Route::prefix('accounts')->group(function () {
-
-            /*
-            * Action: GET
-            * Description: Get accounts
-            */
-
-            Route::get('getAccounts', [AccountController::class, 'getAccounts']);
-
-
-            /*
-             * Action: POST
-             * Description: Save a new Account
-             */
-
-            Route::post('saveAccount', [AccountController::class, 'saveAccount']);
-
-
-            /*
-             * Action: DELETE
-             * Description: Deactivate an Account
-             */
-
-            Route::delete('deactivateAccount/{id}', [AccountController::class, 'deactivateAccount']);
-
-        });
     });
 
 
@@ -222,15 +196,29 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         /*
         |--------------------------------------------------------------------------
-        | Group Financial routes
+        | File upload routes
         |--------------------------------------------------------------------------
         |
         */
 
         Route::prefix('utils')->group(function () {
-            Route::prefix('files')->group(function () {
+
+            Route::prefix('Files')->group(function () {
+
                 Route::prefix('upload')->group(function () {
+
+
                     Route::post('/fileUpload', [FileUploadController::class, 'fileUpload']);
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /uploadFile
+                     * Description: Upload generic Files
+                     */
+                    Route::post('/uploadFile', [FileUploadController::class, 'uploadFile']);
+
+
                 });
             });
         });
@@ -259,7 +247,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             |   6 - POST - / - OK
             |   7 - PUT - /{id} - OK
             |   8 - DELETE - /{id} - OK
-            |   9 - POST - /files/uploadReceiptEntry - OK
+            |   9 - POST - /Files/uploadReceiptEntry - OK
             |   10 - GET - /getEntriesByTransactionCompensation - OK
             |   11 - GET - /getTotalGeneralEntries - OK
             |------------------------------------------------------------------------------------------
@@ -330,11 +318,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     /*
                      * Action: POST
-                     * EndPoint: /files/assets/avatar
+                     * EndPoint: /Files/assets/avatar
                      * Description: Upload a receipt entry
                      */
 
-                    Route::post('/files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
+                    Route::post('/Files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
 
 
                     /*
@@ -685,11 +673,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     /*
                      * Action: POST
-                     * EndPoint: /files/assets/avatar
+                     * EndPoint: /Files/assets/avatar
                      * Description: Upload a receipt entry
                      */
 
-                    //Route::post('/files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
+                    //Route::post('/Files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
 
 
                     /*
@@ -1035,6 +1023,28 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::delete('deactivateAccount/{id}', [AccountController::class, 'deactivateAccount']);
 
+
+
+                    Route::prefix('Files')->group(function () {
+
+                        /*
+                         * Action: POST
+                         * Description: Save a new account file
+                         */
+
+                        Route::post('saveFile', [AccountFilesController::class, 'saveFile']);
+
+
+
+                        /*
+                         * Action: GET
+                         * Description: Get accounts Files
+                         */
+
+                        Route::get('getAccountsFiles', [AccountFilesController::class, 'getAccountsFiles']);
+
+                    });
+
                 });
             });
         });
@@ -1055,7 +1065,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         |   4 - GET - /users/getTotalUsersByRoles -
         |   5 - PUT - /users/{id} - OK
         |   6 - PUT - /users/{id}/status - OK
-        |   7 - POST - /files/assets/avatar - OK
+        |   7 - POST - /Files/assets/avatar - OK
         |------------------------------------------------------------------------------------------
         */
 
@@ -1108,11 +1118,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             /*
              * Action: POST
-             * EndPoint: /files/assets/avatar
+             * EndPoint: /Files/assets/avatar
              * Description: Upload a avatar user image
              */
 
-            Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
+            Route::post('/Files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
         });
 
 
@@ -1192,11 +1202,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     /*
                      * Action: PUT
-                     * EndPoint: /files/assets/avatar
+                     * EndPoint: /Files/assets/avatar
                      * Description: Upload a avatar member image
                      */
 
-                    Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+                    Route::post('/Files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
                 });
 
                 Route::prefix('birthdays')->group(function () {

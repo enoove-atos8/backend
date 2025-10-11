@@ -123,7 +123,7 @@ class MinioStorageService
 
             return isset($objects['Contents']) ? array_map(fn($obj) => $obj['Key'], $objects['Contents']) : [];
         } catch (S3Exception $e) {
-            throw new GeneralExceptions("Error retrieving files by path from MinIO", 500);
+            throw new GeneralExceptions("Error retrieving Files by path from MinIO", 500);
         }
     }
 
