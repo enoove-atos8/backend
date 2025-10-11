@@ -26,6 +26,7 @@ use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
+use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Domain\Financial\Entries\Indicators\AmountDevolutions\Interfaces\AmountDevolutionRepositoryInterface;
@@ -45,6 +46,7 @@ use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountFilesRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInvoiceRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardPurchaseRepository;
@@ -102,6 +104,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(CardPurchaseRepositoryInterface::class, CardPurchaseRepository::class);
         $this->app->bind(CardInstallmentsRepositoryInterface::class, CardInstallmentsRepository::class);
         $this->app->bind(AccountRepositoryInterface::class, AccountRepository::class);
+        $this->app->bind(AccountFileRepositoryInterface::class, AccountFilesRepository::class);
 
 
     }

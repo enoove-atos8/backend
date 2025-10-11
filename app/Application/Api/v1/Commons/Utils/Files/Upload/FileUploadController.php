@@ -35,6 +35,36 @@ class FileUploadController extends Controller
 
 
     /**
+     * Generic file upload function
+     * Uploads a file to MinIO with custom path
+     *
+     * @param Request $request
+     * @return Response
+     * @throws GeneralExceptions
+     */
+    public function uploadFile(Request $request): Response
+    {
+        try
+        {
+            $tenant = explode('.', $request->getHost())[0];
+            $relativePath = $request->input('relativePath');
+            $file = $request->files->get('file');
+
+            $response = $this->minioStorageService->upload($file, $relativePath, $tenant);
+
+            if (!empty($response)) {
+                return response(['link' => $response], 200);
+            } else {
+                return response(['link' => 'error'], 500);
+            }
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
      * @param Request $request
      * @return Response
      * @throws GeneralExceptions

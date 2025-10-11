@@ -13,6 +13,8 @@ class ReturnMessages
     // Error messages
 
     public const ACCOUNT_NOT_CREATED = 'Ocorreu um erro ao criar a conta';
+    public const FILE_NOT_CREATED = 'Ocorreu um erro ao cadastrar esse arquivo';
+    public const FILES_NOT_FOUND = 'Nenhum arquivo por aqui';
 
     // Info messages
 }
