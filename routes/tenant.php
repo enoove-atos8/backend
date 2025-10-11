@@ -203,7 +203,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::prefix('utils')->group(function () {
 
-            Route::prefix('Files')->group(function () {
+            Route::prefix('files')->group(function () {
 
                 Route::prefix('upload')->group(function () {
 
@@ -322,7 +322,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Upload a receipt entry
                      */
 
-                    Route::post('/Files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
+                    Route::post('/files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
 
 
                     /*
@@ -1025,7 +1025,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
 
 
-                    Route::prefix('Files')->group(function () {
+                    Route::prefix('files')->group(function () {
 
                         /*
                          * Action: POST
@@ -1122,7 +1122,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              * Description: Upload a avatar user image
              */
 
-            Route::post('/Files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
+            Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
         });
 
 
@@ -1206,7 +1206,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Upload a avatar member image
                      */
 
-                    Route::post('/Files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
+                    Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
                 });
 
                 Route::prefix('birthdays')->group(function () {
