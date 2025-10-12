@@ -11,11 +11,15 @@ use App\Domain\Financial\Entries\Entries\Models\Entry;
 use App\Domain\Financial\Movements\Actions\GetMovementByEntryIdAction;
 use App\Domain\Financial\Movements\Actions\UpdateMovementAmountAction;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Domain\Financial\Movements\Actions\CreateMovementAction;
+use Domain\Financial\Movements\Actions\DeleteMovementByEntryId;
 use Domain\Financial\Movements\Actions\RecalculateBalanceAction;
 use Domain\Financial\Movements\Actions\UpdateMovementBalanceAction;
+use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
 class UpdateEntryAction
@@ -26,6 +30,8 @@ class UpdateEntryAction
     private UpdateMovementAmountAction $updateMovementAmountAction;
     private RecalculateBalanceAction $recalculateBalanceAction;
     private GetMovementByEntryIdAction $getMovementByEntryIdAction;
+    private DeleteMovementByEntryId $deleteMovementByEntryId;
+    private CreateMovementAction $createMovementAction;
 
     public function __construct(
         EntryRepositoryInterface      $entryRepositoryInterface,
@@ -33,7 +39,9 @@ class UpdateEntryAction
         GetEntryByIdAction $getEntryByIdAction,
         UpdateMovementAmountAction $updateMovementAmountAction,
         RecalculateBalanceAction $recalculateBalanceAction,
-        GetMovementByEntryIdAction $getMovementByEntryIdAction
+        GetMovementByEntryIdAction $getMovementByEntryIdAction,
+        DeleteMovementByEntryId $deleteMovementByEntryId,
+        CreateMovementAction $createMovementAction
     )
     {
         $this->entryRepository = $entryRepositoryInterface;
@@ -42,6 +50,8 @@ class UpdateEntryAction
         $this->updateMovementAmountAction = $updateMovementAmountAction;
         $this->recalculateBalanceAction = $recalculateBalanceAction;
         $this->getMovementByEntryIdAction = $getMovementByEntryIdAction;
+        $this->deleteMovementByEntryId = $deleteMovementByEntryId;
+        $this->createMovementAction = $createMovementAction;
 
     }
 
@@ -73,9 +83,11 @@ class UpdateEntryAction
         {
             if($entryData->entryType == EntryRepository::DESIGNATED_VALUE)
             {
-                if($previousEntry->amount !== $entryData->amount)
-                    $this->updateMovementAndRecalculateBalance($previousEntry, $entryData->amount);
+                if($previousEntry->group_received_id !== $entryData->groupReceivedId)
+                    $this->handleGroupChange($previousEntry, $entryData);
 
+                elseif($previousEntry->amount !== $entryData->amount)
+                    $this->updateMovementAndRecalculateBalance($previousEntry, $entryData->amount);
             }
             return $entry;
         }
@@ -102,6 +114,27 @@ class UpdateEntryAction
             $this->updateMovementAmountAction->execute($movement->id, $newAmount);
             $this->recalculateBalanceAction->execute($movement->groupId);
         }
+    }
+
+    /**
+     * Manipula a mudança de grupo de uma entrada designada.
+     * Remove a movimentação do grupo anterior e cria uma nova no novo grupo.
+     *
+     * @param Model $previousEntry
+     * @param EntryData $newEntryData
+     * @return void
+     * @throws UnknownProperties|GeneralExceptions
+     */
+    private function handleGroupChange(Model $previousEntry, EntryData $newEntryData): void
+    {
+        $oldGroupId = $previousEntry->group_received_id;
+
+        $this->deleteMovementByEntryId->execute($previousEntry->id);
+
+        $this->recalculateBalanceAction->execute($oldGroupId);
+
+        $movementData = MovementsData::fromObjectData($newEntryData);
+        $this->createMovementAction->execute($movementData);
     }
 
 }
