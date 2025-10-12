@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\files;
+namespace App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files;
 
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
@@ -16,7 +16,7 @@ class AccountsFilesResourcesCollection extends ResourceCollection
      * with the one declared in the 'wrap' variable
      * @var string
      */
-    public static $wrap = 'Files';
+    public static $wrap = 'files';
 
 
     /**
