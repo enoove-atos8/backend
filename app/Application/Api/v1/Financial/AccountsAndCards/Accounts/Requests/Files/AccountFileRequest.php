@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\files;
+namespace App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\Files;
 
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Models\AccountsFiles;
