@@ -55,7 +55,7 @@ class LoginFromAppAction
                 {
                     $token = $user->createToken('app', $userRoles)->plainTextToken;
                     $user->token = $token;
-                    $tenantOfUser = $church->tenant_id;
+                    $tenantOfUser = $church->tenantId;
 
                     return [
                         'user'          => $user,
