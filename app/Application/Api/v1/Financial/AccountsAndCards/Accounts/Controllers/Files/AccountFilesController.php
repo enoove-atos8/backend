@@ -2,11 +2,10 @@
 
 namespace Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Files;
 
-use Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\files\AccountFileRequest;
-use Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\files\AccountsFilesResourcesCollection;
+use Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\Files\AccountFileRequest;
+use Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files\AccountsFilesResourcesCollection;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\files\GetAccountFilesAction;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\files\SaveAccountFileAction;
-use Domain\Financial\AccountsAndCards\Accounts\Actions\SaveAccountAction;
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
 use Exception;
 use Illuminate\Http\Request;

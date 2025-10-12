@@ -10,7 +10,7 @@ use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountController;
-use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\files\AccountFilesController;
+use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Files\AccountFilesController;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers\CardController;
 use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
 use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
