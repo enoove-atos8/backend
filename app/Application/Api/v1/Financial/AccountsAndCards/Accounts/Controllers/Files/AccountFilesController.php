@@ -4,8 +4,8 @@ namespace Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Fil
 
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\Files\AccountFileRequest;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files\AccountsFilesResourcesCollection;
-use Domain\Financial\AccountsAndCards\Accounts\Actions\files\GetAccountFilesAction;
-use Domain\Financial\AccountsAndCards\Accounts\Actions\files\SaveAccountFileAction;
+use Domain\Financial\AccountsAndCards\Accounts\Actions\Files\GetAccountFilesAction;
+use Domain\Financial\AccountsAndCards\Accounts\Actions\Files\SaveAccountFileAction;
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
 use Exception;
 use Illuminate\Http\Request;

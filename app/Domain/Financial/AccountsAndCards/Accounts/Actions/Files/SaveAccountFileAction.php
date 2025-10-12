@@ -5,7 +5,6 @@ namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Files;
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
-use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class SaveAccountFileAction
