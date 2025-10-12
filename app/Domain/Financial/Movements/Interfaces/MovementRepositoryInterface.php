@@ -55,6 +55,7 @@ interface MovementRepositoryInterface
     public function getMovementsByEntryIdAction(int $entryId): ?MovementsData;
 
 
+
     /**
      * Get Movement by reference ID
      *

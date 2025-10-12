@@ -692,11 +692,10 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
     /**
      * @param int $entryId
-     * @param string $action
      * @return void
      * @throws BindingResolutionException
      */
-    public function setDuplicityAnalysis(int $entryId, string $action = 'kept' | 'exclude'): void
+    public function setDuplicityAnalysis(int $entryId): void
     {
         $conditions =
             [
@@ -705,19 +704,9 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                 'value' => $entryId,
             ];
 
-        if($action == self::KEPT_ENTRIES_DUPLICATE_KEY)
-        {
-            $this->update($conditions, [
-                'duplicity_verified'  =>   true,
-            ]);
-        }
-        if($action == self::EXCLUDED_ENTRIES_DUPLICATE_KEY)
-        {
-            $this->update($conditions, [
-                'duplicity_verified'    =>   true,
-                'deleted'               =>   true,
-            ]);
-        }
+        $this->update($conditions, [
+            'duplicity_verified'  =>   true,
+        ]);
     }
 
 

@@ -17,7 +17,7 @@ interface EntryRepositoryInterface
     public function updateTimestampValueCpf(int $entryId, string $timestampValueCpf): mixed;
     public function updateReceiptLink(int $entryId, string $receiptLink): mixed;
 
-    public function setDuplicityAnalysis(int $entryId, string $action = 'kept' | 'exclude'): void;
+    public function setDuplicityAnalysis(int $entryId): void;
 
     public function deleteEntry(int $id): bool;
 

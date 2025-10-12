@@ -2,21 +2,32 @@
 
 namespace Domain\Financial\Entries\DuplicitiesAnalisys\Actions;
 
+use App\Domain\Financial\Entries\Entries\Actions\DeleteEntryAction;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
+use Infrastructure\Exceptions\GeneralExceptions;
+use Throwable;
 
 class SaveDuplicityAnalysisAction
 {
     private EntryRepositoryInterface $entryRepository;
+    private DeleteEntryAction $deleteEntryAction;
 
 
-    public function __construct(EntryRepositoryInterface $entryRepositoryInterface)
+    public function __construct(
+        EntryRepositoryInterface $entryRepositoryInterface,
+        DeleteEntryAction $deleteEntryAction
+    )
     {
         $this->entryRepository = $entryRepositoryInterface;
+        $this->deleteEntryAction = $deleteEntryAction;
     }
 
 
     /**
      * @param array $entries
+     * @return void
+     * @throws GeneralExceptions
+     * @throws Throwable
      */
     public function execute(array $entries): void
     {
@@ -25,7 +36,7 @@ class SaveDuplicityAnalysisAction
             if(count($entries['kept']) > 0)
             {
                 foreach ($entries['kept'] as $entry)
-                    $this->entryRepository->setDuplicityAnalysis($entry, 'kept');
+                    $this->entryRepository->setDuplicityAnalysis($entry);
             }
         }
 
@@ -34,7 +45,10 @@ class SaveDuplicityAnalysisAction
             if(count($entries['excluded']) > 0)
             {
                 foreach ($entries['excluded'] as $entry)
-                    $this->entryRepository->setDuplicityAnalysis($entry, 'excluded');
+                {
+                    $this->entryRepository->setDuplicityAnalysis($entry);
+                    $this->deleteEntryAction->execute($entry);
+                }
             }
         }
     }

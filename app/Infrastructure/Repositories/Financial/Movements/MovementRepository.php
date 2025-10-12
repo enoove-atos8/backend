@@ -32,6 +32,7 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     const IS_INITIAL_BALANCE_COLUMN = 'is_initial_balance';
     const DELETED_COLUMN = 'deleted';
     const ENTRY_ID_COLUMN = 'entry_id';
+    const EXIT_ID_COLUMN = 'exit_id';
     const PAGINATE_NUMBER = 30;
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -268,7 +269,7 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     {
         $conditions =[
             [
-                'field' => !is_null($entryId) ? EntryRepository::ENTRY_TYPE : ExitRepository::EXIT_TYPE,
+                'field' => !is_null($entryId) ? self::ENTRY_ID_COLUMN : self::EXIT_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => !is_null($entryId) ? $entryId : $exitId,
             ],
