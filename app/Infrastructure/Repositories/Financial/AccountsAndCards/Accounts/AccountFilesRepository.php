@@ -2,11 +2,8 @@
 
 namespace Infrastructure\Repositories\Financial\AccountsAndCards\Accounts;
 
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
-use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountRepositoryInterface;
-use Domain\Financial\AccountsAndCards\Accounts\Models\Accounts;
 use Domain\Financial\AccountsAndCards\Accounts\Models\AccountsFiles;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;

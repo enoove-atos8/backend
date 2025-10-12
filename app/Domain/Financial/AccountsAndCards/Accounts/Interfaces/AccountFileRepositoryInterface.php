@@ -2,7 +2,6 @@
 
 namespace Domain\Financial\AccountsAndCards\Accounts\Interfaces;
 
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Illuminate\Support\Collection;
 
