@@ -136,6 +136,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             });
         });
 
+        Route::prefix('accounts')->group(function () {
+
+            /*
+            * Action: GET
+            * Description: Get accounts
+            */
+
+            Route::get('getAccounts', [AccountController::class, 'getAccounts']);
+
+        });
+
+
         Route::prefix('purchases')->group(function () {
 
             Route::prefix('cards')->group(function () {
