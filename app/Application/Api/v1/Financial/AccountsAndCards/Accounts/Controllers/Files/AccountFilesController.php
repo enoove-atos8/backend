@@ -2,8 +2,8 @@
 
 namespace Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Files;
 
+use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files\AccountsFilesResourcesCollection;
 use Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\Files\AccountFileRequest;
-use Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files\AccountsFilesResourcesCollection;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\files\GetAccountFilesAction;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\files\SaveAccountFileAction;
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
