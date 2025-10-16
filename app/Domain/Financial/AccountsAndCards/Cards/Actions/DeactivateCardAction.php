@@ -6,7 +6,7 @@ use Domain\Financial\AccountsAndCards\Cards\Constants\ReturnMessages;
 use Domain\Financial\AccountsAndCards\Cards\Interfaces\CardRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
-class DeleteCardAction
+class DeactivateCardAction
 {
     protected CardRepositoryInterface $cardRepository;
 
@@ -30,7 +30,7 @@ class DeleteCardAction
     public function execute($cardId): bool
     {
 
-        $card = $this->cardRepository->deleteCard($cardId);
+        $card = $this->cardRepository->deactivateCard($cardId);
 
         if($card)
             return true;

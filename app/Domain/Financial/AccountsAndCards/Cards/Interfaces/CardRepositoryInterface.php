@@ -29,7 +29,7 @@ interface CardRepositoryInterface
      * @param int $id
      * @return bool
      */
-    public function deleteCard(int $id): bool;
+    public function deactivateCard(int $id): bool;
 
     /**
      * Save a new card or update an existing one.

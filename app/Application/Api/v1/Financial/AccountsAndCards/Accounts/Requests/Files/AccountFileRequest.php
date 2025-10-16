@@ -2,8 +2,7 @@
 
 namespace App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\Files;
 
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
-use Domain\Financial\AccountsAndCards\Accounts\Models\AccountsFiles;
+use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
@@ -47,7 +46,7 @@ class AccountFileRequest extends FormRequest
     {
         $validator->after(function ($validator)
         {
-            $this->existingFile = AccountsFiles::where('reference_date', $this->referenceDate)
+            $this->existingFile = \App\Domain\Financial\AccountsAndCards\Accounts\Models\AccountsFiles::where('reference_date', $this->referenceDate)
                 ->where('account_id', $this->accountId)
                 ->first();
 
@@ -86,12 +85,12 @@ class AccountFileRequest extends FormRequest
     /**
      * Convert request to CardData DTO
      *
-     * @return AccountFileData
+     * @return \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
      * @throws UnknownProperties
      */
     public function accountFileData(): AccountFileData
     {
-        return new AccountFileData(
+        return new \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData(
             id:                 $this->existingFile?->id,
             accountId:          $this->input('accountId'),
             originalFilename:   $this->input('originalFilename'),

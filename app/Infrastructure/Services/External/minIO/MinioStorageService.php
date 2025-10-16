@@ -185,6 +185,42 @@ class MinioStorageService
 
 
     /**
+     * Download file from MinIO and save to local directory (simple version)
+     *
+     * @param string $filePath
+     * @param string $tenant
+     * @param string $localPath
+     * @return string|bool
+     * @throws GeneralExceptions
+     */
+    public function downloadFileOnly(string $filePath, string $tenant, string $localPath): string|bool
+    {
+        try
+        {
+            $s3 = $this->s3->getInstance();
+            $result = $s3->getObject([
+                'Bucket' => $tenant,
+                'Key'    => $filePath
+            ]);
+
+            if (!file_exists($localPath))
+                mkdir($localPath, 0777, true);
+
+            $filename = basename($filePath);
+            $destinationPath = $localPath . '/' . $filename;
+
+            file_put_contents($destinationPath, $result['Body']);
+
+            return $destinationPath;
+        }
+        catch (S3Exception $e)
+        {
+            return false;
+        }
+    }
+
+
+    /**
      * @param string $filePath
      * @param string $tenant
      * @param string $localPath
@@ -261,9 +297,17 @@ class MinioStorageService
             $fileNameToJpg = preg_replace('/\.pdf$/', '', $file);
             exec("pdftoppm -jpeg -f 1 -l 1 -rx $resolutionImage -ry $resolutionImage $file $fileNameToJpg");
 
-            $fileNameWithNumberSufix = preg_replace('/\.jpg$/', '-1.jpg', $fileNameToJpg . '.jpg');
+            // Get directory path
+            $directory = dirname($fileNameToJpg);
+            $baseName = basename($fileNameToJpg);
 
-            rename($fileNameWithNumberSufix, $fileNameToJpg . '.jpg');
+            // Find the generated jpg file in the directory
+            $files = glob($directory . '/' . $baseName . '*.jpg');
+
+            // Rename the first found jpg file to the desired name
+            if (!empty($files)) {
+                rename($files[0], $fileNameToJpg . '.jpg');
+            }
         }
 
         return $fileNameToJpg . '.jpg';

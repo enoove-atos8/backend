@@ -2,8 +2,8 @@
 
 namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Files;
 
+use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
@@ -19,10 +19,10 @@ class SaveAccountFileAction
 
     /**
      * @param AccountFileData $accountFileData
-     * @return AccountFileData
+     * @return \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
      * @throws GeneralExceptions
      */
-    public function execute(AccountFileData $accountFileData): AccountFileData
+    public function execute(\App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $accountFileData): \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
     {
         $file = $this->accountFileRepository->saveFile($accountFileData);
 

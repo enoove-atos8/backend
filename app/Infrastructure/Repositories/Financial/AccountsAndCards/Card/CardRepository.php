@@ -93,7 +93,6 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
         $query = function () {
 
             $q = DB::table(self::TABLE_NAME)
-                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->orderBy(self::ID_COLUMN);
 
 
@@ -135,7 +134,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
      * @return bool
      * @throws BindingResolutionException
      */
-    public function deleteCard(int $id): bool
+    public function deactivateCard(int $id): bool
     {
         $conditions = [
             'field' => self::ID_COLUMN,
@@ -144,7 +143,7 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
         ];
 
         return $this->update($conditions, [
-            'deleted' =>   1,
+            'active' =>   0,
         ]);
     }
 }

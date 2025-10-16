@@ -2,7 +2,7 @@
 
 namespace Domain\Financial\AccountsAndCards\Accounts\Interfaces;
 
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
+use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Illuminate\Support\Collection;
 
 interface AccountFileRepositoryInterface
@@ -17,12 +17,31 @@ interface AccountFileRepositoryInterface
 
 
     /**
-     * Save a new account or update an existing one.
+     * Change file processing status
+     *
+     * @param int $id
+     * @param string $status
+     * @return bool
+     */
+    public function changeFileProcessingStatus(int $id, string $status): bool;
+
+
+    /**
+     * Get files by account id
      *
      * @param int $accountId
      * @return mixed
      */
-    public function getFiles(int $accountId): Collection;
+    public function getFilesByAccountId(int $accountId): Collection;
+
+
+    /**
+     * Get files by id
+     *
+     * @param int $id
+     * @return mixed
+     */
+    public function getFilesById(int $id): AccountFileData;
 
 
     /**
