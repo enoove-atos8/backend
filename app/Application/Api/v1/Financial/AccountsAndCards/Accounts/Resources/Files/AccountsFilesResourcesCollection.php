@@ -2,10 +2,9 @@
 
 namespace App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files;
 
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
-use Illuminate\Http\Request;
+use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Illuminate\Contracts\Support\Arrayable;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use JsonSerializable;
 
@@ -27,7 +26,7 @@ class AccountsFilesResourcesCollection extends ResourceCollection
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        return $this->collection->map(function (AccountFileData $accountFileData) {
+        return $this->collection->map(function (\App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $accountFileData) {
             return [
                 'id'                    => $accountFileData->id,
                 'accountId'             => $accountFileData->accountId,
@@ -49,7 +48,7 @@ class AccountsFilesResourcesCollection extends ResourceCollection
     /**
      * Extract account data from AccountFileData
      *
-     * @param AccountFileData $accountFileData
+     * @param \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\Files\AccountFileData $accountFileData
      * @return array|null
      */
     private function extractAccountData(AccountFileData $accountFileData): ?array

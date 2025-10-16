@@ -1,7 +1,8 @@
 <?php
 
-namespace Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects;
+namespace App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects;
 
+use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 

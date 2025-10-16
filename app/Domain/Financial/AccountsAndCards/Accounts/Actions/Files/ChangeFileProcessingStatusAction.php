@@ -2,10 +2,9 @@
 
 namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Files;
 
-use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
 
-class DeleteAccountFileAction
+class ChangeFileProcessingStatusAction
 {
     private AccountFileRepositoryInterface $accountFileRepository;
 
@@ -16,12 +15,12 @@ class DeleteAccountFileAction
 
 
     /**
-     * @param int $accountId
      * @param int $id
-     * @return AccountFileData
+     * @param string $status
+     * @return bool
      */
-    public function execute(int $accountId, int $id): mixed
+    public function execute(int $id, string $status): bool
     {
-        return $this->accountFileRepository->deleteFile($accountId, $id);
+        return $this->accountFileRepository->changeFileProcessingStatus($id, $status);
     }
 }

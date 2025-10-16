@@ -5,7 +5,7 @@ namespace App\Domain\Financial\AccountsAndCards\Accounts\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AccountsFiles extends Model
+class AccountsMovements extends Model
 {
     use HasFactory;
 
@@ -14,7 +14,7 @@ class AccountsFiles extends Model
      *
      * @var string
      */
-    protected $table = 'accounts_files';
+    protected $table = 'accounts_movements';
 
     /**
      * The attributes that are mass assignable.
@@ -24,13 +24,13 @@ class AccountsFiles extends Model
     protected $fillable = [
         'id',
         'account_id',
-        'original_filename',
-        'link',
-        'file_type',
-        'version',
-        'reference_date',
-        'status',
-        'error_message',
-        'deleted',
+        'file_id',
+        'movement_date',
+        'transaction_type',
+        'description',
+        'amount',
+        'movement_type',
+        'anonymous',
+        'conciliated_status',
     ];
 }

@@ -19,12 +19,13 @@ return new class extends Migration
 
                 $table->id();
                 $table->unsignedBigInteger('account_id');
-                $table->date('movement_date')->nullable(false);
-                $table->string('movement_type')->nullable(false);
-                $table->string('transaction_type')->nullable(false);
+                $table->string('movement_date')->nullable(false);
+                $table->string('transaction_type')->nullable();
+                $table->string('description')->nullable();
                 $table->decimal('amount')->nullable(false);
-                $table->boolean('anonymous')->nullable(false);
-                $table->string('conciliated_status')->nullable(false)->default('not_conciliated');
+                $table->string('movement_type')->nullable(false);
+                $table->boolean('anonymous')->nullable();
+                $table->string('conciliated_status')->nullable();
 
                 $table->timestamps();
 

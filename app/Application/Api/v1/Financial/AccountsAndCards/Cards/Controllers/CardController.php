@@ -6,7 +6,7 @@ use App\Application\Api\v1\Financial\AccountsAndCards\Cards\Resources\CardResour
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Requests\CardRequest;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Resources\CardsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Financial\AccountsAndCards\Cards\Actions\DeleteCardAction;
+use Domain\Financial\AccountsAndCards\Cards\Actions\DeactivateCardAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardByIdAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\GetCardsAction;
 use Domain\Financial\AccountsAndCards\Cards\Actions\SaveCardAction;
@@ -109,15 +109,15 @@ class CardController extends Controller
     /**
      * @throws GeneralExceptions
      */
-    public function deleteCard(Request $request, DeleteCardAction $deleteCardAction): Response|ResponseFactory
+    public function deactivateCard(Request $request, DeactivateCardAction $deactivateCardAction): Response|ResponseFactory
     {
         try
         {
             $id = $request->input('cardId');
-            $deleteCardAction->execute($id);
+            $deactivateCardAction->execute($id);
 
             return response([
-                'message'   =>  ReturnMessages::CARD_DELETED,
+                'message'   =>  ReturnMessages::CARD_DEACTIVATE,
             ], 200);
 
         } catch (Exception $e)

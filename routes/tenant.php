@@ -979,7 +979,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Delete card by id
                      */
 
-                    Route::delete('deleteCard', [CardController::class, 'deleteCard']);
+                    Route::delete('deactivateCard', [CardController::class, 'deactivateCard']);
 
 
                     /*
@@ -1054,6 +1054,15 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::get('getAccountsFiles', [AccountFilesController::class, 'getAccountsFiles']);
+
+
+
+                        /*
+                         * Action: POST
+                         * Description: Save a new account file
+                         */
+
+                        Route::post('processFile', [AccountFilesController::class, 'processFile']);
 
                     });
 

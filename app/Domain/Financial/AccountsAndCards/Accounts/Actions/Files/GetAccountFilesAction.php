@@ -3,7 +3,6 @@
 namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Files;
 
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
-use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -25,7 +24,7 @@ class GetAccountFilesAction
      */
     public function execute(int $accountId): Collection
     {
-        $files = $this->accountFileRepository->getFiles($accountId);
+        $files = $this->accountFileRepository->getFilesByAccountId($accountId);
 
         if(count($files) > 0)
             return $files;
