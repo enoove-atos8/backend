@@ -40,11 +40,6 @@
             padding: 0;
         }
 
-        .break-inside-avoid {
-            break-inside: avoid;
-            page-break-inside: avoid;
-        }
-
         .page-break {
             page-break-after: always;
             break-after: page;

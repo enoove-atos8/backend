@@ -13,6 +13,7 @@ use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountByIdAction;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountsAction;
+use App\Domain\Financial\AccountsAndCards\Accounts\Actions\Movements\GetMovementsAction;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Entries\Reports\MonthlyReportsRepository;
@@ -41,6 +42,7 @@ class GenerateMonthlyEntriesReport
     private GetAllGroupsAction $getAllGroupsAction;
     private GetChurchAction $getChurchAction;
     private GetAccountByIdAction $getAccountByIdAction;
+    private GetMovementsAction $getMovementsAction;
     private UploadFile $uploadFile;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
@@ -68,7 +70,8 @@ class GenerateMonthlyEntriesReport
         GetChurchAction $getChurchAction,
         GetAccountByIdAction $getAccountByIdAction,
         GetAllGroupsAction $getAllGroupsAction,
-        UpdateMonthlyEntriesAmountAction $updateMonthlyEntriesAmountAction
+        UpdateMonthlyEntriesAmountAction $updateMonthlyEntriesAmountAction,
+        GetMovementsAction $getMovementsAction
     )
     {
         $this->getEntriesAction = $getEntriesAction;
@@ -81,6 +84,7 @@ class GenerateMonthlyEntriesReport
         $this->getAccountByIdAction = $getAccountByIdAction;
         $this->getAllGroupsAction = $getAllGroupsAction;
         $this->updateMonthlyEntriesAmountAction = $updateMonthlyEntriesAmountAction;
+        $this->getMovementsAction = $getMovementsAction;
     }
 
     /**
@@ -154,9 +158,11 @@ class GenerateMonthlyEntriesReport
      * Prepares entries data with tithes, offers and designated entries.
      *
      * @param $entries
+     * @param MonthlyReportData $report
      * @return object
+     * @throws Throwable
      */
-    private function prepareEntriesData($entries): object
+    private function prepareEntriesData($entries, MonthlyReportData $report): object
     {
         $totalTithes = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::TITHE_VALUE)
             ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
@@ -173,10 +179,26 @@ class GenerateMonthlyEntriesReport
         $qtdDesignated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::DESIGNATED_VALUE)
             ->count();
 
+        $totalEntries = $entries->where(EntryRepository::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false)
+            ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
+
+        // Get movements from accounts_movements table
+        $referenceDate = $report->dates[0];
+        $movements = $this->getMovementsAction->execute($report->accountId, $referenceDate, false);
+
+        // Sum only credit movements (entries)
+        $totalEntriesInBankExtract = $movements
+            ->where('movementType', 'credit')
+            ->sum('amount');
+
+        // Calculate anonymous amount (difference between bank extract and registered entries)
+        $anonymousAmount = $totalEntriesInBankExtract - $totalEntries;
+
         return (object) [
             'tithes' => (object) ['qtd' => $qtdTithes, 'total' => $totalTithes],
             'offers' => (object) ['qtd' => $qtdOffers, 'total' => $totalOffers],
-            'designated' => (object) ['qtd' => $qtdDesignated, 'total' => $totalDesignated]
+            'designated' => (object) ['qtd' => $qtdDesignated, 'total' => $totalDesignated],
+            'anonymousAmount' => $anonymousAmount
         ];
     }
 
@@ -323,7 +345,7 @@ class GenerateMonthlyEntriesReport
                     ->where(EntryRepository::ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], $report->accountId);
 
                 $reportDataInfo = $this->prepareGeneralReportData($entries, $report, $dates, $tenant);
-                $entriesData = $this->prepareEntriesData($entries);
+                $entriesData = $this->prepareEntriesData($entries, $report);
                 $designatedEntriesData = $this->prepareDesignatedData($entries);
                 $totalsData = [];
 

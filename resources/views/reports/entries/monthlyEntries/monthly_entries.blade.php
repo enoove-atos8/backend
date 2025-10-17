@@ -40,9 +40,9 @@
             padding: 0;
         }
 
-        .break-inside-avoid {
-            break-inside: avoid;
-            page-break-inside: avoid;
+        .page-break {
+            page-break-after: always;
+            break-after: page;
         }
     </style>
 </head>
@@ -121,7 +121,7 @@
             </div>
 
         </div>
-        <div class="mt-8 mb-8 bg-gray-100 rounded-xl break-inside-avoid">
+        <div class="mt-8 mb-8 bg-gray-100 rounded-xl">
             <div class="bg-gray-200 rounded-t-xl px-6 py-4 grid grid-cols-11 gap-x-1">
                 <div class="text-secondary col-span-8 text-lg font-medium">ENTRADAS</div>
                 <div class="text-secondary text-right text-lg font-medium">QTD</div>
@@ -151,8 +151,9 @@
                     @if(isset($monthlyReportObject->includeAnonymousOffers) && $monthlyReportObject->includeAnonymousOffers)
                         <div class="col-span-8 text-md font-medium">Ofertas anônimas</div>
                         <div class="self-center text-right">-</div>
-                        <div class="col-span-2 self-center text-right">-</div>
+                        <div class="col-span-2 self-center text-right">R$ {{ number_format($reportData->entriesData->anonymousAmount, 2, ',', '.') }}</div>
                         <div class="col-span-11 border-b border-gray-300"></div>
+                        @php $totalAmount += $reportData->entriesData->anonymousAmount; @endphp
                     @endif
 
                     @if(isset($monthlyReportObject->includeTransfersBetweenAccounts) && $monthlyReportObject->includeTransfersBetweenAccounts)
@@ -168,40 +169,41 @@
                 </div>
             </div>
         </div>
+    </div>
+</div>
+</div>
 
-        @if($designatedEntriesTableSpacerHeight > 0)
-            @for($i = 0; $i < $designatedEntriesTableSpacerHeight; $i++)
-                <div style="height: 1px;"></div>
-            @endfor
-            <div class="mb-8 bg-gray-100 rounded-xl break-inside-avoid" style="margin-top: -20px;">
-                @else
-                    <div class="mt-8 mb-8 bg-gray-100 rounded-xl break-inside-avoid">
-                        @endif
-                        <div class="bg-gray-200 rounded-t-xl px-6 py-4 grid grid-cols-11 gap-x-1">
-                            <div class="text-secondary col-span-8 text-lg font-medium">ENTRADAS DESIGNADAS</div>
-                            <div class="text-secondary text-right text-lg font-medium">QTD</div>
-                            <div class="text-secondary col-span-2 text-right text-lg font-medium">TOTAL</div>
+<div class="page-break"></div>
+
+<div class="w-full text-left p-0">
+    <div class="bg-card w-full rounded-none bg-transparent shadow-none">
+        <div class="w-full">
+            <div class="mb-8 bg-gray-100 rounded-xl">
+                <div class="bg-gray-200 rounded-t-xl px-6 py-4 grid grid-cols-11 gap-x-1">
+                    <div class="text-secondary col-span-8 text-lg font-medium">ENTRADAS DESIGNADAS</div>
+                    <div class="text-secondary text-right text-lg font-medium">QTD</div>
+                    <div class="text-secondary col-span-2 text-right text-lg font-medium">TOTAL</div>
+                </div>
+                <div class="px-6 py-4">
+                    <div class="grid grid-cols-11 gap-x-1 gap-y-4">
+                        @php $totalDesignatedAmount = 0; @endphp
+
+                        @foreach($reportData->designatedEntriesData as $designatedEntry)
+                            <div class="col-span-8 text-md font-medium">{{ $designatedEntry->name }}</div>
+                            <div class="self-center text-right">{{ $designatedEntry->qtd }}</div>
+                            <div class="col-span-2 self-center text-right">R$ {{ number_format($designatedEntry->total, 2, ',', '.') }}</div>
+                            <div class="col-span-11 border-b border-gray-300 {{ $loop->last ? 'my-2' : '' }}"></div>
+                            @php $totalDesignatedAmount += $designatedEntry->total; @endphp
+                        @endforeach
+
+                        <div class="col-span-11 text-right">
+                            <span class="text-lg font-bold text-gray-800">R$ {{ number_format($totalDesignatedAmount, 2, ',', '.') }}</span>
                         </div>
-                        <div class="px-6 py-4">
-                            <div class="grid grid-cols-11 gap-x-1 gap-y-4">
-                                @php $totalDesignatedAmount = 0; @endphp
-
-                                @foreach($reportData->designatedEntriesData as $designatedEntry)
-                                    <div class="col-span-8 text-md font-medium">{{ $designatedEntry->name }}</div>
-                                    <div class="self-center text-right">{{ $designatedEntry->qtd }}</div>
-                                    <div class="col-span-2 self-center text-right">R$ {{ number_format($designatedEntry->total, 2, ',', '.') }}</div>
-                                    <div class="col-span-11 border-b border-gray-300 {{ $loop->last ? 'my-2' : '' }}"></div>
-                                    @php $totalDesignatedAmount += $designatedEntry->total; @endphp
-                                @endforeach
-
-                                <div class="col-span-11 text-right">
-                                    <span class="text-lg font-bold text-gray-800">R$ {{ number_format($totalDesignatedAmount, 2, ',', '.') }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>
-    </body>
+        </div>
+    </div>
+</div>
+</body>
 </html>
