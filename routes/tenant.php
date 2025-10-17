@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers\GroupController;
+use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountFilesController;
+use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountMovementsController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountController;
-use Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Files\AccountFilesController;
 use Application\Api\v1\Financial\AccountsAndCards\Cards\Controllers\CardController;
 use Application\Api\v1\Financial\Entries\Consolidation\Controllers\ConsolidationController;
 use Application\Api\v1\Financial\Entries\Cults\Controllers\CultController;
@@ -1063,6 +1064,18 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::post('processFile', [AccountFilesController::class, 'processFile']);
+
+                    });
+
+                    Route::prefix('movements')->group(function () {
+
+
+                        /*
+                         * Action: GET
+                         * Description: Get movements by account id and reference date
+                         */
+
+                        Route::get('getMovements', [AccountMovementsController::class, 'getMovements']);
 
                     });
 
