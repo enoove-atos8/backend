@@ -1,6 +1,6 @@
 <?php
 
-namespace Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Files;
+namespace App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers;
 
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Requests\Files\AccountFileRequest;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Resources\Files\AccountsFilesResourcesCollection;
@@ -12,9 +12,9 @@ use Domain\Financial\AccountsAndCards\Accounts\Actions\Files\SaveAccountFileActi
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Routing\ResponseFactory;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Symfony\Component\Console\Application;
 use Symfony\Component\HttpFoundation\Response;
-use Infrastructure\Exceptions\GeneralExceptions;
 
 class AccountFilesController
 {
