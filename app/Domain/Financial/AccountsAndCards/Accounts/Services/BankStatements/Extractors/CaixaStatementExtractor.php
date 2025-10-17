@@ -202,7 +202,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * @param string $filePath
      * @param string $accountNumber
      * @return void
-     * @throws GeneralExceptions
      */
     private function validateCsvAccount(string $filePath, string $accountNumber): void
     {
@@ -216,7 +215,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * @param string $filePath
      * @param string $accountNumber
      * @return void
-     * @throws GeneralExceptions
      */
     private function validateOfxAccount(string $filePath, string $accountNumber): void
     {
@@ -228,7 +226,7 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * Extract data from PDF format
      *
      * @param string $filePath
-     * @param \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $file
+     * @param AccountFileData $file
      * @return array
      * @throws GeneralExceptions
      */
@@ -248,7 +246,7 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * Extract data from TXT format
      *
      * @param string $filePath
-     * @param \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $file
+     * @param AccountFileData $file
      * @return array
      * @throws GeneralExceptions
      */
@@ -279,7 +277,7 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * Extract data from OFX format
      *
      * @param string $filePath
-     * @param \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $file
+     * @param AccountFileData $file
      * @return array
      * @throws GeneralExceptions
      */
@@ -299,7 +297,7 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * Extract data from CSV format
      *
      * @param string $filePath
-     * @param \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $file
+     * @param AccountFileData $file
      * @return array
      * @throws GeneralExceptions
      */

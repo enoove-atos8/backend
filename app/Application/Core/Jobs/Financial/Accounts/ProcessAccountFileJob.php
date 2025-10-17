@@ -115,6 +115,8 @@ class ProcessAccountFileJob implements ShouldQueue
         $absoluteS3Path = self::S3_ACCOUNTS_FILES_PATH . '/' . basename($fileLink);
         $basePathTemp = self::STORAGE_BASE_PATH . 'tenants/' . $this->tenant . self::RELATIVE_LOCAL_PATH;
 
+        $minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
+
         return $minioStorageService->downloadFileOnly($absoluteS3Path, $this->tenant, $basePathTemp);
     }
 
