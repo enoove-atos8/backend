@@ -26,62 +26,53 @@ class Kernel extends ConsoleKernel
         // =============================================================
 
         // Entries
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             try{
                 resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
             }catch (\Throwable $e){
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankEntriesTransferReceipts', 500, $e);
             }
-        })->everyFifteenMinutes();*/
+        })->everyFifteenMinutes();
 
         // Exits
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             try{
                 resolve(ProcessingBankExitsTransferReceipts::class)->handle();
             }catch (\Throwable $e){
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankExitsTransferReceipts', 500, $e);
             }
-        })->everyFifteenMinutes();*/
+        })->everyFifteenMinutes();
 
         // Reports
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             try{
                 resolve(HandlerEntriesReports::class)->handle();
             }catch (\Throwable $e){
                 throw new GeneralExceptions('Erro na execução do agendamento HandlerEntriesReports', 500, $e);
             }
-        })->everyMinute();*/
+        })->everyMinute();
 
 
         // Purchases
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             try{
                 resolve(ProcessingPurchaseCards::class)->handle();
             }catch (\Throwable $e){
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingPurchaseCards', 500, $e);
             }
-        })->everyFifteenMinutes();*/
+        })->everyFifteenMinutes();
 
         // Update invoice status
-        /*$schedule->call(function () {
+        $schedule->call(function () {
             try{
                 resolve(ProcessingInvoicesStatus::class)->handle();
             }catch (\Throwable $e){
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingInvoicesStatus', 500, $e);
             }
-        })->hourly();*/
+        })->hourly();
     }
 
 
-
-    /**
-     * The Artisan commands provided by your application.
-     *
-     * @var array
-     */
-    protected $commands = [
-        \Application\Core\Console\Commands\ProcessExitsReceipts::class,
-    ];
 
     /**
      * Register the commands for the application.
