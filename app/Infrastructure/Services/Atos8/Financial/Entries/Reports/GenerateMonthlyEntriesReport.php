@@ -179,11 +179,15 @@ class GenerateMonthlyEntriesReport
         $totalAnonymousOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::ANONYMOUS_OFFERS_VALUE)
             ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
 
+        $totalAccountsTransfer = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::ACCOUNTS_TRANSFER_VALUE)
+            ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
+
         return (object) [
             'tithes' => (object) ['qtd' => $qtdTithes, 'total' => $totalTithes],
             'offers' => (object) ['qtd' => $qtdOffers, 'total' => $totalOffers],
             'designated' => (object) ['qtd' => $qtdDesignated, 'total' => $totalDesignated],
-            'anonymousAmount' => $totalAnonymousOffers
+            'anonymousAmount' => $totalAnonymousOffers,
+            'totalAccountsTransfer' => $totalAccountsTransfer,
         ];
     }
 
