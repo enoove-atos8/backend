@@ -69,7 +69,7 @@ class CreateAnonymousOffersByMovements
             ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
 
         // Calculate anonymous offers amount: total in bank extract - registered entries - transfers
-        $anonymousOffersAmount = $totalEntriesInBankExtract - $totalEntries - $totalTransfersBetweenAccounts;
+        $anonymousOffersAmount = ($totalEntriesInBankExtract - $totalTransfersBetweenAccounts) - $totalEntries;
 
         // Check if anonymous offers entry already exists for this account and period
         $existingAnonymousOffer = $this->getExistingAnonymousOffer($accountId, $referenceDate);
@@ -166,13 +166,18 @@ class CreateAnonymousOffersByMovements
         $reviewer = $this->getReviewerAction->execute();
         $currentDate = date('Y-m-d');
 
+        // Get last day of the month from referenceDate (YYYY-MM format)
+        // Parse the reference date and get the last day of that month
+        [$year, $month] = explode('-', $referenceDate);
+        $lastDayOfMonth = \Carbon\Carbon::create($year, $month, 1)->endOfMonth()->format('Y-m-d');
+
         // Create EntryData for anonymous offers
         $entryData = new EntryData([
             'id' => null,
             'amount' => $amount,
             'comments' => 'Ofertas anônimas geradas automaticamente após importação de movimentações',
             'dateEntryRegister' => $currentDate,
-            'dateTransactionCompensation' => $referenceDate . 'T03:00:00.000Z',
+            'dateTransactionCompensation' => $lastDayOfMonth . 'T03:00:00.000Z',
             'deleted' => 0,
             'entryType' => EntryRepository::ANONYMOUS_OFFERS_VALUE,
             'memberId' => null,

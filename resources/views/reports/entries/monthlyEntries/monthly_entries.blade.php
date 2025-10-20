@@ -150,7 +150,7 @@
 
                     @if(isset($monthlyReportObject->includeAnonymousOffers) && $monthlyReportObject->includeAnonymousOffers)
                         <div class="col-span-8 text-md font-medium">Ofertas anônimas</div>
-                        <div class="self-center text-right">-</div>
+                        <div class="self-center text-right"></div>
                         <div class="col-span-2 self-center text-right">R$ {{ number_format($reportData->entriesData->anonymousAmount, 2, ',', '.') }}</div>
                         <div class="col-span-11 border-b border-gray-300"></div>
                         @php $totalAmount += $reportData->entriesData->anonymousAmount; @endphp
@@ -158,8 +158,8 @@
 
                     @if(isset($monthlyReportObject->includeTransfersBetweenAccounts) && $monthlyReportObject->includeTransfersBetweenAccounts)
                         <div class="col-span-8 text-md font-medium">Transferências entre contas</div>
-                        <div class="self-center text-right">-</div>
-                        <div class="col-span-2 self-center text-right">-</div>
+                        <div class="self-center text-right"></div>
+                        <div class="col-span-2 self-center text-right">R$ {{ number_format($reportData->entriesData->totalAccountsTransfer, 2, ',', '.') }}</div>
                         <div class="col-span-11 border-b border-gray-300 my-2"></div>
                     @endif
 

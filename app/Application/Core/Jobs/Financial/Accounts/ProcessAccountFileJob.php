@@ -40,7 +40,7 @@ class ProcessAccountFileJob implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @throws GeneralExceptions|TenantCouldNotBeIdentifiedById
+     * @throws GeneralExceptions|TenantCouldNotBeIdentifiedById|\Throwable
      */
     public function handle(
         AccountFilesRepository $accountFilesRepository,
