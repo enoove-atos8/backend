@@ -47,9 +47,7 @@
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/",
             "Database\\Seeders\\Central\\": "database/seeders/central/",
-            "Database\\Seeders\\Tenant\\": "database/seeders/tenant/",
-            "Application\\Core\\Jobs\\": "app/Application/Core/Jobs/",
-            "Application\\Core\\Console\\Commands\\": "app/Application/Core/Console/Commands/"
+            "Database\\Seeders\\Tenant\\": "database/seeders/tenant/"
         },
         "files": [
             "app/Application/Core/Helpers/PathHelper.php"
