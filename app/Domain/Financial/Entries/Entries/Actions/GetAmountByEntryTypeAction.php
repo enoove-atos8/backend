@@ -72,6 +72,12 @@ class GetAmountByEntryTypeAction
         $designated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], EntryRepository::DESIGNATED_VALUE);
         $totalDesignatedAmount = $designated->sum(EntryRepository::AMOUNT_COLUMN);
 
+        $anonymousOffers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], EntryRepository::ANONYMOUS_OFFERS_VALUE);
+        $totalAnonymousOffersAmount = $anonymousOffers->sum(EntryRepository::AMOUNT_COLUMN);
+
+        $accountsTransfers = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], EntryRepository::ACCOUNTS_TRANSFER_VALUE);
+        $totalAccountsTransfersAmount = $accountsTransfers->sum(EntryRepository::AMOUNT_COLUMN);
+
         $totalDevolutionAmount = $entries->where(EntryRepository::DEVOLUTION_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1)->sum(EntryRepository::AMOUNT_COLUMN);
 
         return [
@@ -86,6 +92,14 @@ class GetAmountByEntryTypeAction
             'designated' => [
                 'total'    => $totalDesignatedAmount,
                 'accounts' => $groupByAccounts($designated) ?? null,
+            ],
+            'anonymousOffers' => [
+                'total'    => $totalAnonymousOffersAmount,
+                'accounts' => $groupByAccounts($anonymousOffers),
+            ],
+            'accountsTransfers' => [
+                'total'    => $totalAccountsTransfersAmount,
+                'accounts' => $groupByAccounts($accountsTransfers),
             ],
             'devolution' => $totalDevolutionAmount,
         ];

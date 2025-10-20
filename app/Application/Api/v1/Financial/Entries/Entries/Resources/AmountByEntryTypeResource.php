@@ -23,49 +23,29 @@ class AmountByEntryTypeResource extends JsonResource
         return [
             'tithes'        => [
                 'total' => $result['tithes']['total'],
-                'accounts' => self::validateTithes($result['tithes']),
+                'accounts' => self::validateAccounts($result['tithes']),
             ],
             'offers'        => [
                 'total' => $result['offers']['total'],
-                'accounts' => self::validateOffers($result['offers']),
+                'accounts' => self::validateAccounts($result['offers']),
             ],
             'designated'        => [
                 'total' => $result['designated']['total'],
-                'accounts' => self::validateDesignated($result['designated']),
+                'accounts' => self::validateAccounts($result['designated']),
+            ],
+            'anonymousOffers'   => [
+                'total' => $result['anonymousOffers']['total'],
+                'accounts' => self::validateAccounts($result['anonymousOffers']),
+            ],
+            'accountsTransfers' => [
+                'total' => $result['accountsTransfers']['total'],
+                'accounts' => self::validateAccounts($result['accountsTransfers']),
             ],
         ];
     }
 
 
-    public function validateTithes(array $result)
-    {
-        foreach ($result['accounts'] as $key => $value) {
-            if($value != null)
-            {
-                return $result['accounts'];
-            }
-        }
-
-        return null;
-    }
-
-
-
-    public function validateOffers(array $result)
-    {
-        foreach ($result['accounts'] as $key => $value) {
-            if($value != null)
-            {
-                return $result['accounts'];
-            }
-        }
-
-        return null;
-    }
-
-
-
-    public function validateDesignated(array $result)
+    public function validateAccounts(array $result)
     {
         foreach ($result['accounts'] as $key => $value) {
             if($value != null)

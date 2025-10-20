@@ -60,7 +60,7 @@ class ProcessAccountFileJob implements ShouldQueue
 
             if (!empty($extractedData)) {
                 $movements = collect($extractedData);
-                $inserted = $createBulkMovementsAction->execute($movements, $file->accountId, $this->fileId);
+                $inserted = $createBulkMovementsAction->execute($movements, $file->accountId, $this->fileId, $file->referenceDate);
 
                 if (!$inserted) {
                     throw new GeneralExceptions(ReturnMessages::INSERT_BULK_MOVEMENTS_ERROR, 500);
