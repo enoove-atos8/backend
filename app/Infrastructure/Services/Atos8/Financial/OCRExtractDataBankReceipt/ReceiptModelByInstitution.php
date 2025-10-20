@@ -17,6 +17,7 @@ class ReceiptModelByInstitution
     const TITHE_ENTRY_TYPE = 'tithe';
     const DESIGNATED_ENTRY_TYPE = 'designated';
     const OFFER_ENTRY_TYPE = 'offer';
+    const ACCOUNTS_TRANSFER_ENTRY_TYPE = 'accounts_transfer';
 
 
     //Exit type consts
@@ -416,7 +417,7 @@ class ReceiptModelByInstitution
                 else
                     $this->response['status'] = 'READING_ERROR';
             }
-            else if($docSubType === self::DESIGNATED_ENTRY_TYPE || $docSubType === self::OFFER_ENTRY_TYPE)
+            else if($docSubType === self::DESIGNATED_ENTRY_TYPE || $docSubType === self::OFFER_ENTRY_TYPE || $docSubType === self::ACCOUNTS_TRANSFER_ENTRY_TYPE)
             {
                 if ($this->response['data']['amount'] !== 0 && !empty($this->response['data']['date']) && !empty($this->response['data']['timestamp_value_cpf']))
                     $this->response['status'] = 'SUCCESS';

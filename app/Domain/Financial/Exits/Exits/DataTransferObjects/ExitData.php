@@ -9,6 +9,7 @@ use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use DateTime;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Exception;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\DataTransferObject;
@@ -18,6 +19,9 @@ class ExitData extends DataTransferObject
 {
     /** @var integer | null */
     public ?int $id;
+
+    /** @var integer | null */
+    public ?int $accountId;
 
     /** @var string | null */
     public ?string $exitType;
@@ -67,6 +71,9 @@ class ExitData extends DataTransferObject
     /** @var PaymentItemData | null */
     public ?PaymentItemData $paymentItem;
 
+    /** @var AccountData | null */
+    public ?AccountData $account;
+
 
     /**
      * @throws UnknownProperties
@@ -75,6 +82,7 @@ class ExitData extends DataTransferObject
     {
         return new self(
             id: $data['exits_id'] ?? null,
+            accountId: $data['exits_account_id'] ?? null,
             reviewerId: $data['exits_reviewer_id'] ?? null,
             exitType: $data['exits_exit_type'] ?? null,
             isPayment: $data['exits_is_payment'] ?? null,
@@ -142,6 +150,15 @@ class ExitData extends DataTransferObject
                 'slug' => $data['payment_item_slug'] ?? null,
                 'name' => $data['payment_item_name'] ?? null,
                 'description' => $data['payment_item_description'] ?? null,
+            ]),
+
+            account: new AccountData([
+                'id' => $data['accounts_id'] ?? null,
+                'accountType' => $data['accounts_account_type'] ?? null,
+                'bankName' => $data['accounts_bank_name'] ?? null,
+                'agencyNumber' => $data['accounts_agency_number'] ?? null,
+                'accountNumber' => $data['accounts_account_number'] ?? null,
+                'activated' => $data['accounts_activated'] ?? null,
             ])
         );
     }
@@ -174,6 +191,7 @@ class ExitData extends DataTransferObject
 
         $instance = new self([
             'id' => null,
+            'accountId' => $data->accountId,
             'amount' => floatval($extractedData['data']['amount']) / 100,
             'comments' => 'Saída registrada automaticamente!',
             'dateExitRegister' => $currentDate,
@@ -189,7 +207,8 @@ class ExitData extends DataTransferObject
             'division' => new DivisionData(['id' => null]),
             'group' => new GroupData(['id' => null]),
             'paymentCategory' => new PaymentCategoryData(['id' => null]),
-            'paymentItem' => new PaymentItemData(['id' => null])
+            'paymentItem' => new PaymentItemData(['id' => null]),
+            'account' => new AccountData(['id' => null])
         ]);
 
         if ($data->docSubType == ExitRepository::PAYMENTS_VALUE)
@@ -203,6 +222,14 @@ class ExitData extends DataTransferObject
         {
             $instance->group = new GroupData(['id' => $data->groupId]);
             $instance->division = new DivisionData(['id' => $data->divisionId]);
+        }
+
+        if ($data->docSubType == ExitRepository::ACCOUNTS_TRANSFER_VALUE)
+        {
+            $instance->exitType = ExitRepository::ACCOUNTS_TRANSFER_VALUE;
+            $instance->group = new GroupData(['id' => null]);
+            $instance->division = new DivisionData(['id' => null]);
+            $instance->isPayment = 0;
         }
 
         return $instance;

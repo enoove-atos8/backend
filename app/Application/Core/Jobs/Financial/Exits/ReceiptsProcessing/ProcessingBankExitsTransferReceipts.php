@@ -13,6 +13,9 @@ use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
+use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitByTimestampAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateReceiptLinkAction;
@@ -52,8 +55,10 @@ class ProcessingBankExitsTransferReceipts
     private UpdateTimestampAction $updateTimestampAction;
     private UpdateStatusAction $updateStatusAction;
     private CreateExitAction $createExitAction;
+    private CreateEntryAction $createEntryAction;
     private UpdateReceiptLinkAction    $updateReceiptLinkAction;
     private ExitData $exitData;
+    private EntryData $entryData;
     private PaymentCategoryData $paymentCategoryData;
     private PaymentItemData $paymentItemData;
     private GroupData $groupData;
@@ -86,10 +91,12 @@ class ProcessingBankExitsTransferReceipts
         GetExitByTimestampAction         $getExitByTimestampAction,
         UpdateStatusAction               $updateStatusAction,
         CreateExitAction                 $createExitAction,
+        CreateEntryAction                $createEntryAction,
         UpdateTimestampAction            $updateExitTimestampAction,
         UpdateReceiptLinkAction          $updateReceiptLinkAction,
         GetReviewerAction                $getReviewerAction,
         ExitData                         $exitData,
+        EntryData                        $entryData,
         PaymentCategoryData              $paymentCategoryData,
         PaymentItemData                  $paymentItemData,
         GroupData                        $groupData,
@@ -111,10 +118,12 @@ class ProcessingBankExitsTransferReceipts
         $this->getExitByTimestampAction = $getExitByTimestampAction;
         $this->updateStatusAction = $updateStatusAction;
         $this->createExitAction = $createExitAction;
+        $this->createEntryAction = $createEntryAction;
         $this->updateTimestampAction = $updateExitTimestampAction;
         $this->updateReceiptLinkAction = $updateReceiptLinkAction;
         $this->getReviewerAction = $getReviewerAction;
         $this->exitData = $exitData;
+        $this->entryData = $entryData;
         $this->paymentCategoryData = $paymentCategoryData;
         $this->paymentItemData = $paymentItemData;
         $this->groupData = $groupData;
@@ -219,6 +228,7 @@ class ProcessingBankExitsTransferReceipts
             if($timestamp != '')
                 $this->updateTimestampAction->execute($exit->id, $timestamp);
 
+
             $sharedPath = $syncStorageData->path;
             $syncStorageData->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $syncStorageData->path);
             $urlParts = explode('/', $syncStorageData->path);
@@ -231,6 +241,12 @@ class ProcessingBankExitsTransferReceipts
 
             $this->updateReceiptLinkAction->execute($exit->id, $fileUrl);
             $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
+
+            if ($syncStorageData->docSubType == ExitRepository::ACCOUNTS_TRANSFER_VALUE)
+            {
+                $this->setEntryDataFromTransfer($extractedData, $fileUrl, $syncStorageData);
+                $this->createEntryAction->execute($this->entryData, null);
+            }
 
         }
         else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
@@ -366,5 +382,45 @@ class ProcessingBankExitsTransferReceipts
         }
 
         return $currentDate->format('Y-m-d');
+    }
+
+
+    /**
+     * Cria EntryData a partir de dados de transferência entre contas
+     *
+     * @throws Exception
+     * @throws Throwable
+     */
+    public function setEntryDataFromTransfer(array $extractedData, string $linkReceipt, SyncStorageData $data): void
+    {
+        $reviewer = $this->getReviewerAction->execute();
+        $currentDate = date('Y-m-d');
+        $extractedDate = $extractedData['data']['date'];
+        $nextBusinessDay = $this->getNextBusinessDay($extractedDate);
+
+        $dateTransactionCompensation = $nextBusinessDay . 'T03:00:00.000Z';
+
+        $this->entryData = new EntryData([
+            'id' => null,
+            'amount' => floatval($extractedData['data']['amount']) / 100,
+            'comments' => 'Entrada por transferência entre contas',
+            'dateEntryRegister' => $currentDate,
+            'dateTransactionCompensation' => $dateTransactionCompensation,
+            'deleted' => 0,
+            'entryType' => EntryRepository::ACCOUNTS_TRANSFER_VALUE,
+            'memberId' => null,
+            'accountId' => $data->destinationAccountId, // Conta destino
+            'receipt' => $linkReceipt,
+            'devolution' => 0,
+            'residualValue' => 0,
+            'identificationPending' => 0,
+            'cultId' => null,
+            'timestampValueCpf' => null,
+            'reviewerId' => $reviewer->id,
+            'transactionCompensation' => EntryRepository::COMPENSATED_VALUE,
+            'transactionType' => EntryRepository::PIX_TRANSACTION_TYPE,
+            'groupReceivedId' => null,
+            'groupReturnedId' => null,
+        ]);
     }
 }

@@ -65,6 +65,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const TITHE_VALUE = 'tithe';
     const DESIGNATED_VALUE = 'designated';
     const OFFER_VALUE = 'offer';
+    const ACCOUNTS_TRANSFER_VALUE = 'accounts_transfer';
     const REGISTER_INDICATOR = 'register';
     const TRANSACTION_INDICATOR = 'transaction';
     const PAGINATE_NUMBER = 30;

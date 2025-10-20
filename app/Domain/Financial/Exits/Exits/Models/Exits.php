@@ -14,6 +14,7 @@ class Exits extends Model
      */
     protected $fillable = [
         'reviewer_id',
+        'account_id',
         'exit_type',
         'division_id',
         'group_id',

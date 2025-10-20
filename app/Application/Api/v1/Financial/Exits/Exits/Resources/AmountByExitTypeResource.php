@@ -24,11 +24,49 @@ class AmountByExitTypeResource extends JsonResource
         $result = $this->resource;
 
         return [
-            'payments'              => $result['payments'],
-            'transfers'             => $result['transfers'],
-            'ministerialTransfers'  => $result['ministerialTransfers'],
-            'contributions'         => $result['contributions'],
+            'payments'              => [
+                'total' => $result['payments']['total'],
+                'accounts' => self::validateAccounts($result['payments']),
+            ],
+            'transfers'             => [
+                'total' => $result['transfers']['total'],
+                'accounts' => self::validateAccounts($result['transfers']),
+            ],
+            'ministerialTransfers'  => [
+                'total' => $result['ministerialTransfers']['total'],
+                'accounts' => self::validateAccounts($result['ministerialTransfers']),
+            ],
+            'contributions'         => [
+                'total' => $result['contributions']['total'],
+                'accounts' => self::validateAccounts($result['contributions']),
+            ],
             'total'                 => $result['total'],
         ];
+    }
+
+
+    /**
+     * Validate if accounts array has data
+     *
+     * @param array $result
+     * @return array|null
+     */
+    public function validateAccounts(array $result): ?array
+    {
+        $accounts = $result['accounts'];
+
+        // Se for Collection, converte para array
+        if ($accounts instanceof \Illuminate\Support\Collection) {
+            $accounts = $accounts->toArray();
+        }
+
+        foreach ($accounts as $key => $value) {
+            if($value != null)
+            {
+                return $accounts;
+            }
+        }
+
+        return null;
     }
 }

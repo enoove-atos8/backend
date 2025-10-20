@@ -52,7 +52,7 @@ class CreateEntryAction
     /**
      * @throws Throwable
      */
-    public function execute(EntryData $entryData, ConsolidationEntriesData $consolidationEntriesData): ?Entry
+    public function execute(EntryData $entryData, ?ConsolidationEntriesData $consolidationEntriesData): ?Entry
     {
         $dateEntryRegister = $entryData->dateEntryRegister;
         $dateTransactionCompensation = $entryData->dateTransactionCompensation;
@@ -63,7 +63,9 @@ class CreateEntryAction
                 $entryData->dateEntryRegister = substr($dateTransactionCompensation, 0, 7) . '-01';
         }
 
-        $this->createConsolidatedEntryAction->execute($consolidationEntriesData);
+        if(!is_null($consolidationEntriesData))
+            $this->createConsolidatedEntryAction->execute($consolidationEntriesData);
+
         $entry = $this->entryRepository->newEntry($entryData);
         $entryData->id = $entry->id;
 

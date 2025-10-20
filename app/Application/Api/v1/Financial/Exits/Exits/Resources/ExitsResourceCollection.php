@@ -7,6 +7,7 @@ use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemDat
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -37,6 +38,7 @@ class ExitsResourceCollection extends ResourceCollection
         {
             $result[] = [
                 'id'                             =>  $exit->id,
+                'accountId'                      =>  $exit->accountId,
                 'exitType'                       =>  $exit->exitType,
                 'isPayment'                      =>  $exit->isPayment,
                 'deleted'                        =>  $exit->deleted,
@@ -49,6 +51,7 @@ class ExitsResourceCollection extends ResourceCollection
                 'comments'                       =>  $exit->comments,
                 'receiptLink'                    =>  $exit->receiptLink,
                 'reviewer'                       =>  $this->getReviewer($exit->financialReviewer),
+                'account'                        =>  $this->getAccount($exit->account),
                 'division'                       =>  $this->getDivision($exit->division),
                 'group'                          =>  $this->getGroup($exit->group),
                 'paymentCategory'                =>  $this->getPaymentCategory($exit->paymentCategory),
@@ -186,6 +189,29 @@ class ExitsResourceCollection extends ResourceCollection
         }
     }
 
+
+    /**
+     * @param AccountData $data
+     * @return array|null
+     */
+    public function getAccount(AccountData $data): ?array
+    {
+        if(!is_null($data->id))
+        {
+            return [
+                'id'            =>  $data->id,
+                'accountType'   =>  $data->accountType,
+                'bankName'      =>  $data->bankName,
+                'agencyNumber'  =>  $data->agencyNumber,
+                'accountNumber' =>  $data->accountNumber,
+                'activated'     =>  $data->activated,
+            ];
+        }
+        else
+        {
+            return null;
+        }
+    }
 
 
     public function with($request): array
