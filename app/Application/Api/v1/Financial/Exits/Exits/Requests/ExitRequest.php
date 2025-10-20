@@ -39,6 +39,7 @@ class ExitRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'accountId'                         =>  '',
             'amount'                            =>  'required',
             'dateExitRegister'                  =>  'required',
             'dateTransactionCompensation'       =>  'required',
@@ -90,6 +91,7 @@ class ExitRequest extends FormRequest
     public function exitData(): ExitData
     {
         return new ExitData(
+            accountId:                     $this->input('accountId'),
             exitType:                      $this->input('exitType'),
             isPayment:                     $this->input('isPayment'),
             deleted:                       $this->input('deleted'),

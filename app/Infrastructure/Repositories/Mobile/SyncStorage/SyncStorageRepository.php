@@ -52,6 +52,8 @@ class SyncStorageRepository extends BaseRepository implements SyncStorageReposit
             'group_id'                                      => $syncStorageData->groupId != '0' ? $syncStorageData->groupId : null,
             'card_id'                                       => $syncStorageData->cardId != '0' ? $syncStorageData->cardId : null,
             'account_id'                                    => $syncStorageData->accountId != '0' ? $syncStorageData->accountId : null,
+            'origin_account_id'                             => $syncStorageData->originAccountId != '0' ? $syncStorageData->originAccountId : null,
+            'destination_account_id'                        => $syncStorageData->destinationAccountId != '0' ? $syncStorageData->destinationAccountId : null,
             'invoice_id'                                    => $syncStorageData->invoiceId != '0' ? $syncStorageData->invoiceId : null,
             'payment_category_id'                           => $syncStorageData->paymentCategoryId != '0' ? $syncStorageData->paymentCategoryId : null,
             'payment_item_id'                               => $syncStorageData->paymentItemId != '0' ? $syncStorageData->paymentItemId : null,

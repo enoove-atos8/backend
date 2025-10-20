@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
+use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountRepository;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentCategoryRepository;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
 
@@ -41,6 +42,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const TIMESTAMP_EXIT_TRANSACTION_COLUMN = 'timestamp_exit_transaction';
 
     const REVIEWER_ID_COLUMN_JOINED = 'exits.reviewer_id';
+    const ACCOUNT_ID_COLUMN_JOINED = 'exits.account_id';
     const DIVISION_ID_COLUMN_JOINED = 'exits.division_id';
     const GROUP_ID_COLUMN_JOINED = 'exits.group_id';
     const PAYMENT_CATEGORY_ID_COLUMN_JOINED = 'exits.payment_category_id';
@@ -56,11 +58,13 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const TRANSFER_VALUE = 'transfer';
     const MINISTERIAL_TRANSFER_VALUE = 'ministerial_transfer';
     const CONTRIBUTIONS_VALUE = 'contributions';
+    const ACCOUNTS_TRANSFER_VALUE = 'accounts_transfer';
 
     const PAGINATE_NUMBER = 30;
 
     const DISPLAY_SELECT_COLUMNS = [
         'exits.id as exits_id',
+        'exits.account_id as exits_account_id',
         'exits.reviewer_id as exits_reviewer_id',
         'exits.exit_type as exits_exit_type',
         'exits.division_id as exits_division_id',
@@ -93,6 +97,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     {
         return $this->create([
             'reviewer_id'                        =>   $exitData->financialReviewer->id,
+            'account_id'                         =>   $exitData->accountId,
             'exit_type'                          =>   $exitData->exitType,
             'division_id'                        =>   $exitData->division->id,
             'group_id'                           =>   $exitData->group->id,
@@ -137,7 +142,8 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             DivisionRepository::DISPLAY_SELECT_COLUMNS,
             GroupsRepository::DISPLAY_SELECT_COLUMNS,
             PaymentCategoryRepository::DISPLAY_SELECT_COLUMNS,
-            PaymentItemRepository::DISPLAY_SELECT_COLUMNS
+            PaymentItemRepository::DISPLAY_SELECT_COLUMNS,
+            AccountRepository::DISPLAY_SELECT_COLUMNS
         );
 
         if($dates != 'all' && $dates != null)
@@ -316,6 +322,11 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
                     ExitRepository::REVIEWER_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     FinancialReviewerRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    AccountRepository::TABLE_NAME,
+                    ExitRepository::ACCOUNT_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    AccountRepository::ID_COLUMN_JOINED)
                 ->leftJoin(
                     DivisionRepository::TABLE_NAME,
                     ExitRepository::DIVISION_ID_COLUMN_JOINED,
