@@ -45,36 +45,30 @@ class CreateAnonymousOffersByMovements
      */
     public function execute(int $accountId, string $referenceDate): ?float
     {
-        // Get movements from accounts_movements table
+
         $movements = $this->getMovementsAction->execute($accountId, $referenceDate, false);
 
-        // Sum only credit movements (entries)
         $totalEntriesInBankExtract = $movements
             ->where('movementType', 'credit')
             ->sum('amount');
 
-        // Get all entries for this account and period
         $entries = $this->getEntriesAction->execute($referenceDate, [], false)
             ->where(EntryRepository::ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], $accountId);
 
-        // Calculate total registered entries (excluding anonymous offers to avoid counting them twice)
         $totalEntries = $entries
             ->where(EntryRepository::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false)
             ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['NOT_EQUALS'], EntryRepository::ANONYMOUS_OFFERS_VALUE)
+            ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['NOT_EQUALS'], EntryRepository::ACCOUNTS_TRANSFER_VALUE)
             ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
 
-        // Get transfers between accounts to subtract from anonymous offers
         $totalTransfersBetweenAccounts = $entries
             ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::ACCOUNTS_TRANSFER_VALUE)
             ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
 
-        // Calculate anonymous offers amount: total in bank extract - registered entries - transfers
-        $anonymousOffersAmount = ($totalEntriesInBankExtract - $totalTransfersBetweenAccounts) - $totalEntries;
 
-        // Check if anonymous offers entry already exists for this account and period
+        $anonymousOffersAmount = ($totalEntriesInBankExtract - $totalTransfersBetweenAccounts) - $totalEntries;
         $existingAnonymousOffer = $this->getExistingAnonymousOffer($accountId, $referenceDate);
 
-        // Create or update anonymous offers entry if amount is greater than zero
         if ($anonymousOffersAmount > 0) {
             if ($existingAnonymousOffer) {
                 return $this->updateAnonymousOffersEntry($existingAnonymousOffer->entries_id, $anonymousOffersAmount);
@@ -115,12 +109,8 @@ class CreateAnonymousOffersByMovements
     private function updateAnonymousOffersEntry(int $entryId, float $amount): float
     {
         $reviewer = $this->getReviewerAction->execute();
-        $currentDate = date('Y-m-d');
-
-        // Get existing entry to preserve its data
         $existingEntry = $this->entryRepository->getEntryById($entryId);
 
-        // Create EntryData with updated amount
         $entryData = new EntryData([
             'id' => $entryId,
             'amount' => $amount,
@@ -146,7 +136,7 @@ class CreateAnonymousOffersByMovements
             'duplicityVerified' => false,
         ]);
 
-        // Update the entry
+
         $this->entryRepository->updateEntry($entryId, $entryData);
 
         return $amount;
@@ -166,12 +156,10 @@ class CreateAnonymousOffersByMovements
         $reviewer = $this->getReviewerAction->execute();
         $currentDate = date('Y-m-d');
 
-        // Get last day of the month from referenceDate (YYYY-MM format)
-        // Parse the reference date and get the last day of that month
         [$year, $month] = explode('-', $referenceDate);
         $lastDayOfMonth = \Carbon\Carbon::create($year, $month, 1)->endOfMonth()->format('Y-m-d');
 
-        // Create EntryData for anonymous offers
+
         $entryData = new EntryData([
             'id' => null,
             'amount' => $amount,
@@ -197,7 +185,6 @@ class CreateAnonymousOffersByMovements
             'duplicityVerified' => false,
         ]);
 
-        // Create the entry
         $this->createEntryAction->execute($entryData, null);
 
         return $amount;

@@ -48,7 +48,7 @@ class HandleFileProcessAction
 
         if($statusChanged)
         {
-            ProcessAccountFileJob::dispatch($fileId, $processingType, $tenant);
+            ProcessAccountFileJob::dispatchSync($fileId, $processingType, $tenant);
         }
     }
 }

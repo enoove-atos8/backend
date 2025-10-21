@@ -34,7 +34,6 @@ class CreateBulkMovementsAction
     {
         $result = $this->accountMovementsRepository->bulkCreateMovements($movements, $accountId, $fileId);
 
-        // Create anonymous offers entry after bulk insertion if reference date is provided
         if ($result && $referenceDate) {
             $this->createAnonymousOffersByMovements->execute($accountId, $referenceDate);
         }
