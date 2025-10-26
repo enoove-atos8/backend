@@ -5,14 +5,18 @@ namespace Application\Core\Jobs\Financial\Entries\Reports;
 use App\Domain\CentralDomain\Plans\Actions\GetPlansAction;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Reports\GenerateMonthlyEntriesReport;
 use App\Infrastructure\Services\Atos8\Financial\Entries\Reports\GenerateMonthlyReceiptsReport;
-use App\Infrastructure\Services\Atos8\Financial\Entries\Reports\GenerateQuarterlyEntriesReports;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;
 use Domain\Financial\Entries\Reports\Actions\GetReportsRequestsAction;
 use Domain\Financial\Entries\Reports\Actions\GetReportsRequestsByStatusAction;
 use Domain\Financial\Entries\Reports\Actions\UpdateStatusReportRequestsAction;
+use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Bus\Dispatchable;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
@@ -20,13 +24,13 @@ use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Financial\Entries\Reports\MonthlyReportsRepository;
 use Throwable;
 
-class HandlerEntriesReports
+class HandlerEntriesReports implements ShouldQueue
 {
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     private GetReportsRequestsAction $getReportsRequestsAction;
     private GenerateMonthlyEntriesReport $generateMonthlyEntriesReport;
     private GenerateMonthlyReceiptsReport $generateMonthlyReceiptsReport;
-    private GenerateQuarterlyEntriesReports $generateQuarterlyEntriesReports;
     private GetPlansAction $getPlansAction;
     private GetChurchesAction $getChurchesAction;
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
@@ -34,27 +38,8 @@ class HandlerEntriesReports
     private UpdateStatusReportRequestsAction $updateStatusReportRequestsAction;
 
 
-    public function __construct(
-        GetReportsRequestsAction $getReportsRequestsAction,
-        GenerateMonthlyEntriesReport $generateMonthlyEntriesReport,
-        GenerateMonthlyReceiptsReport $generateMonthlyReceiptsReport,
-        GenerateQuarterlyEntriesReports $generateQuarterlyEntriesReports,
-        GetPlansAction $getPlansAction,
-        GetChurchesAction $getChurchesAction,
-        GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
-        UpdateStatusReportRequestsAction $updateStatusReportRequestsAction,
-        GetReportsRequestsByStatusAction $getReportsRequestsByStatusAction,
-    )
+    public function __construct()
     {
-        $this->getReportsRequestsAction = $getReportsRequestsAction;
-        $this->generateMonthlyEntriesReport = $generateMonthlyEntriesReport;
-        $this->generateMonthlyReceiptsReport = $generateMonthlyReceiptsReport;
-        $this->generateQuarterlyEntriesReports = $generateQuarterlyEntriesReports;
-        $this->getPlansAction = $getPlansAction;
-        $this->getChurchesAction = $getChurchesAction;
-        $this->getChurchesByPlanIdAction = $getChurchesByPlanIdAction;
-        $this->getReportsRequestsByStatusAction = $getReportsRequestsByStatusAction;
-        $this->updateStatusReportRequestsAction = $updateStatusReportRequestsAction;
     }
 
 
@@ -62,16 +47,25 @@ class HandlerEntriesReports
      * @throws GeneralExceptions
      * @throws BindingResolutionException|Throwable
      */
-    public function handle(): void
+    public function handle(
+        GetReportsRequestsAction $getReportsRequestsAction,
+        GenerateMonthlyEntriesReport $generateMonthlyEntriesReport,
+        GenerateMonthlyReceiptsReport $generateMonthlyReceiptsReport,
+        GetPlansAction $getPlansAction,
+        GetChurchesAction $getChurchesAction,
+        GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
+        UpdateStatusReportRequestsAction $updateStatusReportRequestsAction,
+        GetReportsRequestsByStatusAction $getReportsRequestsByStatusAction,
+    ): void
     {
-        $tenants = $this->getActiveTenants();
+        $tenants = $this->getActiveTenants($getChurchesAction);
         //$tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
 
         foreach ($tenants as $tenant)
         {
             tenancy()->initialize($tenant);
 
-            $reports = $this->getReportsRequestsByStatusAction->execute(MonthlyReportsRepository::TO_PROCESS_STATUS_VALUE);
+            $reports = $getReportsRequestsByStatusAction->execute(MonthlyReportsRepository::TO_PROCESS_STATUS_VALUE);
 
             if(count($reports) > 0)
             {
@@ -79,24 +73,24 @@ class HandlerEntriesReports
                 {
                     try
                     {
-                        $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::IN_PROGRESS_STATUS_VALUE);
+                        $updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::IN_PROGRESS_STATUS_VALUE);
 
                         if($report->reportName == MonthlyReportsRepository::MONTHLY_RECEIPTS_REPORT_NAME)
-                            $this->generateMonthlyReceiptsReport->execute($report, $tenant);
+                            $generateMonthlyReceiptsReport->execute($report, $tenant);
 
                         if($report->reportName == MonthlyReportsRepository::MONTHLY_ENTRIES_REPORT_NAME)
-                            $this->generateMonthlyEntriesReport->execute($report, $tenant);
+                            $generateMonthlyEntriesReport->execute($report, $tenant);
 
                         //if($report->report_name == MonthlyReportsRepository::MONTHLY_ENTRIES_REPORT_NAME)
-                        //    $this->generateQuarterlyEntriesReports->execute();
+                        //    $generateQuarterlyEntriesReports->execute();
                     }
                     catch(GeneralExceptions $e)
                     {
                         if($e->getCode() == 404)
-                            $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
+                            $updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
 
                         if($e->getCode() == 500)
-                            $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::ERROR_STATUS_VALUE);
+                            $updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::ERROR_STATUS_VALUE);
 
                         throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
                     }
@@ -111,10 +105,10 @@ class HandlerEntriesReports
     /**
      * @throws Throwable
      */
-    public function getActiveTenants(): array
+    public function getActiveTenants($getChurchesAction): array
     {
         $arrTenants = [];
-        $tenants = $this->getChurchesAction->execute();
+        $tenants = $getChurchesAction->execute();
 
         if(count($tenants) > 0)
         {

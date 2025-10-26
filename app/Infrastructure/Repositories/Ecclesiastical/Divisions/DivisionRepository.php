@@ -81,6 +81,26 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
         );
     }
 
+    /**
+     * Get divisions mapped to DivisionData objects
+     *
+     * @param int $enabled
+     * @return Collection
+     * @throws UnknownProperties
+     */
+    public function getDivisionsData(int $enabled = 1): Collection
+    {
+        $divisions = $this->model
+            ->select(self::DISPLAY_SELECT_COLUMNS)
+            ->where(self::ENABLED_COLUMN, BaseRepository::OPERATORS['EQUALS'], $enabled)
+            ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['ASC'])
+            ->get();
+
+        return $divisions->map(function ($division) {
+            return DivisionData::fromResponse($division->getAttributes());
+        });
+    }
+
 
     /**
      * @param int $id

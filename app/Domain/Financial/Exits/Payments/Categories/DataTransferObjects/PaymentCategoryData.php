@@ -7,6 +7,8 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class PaymentCategoryData extends DataTransferObject
 {
+    const NAME_PROPERTY = 'name';
+
     /** @var integer | null */
     public ?int $id;
 

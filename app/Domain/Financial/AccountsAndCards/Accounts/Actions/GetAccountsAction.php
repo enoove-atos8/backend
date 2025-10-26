@@ -22,10 +22,11 @@ class GetAccountsAction
     /**
      * Execute the action to save a card.
      *
+     * @param bool $returnDeactivatesAccounts
      * @return Collection
      */
-    public function execute(): Collection
+    public function execute(bool $returnDeactivatesAccounts = false): Collection
     {
-        return $this->accountRepository->getAccounts();
+        return $this->accountRepository->getAccounts($returnDeactivatesAccounts);
     }
 }

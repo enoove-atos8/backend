@@ -11,7 +11,7 @@ use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 
 interface ExitRepositoryInterface
 {
-    public function getExits(?string $dates, array $filters, array $orderBy, string $transactionCompensation = ExitRepository::COMPENSATED_VALUE, bool $paginate = true, bool $queryOnlyExitsTable = false): Collection | Paginator;
+    public function getExits(?string $dates, array $filters, array $orderBy, string $transactionCompensation, bool $paginate = true, bool $queryOnlyExitsTable = false): Collection | Paginator;
     public function getAmountByExitType(string $dates, string $exitType = '*'): mixed;
     public function getExitByTimestamp(string $timestamp): Model | null;
 

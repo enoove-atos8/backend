@@ -36,6 +36,16 @@ interface AccountFileRepositoryInterface
 
 
     /**
+     * Verify id exist file to account id and reference date
+     *
+     * @param int $accountId
+     * @param string $referenceDate
+     * @return mixed
+     */
+    public function existFileByReferenceDate(int $accountId, string $referenceDate): bool;
+
+
+    /**
      * Get files by id
      *
      * @param int $id

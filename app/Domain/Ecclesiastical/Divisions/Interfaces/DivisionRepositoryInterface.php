@@ -16,5 +16,6 @@ interface DivisionRepositoryInterface
     public function getDivisionByName(string $division): ?DivisionData;
     public function getDivisionById(int $id): Model | null;
     public function getDivisions(int $enabled): Collection;
+    public function getDivisionsData(int $enabled = 1): Collection;
     public function createDivision(DivisionData $divisionData): Division;
 }

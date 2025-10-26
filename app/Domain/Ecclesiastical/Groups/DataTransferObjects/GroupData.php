@@ -8,6 +8,11 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class GroupData extends DataTransferObject
 {
+    const ID_PROPERTY = 'id';
+    const NAME_PROPERTY = 'name';
+    const GROUPS_NAME_PROPERTY = 'groups_name';
+    const DIVISION_ID_PROPERTY = 'groups_division_id';
+
     /** @var null | integer  */
     public ?int $id;
 

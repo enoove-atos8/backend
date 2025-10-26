@@ -28,9 +28,10 @@ interface AccountRepositoryInterface
     /**
      * Get accounts
      *
+     * @param bool $returnDeactivatesAccounts
      * @return Collection
      */
-    public function getAccounts(): Collection;
+    public function getAccounts(bool $returnDeactivatesAccounts): Collection;
 
 
     /**
