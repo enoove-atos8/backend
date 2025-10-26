@@ -24,6 +24,7 @@ use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InvoiceController;
+use Application\Api\v1\Financial\Exits\Reports\Controllers\MonthlyExitsReportsController;
 use Application\Api\v1\Financial\Movements\Controllers\MovementController;
 use Application\Api\v1\Financial\ReceiptProcessing\Controllers\ReceiptProcessingController;
 use Application\Api\v1\Mobile\SyncStorage\Controllers\SyncStorageController;
@@ -852,6 +853,46 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     });
 
 
+
+                });
+
+
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | Reports Financial routes
+                |--------------------------------------------------------------------------
+                |
+                */
+                Route::prefix('reports')->group(function () {
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyReceiptsReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyReceiptsReport', [MonthlyExitsReportsController::class, 'generateMonthlyExitsReceiptsReport']);
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyExitsReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyExitsReport', [MonthlyExitsReportsController::class, 'generateMonthlyExitsReport']);
+
+
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::get('/getReports', [MonthlyExitsReportsController::class, 'getReports']);
 
                 });
             });

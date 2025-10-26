@@ -22,12 +22,14 @@ class GetExitsAction
     /**
      * @throws Throwable
      */
-    public function execute(null | string $dates, array $filters): Collection | Paginator
+    public function execute(null | string $dates, array $filters, bool $paginate = true): Collection | Paginator
     {
         return $this->exitRepository->getExits(
             $dates,
             $filters,
             [ExitRepository::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, ExitRepository::ID_COLUMN_JOINED],
+            ExitRepository::COMPENSATED_VALUE,
+            $paginate
         );
     }
 }

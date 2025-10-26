@@ -17,6 +17,13 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class ExitData extends DataTransferObject
 {
+    const ACCOUNT_ID_PROPERTY = 'accountId';
+    const AMOUNT_PROPERTY = 'amount';
+    const EXIT_TYPE_PROPERTY = 'exitType';
+    const GROUP_PROPERTY = 'group';
+    const PAYMENT_CATEGORY_PROPERTY = 'paymentCategory';
+    const PAYMENT_ITEM_PROPERTY = 'paymentItem';
+
     /** @var integer | null */
     public ?int $id;
 

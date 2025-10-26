@@ -43,6 +43,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
 
     const REVIEWER_ID_COLUMN_JOINED = 'exits.reviewer_id';
     const ACCOUNT_ID_COLUMN_JOINED = 'exits.account_id';
+    const ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE = 'exits_account_id';
     const DIVISION_ID_COLUMN_JOINED = 'exits.division_id';
     const GROUP_ID_COLUMN_JOINED = 'exits.group_id';
     const PAYMENT_CATEGORY_ID_COLUMN_JOINED = 'exits.payment_category_id';
@@ -132,7 +133,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         ?string $dates,
         array $filters,
         array $orderBy,
-        string $transactionCompensation = self::COMPENSATED_VALUE,
+        string $transactionCompensation,
         bool $paginate = true,
         bool $queryOnlyExitsTable = false): Collection | Paginator
     {
@@ -420,7 +421,8 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             }
             else
             {
-                return collect($q)->map(fn($item) => ExitData::fromResponse((array) $item));
+                $result = $q->get();
+                return collect($result)->map(fn($item) => ExitData::fromResponse((array) $item));
             }
         };
 

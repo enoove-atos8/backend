@@ -43,15 +43,6 @@ class Kernel extends ConsoleKernel
             }
         })->everyFifteenMinutes();
 
-        // Reports
-        $schedule->call(function () {
-            try{
-                resolve(HandlerEntriesReports::class)->handle();
-            }catch (\Throwable $e){
-                throw new GeneralExceptions('Erro na execução do agendamento HandlerEntriesReports', 500, $e);
-            }
-        })->everyMinute();
-
 
         // Purchases
         $schedule->call(function () {
@@ -81,8 +72,6 @@ class Kernel extends ConsoleKernel
      */
     protected function commands(): void
     {
-        $this->load(__DIR__.'/Commands');
-
         require base_path('routes/console.php');
     }
 }

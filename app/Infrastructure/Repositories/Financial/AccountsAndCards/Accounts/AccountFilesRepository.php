@@ -17,6 +17,7 @@ class AccountFilesRepository extends BaseRepository implements AccountFileReposi
 
     const TABLE_NAME = 'accounts_files';
     const DELETED_COLUMN = 'deleted';
+    const REFERENCE_DATE_COLUMN = 'reference_date';
 
     const ID_COLUMN_JOINED = 'accounts_files.id';
     const ACCOUNT_ID_COLUMN_JOINED = 'accounts_files.account_id';
@@ -138,10 +139,33 @@ class AccountFilesRepository extends BaseRepository implements AccountFileReposi
     }
 
 
+    /**
+     * @param int $accountId
+     * @param string $referenceDate
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function existFileByReferenceDate(int $accountId, string $referenceDate): bool
+    {
+        $query = function () use ($accountId, $referenceDate){
+
+            $q = DB::table(self::TABLE_NAME)
+                ->where(self::ACCOUNT_ID_COLUMN_JOINED, BaseRepository::OPERATORS['EQUALS'], $accountId)
+                ->where(self::REFERENCE_DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $referenceDate)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false);
+
+
+            $result = $q->get();
+            return count($result) > 0;
+        };
+
+        return $this->doQuery($query);
+    }
+
 
     /**
      * @param int $id
-     * @return \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\Files\\App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
+     * @return AccountFileData \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
      * @throws BindingResolutionException
      */
     public function getFilesById(int $id): AccountFileData

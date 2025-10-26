@@ -10,6 +10,7 @@ use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountsAction;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\SaveAccountAction;
 use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
 use Exception;
+use Illuminate\Http\Request;
 use Illuminate\Routing\ResponseFactory;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Symfony\Component\Console\Application;
@@ -69,18 +70,18 @@ class AccountController extends Controller
     }
 
 
-
-
     /**
+     * @param Request $request
      * @param GetAccountsAction $getAccountsAction
      * @return AccountsResourcesCollection
      * @throws GeneralExceptions
      */
-    public function getAccounts(GetAccountsAction $getAccountsAction): AccountsResourcesCollection
+    public function getAccounts(Request $request, GetAccountsAction $getAccountsAction): AccountsResourcesCollection
     {
         try
         {
-            $cards = $getAccountsAction->execute();
+            $returnDeactivatesAccounts = $request->boolean('returnDeactivatesAccounts');
+            $cards = $getAccountsAction->execute($returnDeactivatesAccounts);
 
             return new AccountsResourcesCollection($cards);
         }

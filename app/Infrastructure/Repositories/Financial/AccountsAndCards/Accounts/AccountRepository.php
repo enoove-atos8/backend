@@ -73,21 +73,23 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
     }
 
 
-
-
     /**
      * Get all cards from the database.
      *
+     * @param bool $returnDeactivatesAccounts
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAccounts(): Collection
+    public function getAccounts(bool $returnDeactivatesAccounts): Collection
     {
-        $query = function () {
+        $query = function () use ($returnDeactivatesAccounts) {
 
-            $q = DB::table(self::TABLE_NAME)
-                ->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 1)
-                ->orderBy(self::ID_COLUMN);
+            $q = DB::table(self::TABLE_NAME);
+
+            if(!$returnDeactivatesAccounts)
+                $q->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], true);
+
+            $q->orderBy(self::ID_COLUMN);
 
 
             $result = $q->get();

@@ -8,6 +8,9 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class DivisionData extends DataTransferObject
 {
+    const ID_PROPERTY = 'id';
+    const NAME_PROPERTY = 'name';
+
     /** @var null | integer  */
     public ?int $id;
 

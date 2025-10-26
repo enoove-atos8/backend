@@ -11,7 +11,7 @@ use Throwable;
 
 class GetDivisionsAction
 {
-    private DivisionRepository $divisionRepository;
+    private DivisionRepositoryInterface $divisionRepository;
 
     public function __construct(
         DivisionRepositoryInterface  $divisionRepositoryInterface,

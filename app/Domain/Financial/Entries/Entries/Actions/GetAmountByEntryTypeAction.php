@@ -32,7 +32,7 @@ class GetAmountByEntryTypeAction
     public function execute($rangeMonthlyDate, $entryType = 'all'): ?array
     {
         $entries = $this->entryRepository->getAmountByEntryType($rangeMonthlyDate, $entryType);
-        $accounts = $this->getAccountsAction->execute();
+        $accounts = $this->getAccountsAction->execute(true);
 
         $groupByAccounts = function ($collection) use ($accounts)
         {
