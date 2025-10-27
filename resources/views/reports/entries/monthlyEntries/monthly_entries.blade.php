@@ -174,6 +174,8 @@
 
 <div class="page-break"></div>
 
+{{-- ENTRADAS DESIGNADAS --}}
+@if(count($reportData->designatedEntriesData) > 0)
 <div class="w-full text-left p-0">
     <div class="bg-card w-full rounded-none bg-transparent shadow-none">
         <div class="w-full">
@@ -187,12 +189,21 @@
                     <div class="grid grid-cols-11 gap-x-1 gap-y-4">
                         @php $totalDesignatedAmount = 0; @endphp
 
-                        @foreach($reportData->designatedEntriesData as $designatedEntry)
-                            <div class="col-span-8 text-md font-medium">{{ $designatedEntry->name }}</div>
-                            <div class="self-center text-right">{{ $designatedEntry->qtd }}</div>
-                            <div class="col-span-2 self-center text-right">R$ {{ number_format($designatedEntry->total, 2, ',', '.') }}</div>
-                            <div class="col-span-11 border-b border-gray-300 {{ $loop->last ? 'my-2' : '' }}"></div>
-                            @php $totalDesignatedAmount += $designatedEntry->total; @endphp
+                        @foreach($reportData->designatedEntriesData as $division)
+                            {{-- Division Header --}}
+                            <div class="col-span-8 text-md font-bold text-gray-800">{{ $division->divisionName }}</div>
+                            <div class="self-center text-right font-semibold">{{ $division->divisionQtd }}</div>
+                            <div class="col-span-2 self-center text-right font-semibold">R$ {{ number_format($division->divisionTotal, 2, ',', '.') }}</div>
+
+                            {{-- Division Groups --}}
+                            @foreach($division->groups as $group)
+                                <div class="col-span-8 text-sm pl-4">{{ $group->groupName }}</div>
+                                <div class="self-center text-right text-sm">{{ $group->qtd }}</div>
+                                <div class="col-span-2 self-center text-right text-sm">R$ {{ number_format($group->total, 2, ',', '.') }}</div>
+                            @endforeach
+
+                            <div class="col-span-11 border-b border-gray-300"></div>
+                            @php $totalDesignatedAmount += $division->divisionTotal; @endphp
                         @endforeach
 
                         <div class="col-span-11 text-right">
@@ -204,5 +215,6 @@
         </div>
     </div>
 </div>
+@endif
 </body>
 </html>
