@@ -10,7 +10,10 @@ use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
 use Carbon\Carbon;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
+use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsDataAction;
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
+use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountByIdAction;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountsAction;
 use Infrastructure\Repositories\BaseRepository;
@@ -39,9 +42,12 @@ class GenerateMonthlyEntriesReport
     private UpdateMonthlyEntriesAmountAction $updateMonthlyEntriesAmountAction;
     private GetGroupsByIdAction $getGroupsByIdAction;
     private GetAllGroupsAction $getAllGroupsAction;
+    private GetDivisionsDataAction $getDivisionsDataAction;
     private GetChurchAction $getChurchAction;
     private GetAccountByIdAction $getAccountByIdAction;
     private UploadFile $uploadFile;
+    private $groups;
+    private $divisions;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
     const S3_PATH_MONTHLY_ENTRIES_REPORTS = 'reports/financial/entries/monthly_entries';
@@ -68,6 +74,7 @@ class GenerateMonthlyEntriesReport
         GetChurchAction $getChurchAction,
         GetAccountByIdAction $getAccountByIdAction,
         GetAllGroupsAction $getAllGroupsAction,
+        GetDivisionsDataAction $getDivisionsDataAction,
         UpdateMonthlyEntriesAmountAction $updateMonthlyEntriesAmountAction
     )
     {
@@ -80,7 +87,30 @@ class GenerateMonthlyEntriesReport
         $this->getChurchAction = $getChurchAction;
         $this->getAccountByIdAction = $getAccountByIdAction;
         $this->getAllGroupsAction = $getAllGroupsAction;
+        $this->getDivisionsDataAction = $getDivisionsDataAction;
         $this->updateMonthlyEntriesAmountAction = $updateMonthlyEntriesAmountAction;
+    }
+
+    /**
+     * Load all groups once to be reused across multiple functions.
+     *
+     * @return void
+     * @throws Throwable
+     */
+    private function loadGroups(): void
+    {
+        $this->groups = $this->getAllGroupsAction->execute();
+    }
+
+    /**
+     * Load all divisions once to be reused across multiple functions.
+     *
+     * @return void
+     * @throws Throwable
+     */
+    private function loadDivisions(): void
+    {
+        $this->divisions = $this->getDivisionsDataAction->execute();
     }
 
     /**
@@ -193,7 +223,7 @@ class GenerateMonthlyEntriesReport
 
 
     /**
-     * Prepares designated entries data grouped by group.
+     * Prepares designated entries data grouped by division and group.
      *
      * @param $entries
      * @return array
@@ -201,31 +231,53 @@ class GenerateMonthlyEntriesReport
      */
     private function prepareDesignatedData($entries): array
     {
-        $groups = $this->getAllGroupsAction->execute();
         $designated = $entries->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::DESIGNATED_VALUE);
 
-        $groupedData = [];
+        $groupedByDivision = [];
 
         foreach ($designated as $entry) {
             $groupId = $entry->entries_group_received_id;
             $amount = $entry->entries_amount;
 
-            if (!isset($groupedData[$groupId])) {
-                $group = $groups->firstWhere(GroupsRepository::GROUP_ID_WITH_UNDERLINE, $groupId);
-                $groupName = $group ? $group->groups_name : 'Sem Grupo';
+            // Find group and get division info
+            $group = $this->groups->firstWhere(GroupsRepository::GROUP_ID_WITH_UNDERLINE, $groupId);
+            $groupName = $group ? $group->{GroupData::GROUPS_NAME_PROPERTY} : 'Sem Grupo';
+            $divisionId = $group ? $group->{GroupData::DIVISION_ID_PROPERTY} : null;
 
-                $groupedData[$groupId] = (object) [
-                    'name' => $groupName,
+            // Find division
+            $division = $this->divisions->firstWhere(DivisionData::ID_PROPERTY, $divisionId);
+            $divisionName = $division ? $division->{DivisionData::NAME_PROPERTY} : 'Sem Divisão';
+
+            if (!isset($groupedByDivision[$divisionId])) {
+                $groupedByDivision[$divisionId] = [
+                    'divisionName' => $divisionName,
+                    'groups' => [],
+                    'divisionTotal' => 0,
+                    'divisionQtd' => 0
+                ];
+            }
+
+            if (!isset($groupedByDivision[$divisionId]['groups'][$groupId])) {
+                $groupedByDivision[$divisionId]['groups'][$groupId] = (object) [
+                    'groupName' => $groupName,
                     'qtd' => 0,
                     'total' => 0
                 ];
             }
 
-            $groupedData[$groupId]->qtd++;
-            $groupedData[$groupId]->total += $amount;
+            $groupedByDivision[$divisionId]['groups'][$groupId]->qtd++;
+            $groupedByDivision[$divisionId]['groups'][$groupId]->total += $amount;
+            $groupedByDivision[$divisionId]['divisionQtd']++;
+            $groupedByDivision[$divisionId]['divisionTotal'] += $amount;
         }
 
-        return array_values($groupedData);
+        // Convert groups arrays to objects
+        foreach ($groupedByDivision as &$division) {
+            $division['groups'] = array_values($division['groups']);
+            $division = (object) $division;
+        }
+
+        return array_values($groupedByDivision);
     }
 
     /**
@@ -332,6 +384,9 @@ class GenerateMonthlyEntriesReport
             {
                 $entries = $this->getEntriesAction->execute($dates, [], false)
                     ->where(EntryRepository::ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], $report->accountId);
+
+                $this->loadGroups();
+                $this->loadDivisions();
 
                 $reportDataInfo = $this->prepareGeneralReportData($entries, $report, $dates, $tenant);
                 $entriesData = $this->prepareEntriesData($entries, $report);
