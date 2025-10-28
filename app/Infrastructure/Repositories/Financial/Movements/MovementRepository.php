@@ -2,18 +2,14 @@
 
 namespace Infrastructure\Repositories\Financial\Movements;
 
-
-use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Domain\Financial\Movements\Models\Movement;
-use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
-use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class MovementRepository extends BaseRepository implements MovementRepositoryInterface
@@ -21,18 +17,31 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     protected mixed $model = Movement::class;
 
     const TABLE_NAME = 'movements';
+
     const ID_COLUMN = 'movements.id';
+
     const GROUP_ID_COLUMN = 'movements.group_id';
+
     const TYPE_COLUMN = 'movements.type';
+
     const AMOUNT_COLUMN = 'amount';
+
     const BALANCE_COLUMN = 'balance';
+
     const DESCRIPTION_COLUMN = 'description';
+
     const MOVEMENT_DATE_COLUMN = 'movement_date';
+
     const REFERENCE_COLUMN = 'reference';
+
     const IS_INITIAL_BALANCE_COLUMN = 'is_initial_balance';
+
     const DELETED_COLUMN = 'deleted';
+
     const ENTRY_ID_COLUMN = 'entry_id';
+
     const EXIT_ID_COLUMN = 'exit_id';
+
     const PAGINATE_NUMBER = 30;
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -55,12 +64,6 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
      */
     private array $queryConditions = [];
 
-
-
-    /**
-     * @param MovementsData $movementsData
-     * @return Movement
-     */
     public function createMovement(MovementsData $movementsData): Movement
     {
         return $this->create([
@@ -78,20 +81,17 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         ]);
     }
 
-
     /**
-     * @param int $groupId
-     * @return bool
      * @throws BindingResolutionException
      */
     public function resetBalance(int $groupId): bool
     {
-        $conditions =[
+        $conditions = [
             [
                 'field' => self::GROUP_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => $groupId,
-            ]
+            ],
         ];
 
         return $this->update($conditions, [
@@ -99,22 +99,18 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         ]);
     }
 
-
     /**
      * Get movements by group and optionally return indicators (entries, exits, current balance)
      *
-     * @param int $groupId
-     * @param string|null $dates
-     * @param bool $paginate
-     * @param bool $forIndicators Quando true, retorna formato adequado para indicadores
-     * @return Collection|Paginator
+     * @param  bool  $forIndicators  Quando true, retorna formato adequado para indicadores
+     *
      * @throws BindingResolutionException
      */
-    public function getMovementsByGroup(int $groupId, ?string $dates = 'all', bool $paginate = true, bool $forIndicators = false): Collection | Paginator
+    public function getMovementsByGroup(int $groupId, ?string $dates = 'all', bool $paginate = true, bool $forIndicators = false): Collection|Paginator
     {
         $arrDates = [];
 
-        if($dates != 'all' && $dates != null) {
+        if ($dates != 'all' && $dates != null) {
             $arrDates = explode(',', $dates);
         }
 
@@ -128,7 +124,7 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
                 ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
                 ->where(self::GROUP_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $groupId);
 
-            if(isset($arrDates) && count($arrDates) > 0) {
+            if (isset($arrDates) && count($arrDates) > 0) {
                 $q->where(function ($query) use ($arrDates) {
                     foreach ($arrDates as $date) {
                         $query->orWhere(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
@@ -136,37 +132,28 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
                 });
             }
 
-
-            if (!$forIndicators)
-            {
+            if (! $forIndicators) {
                 $q->orderBy(self::MOVEMENT_DATE_COLUMN)
-                  ->orderBy(self::ID_COLUMN);
+                    ->orderBy(self::ID_COLUMN);
             }
 
-
-            if ($forIndicators || !$paginate)
-            {
+            if ($forIndicators || ! $paginate) {
                 $result = $q->get();
-                return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
-            }
-            else
-            {
+
+                return collect($result)->map(fn ($item) => MovementsData::fromResponse((array) $item));
+            } else {
                 $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => MovementsData::fromResponse((array) $item)));
+
+                return $paginator->setCollection($paginator->getCollection()->map(fn ($item) => MovementsData::fromResponse((array) $item)));
             }
         };
 
         return $this->doQuery($query);
     }
 
-
-
-
     /**
      * Get initial balance movement for a group
      *
-     * @param int $groupId
-     * @return MovementsData|null
      * @throws BindingResolutionException
      * @throws UnknownProperties
      */
@@ -186,12 +173,9 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         return MovementsData::fromResponse((array) $result);
     }
 
-
     /**
      * Get movement by entry id
      *
-     * @param int $entryId
-     * @return MovementsData|null
      * @throws BindingResolutionException
      * @throws UnknownProperties
      */
@@ -201,20 +185,37 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
             ->where(self::ENTRY_ID_COLUMN, $entryId)
             ->first();
 
-        if (!$movement) {
+        if (! $movement) {
             return null;
         }
 
         $attributes = $movement->getAttributes();
+
         return MovementsData::fromResponse($attributes);
     }
 
+    /**
+     * Get movement by exit id
+     *
+     * @throws BindingResolutionException
+     * @throws UnknownProperties
+     */
+    public function getMovementsByExitIdAction(int $exitId): ?MovementsData
+    {
+        $movement = $this->model
+            ->where(self::EXIT_ID_COLUMN, $exitId)
+            ->first();
 
+        if (! $movement) {
+            return null;
+        }
 
+        $attributes = $movement->getAttributes();
+
+        return MovementsData::fromResponse($attributes);
+    }
 
     /**
-     * @param int $id
-     * @return mixed
      * @throws BindingResolutionException
      */
     public function deleteMovement(int $id): mixed
@@ -227,20 +228,18 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
             ];
 
         return $this->update($conditions, [
-            'deleted'  =>   1,
+            'deleted' => 1,
         ]);
     }
 
     /**
      * Mark all movements of a group as deleted
      *
-     * @param int $groupId
-     * @return mixed
      * @throws BindingResolutionException
      */
     public function deleteMovementsOfGroup(int $groupId): mixed
     {
-        $conditions =[
+        $conditions = [
             [
                 'field' => self::GROUP_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
@@ -250,7 +249,7 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
                 'field' => self::IS_INITIAL_BALANCE_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => 0,
-            ]
+            ],
         ];
 
         return $this->update($conditions, [
@@ -258,20 +257,16 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         ]);
     }
 
-
     /**
-     * @param int|null $entryId
-     * @param int|null $exitId
-     * @return mixed
      * @throws BindingResolutionException
      */
-    public function deleteMovementByEntryOrExitId(int $entryId = null, int $exitId = null): mixed
+    public function deleteMovementByEntryOrExitId(?int $entryId = null, ?int $exitId = null): mixed
     {
-        $conditions =[
+        $conditions = [
             [
-                'field' => !is_null($entryId) ? self::ENTRY_ID_COLUMN : self::EXIT_ID_COLUMN,
+                'field' => ! is_null($entryId) ? self::ENTRY_ID_COLUMN : self::EXIT_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => !is_null($entryId) ? $entryId : $exitId,
+                'value' => ! is_null($entryId) ? $entryId : $exitId,
             ],
         ];
 
@@ -283,8 +278,6 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
     /**
      * Get deleted movements for a group
      *
-     * @param int $groupId
-     * @return Collection
      * @throws BindingResolutionException
      */
     public function getDeletedMovementsByGroup(int $groupId): Collection
@@ -299,12 +292,6 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         );
     }
 
-
-
-    /**
-     * @param int $referenceId
-     * @return Movement|null
-     */
     public function getMovementByReference(int $referenceId): ?Movement
     {
         // TODO: Implement getMovementByReference() method.
@@ -312,41 +299,31 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
 
     /**
      * Get the balance from a movement
-     *
-     * @param Movement|null $movement
-     * @return float
      */
     public function getMovementBalance(?Movement $movement): float
     {
-        return $movement ? (float)$movement->balance : 0.0;
+        return $movement ? (float) $movement->balance : 0.0;
     }
 
     /**
      * Get the amount from a movement
-     *
-     * @param Movement|null $movement
-     * @return float
      */
     public function getMovementAmount(?Movement $movement): float
     {
-        return $movement ? (float)$movement->amount : 0.0;
+        return $movement ? (float) $movement->amount : 0.0;
     }
 
-
     /**
-     * @param int $movementId
-     * @param float $newBalance
-     * @return void
      * @throws BindingResolutionException
      */
     public function updateMovementBalance(int $movementId, float $newBalance): void
     {
-        $conditions =[
+        $conditions = [
             [
                 'field' => self::ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => $movementId,
-            ]
+            ],
         ];
 
         $this->update($conditions, [
@@ -354,21 +331,17 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         ]);
     }
 
-
     /**
-     * @param int $movementId
-     * @param float $newAmount
-     * @return void
      * @throws BindingResolutionException
      */
     public function updateMovementAmount(int $movementId, float $newAmount): void
     {
-        $conditions =[
+        $conditions = [
             [
                 'field' => self::ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => $movementId,
-            ]
+            ],
         ];
 
         $this->update($conditions, [
@@ -376,21 +349,20 @@ class MovementRepository extends BaseRepository implements MovementRepositoryInt
         ]);
     }
 
-
     public function addInitialBalance(MovementsData $movementsData): Movement
     {
         return $this->create([
-            'group_id'             =>   $movementsData->groupId,
-            'entry_id'             =>   $movementsData->entryId,
-            'exit_id'              =>   $movementsData->exitId,
-            'type'                 =>   $movementsData->type,
-            'sub_type'             =>   $movementsData->subType,
-            'amount'               =>   $movementsData->amount,
-            'balance'              =>   $movementsData->balance,
-            'description'          =>   $movementsData->description,
-            'movement_date'        =>   $movementsData->movementDate,
-            'is_initial_balance'   =>   $movementsData->isInitialBalance,
-            'deleted'              =>   $movementsData->deleted,
+            'group_id' => $movementsData->groupId,
+            'entry_id' => $movementsData->entryId,
+            'exit_id' => $movementsData->exitId,
+            'type' => $movementsData->type,
+            'sub_type' => $movementsData->subType,
+            'amount' => $movementsData->amount,
+            'balance' => $movementsData->balance,
+            'description' => $movementsData->description,
+            'movement_date' => $movementsData->movementDate,
+            'is_initial_balance' => $movementsData->isInitialBalance,
+            'deleted' => $movementsData->deleted,
         ]);
     }
 }

@@ -5,7 +5,6 @@ namespace Infrastructure\Repositories\Financial\AccountsAndCards\Card;
 use App\Domain\Financial\Exits\Purchases\DataTransferObjects\CardPurchaseData;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardPurchaseRepositoryInterface;
 use App\Domain\Financial\Exits\Purchases\Models\CardPurchase;
-use Domain\Financial\Movements\Models\Movement;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -14,7 +13,6 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepositoryInterface
 {
-
     protected mixed $model = CardPurchase::class;
 
     const TABLE_NAME = 'cards_purchases';
@@ -22,12 +20,14 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
     const ID_COLUMN = 'id';
 
     const CARD_ID_COLUMN = 'card_id';
+
     const INVOICE_ID_COLUMN = 'invoice_id';
+
     const PURCHASE_DATE_COLUMN = 'purchase_date';
+
     const PENDING_VALUE = 'pending';
+
     const INVOICED_VALUE = 'invoiced';
-
-
 
     const DISPLAY_SELECT_COLUMNS = [
         'cards_purchases.id as cards_purchases_id',
@@ -44,42 +44,36 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
         'cards_purchases.receipt as cards_purchases_receipt',
     ];
 
-
     /**
      * Array of conditions
      */
     private array $queryConditions = [];
 
-
     /**
-     * @param CardPurchaseData $cardPurchaseData
-     * @return CardPurchaseData
      * @throws UnknownProperties
      */
     public function createPurchase(CardPurchaseData $cardPurchaseData): CardPurchaseData
     {
         $created = $this->create([
-            'card_id'               =>  $cardPurchaseData->cardId,
-            'group_id'              =>  $cardPurchaseData->groupId,
-            'status'                =>  $cardPurchaseData->status,
-            'amount'                =>  $cardPurchaseData->amount,
-            'installments'          =>  $cardPurchaseData->installments,
-            'installment_amount'    =>  $cardPurchaseData->installmentAmount,
-            'establishment_name'    =>  $cardPurchaseData->establishmentName,
-            'purchase_description'  =>  $cardPurchaseData->purchaseDescription,
-            'date'                  =>  $cardPurchaseData->date,
-            'deleted'               =>  $cardPurchaseData->deleted,
-            'receipt'               =>  $cardPurchaseData->receipt,
+            'card_id' => $cardPurchaseData->cardId,
+            'group_id' => $cardPurchaseData->groupId,
+            'status' => $cardPurchaseData->status,
+            'amount' => $cardPurchaseData->amount,
+            'installments' => $cardPurchaseData->installments,
+            'installment_amount' => $cardPurchaseData->installmentAmount,
+            'establishment_name' => $cardPurchaseData->establishmentName,
+            'purchase_description' => $cardPurchaseData->purchaseDescription,
+            'date' => $cardPurchaseData->date,
+            'deleted' => $cardPurchaseData->deleted,
+            'receipt' => $cardPurchaseData->receipt,
         ]);
 
         return CardPurchaseData::fromResponse($created->toArray());
     }
 
-
     /**
-     * @param int $cardId
-     * @param string $date
      * @return CardPurchaseData|null
+     *
      * @throws BindingResolutionException
      */
     public function getPurchases(int $cardId, string $date): ?Collection
@@ -91,11 +85,27 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
                 ->where(self::PURCHASE_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
                 ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['DESC']);
 
-
             $result = $q->get();
-            return collect($result)->map(fn($item) => CardPurchaseData::fromResponse((array) $item));
+
+            return collect($result)->map(fn ($item) => CardPurchaseData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function deletePurchase(int $purchaseId): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $purchaseId,
+        ];
+
+        return $this->update($conditions, [
+            'deleted' => 1,
+        ]);
     }
 }

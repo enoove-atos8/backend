@@ -4,36 +4,39 @@ namespace Domain\Financial\Exits\Exits\Actions;
 
 use Domain\Financial\Exits\Exits\Constants\ReturnMessages;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
+use Domain\Financial\Movements\Actions\DeleteMovementByExitId;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
+use Throwable;
 
 class DeleteExitAction
 {
     private ExitRepositoryInterface $exitRepository;
 
+    private DeleteMovementByExitId $deleteMovementByExitId;
+
     public function __construct(
-        ExitRepositoryInterface $exitRepositoryInterface
-    )
-    {
+        ExitRepositoryInterface $exitRepositoryInterface,
+        DeleteMovementByExitId $deleteMovementByExitId
+    ) {
         $this->exitRepository = $exitRepositoryInterface;
+        $this->deleteMovementByExitId = $deleteMovementByExitId;
     }
 
-
     /**
-     * @param $id
-     * @return mixed
      * @throws BindingResolutionException
-     * @throws GeneralExceptions
+     * @throws GeneralExceptions|Throwable
      */
-    public function execute($id): mixed
+    public function execute($id): bool
     {
-        $exit = $this->exitRepository->deleteExit($id);
+        $exitDeleted = $this->exitRepository->deleteExit($id);
 
-        if($exit)
-            return $exit;
-        else
+        if ($exitDeleted) {
+            $this->deleteMovementByExitId->execute($id);
+
+            return true;
+        } else {
             throw new GeneralExceptions(ReturnMessages::EXIT_DELETE_ERROR, 500);
-
+        }
     }
 }

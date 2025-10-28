@@ -10,18 +10,17 @@ interface CardPurchaseRepositoryInterface
     /**
      * Returns the purchases of card to a specific invoice
      *
-     * @param int $cardId
-     * @param string $date
      * @return CardPurchaseData|null
      */
     public function getPurchases(int $cardId, string $date): ?Collection;
 
-
     /**
      * Create a new purchase
-     *
-     * @param CardPurchaseData $cardPurchaseData
-     * @return CardPurchaseData
      */
     public function createPurchase(CardPurchaseData $cardPurchaseData): CardPurchaseData;
+
+    /**
+     * Delete a purchase (soft delete)
+     */
+    public function deletePurchase(int $purchaseId): bool;
 }

@@ -2,7 +2,6 @@
 
 namespace App\Infrastructure\Repositories\Financial\AccountsAndCards\Card;
 
-
 use App\Domain\Financial\Exits\Purchases\DataTransferObjects\CardInstallmentData;
 use App\Domain\Financial\Exits\Purchases\DataTransferObjects\CardInvoiceData;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardInstallmentsRepositoryInterface;
@@ -18,22 +17,30 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class CardInstallmentsRepository extends BaseRepository implements CardInstallmentsRepositoryInterface
 {
-
     protected mixed $model = CardInstallment::class;
 
     const TABLE_NAME = 'cards_installments';
 
     const ID_COLUMN = 'id';
+
     const CARD_ID_COLUMN = 'card_id';
 
     const PURCHASE_ID_COLUMN = 'purchase_id';
+
     const INVOICE_ID_COLUMN = 'invoice_id';
+
     const GROUP_ID_COLUMN = 'group_id';
+
     const INSTALLMENT_ID_COLUMN = 'installment_id';
+
     const DATE_COLUMN = 'date';
+
     const DELETED_COLUMN = 'deleted';
+
     const PAID_VALUE = 'paid';
+
     const OPEN_VALUE = 'open';
+
     const LATE_VALUE = 'late';
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -48,17 +55,14 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
         'cards_installments.deleted as cards_installments_deleted',
     ];
 
-
     /**
      * Array of conditions
      */
     private array $queryConditions = [];
 
-
     /**
-     * @param int $cardId
-     * @param string $date
      * @return CardInvoiceData|null
+     *
      * @throws BindingResolutionException
      */
     public function getInstallmentsWithPurchase(int $cardId, string $date): ?Collection
@@ -73,37 +77,34 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
 
             $q = DB::table(self::TABLE_NAME)
                 ->select($displayColumnsFromRelationship)
-                ->leftJoin(CardPurchaseRepository::TABLE_NAME, self::TABLE_NAME . '.' . self::PURCHASE_ID_COLUMN,
+                ->leftJoin(CardPurchaseRepository::TABLE_NAME, self::TABLE_NAME.'.'.self::PURCHASE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
-                    CardPurchaseRepository::TABLE_NAME . '.' . CardPurchaseRepository::ID_COLUMN)
+                    CardPurchaseRepository::TABLE_NAME.'.'.CardPurchaseRepository::ID_COLUMN)
 
-                ->leftJoin(CardInvoiceRepository::TABLE_NAME, self::TABLE_NAME . '.' . self::INVOICE_ID_COLUMN,
+                ->leftJoin(CardInvoiceRepository::TABLE_NAME, self::TABLE_NAME.'.'.self::INVOICE_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
-                    CardInvoiceRepository::TABLE_NAME . '.' . CardInvoiceRepository::ID_COLUMN)
+                    CardInvoiceRepository::TABLE_NAME.'.'.CardInvoiceRepository::ID_COLUMN)
 
-                ->leftJoin(GroupsRepository::TABLE_NAME, CardPurchaseRepository::TABLE_NAME . '.' . self::GROUP_ID_COLUMN,
+                ->leftJoin(GroupsRepository::TABLE_NAME, CardPurchaseRepository::TABLE_NAME.'.'.self::GROUP_ID_COLUMN,
                     BaseRepository::OPERATORS['EQUALS'],
-                    GroupsRepository::TABLE_NAME . '.' . GroupsRepository::ID_COLUMN)
+                    GroupsRepository::TABLE_NAME.'.'.GroupsRepository::ID_COLUMN)
 
-                ->where(self::TABLE_NAME . '.' . self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
-                ->where(self::TABLE_NAME . '.' . self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
-                ->where(self::TABLE_NAME . '.' . self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date)
-                ->orderBy(self::TABLE_NAME . '.' . self::ID_COLUMN);
-
+                ->where(self::TABLE_NAME.'.'.self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+                ->where(self::TABLE_NAME.'.'.self::CARD_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $cardId)
+                ->where(self::TABLE_NAME.'.'.self::DATE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $date)
+                ->orderBy(self::TABLE_NAME.'.'.self::ID_COLUMN);
 
             $result = $q->get();
-            return $result->map(fn($item) => CardInstallmentData::fromResponse((array) $item));
+
+            return $result->map(fn ($item) => CardInstallmentData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
-
-
     /**
-     * @param int $purchaseId
      * @return CardInvoiceData|null
+     *
      * @throws BindingResolutionException
      */
     public function getInstallmentsByPurchaseId(int $purchaseId): ?Collection
@@ -116,24 +117,19 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
                 ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['ASC']);
 
             $result = $q->get();
-            return collect($result)->map(fn($item) => CardInstallmentData::fromSelf((array) $item));
+
+            return collect($result)->map(fn ($item) => CardInstallmentData::fromSelf((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
-
     /**
-     * @param int $invoiceId
-     * @param string $date
-     * @param string $status
-     * @return void
      * @throws BindingResolutionException
      */
     public function updateStatusInstallment(int $invoiceId, string $date, string $status): void
     {
-        $conditions =[
+        $conditions = [
             [
                 'field' => self::INVOICE_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
@@ -143,7 +139,7 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
                 'field' => self::DATE_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
                 'value' => $date,
-            ]
+            ],
         ];
 
         $this->update($conditions, [
@@ -151,26 +147,39 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
         ]);
     }
 
-
     /**
-     * @param CardInstallmentData $cardInstallmentData
-     * @return CardInstallmentData
      * @throws UnknownProperties
      */
     public function createInstallment(CardInstallmentData $cardInstallmentData): CardInstallmentData
     {
         $created = $this->create([
-            'card_id'               =>  $cardInstallmentData->cardId,
-            'invoice_id'            =>  $cardInstallmentData->cardInvoiceData->id,
-            'purchase_id'           =>  $cardInstallmentData->cardPurchaseData->id,
-            'status'                =>  $cardInstallmentData->status,
-            'amount'                =>  $cardInstallmentData->amount,
-            'installment'           =>  $cardInstallmentData->installment,
-            'installment_amount'    =>  $cardInstallmentData->installmentAmount,
-            'date'                  =>  $cardInstallmentData->date,
-            'deleted'               =>  $cardInstallmentData->deleted,
+            'card_id' => $cardInstallmentData->cardId,
+            'invoice_id' => $cardInstallmentData->cardInvoiceData->id,
+            'purchase_id' => $cardInstallmentData->cardPurchaseData->id,
+            'status' => $cardInstallmentData->status,
+            'amount' => $cardInstallmentData->amount,
+            'installment' => $cardInstallmentData->installment,
+            'installment_amount' => $cardInstallmentData->installmentAmount,
+            'date' => $cardInstallmentData->date,
+            'deleted' => $cardInstallmentData->deleted,
         ]);
 
         return CardInstallmentData::fromSelf($created->toArray());
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function deleteInstallmentsByPurchaseId(int $purchaseId): bool
+    {
+        $conditions = [
+            'field' => self::PURCHASE_ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $purchaseId,
+        ];
+
+        return $this->update($conditions, [
+            'deleted' => 1,
+        ]);
     }
 }
