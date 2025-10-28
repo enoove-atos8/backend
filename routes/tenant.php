@@ -24,6 +24,7 @@ use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InvoiceController;
+use Application\Api\v1\Financial\Exits\Purchases\Controllers\PurchaseController;
 use Application\Api\v1\Financial\Exits\Reports\Controllers\MonthlyExitsReportsController;
 use Application\Api\v1\Financial\Movements\Controllers\MovementController;
 use Application\Api\v1\Financial\ReceiptProcessing\Controllers\ReceiptProcessingController;
@@ -34,8 +35,7 @@ use Illuminate\Support\Facades\Route;
 use Stancl\Tenancy\Middleware\InitializeTenancyByDomain;
 use Stancl\Tenancy\Middleware\PreventAccessFromCentralDomains;
 
-
-Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class,])->group(function () {
+Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, PreventAccessFromCentralDomains::class])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
@@ -45,16 +45,15 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
     Route::get('/version', function () {
         return [
-            'api_version'   =>  env('API_VERSION'),
-            'branch'        =>  'develop',
-            'tenant'        =>  tenant('id')
+            'api_version' => env('API_VERSION'),
+            'branch' => 'develop',
+            'tenant' => tenant('id'),
         ];
     });
 
-
-//==================================================================================================================================
-//================================================  NonAuthenticated Routes  =======================================================
-//==================================================================================================================================
+    // ==================================================================================================================================
+    // ================================================  NonAuthenticated Routes  =======================================================
+    // ==================================================================================================================================
 
     /*
     |------------------------------------------------------------------------------------------
@@ -68,7 +67,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
     Route::post('loginFromApp', [AuthController::class, 'loginFromApp'])->name('loginFromApp');
-
 
     /*
     |==================================================================================================================
@@ -149,7 +147,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         });
 
-
         Route::prefix('purchases')->group(function () {
 
             Route::prefix('cards')->group(function () {
@@ -178,13 +175,9 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         });
     });
 
-
-
-//==================================================================================================================================
-//================================================  Web routes authenticated routes  ===============================================
-//==================================================================================================================================
-
-
+    // ==================================================================================================================================
+    // ================================================  Web routes authenticated routes  ===============================================
+    // ==================================================================================================================================
 
     Route::middleware('auth:sanctum')->controller(AuthController::class)->group(function () {
 
@@ -196,7 +189,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
         Route::post('logout', 'logout');
 
-
         /*
         |--------------------------------------------------------------------------
         | Navigate menu Routes
@@ -206,7 +198,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         Route::prefix('navigation')->group(function () {
             Route::get('/menu', [NavigationMenuController::class, 'getMenu']);
         });
-
 
         /*
         |--------------------------------------------------------------------------
@@ -221,9 +212,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::prefix('upload')->group(function () {
 
-
                     Route::post('/fileUpload', [FileUploadController::class, 'fileUpload']);
-
 
                     /*
                      * Action: POST
@@ -232,11 +221,9 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
                     Route::post('/uploadFile', [FileUploadController::class, 'uploadFile']);
 
-
                 });
             });
         });
-
 
         /*
         |--------------------------------------------------------------------------
@@ -285,15 +272,12 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/', [EntriesController::class, 'getEntriesByMonthlyRange']);
 
-
                     /*
                      * Action: GET
                      * EndPoint: /getAmountByEntryType/
                      * Description: Get amount of entries by Date Range
                     */
                     Route::get('/getAmountByEntryType/', [EntriesController::class, 'getAmountByEntryType']);
-
-
 
                     /*
                      * Action: GET
@@ -303,14 +287,12 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/{id}', [EntriesController::class, 'getEntryById'])->whereNumber('id');
 
-
                     /*
                      * Action: POST
                      * EndPoint: /
                      * Description: Get All Entries by Date Range
                      */
                     Route::post('/', [EntriesController::class, 'createEntry']);
-
 
                     /*
                      * Action: PUT
@@ -320,7 +302,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::put('/{id}', [EntriesController::class, 'updateEntry'])->whereNumber('id');
 
-
                     /*
                      * Action: DELETE
                      * EndPoint: /{id}
@@ -328,7 +309,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::delete('/{id}', [EntriesController::class, 'deleteEntry'])->whereNumber('id');
-
 
                     /*
                      * Action: POST
@@ -338,7 +318,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::post('/files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
 
-
                     /*
                      * Action: GET
                      * EndPoint: /getEntriesByTransactionCompensation
@@ -347,7 +326,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/getEntriesByTransactionCompensation', [EntriesController::class, 'getEntriesByTransactionCompensation']);
 
-
                     /*
                      * Action: GET
                      * EndPoint: /getDevolutionEntries
@@ -355,8 +333,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('/getDevolutionEntries', [EntriesController::class, 'getDevolutionEntries']);
-
-
 
                     /*
                      * Action: GET
@@ -367,7 +343,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     Route::get('/getEntriesIndicators', [EntryIndicatorsController::class, 'getEntriesIndicators']);
 
                 });
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -385,8 +360,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/getCults', [CultController::class, 'getCults']);
 
-
-
                     /*
                      * Action: GET
                      * EndPoint: /getCultById
@@ -395,8 +368,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/getCultById', [CultController::class, 'getCultById']);
 
-
-
                     /*
                      * Action: POST
                      * EndPoint: /createCult
@@ -404,8 +375,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::post('/', [CultController::class, 'saveCult']);
-
-
 
                     /*
                      * Action: PUT
@@ -416,9 +385,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     Route::put('/{id}', [CultController::class, 'saveCult'])->whereNumber('id');
 
                 });
-
-
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -436,8 +402,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/getMonths', [ConsolidationController::class, 'getMonths']);
 
-
-
                     /*
                      * Action: POST
                      * EndPoint: /consolidateMonth
@@ -446,9 +410,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::put('/consolidateMonth', [ConsolidationController::class, 'consolidateMonth']);
 
-
-
-
                     /*
                      * Action: POST
                      * EndPoint: /reopenMonth
@@ -456,8 +417,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::put('/reopenConsolidatedMonth', [ConsolidationController::class, 'reopenMonth']);
-
-
 
                     /*
                      * Action: GET
@@ -468,8 +427,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     Route::get('/getTotalAmountEntries', [ConsolidationController::class, 'getTotalAmountEntries']);
 
                 });
-
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -487,7 +444,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::post('/generateMonthlyReceiptsReport', [MonthlyReportsController::class, 'generateMonthlyReceiptsReport']);
 
-
                     /*
                      * Action: POST
                      * EndPoint: /generateMonthlyEntriesReport
@@ -495,8 +451,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::post('/generateMonthlyEntriesReport', [MonthlyReportsController::class, 'generateMonthlyEntriesReport']);
-
-
 
                     /*
                      * Action: POST
@@ -508,8 +462,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
-
-
                 /*
                 |--------------------------------------------------------------------------
                 | Receipts routes
@@ -518,18 +470,13 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 */
                 Route::prefix('receipts')->group(function () {
 
-
                     /*
                     |--------------------------------------------------------------------------
                     | Overview receipts routes
                     |--------------------------------------------------------------------------
                     |
                     */
-                    Route::prefix('overview')->group(function () {
-
-                    });
-
-
+                    Route::prefix('overview')->group(function () {});
 
                     /*
                     |--------------------------------------------------------------------------
@@ -537,11 +484,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     |--------------------------------------------------------------------------
                     |
                     */
-                    Route::prefix('processed')->group(function () {
-
-
-                    });
-
+                    Route::prefix('processed')->group(function () {});
 
                     /*
                     |--------------------------------------------------------------------------
@@ -551,10 +494,10 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     */
                     Route::prefix('not-processed')->group(function () {
 
-                         /*
-                         * Action: DELETE
-                         * EndPoint: /
-                         */
+                        /*
+                        * Action: DELETE
+                        * EndPoint: /
+                        */
 
                         Route::delete('deleteReceiptsProcessing/{id}', [ReceiptProcessingController::class, 'deleteReceiptsProcessing'])->whereNumber('id');
 
@@ -566,7 +509,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                         Route::get('getReceiptsProcessing/', [ReceiptProcessingController::class, 'getReceiptsProcessing']);
 
                     });
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -585,8 +527,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::get('/getDuplicitiesEntries', [DuplicityAnalisysController::class, 'getDuplicitiesEntries']);
 
-
-
                         /*
                          * Action: GET
                          * EndPoint: /getReceiptsByEntriesIdsAction
@@ -594,8 +534,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::get('/getReceiptsByEntriesIds', [DuplicityAnalisysController::class, 'getReceiptsByEntriesIds']);
-
-
 
                         /*
                          * Action: GET
@@ -609,8 +547,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 });
 
             });
-
-
 
             /*
             |------------------------------------------------------------------------------------------
@@ -641,7 +577,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/', [ExitsController::class, 'getExits']);
 
-
                     /*
                      * Action: GET
                      * EndPoint: /getAmountByEntryType/
@@ -649,16 +584,13 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     */
                     Route::get('/getAmountByExitType/', [ExitsController::class, 'getAmountByExitType']);
 
-
-
                     /*
                      * Action: GET
                      * EndPoint: /{id}
                      * Description: Get an entry by id
                      */
 
-                    //Route::get('/{id}', [EntriesController::class, 'getEntryById'])->whereNumber('id');
-
+                    // Route::get('/{id}', [EntriesController::class, 'getEntryById'])->whereNumber('id');
 
                     /*
                      * Action: POST
@@ -666,15 +598,13 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
                     Route::post('/', [ExitsController::class, 'createExit']);
 
-
                     /*
                      * Action: PUT
                      * EndPoint: /{id}
                      * Description: Update an entry
                      */
 
-                    //Route::put('/{id}', [EntriesController::class, 'updateEntry'])->whereNumber('id');
-
+                    // Route::put('/{id}', [EntriesController::class, 'updateEntry'])->whereNumber('id');
 
                     /*
                      * Action: DELETE
@@ -684,15 +614,13 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::delete('/{id}', [ExitsController::class, 'deleteExit'])->whereNumber('id');
 
-
                     /*
                      * Action: POST
                      * EndPoint: /Files/assets/avatar
                      * Description: Upload a receipt entry
                      */
 
-                    //Route::post('/Files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
-
+                    // Route::post('/Files/assets/uploadReceiptEntry', [EntriesController::class, 'uploadEntryReceipt']);
 
                     /*
                      * Action: GET
@@ -700,8 +628,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Get a  entries to compensate list
                      */
 
-                    //Route::get('/getEntriesByTransactionCompensation', [EntriesController::class, 'getEntriesByTransactionCompensation']);
-
+                    // Route::get('/getEntriesByTransactionCompensation', [EntriesController::class, 'getEntriesByTransactionCompensation']);
 
                     /*
                      * Action: GET
@@ -709,7 +636,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      * Description: Get a list of devolution entries
                      */
 
-                    //Route::get('/getDevolutionEntries', [EntriesController::class, 'getDevolutionEntries']);
+                    // Route::get('/getDevolutionEntries', [EntriesController::class, 'getDevolutionEntries']);
 
                     Route::prefix('indicators')->group(function () {
 
@@ -725,7 +652,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | Group Payments Financial routes
@@ -733,8 +659,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 |
                 */
                 Route::prefix('payments')->group(function () {
-
-
 
                     Route::prefix('categories')->group(function () {
 
@@ -748,7 +672,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     });
 
-
                     Route::prefix('items')->group(function () {
 
                         /*
@@ -759,7 +682,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::get('/{id}', [PaymentsController::class, 'getPaymentItems']);
 
-
                         /*
                          * Action: GET
                          * EndPoint: /
@@ -767,7 +689,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::post('/', [PaymentsController::class, 'addPaymentItems']);
-
 
                         /*
                          * Action: GET
@@ -779,10 +700,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     });
 
-
-
                 });
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -792,7 +710,13 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 */
                 Route::prefix('purchases')->group(function () {
 
+                    /*
+                     * Action: DELETE
+                     * EndPoint: /{id}
+                     * Description: Delete a purchase
+                     */
 
+                    Route::delete('/{id}', [PurchaseController::class, 'deletePurchase'])->whereNumber('id');
 
                     Route::prefix('cards')->group(function () {
 
@@ -806,7 +730,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     });
 
-
                     Route::prefix('invoices')->group(function () {
 
                         /*
@@ -816,8 +739,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::get('/getInvoices', [InvoiceController::class, 'getInvoicesByCardId']);
-
-
 
                         /*
                          * Action: GET
@@ -829,7 +750,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     });
 
-
                     Route::prefix('installments')->group(function () {
 
                         /*
@@ -839,8 +759,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                          */
 
                         Route::get('/getInstallments', [InstallmentsController::class, 'getInstalments']);
-
-
 
                         /*
                          * Action: GET
@@ -852,12 +770,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     });
 
-
-
                 });
-
-
-
 
                 /*
                 |--------------------------------------------------------------------------
@@ -875,7 +788,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::post('/generateMonthlyReceiptsReport', [MonthlyExitsReportsController::class, 'generateMonthlyExitsReceiptsReport']);
 
-
                     /*
                      * Action: POST
                      * EndPoint: /generateMonthlyExitsReport
@@ -883,8 +795,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::post('/generateMonthlyExitsReport', [MonthlyExitsReportsController::class, 'generateMonthlyExitsReport']);
-
-
 
                     /*
                      * Action: POST
@@ -896,7 +806,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
             });
-
 
             /*
             |------------------------------------------------------------------------------------------
@@ -920,7 +829,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             });
 
-
             /*
             |--------------------------------------------------------------------------
             | Group Dashboard Financial routes
@@ -930,7 +838,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             Route::prefix('dashboards')->group(function () {
 
-
                 /*
                 |------------------------------------------------------------------------------------------
                 | Resource Group: Dashboard financial entries
@@ -939,7 +846,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 |------------------------------------------------------------------------------------------
                 */
                 Route::prefix('entries')->group(function () {
-
 
                     /*
                      * Action: GET
@@ -952,8 +858,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 });
 
             });
-
-
 
             /*
             |--------------------------------------------------------------------------
@@ -971,7 +875,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getMovementsByGroup', [MovementController::class, 'getMovementsByGroup']);
 
-
                 /*
                  * Action: GET
                  * EndPoint: /{id}
@@ -980,7 +883,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getIndicatorsByGroup', [MovementController::class, 'getMovementsIndicatorsByGroup']);
 
-
                 /*
                  * Action: POST
                  * EndPoint: /{id}
@@ -988,8 +890,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::post('addInitialBalance', [MovementController::class, 'addInitialBalance']);
-
-
 
                 /*
                  * Action: PUT
@@ -1001,8 +901,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             });
 
-
-
             /*
             |--------------------------------------------------------------------------
             | Account and Purchases Financial routes
@@ -1010,8 +908,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             |
             */
             Route::prefix('accounts-cards')->group(function () {
-
-
 
                 Route::prefix('cards')->group(function () {
 
@@ -1023,7 +919,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::delete('deactivateCard', [CardController::class, 'deactivateCard']);
 
-
                     /*
                      * Action: GET
                      * EndPoint: /{id}
@@ -1032,7 +927,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('getCards', [CardController::class, 'getCards']);
 
-
                     /*
                      * Action: GET
                      * EndPoint: /{id}
@@ -1040,7 +934,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('getCardById', [CardController::class, 'getCardById']);
-
 
                     /*
                      * Action: POST
@@ -1051,7 +944,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
-
                 Route::prefix('accounts')->group(function () {
 
                     /*
@@ -1061,7 +953,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('getAccounts', [AccountController::class, 'getAccounts']);
 
-
                     /*
                      * Action: POST
                      * Description: Save a new Account
@@ -1069,15 +960,12 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::post('saveAccount', [AccountController::class, 'saveAccount']);
 
-
                     /*
                      * Action: DELETE
                      * Description: Deactivate an Account
                      */
 
                     Route::delete('deactivateAccount/{id}', [AccountController::class, 'deactivateAccount']);
-
-
 
                     Route::prefix('files')->group(function () {
 
@@ -1088,16 +976,12 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::post('saveFile', [AccountFilesController::class, 'saveFile']);
 
-
-
                         /*
                          * Action: GET
                          * Description: Get accounts Files
                          */
 
                         Route::get('getAccountsFiles', [AccountFilesController::class, 'getAccountsFiles']);
-
-
 
                         /*
                          * Action: POST
@@ -1109,7 +993,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     });
 
                     Route::prefix('movements')->group(function () {
-
 
                         /*
                          * Action: GET
@@ -1123,8 +1006,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 });
             });
         });
-
-
 
         /*
         |--------------------------------------------------------------------------
@@ -1154,7 +1035,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             Route::get('/', [UserController::class, 'getUsers']);
 
-
             /*
              * Action: GET
              * EndPoint: /{id}
@@ -1162,7 +1042,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::get('/{id}', [UserController::class, 'getUserById']);
-
 
             /*
              * Action: POST
@@ -1172,7 +1051,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             Route::post('/', [UserController::class, 'createUser']);
 
-
             /*
              * Action: PUT
              * EndPoint: /{id}/status
@@ -1180,7 +1058,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::put('/{id}/status', [UserController::class, 'updateStatus']);
-
 
             /*
              * Action: PUT
@@ -1190,7 +1067,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             Route::put('/{id}', [UserController::class, 'updateUser']);
 
-
             /*
              * Action: POST
              * EndPoint: /Files/assets/avatar
@@ -1199,9 +1075,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
             Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
         });
-
-
-
 
         /*
         |--------------------------------------------------------------------------
@@ -1224,8 +1097,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/', [MemberController::class, 'getMembers']);
 
-
-
                     /*
                      * Action: GET
                      * EndPoint: /getMembersIndicators
@@ -1233,9 +1104,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('/getMembersIndicators/', [MemberController::class, 'getMembersIndicators']);
-
-
-
 
                     /*
                      * Action: GET
@@ -1245,8 +1113,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/{id}', [MemberController::class, 'getMemberById']);
 
-
-
                     /*
                      * Action: POST
                      * EndPoint: /
@@ -1254,7 +1120,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::post('/', [MemberController::class, 'createMember']);
-
 
                     /*
                      * Action: PUT
@@ -1264,7 +1129,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
 
-
                     /*
                      * Action: PUT
                      * EndPoint: /{id}
@@ -1272,8 +1136,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::put('/{id}', [MemberController::class, 'updateMember']);
-
-
 
                     /*
                      * Action: PUT
@@ -1293,8 +1155,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('/getMembersByBornMonth', [MemberController::class, 'getMembersByBornMonth']);
-
-
 
                     /*
                      * Action: POST
@@ -1316,8 +1176,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::get('/getTithersByDate', [MemberController::class, 'getTithersByDate']);
 
-
-
                     /*
                      * Action: POST
                      * EndPoint: /exportTithersData
@@ -1331,9 +1189,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
             });
 
         });
-
-
-
 
         /*
         |------------------------------------------------------------------------------------------
@@ -1369,9 +1224,7 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              * Description: Get All users
              */
 
-
         });
-
 
         /*
         |--------------------------------------------------------------------------
@@ -1402,7 +1255,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getDivisions', [DivisionsController::class, 'getDivisions']);
 
-
                 /*
                  * Action: GET
                  * EndPoint: /{enabled}
@@ -1411,7 +1263,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getDivisionIdByName', [DivisionsController::class, 'getDivisionIdByName']);
 
-
                 /*
                  * Action: GET
                  * EndPoint: /{enabled}
@@ -1419,7 +1270,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::get('getDivisionByName', [DivisionsController::class, 'getDivisionByName']);
-
 
                 /*
                  * Action: POST
@@ -1430,7 +1280,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 Route::post('/', [DivisionsController::class, 'createDivision']);
 
             });
-
 
             /*
             |------------------------------------------------------------------------------------------
@@ -1454,8 +1303,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getGroupsByDivision', [GroupController::class, 'getGroupsByDivision']);
 
-
-
                 /*
                  * Action: GET
                  * EndPoint: /{id}
@@ -1463,7 +1310,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::get('getGroupById', [GroupController::class, 'getGroupById']);
-
 
                 /*
                  * Action: GET
@@ -1473,8 +1319,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('getAllGroups', [GroupController::class, 'getAllGroups']);
 
-
-
                 /*
                  * Action: GET
                  * EndPoint: /
@@ -1482,8 +1326,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                  */
 
                 Route::get('getAllGroupsWithDivisions', [GroupController::class, 'getAllGroupsWithDivisions']);
-
-
 
                 /*
                  * Action: POST
@@ -1493,7 +1335,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::post('/', [GroupController::class, 'createGroup']);
 
-
                 /*
                 |--------------------------------------------------------------------------
                 | Details groups routes
@@ -1501,22 +1342,11 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 |
                 */
 
-                Route::prefix('details')->group(function () {
-
-
-
-
-                });
-
-
-
-
+                Route::prefix('details')->group(function () {});
 
             });
 
         });
-
-
 
         /*
         |==========================================================================
