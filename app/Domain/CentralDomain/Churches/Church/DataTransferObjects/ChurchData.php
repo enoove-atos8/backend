@@ -26,6 +26,15 @@ class ChurchData extends DataTransferObject
     public ?string $logo;
 
     /** @var string| null  */
+    public ?string $address;
+
+    /** @var string| null  */
+    public ?string $cellPhone;
+
+    /** @var string| null  */
+    public ?string $mail;
+
+    /** @var string| null  */
     public ?string $docType;
 
     /** @var string| null  */
@@ -42,7 +51,10 @@ class ChurchData extends DataTransferObject
             'planId' => $data['plan_id'] ?? null,
             'name' => $data['name'] ?? null,
             'activated' => $data['activated'] ?? false,
-            'logo' => $data['logo'] ?? false,
+            'logo' => $data['logo'] ?? null,
+            'address' => $data['address'] ?? null,
+            'cellPhone' => $data['cell_phone'] ?? null,
+            'mail' => $data['mail'] ?? null,
             'docType' => $data['doc_type'] ?? null,
             'docNumber' => $data['doc_number'] ?? null,
         ]);

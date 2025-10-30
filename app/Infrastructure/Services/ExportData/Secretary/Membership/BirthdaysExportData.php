@@ -2,13 +2,8 @@
 
 namespace Infrastructure\Services\ExportData\Secretary\Membership;
 
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Services\External\minIO\MinioStorageService;
 
 class BirthdaysExportData
 {
@@ -17,6 +12,8 @@ class BirthdaysExportData
     private array $fields;
 
     private const ALLOWED_TYPES = ['PDF', 'XLSX'];
+    private const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
+    private const TEMP_DIR = '/temp';
 
     public function __construct(string $month, string $type, string $fields)
     {
@@ -49,12 +46,6 @@ class BirthdaysExportData
 
     private function exportToPdf(array $data): string
     {
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-
-        $dompdf = new Dompdf($options);
-
         $mappedFields = $this->mapFieldsToCamelCase($this->fields);
 
         $html = view('reports.secretary.membership.birthdays', [
@@ -63,11 +54,19 @@ class BirthdaysExportData
             'fields' => $mappedFields
         ])->render();
 
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+        $timestamp = date('YmdHis');
+        $directoryPath = self::STORAGE_BASE_PATH . self::TEMP_DIR;
 
-        $pdfContent = $dompdf->output();
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0775, true);
+        }
+
+        $pdfPath = $directoryPath . '/' . $timestamp . '_birthdays.pdf';
+
+        PDFGenerator::save($html, $pdfPath);
+
+        $pdfContent = file_get_contents($pdfPath);
+        unlink($pdfPath);
 
         return $pdfContent;
     }

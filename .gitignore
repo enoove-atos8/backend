@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /storage/*.key
+/storage
 /vendor
 .env
 .env.dev
@@ -19,3 +20,4 @@ yarn-error.log
 supervisord.pid
 supervisord.log
 /config/tenancy.php
+/CLAUDE.md
