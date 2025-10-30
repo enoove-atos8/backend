@@ -2,14 +2,9 @@
 
 namespace App\Infrastructure\Services\ExportData\Secretary\Membership;
 
+use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
 use Carbon\Carbon;
-use Dompdf\Dompdf;
-use Dompdf\Options;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Services\External\minIO\MinioStorageService;
 
 class TithersExportData
 {
@@ -19,6 +14,8 @@ class TithersExportData
     private float $totalTithes;
 
     private const ALLOWED_TYPES = ['PDF', 'XLSX'];
+    private const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
+    private const TEMP_DIR = '/temp';
 
     /**
      * @throws GeneralExceptions
@@ -52,11 +49,6 @@ class TithersExportData
 
     private function exportToPdf(array $data): string
     {
-        $options = new Options();
-        $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-
-        $dompdf = new Dompdf($options);
         $data = $data['data'] ?? $data;
 
         $html = view('reports.secretary.membership.tithers', [
@@ -67,11 +59,21 @@ class TithersExportData
             'monthlyTarget' => $this->monthlyTarget,
         ])->render();
 
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
+        $timestamp = date('YmdHis');
+        $directoryPath = self::STORAGE_BASE_PATH . self::TEMP_DIR;
 
-        return $dompdf->output();
+        if (!file_exists($directoryPath)) {
+            mkdir($directoryPath, 0775, true);
+        }
+
+        $pdfPath = $directoryPath . '/' . $timestamp . '_tithers.pdf';
+
+        PDFGenerator::save($html, $pdfPath);
+
+        $pdfContent = file_get_contents($pdfPath);
+        unlink($pdfPath);
+
+        return $pdfContent;
     }
 
 
