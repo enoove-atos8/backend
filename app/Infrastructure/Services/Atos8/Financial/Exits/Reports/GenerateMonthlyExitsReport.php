@@ -2,55 +2,68 @@
 
 namespace App\Infrastructure\Services\Atos8\Financial\Exits\Reports;
 
-
-use App\Domain\Financial\Exits\Reports\DataTransferObjects\MonthlyExitsReportData;
+use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
+use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
+use App\Domain\Financial\Reports\Exits\Actions\UpdateAmountsExitsReportRequestsAction;
+use App\Domain\Financial\Reports\Exits\Actions\UpdateLinkExitsReportRequestsAction;
+use App\Domain\Financial\Reports\Exits\Actions\UpdateStatusExitsReportRequestsAction;
+use App\Domain\Financial\Reports\Exits\DataTransferObjects\MonthlyExitsReportData;
 use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
 use Carbon\Carbon;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsDataAction;
+use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
+use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountByIdAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
-use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
-use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
-use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use Domain\Financial\Exits\Reports\Actions\UpdateAmountsExitsReportRequestsAction;
-use Domain\Financial\Exits\Reports\Actions\UpdateLinkExitsReportRequestsAction;
-use Domain\Financial\Exits\Reports\Actions\UpdateStatusExitsReportRequestsAction;
+use Exception;
+use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
-use Infrastructure\Repositories\Financial\Exits\Reports\MonthlyExitsReportsRepository;
-use Exception;
-use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Util\Storage\S3\UploadFile;
 use Throwable;
 
 class GenerateMonthlyExitsReport
 {
-
     private GetExitsAction $getExitsAction;
+
     private UpdateStatusExitsReportRequestsAction $updateStatusExitsReportRequestsAction;
+
     private UpdateLinkExitsReportRequestsAction $updateLinkExitsReportRequestsAction;
+
     private UpdateAmountsExitsReportRequestsAction $updateAmountsExitsReportRequestsAction;
+
     private GetAllGroupsAction $getAllGroupsAction;
+
     private GetDivisionsDataAction $getDivisionsDataAction;
+
     private GetChurchAction $getChurchAction;
+
     private GetAccountByIdAction $getAccountByIdAction;
+
     private UploadFile $uploadFile;
+
     private $groups;
+
     private $divisions;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
+
     const S3_PATH_MONTHLY_EXITS_REPORTS = 'reports/financial/exits/monthly_exits';
+
     const TENANTS_DIR = '/tenants';
+
     const REPORTS_TEMP_DIR = '/reports/temp';
+
     const PIX = 'pix';
+
     const CASH = 'cash';
 
     const MONTHLY_EXITS_BLADE_VIEW = 'reports/exits/monthlyExits/monthly_exits';
+
     const MONTHLY_EXITS_REPORT_NAME = 'monthly_exits.pdf';
 
     public function __construct(
@@ -63,8 +76,7 @@ class GenerateMonthlyExitsReport
         GetAccountByIdAction $getAccountByIdAction,
         GetAllGroupsAction $getAllGroupsAction,
         GetDivisionsDataAction $getDivisionsDataAction
-    )
-    {
+    ) {
         $this->getExitsAction = $getExitsAction;
         $this->updateStatusExitsReportRequestsAction = $updateStatusExitsReportRequestsAction;
         $this->updateLinkExitsReportRequestsAction = $updateLinkExitsReportRequestsAction;
@@ -79,7 +91,6 @@ class GenerateMonthlyExitsReport
     /**
      * Load all groups once to be reused across multiple functions.
      *
-     * @return void
      * @throws Throwable
      */
     private function loadGroups(): void
@@ -90,7 +101,6 @@ class GenerateMonthlyExitsReport
     /**
      * Load all divisions once to be reused across multiple functions.
      *
-     * @return void
      * @throws Throwable
      */
     private function loadDivisions(): void
@@ -101,11 +111,6 @@ class GenerateMonthlyExitsReport
     /**
      * Prepares general report data including church and account info.
      *
-     * @param $exits
-     * @param MonthlyExitsReportData $report
-     * @param string $dates
-     * @param string $tenant
-     * @return object
      * @throws Throwable
      */
     private function prepareGeneralReportData($exits, MonthlyExitsReportData $report, string $dates, string $tenant): object
@@ -123,16 +128,13 @@ class GenerateMonthlyExitsReport
                 'generationDate' => Carbon::createFromFormat('Y-m-d H:i:s', $report->generationDate)->format('d/m/Y'),
                 'totalExits' => $totalExits,
                 'quantity' => $quantity,
-            ]
+            ],
         ];
     }
 
     /**
      * Prepares exits data with payments, contributions, ministerial transfer and transfers.
      *
-     * @param $exits
-     * @param MonthlyExitsReportData $report
-     * @return object
      * @throws Throwable
      */
     private function prepareExitsData($exits, MonthlyExitsReportData $report): object
@@ -169,12 +171,9 @@ class GenerateMonthlyExitsReport
         ];
     }
 
-
     /**
      * Prepares payments data grouped by payment category and item.
      *
-     * @param $exits
-     * @return array
      * @throws Throwable
      */
     private function preparePaymentsData($exits): array
@@ -188,20 +187,20 @@ class GenerateMonthlyExitsReport
             $itemName = $exit->{ExitData::PAYMENT_ITEM_PROPERTY}->{PaymentItemData::NAME_PROPERTY} ?? 'Sem Item';
             $amount = $exit->{ExitData::AMOUNT_PROPERTY};
 
-            if (!isset($groupedByCategory[$categoryName])) {
+            if (! isset($groupedByCategory[$categoryName])) {
                 $groupedByCategory[$categoryName] = [
                     'categoryName' => $categoryName,
                     'items' => [],
                     'categoryTotal' => 0,
-                    'categoryQtd' => 0
+                    'categoryQtd' => 0,
                 ];
             }
 
-            if (!isset($groupedByCategory[$categoryName]['items'][$itemName])) {
+            if (! isset($groupedByCategory[$categoryName]['items'][$itemName])) {
                 $groupedByCategory[$categoryName]['items'][$itemName] = (object) [
                     'itemName' => $itemName,
                     'qtd' => 0,
-                    'total' => 0
+                    'total' => 0,
                 ];
             }
 
@@ -223,8 +222,6 @@ class GenerateMonthlyExitsReport
     /**
      * Prepares transfer data grouped by division.
      *
-     * @param $exits
-     * @return array
      * @throws Throwable
      */
     private function prepareTransferData($exits): array
@@ -246,20 +243,20 @@ class GenerateMonthlyExitsReport
             $division = $this->divisions->firstWhere(DivisionData::ID_PROPERTY, $divisionId);
             $divisionName = $division ? $division->{DivisionData::NAME_PROPERTY} : 'Sem Divisão';
 
-            if (!isset($groupedByDivision[$divisionId])) {
+            if (! isset($groupedByDivision[$divisionId])) {
                 $groupedByDivision[$divisionId] = [
                     'divisionName' => $divisionName,
                     'groups' => [],
                     'divisionTotal' => 0,
-                    'divisionQtd' => 0
+                    'divisionQtd' => 0,
                 ];
             }
 
-            if (!isset($groupedByDivision[$divisionId]['groups'][$groupId])) {
+            if (! isset($groupedByDivision[$divisionId]['groups'][$groupId])) {
                 $groupedByDivision[$divisionId]['groups'][$groupId] = (object) [
                     'groupName' => $groupName,
                     'qtd' => 0,
-                    'total' => 0
+                    'total' => 0,
                 ];
             }
 
@@ -281,8 +278,6 @@ class GenerateMonthlyExitsReport
     /**
      * Prepares ministerial transfer data grouped by group.
      *
-     * @param $exits
-     * @return array
      * @throws Throwable
      */
     private function prepareMinisterialTransferData($exits): array
@@ -295,14 +290,14 @@ class GenerateMonthlyExitsReport
             $groupId = $exit->{ExitData::GROUP_PROPERTY}->{GroupData::ID_PROPERTY};
             $amount = $exit->{ExitData::AMOUNT_PROPERTY};
 
-            if (!isset($groupedData[$groupId])) {
+            if (! isset($groupedData[$groupId])) {
                 $group = $this->groups->firstWhere(GroupsRepository::GROUP_ID_WITH_UNDERLINE, $groupId);
                 $groupName = $group ? $group->{GroupData::GROUPS_NAME_PROPERTY} : 'Sem Grupo';
 
                 $groupedData[$groupId] = (object) [
                     'name' => $groupName,
                     'qtd' => 0,
-                    'total' => 0
+                    'total' => 0,
                 ];
             }
 
@@ -316,8 +311,6 @@ class GenerateMonthlyExitsReport
     /**
      * Prepares contributions data grouped by group.
      *
-     * @param $exits
-     * @return array
      * @throws Throwable
      */
     private function prepareContributionsData($exits): array
@@ -330,14 +323,14 @@ class GenerateMonthlyExitsReport
             $groupId = $exit->{ExitData::GROUP_PROPERTY}->{GroupData::ID_PROPERTY};
             $amount = $exit->{ExitData::AMOUNT_PROPERTY};
 
-            if (!isset($groupedData[$groupId])) {
+            if (! isset($groupedData[$groupId])) {
                 $group = $this->groups->firstWhere(GroupsRepository::GROUP_ID_WITH_UNDERLINE, $groupId);
                 $groupName = $group ? $group->{GroupData::GROUPS_NAME_PROPERTY} : 'Sem Grupo';
 
                 $groupedData[$groupId] = (object) [
                     'name' => $groupName,
                     'qtd' => 0,
-                    'total' => 0
+                    'total' => 0,
                 ];
             }
 
@@ -348,28 +341,18 @@ class GenerateMonthlyExitsReport
         return array_values($groupedData);
     }
 
-
-    /**
-     * @param string $directory
-     * @return void
-     */
     public function cleanReportTempDir(string $directory): void
     {
-        if (is_dir($directory))
-        {
+        if (is_dir($directory)) {
             $files = scandir($directory);
 
             foreach ($files as $file) {
-                if ($file !== "." && $file !== "..")
-                {
-                    $filePath = $directory . DIRECTORY_SEPARATOR . $file;
+                if ($file !== '.' && $file !== '..') {
+                    $filePath = $directory.DIRECTORY_SEPARATOR.$file;
 
-                    if (is_file($filePath))
-                    {
+                    if (is_file($filePath)) {
                         unlink($filePath);
-                    }
-                    elseif (is_dir($filePath))
-                    {
+                    } elseif (is_dir($filePath)) {
                         $this->deleteDirectory($filePath);
                     }
                 }
@@ -377,20 +360,15 @@ class GenerateMonthlyExitsReport
         }
     }
 
-
-    /**
-     * @param $dir
-     * @return void
-     */
-    function deleteDirectory($dir): void
+    public function deleteDirectory($dir): void
     {
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return;
         }
 
         foreach (scandir($dir) as $file) {
-            if ($file !== "." && $file !== "..") {
-                $filePath = $dir . DIRECTORY_SEPARATOR . $file;
+            if ($file !== '.' && $file !== '..') {
+                $filePath = $dir.DIRECTORY_SEPARATOR.$file;
                 if (is_dir($filePath)) {
                     $this->deleteDirectory($filePath);
                 } else {
@@ -401,8 +379,6 @@ class GenerateMonthlyExitsReport
         rmdir($dir);
     }
 
-
-
     /**
      * @throws Throwable
      */
@@ -410,26 +386,23 @@ class GenerateMonthlyExitsReport
     {
         $dates = $report->dates[0];
 
-        if(!is_null($dates))
-        {
+        if (! is_null($dates)) {
             $timestamp = date('YmdHis');
-            $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR;
+            $directoryPath = self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_TEMP_DIR;
 
-            if (!file_exists($directoryPath))
-            {
-                mkdir($directoryPath, 0775, true);
+            if (! file_exists($directoryPath)) {
+                mkdir($directoryPath, 0777, true);
             }
 
-            $pdfPath = $directoryPath . '/' . $timestamp . '_' . self::MONTHLY_EXITS_REPORT_NAME;
+            $pdfPath = $directoryPath.'/'.$timestamp.'_'.self::MONTHLY_EXITS_REPORT_NAME;
 
-            try
-            {
+            try {
                 $exits = $this->getExitsAction->execute($dates, [], false)
                     ->where(ExitData::ACCOUNT_ID_PROPERTY, BaseRepository::OPERATORS['EQUALS'], $report->accountId);
 
-                if($exits->isEmpty())
-                {
-                    $this->updateStatusExitsReportRequestsAction->execute($report->id, MonthlyExitsReportsRepository::NO_DATA_STATUS_VALUE);
+                if ($exits->isEmpty()) {
+                    $this->updateStatusExitsReportRequestsAction->execute($report->id, \App\Infrastructure\Repositories\Financial\Reports\Exits\MonthlyExitsReportsRepository::NO_DATA_STATUS_VALUE);
+
                     return;
                 }
 
@@ -468,22 +441,18 @@ class GenerateMonthlyExitsReport
                 $totalAmount = $reportDataInfo->generalData->totalExits;
                 $this->updateAmountsExitsReportRequestsAction->execute($report->id, $totalAmount);
 
-                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR);
+                $this->cleanReportTempDir(self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_TEMP_DIR);
 
-                $this->updateStatusExitsReportRequestsAction->execute($report->id, MonthlyExitsReportsRepository::DONE_STATUS_VALUE);
+                $this->updateStatusExitsReportRequestsAction->execute($report->id, \App\Infrastructure\Repositories\Financial\Reports\Exits\MonthlyExitsReportsRepository::DONE_STATUS_VALUE);
 
-            }
-            catch (Exception $e)
-            {
+            } catch (Exception $e) {
                 throw new GeneralExceptions(
-                    'Houve um erro ao gerar o relatório: ' . $e->getMessage(),
+                    'Houve um erro ao gerar o relatório: '.$e->getMessage(),
                     500
                 );
             }
-        }
-        else
-        {
-            $this->updateStatusExitsReportRequestsAction->execute($report->id, MonthlyExitsReportsRepository::ERROR_STATUS_VALUE);
+        } else {
+            $this->updateStatusExitsReportRequestsAction->execute($report->id, \App\Infrastructure\Repositories\Financial\Reports\Exits\MonthlyExitsReportsRepository::ERROR_STATUS_VALUE);
         }
     }
 }

@@ -18,69 +18,54 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class ExitData extends DataTransferObject
 {
     const ACCOUNT_ID_PROPERTY = 'accountId';
+
     const AMOUNT_PROPERTY = 'amount';
+
     const EXIT_TYPE_PROPERTY = 'exitType';
+
     const GROUP_PROPERTY = 'group';
+
     const PAYMENT_CATEGORY_PROPERTY = 'paymentCategory';
+
     const PAYMENT_ITEM_PROPERTY = 'paymentItem';
 
-    /** @var integer | null */
     public ?int $id;
 
-    /** @var integer | null */
     public ?int $accountId;
 
-    /** @var string | null */
     public ?string $exitType;
 
-    /** @var boolean | null */
     public ?bool $isPayment;
 
-    /** @var boolean | null */
     public ?bool $deleted;
 
-    /** @var string | null */
     public ?string $transactionType;
 
-    /** @var string | null */
     public ?string $transactionCompensation;
 
-    /** @var string | null */
     public ?string $dateTransactionCompensation;
 
-    /** @var string | null */
     public ?string $dateExitRegister;
 
-    /** @var string | null */
     public ?string $timestampExitTransaction;
 
-    /** @var string | null */
     public ?string $amount;
 
-    /** @var string | null */
     public ?string $comments;
 
-    /** @var string | null */
     public ?string $receiptLink;
 
-    /** @var FinancialReviewerData | null */
     public ?FinancialReviewerData $financialReviewer;
 
-    /** @var DivisionData | null */
     public ?DivisionData $division;
 
-    /** @var GroupData | null */
     public ?GroupData $group;
 
-    /** @var PaymentCategoryData | null */
     public ?PaymentCategoryData $paymentCategory;
 
-    /** @var PaymentItemData | null */
     public ?PaymentItemData $paymentItem;
 
-    /** @var AccountData | null */
     public ?AccountData $account;
-
 
     /**
      * @throws UnknownProperties
@@ -170,16 +155,15 @@ class ExitData extends DataTransferObject
         );
     }
 
-
-
     /**
      * Create an ExitData instance from extracted data
      *
-     * @param array $extractedData Data extracted from receipt
-     * @param SyncStorageData $data Sync storage data
-     * @param object $reviewer Reviewer object
-     * @param string|null $nextBusinessDay Function to get next business day from a date
+     * @param  array  $extractedData  Data extracted from receipt
+     * @param  SyncStorageData  $data  Sync storage data
+     * @param  object  $reviewer  Reviewer object
+     * @param  string|null  $nextBusinessDay  Function to get next business day from a date
      * @return self New ExitData instance
+     *
      * @throws UnknownProperties
      * @throws Exception
      */
@@ -193,8 +177,8 @@ class ExitData extends DataTransferObject
         $extractedDate = $extractedData['data']['date'];
 
         $dateTransactionCompensation = $nextBusinessDay ?
-            $nextBusinessDay . 'T03:00:00.000Z' :
-            (new DateTime($extractedDate))->format('Y-m-d') . 'T03:00:00.000Z';
+            $nextBusinessDay.'T03:00:00.000Z' :
+            (new DateTime($extractedDate))->format('Y-m-d').'T03:00:00.000Z';
 
         $instance = new self([
             'id' => null,
@@ -215,25 +199,23 @@ class ExitData extends DataTransferObject
             'group' => new GroupData(['id' => null]),
             'paymentCategory' => new PaymentCategoryData(['id' => null]),
             'paymentItem' => new PaymentItemData(['id' => null]),
-            'account' => new AccountData(['id' => null])
+            'account' => new AccountData(['id' => null]),
         ]);
 
-        if ($data->docSubType == ExitRepository::PAYMENTS_VALUE)
-        {
+        if ($data->docSubType == ExitRepository::PAYMENTS_VALUE) {
             $instance->isPayment = 1;
             $instance->paymentItem = new PaymentItemData(['id' => $data->paymentItemId]);
             $instance->paymentCategory = new PaymentCategoryData(['id' => $data->paymentCategoryId]);
         }
 
-        if ($data->docSubType != ExitRepository::PAYMENTS_VALUE)
-        {
+        if ($data->docSubType != ExitRepository::PAYMENTS_VALUE) {
             $instance->group = new GroupData(['id' => $data->groupId]);
             $instance->division = new DivisionData(['id' => $data->divisionId]);
         }
 
-        if ($data->docSubType == ExitRepository::ACCOUNTS_TRANSFER_VALUE)
-        {
+        if ($data->docSubType == ExitRepository::ACCOUNTS_TRANSFER_VALUE) {
             $instance->exitType = ExitRepository::ACCOUNTS_TRANSFER_VALUE;
+            $instance->accountId = $data->originAccountId;
             $instance->group = new GroupData(['id' => null]);
             $instance->division = new DivisionData(['id' => null]);
             $instance->isPayment = 0;

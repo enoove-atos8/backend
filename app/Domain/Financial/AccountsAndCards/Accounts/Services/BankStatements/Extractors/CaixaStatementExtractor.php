@@ -13,14 +13,13 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Extract bank statement data from Caixa file
      *
-     * @param string $filePath * @return array
-     * @param AccountFileData $file
-     * @return array
+     * @param  string  $filePath  * @return array
+     *
      * @throws GeneralExceptions
      */
     public function extract(string $filePath, AccountFileData $file): array
     {
-        return match(strtoupper($file->fileType)) {
+        return match (strtoupper($file->fileType)) {
             'PDF' => $this->extractFromPdf($filePath, $file),
             'TXT' => $this->extractFromTxt($filePath, $file),
             'OFX' => $this->extractFromOfx($filePath, $file),
@@ -33,17 +32,13 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Validate if the file contains movements for the expected account
      *
-     * @param string $filePath
-     * @param AccountFileData $file
-     * @param string $fileType
-     * @return void
      * @throws GeneralExceptions
      */
     private function validateAccountFile(string $filePath, AccountFileData $file, string $fileType): void
     {
         $accountNumber = str_replace('-', '', $file->account->accountNumber);
 
-        match(strtoupper($fileType)) {
+        match (strtoupper($fileType)) {
             'TXT' => $this->validateTxtAccount($filePath, $accountNumber),
             'PDF' => $this->validatePdfAccount($filePath, $accountNumber),
             'CSV' => $this->validateCsvAccount($filePath, $accountNumber),
@@ -56,9 +51,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Validate TXT file account
      *
-     * @param string $filePath
-     * @param string $accountNumber
-     * @return void
      * @throws GeneralExceptions
      */
     private function validateTxtAccount(string $filePath, string $accountNumber): void
@@ -74,12 +66,12 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
         fclose($handle);
 
         if ($firstRow === false || empty($firstRow[0])) {
-            throw new GeneralExceptions("File is empty or has invalid format", 422);
+            throw new GeneralExceptions('File is empty or has invalid format', 422);
         }
 
         $accountInFile = trim($firstRow[0], '"');
 
-        if (!Str::contains($accountInFile, $accountNumber)) {
+        if (! Str::contains($accountInFile, $accountNumber)) {
             throw new GeneralExceptions(
                 "Account validation failed: Expected account '{$accountNumber}' not found in file data '{$accountInFile}'",
                 422
@@ -90,17 +82,13 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Validate if the file movements match the expected reference month
      *
-     * @param string $filePath
-     * @param AccountFileData $file
-     * @param string $fileType
-     * @return void
      * @throws GeneralExceptions
      */
     private function validateMonthFile(string $filePath, AccountFileData $file, string $fileType): void
     {
         $referenceMonth = str_replace('-', '', $file->referenceDate);
 
-        match(strtoupper($fileType)) {
+        match (strtoupper($fileType)) {
             'TXT' => $this->validateTxtMonth($filePath, $referenceMonth),
             'PDF' => $this->validatePdfMonth($filePath, $referenceMonth),
             'CSV' => $this->validateCsvMonth($filePath, $referenceMonth),
@@ -113,9 +101,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Validate TXT file month
      *
-     * @param string $filePath
-     * @param string $referenceMonth
-     * @return void
      * @throws GeneralExceptions
      */
     private function validateTxtMonth(string $filePath, string $referenceMonth): void
@@ -131,12 +116,12 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
         fclose($handle);
 
         if ($firstRow === false || empty($firstRow[1])) {
-            throw new GeneralExceptions("File is empty or has invalid format", 423);
+            throw new GeneralExceptions('File is empty or has invalid format', 423);
         }
 
         $movementDateInFile = trim($firstRow[1], '"');
 
-        if (!Str::contains($movementDateInFile, $referenceMonth)) {
+        if (! Str::contains($movementDateInFile, $referenceMonth)) {
             throw new GeneralExceptions(
                 "Month validation failed: Expected month '{$referenceMonth}' not found in file movement date '{$movementDateInFile}'",
                 423
@@ -146,10 +131,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate PDF file month
-     *
-     * @param string $filePath
-     * @param string $referenceMonth
-     * @return void
      */
     private function validatePdfMonth(string $filePath, string $referenceMonth): void
     {
@@ -159,10 +140,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate CSV file month
-     *
-     * @param string $filePath
-     * @param string $referenceMonth
-     * @return void
      */
     private function validateCsvMonth(string $filePath, string $referenceMonth): void
     {
@@ -172,10 +149,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate OFX file month
-     *
-     * @param string $filePath
-     * @param string $referenceMonth
-     * @return void
      */
     private function validateOfxMonth(string $filePath, string $referenceMonth): void
     {
@@ -185,10 +158,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate PDF file account
-     *
-     * @param string $filePath
-     * @param string $accountNumber
-     * @return void
      */
     private function validatePdfAccount(string $filePath, string $accountNumber): void
     {
@@ -198,10 +167,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate CSV file account
-     *
-     * @param string $filePath
-     * @param string $accountNumber
-     * @return void
      */
     private function validateCsvAccount(string $filePath, string $accountNumber): void
     {
@@ -211,10 +176,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate OFX file account
-     *
-     * @param string $filePath
-     * @param string $accountNumber
-     * @return void
      */
     private function validateOfxAccount(string $filePath, string $accountNumber): void
     {
@@ -225,9 +186,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Extract data from PDF format
      *
-     * @param string $filePath
-     * @param AccountFileData $file
-     * @return array
      * @throws GeneralExceptions
      */
     private function extractFromPdf(string $filePath, AccountFileData $file): array
@@ -245,9 +203,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Extract data from TXT format
      *
-     * @param string $filePath
-     * @param AccountFileData $file
-     * @return array
      * @throws GeneralExceptions
      */
     private function extractFromTxt(string $filePath, AccountFileData $file): array
@@ -265,20 +220,22 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
         $rows = [];
 
         while (($row = fgetcsv($handle, 0, ';')) !== false) {
+            // Validar o formato da linha antes de adicionar ao array
+            if (! $this->validateTxtRowFormat($row)) {
+                continue;
+            }
+
             $rows[] = $row;
         }
 
         fclose($handle);
 
-        return collect($rows)->map(fn($row) => ExtractorFileData::fromFile($row))->toArray();
+        return collect($rows)->map(fn ($row) => ExtractorFileData::fromFile($row))->toArray();
     }
 
     /**
      * Extract data from OFX format
      *
-     * @param string $filePath
-     * @param AccountFileData $file
-     * @return array
      * @throws GeneralExceptions
      */
     private function extractFromOfx(string $filePath, AccountFileData $file): array
@@ -296,9 +253,6 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     /**
      * Extract data from CSV format
      *
-     * @param string $filePath
-     * @param AccountFileData $file
-     * @return array
      * @throws GeneralExceptions
      */
     private function extractFromCsv(string $filePath, AccountFileData $file): array
@@ -314,10 +268,43 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     }
 
     /**
-     * Check if this extractor supports the given bank
+     * Validate TXT row format
      *
-     * @param string $bankName
-     * @return bool
+     * Validates if the row has the correct format for Caixa TXT files:
+     * - Must have exactly 6 fields
+     * - Must not contain line breaks (\f, \n, \r)
+     * - Essential fields must not be empty (account, date, description)
+     */
+    private function validateTxtRowFormat(array $row): bool
+    {
+        // Pular linhas vazias ou com apenas um elemento vazio
+        if (empty($row) || (count($row) === 1 && trim($row[0]) === '')) {
+            return false;
+        }
+
+        // Validar se a linha tem EXATAMENTE 6 campos (formato correto do extrato Caixa)
+        // Formato esperado: [account, date, documentNumber, description, amount, type]
+        if (count($row) !== 6) {
+            return false;
+        }
+
+        // Validar se algum campo contém quebras de linha indevidas (\f, \n, \r)
+        foreach ($row as $field) {
+            if (str_contains($field, "\f") || str_contains($field, "\n") || str_contains($field, "\r")) {
+                return false;
+            }
+        }
+
+        // Validar se os campos essenciais não estão vazios (account, date, description)
+        if (empty(trim($row[0], '"')) || empty(trim($row[1], '"')) || empty(trim($row[3], '"'))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if this extractor supports the given bank
      */
     public function supports(string $bankName): bool
     {

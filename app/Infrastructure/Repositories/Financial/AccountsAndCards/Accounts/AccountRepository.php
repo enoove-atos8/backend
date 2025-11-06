@@ -16,10 +16,10 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
     protected mixed $model = Accounts::class;
 
     const TABLE_NAME = 'accounts';
+
     const ACTIVATED_COLUMN = 'activated';
 
     const ID_COLUMN_JOINED = 'accounts.id';
-
 
     const DISPLAY_SELECT_COLUMNS = [
         'accounts.id as accounts_id',
@@ -27,19 +27,21 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
         'accounts.bank_name as accounts_bank_name',
         'accounts.agency_number as accounts_agency_number',
         'accounts.account_number as accounts_account_number',
+        'accounts.initial_balance as accounts_initial_balance',
+        'accounts.initial_balance_date as accounts_initial_balance_date',
         'accounts.activated as accounts_activated',
     ];
 
     /**
-     * @inheritDoc
+     * {@inheritDoc}
+     *
      * @throws UnknownProperties
      */
     public function saveAccount(AccountData $accountData): AccountData
     {
         $conditions = null;
 
-        if($accountData->id)
-        {
+        if ($accountData->id) {
             $conditions = [
                 'field' => self::ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
@@ -48,16 +50,17 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
         }
 
         $updatedOrCreated = $this->updateOrCreate([
-            'account_type'        => $accountData->accountType,
-            'bank_name'           => $accountData->bankName,
-            'agency_number'       => $accountData->agencyNumber,
-            'account_number'      => $accountData->accountNumber,
-            'activated'           => $accountData->activated,
+            'account_type' => $accountData->accountType,
+            'bank_name' => $accountData->bankName,
+            'agency_number' => $accountData->agencyNumber,
+            'account_number' => $accountData->accountNumber,
+            'initial_balance' => $accountData->initialBalance,
+            'initial_balance_date' => $accountData->initialBalanceDate,
+            'activated' => $accountData->activated,
         ], $conditions);
 
         return AccountData::fromResponse($updatedOrCreated->toArray());
     }
-
 
     /**
      * @throws BindingResolutionException
@@ -67,17 +70,15 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
         $conditions = [
             'field' => self::ID_COLUMN,
             'operator' => BaseRepository::OPERATORS['EQUALS'],
-            'value' => $accountId
+            'value' => $accountId,
         ];
-        return $this->update($conditions, ['activated' =>  false]);
-    }
 
+        return $this->update($conditions, ['activated' => false]);
+    }
 
     /**
      * Get all cards from the database.
      *
-     * @param bool $returnDeactivatesAccounts
-     * @return Collection
      * @throws BindingResolutionException
      */
     public function getAccounts(bool $returnDeactivatesAccounts): Collection
@@ -86,36 +87,34 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
 
             $q = DB::table(self::TABLE_NAME);
 
-            if(!$returnDeactivatesAccounts)
+            if (! $returnDeactivatesAccounts) {
                 $q->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], true);
+            }
 
             $q->orderBy(self::ID_COLUMN);
 
-
             $result = $q->get();
-            return collect($result)->map(fn($item) => AccountData::fromResponse((array) $item));
+
+            return collect($result)->map(fn ($item) => AccountData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
     /**
      * Get an account by id
      *
-     * @param int $id
-     * @return AccountData|null
      * @throws BindingResolutionException
      */
     public function getAccountsById(int $id): ?AccountData
     {
-        $query = function () use ($id){
+        $query = function () use ($id) {
 
             $q = DB::table(self::TABLE_NAME)
                 ->where(self::ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $id);
 
-
             $result = $q->first();
+
             return $result ? AccountData::fromResponse((array) $result) : null;
         };
 

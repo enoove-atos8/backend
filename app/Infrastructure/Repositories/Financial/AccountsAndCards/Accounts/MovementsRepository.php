@@ -18,8 +18,19 @@ class MovementsRepository extends BaseRepository implements MovementsRepositoryI
     const TABLE_NAME = 'accounts_movements';
 
     const ID_COLUMN_JOINED = 'accounts_movements.id';
+
     const ACCOUNT_ID_COLUMN_JOINED = 'accounts_movements.account_id';
+
     const MOVEMENT_DATE_COLUMN = 'accounts_movements.movement_date';
+
+    const MOVEMENT_TYPE_COLUMN = 'movementType';
+
+    const AMOUNT_COLUMN = 'amount';
+
+    const DEBIT_VALUE = 'debit';
+
+    const CREDIT_VALUE = 'credit';
+
     const PAGINATE_NUMBER = 30;
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -40,13 +51,9 @@ class MovementsRepository extends BaseRepository implements MovementsRepositoryI
     /**
      * Get movements by account id and reference date
      *
-     * @param int $accountId
-     * @param string $referenceDate
-     * @param bool $paginate
-     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getMovements(int $accountId, string $referenceDate, bool $paginate = true): Collection | Paginator
+    public function getMovements(int $accountId, string $referenceDate, bool $paginate = true): Collection|Paginator
     {
         $query = function () use ($accountId, $referenceDate, $paginate) {
 
@@ -57,15 +64,14 @@ class MovementsRepository extends BaseRepository implements MovementsRepositoryI
                 ->orderBy(self::MOVEMENT_DATE_COLUMN, 'asc')
                 ->orderBy(self::ID_COLUMN_JOINED, 'asc');
 
-            if (!$paginate)
-            {
+            if (! $paginate) {
                 $result = $q->get();
-                return collect($result)->map(fn($item) => MovementsData::fromResponse((array) $item));
-            }
-            else
-            {
+
+                return collect($result)->map(fn ($item) => MovementsData::fromResponse((array) $item));
+            } else {
                 $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => MovementsData::fromResponse((array) $item)));
+
+                return $paginator->setCollection($paginator->getCollection()->map(fn ($item) => MovementsData::fromResponse((array) $item)));
             }
         };
 

@@ -16,20 +16,17 @@ class SaveAccountFileAction
         $this->accountFileRepository = $accountFileRepository;
     }
 
-
     /**
-     * @param AccountFileData $accountFileData
-     * @return \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
      * @throws GeneralExceptions
      */
-    public function execute(\App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData $accountFileData): \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
+    public function execute(AccountFileData $accountFileData): AccountFileData
     {
         $file = $this->accountFileRepository->saveFile($accountFileData);
 
-        if(!is_null($file->id))
+        if (! is_null($file->id)) {
             return $file;
-
-        else
+        } else {
             throw new GeneralExceptions(ReturnMessages::FILE_NOT_CREATED, 500);
+        }
     }
 }

@@ -9,50 +9,34 @@ interface AccountFileRepositoryInterface
 {
     /**
      * Save a new file
-     *
-     * @param AccountFileData $accountFileData
-     * @return AccountFileData
      */
     public function saveFile(AccountFileData $accountFileData): AccountFileData;
 
-
     /**
      * Change file processing status
-     *
-     * @param int $id
-     * @param string $status
-     * @return bool
      */
     public function changeFileProcessingStatus(int $id, string $status): bool;
-
 
     /**
      * Get files by account id
      *
-     * @param int $accountId
      * @return mixed
      */
     public function getFilesByAccountId(int $accountId): Collection;
 
-
     /**
      * Verify id exist file to account id and reference date
      *
-     * @param int $accountId
-     * @param string $referenceDate
      * @return mixed
      */
     public function existFileByReferenceDate(int $accountId, string $referenceDate): bool;
 
-
     /**
      * Get files by id
      *
-     * @param int $id
      * @return mixed
      */
     public function getFilesById(int $id): AccountFileData;
-
 
     /**
      * Delete a file from by account id and id file
@@ -60,4 +44,14 @@ interface AccountFileRepositoryInterface
      * @return Collection
      */
     public function deleteFile(int $accountId, int $id): mixed;
+
+    /**
+     * Get the last processed file for an account
+     */
+    public function getLastProcessedFile(int $accountId): ?AccountFileData;
+
+    /**
+     * Get file by account id and reference date
+     */
+    public function getFileByAccountAndReferenceDate(int $accountId, string $referenceDate): ?AccountFileData;
 }

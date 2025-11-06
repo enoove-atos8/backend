@@ -22,10 +22,10 @@ use Domain\Financial\Entries\Consolidation\Actions\CheckConsolidationStatusActio
 use Domain\Financial\ReceiptProcessing\Actions\CreateReceiptProcessing;
 use Domain\Financial\ReceiptProcessing\DataTransferObjects\ReceiptProcessingData;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
-use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\Secretary\Membership\Actions\GetMemberByCPFAction;
 use Domain\Secretary\Membership\Actions\GetMemberByMiddleCPFAction;
 use Domain\Secretary\Membership\Actions\UpdateMiddleCpfMemberAction;
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\SyncStorage\Actions\GetSyncStorageDataAction;
 use Domain\SyncStorage\Actions\UpdateStatusAction;
 use Exception;
@@ -43,90 +43,128 @@ use Throwable;
 class ProcessingBankEntriesTransferReceipts
 {
     private CreateEntryAction $createEntryAction;
+
     private GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction;
+
     private GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction;
+
     private GetSyncStorageDataAction $getSyncStorageDataAction;
+
     private UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction;
+
     private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
+
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
+
     private UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction;
+
     private UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction;
+
     private GetReturnReceivingGroupAction $getReturnReceivingGroupAction;
+
     private GetMemberByCPFAction $getMemberByCPFAction;
+
     private CreateReceiptProcessing $createReceiptProcessing;
+
     private UploadFile $uploadFile;
+
     private ConsolidationEntriesData $consolidationEntriesData;
+
     private EntryData $entryData;
+
     private MemberData $memberData;
+
     private GetPlansAction $getPlansAction;
+
     private GetPlanByNameAction $getPlanByNameAction;
+
     private ReceiptProcessingData $receiptProcessingData;
 
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
+
     private GetReviewerAction $getReviewerAction;
+
     private GetFinancialGroupAction $getFinancialGroupAction;
 
     private UpdateStatusAction $updateStatusAction;
+
     private CheckConsolidationStatusAction $checkConsolidationStatusAction;
 
     private string $entryType;
+
     protected Collection $foldersData;
+
     protected Collection $syncStorageData;
 
     private bool $devolution = false;
+
     private int $amount = 0;
+
     private string $institution;
+
     private string $reason;
 
     private ?int $groupReturnedId = null;
+
     private ?int $groupReceivedId = null;
 
     private MinioStorageService $minioStorageService;
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
+
     const IDENTIFICATION_PENDING_1 = 1;
+
     const IDENTIFICATION_PENDING_0 = 0;
+
     const S3_ENTRIES_RECEIPT_PATH = 'entries/assets/receipts';
+
     const SYNC_STORAGE_ENTRIES_ERROR_RECEIPTS = 'sync_storage/financial/error_receipts/entries';
+
     const SUFFIX_TIMEZONE = 'T03:00:00.000Z';
+
     const SHARED_RECEIPTS_FOLDER_NAME = 'shared_receipts';
+
     const STORED_RECEIPTS_FOLDER_NAME = 'stored_receipts';
+
     const SYNC_STORAGE_FOLDER_NAME = 'sync_storage';
+
     const FINANCIAL_FOLDER_NAME = 'financial';
+
     const ENTRIES_FOLDER_NAME = 'entries';
+
     const TITHE_FOLDER_NAME = 'tithe';
+
     const DESIGNATED_FOLDER_NAME = 'designated';
+
     const OFFER_FOLDER_NAME = 'offer';
 
-
     public function __construct(
-        CreateEntryAction                      $createEntryAction,
-        GetMemberByMiddleCPFAction             $getMemberByMiddleCPFAction,
-        GetMemberByCPFAction                   $getMemberByCPFAction,
-        UpdateMiddleCpfMemberAction            $updateMiddleCpfMemberAction,
-        GetEntryByTimestampValueCpfAction      $getEntryByTimestampValueCpfAction,
-        GetSyncStorageDataAction               $getSyncStorageDataAction,
-        GetReturnReceivingGroupAction          $getReturnReceivingGroupAction,
-        UploadFile                             $uploadFile,
+        CreateEntryAction $createEntryAction,
+        GetMemberByMiddleCPFAction $getMemberByMiddleCPFAction,
+        GetMemberByCPFAction $getMemberByCPFAction,
+        UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction,
+        GetEntryByTimestampValueCpfAction $getEntryByTimestampValueCpfAction,
+        GetSyncStorageDataAction $getSyncStorageDataAction,
+        GetReturnReceivingGroupAction $getReturnReceivingGroupAction,
+        UploadFile $uploadFile,
         UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction,
-        UpdateReceiptLinkEntryAction           $updateReceiptLinkEntryAction,
-        UpdateTimestampValueCPFEntryAction     $updateTimestampValueCPFEntryAction,
-        EntryData                              $entryData,
-        MemberData                             $memberData,
-        OCRExtractDataBankReceiptService       $OCRExtractDataBankReceiptService,
-        ConsolidationEntriesData               $consolidationEntriesData,
-        GetPlansAction                         $getPlansAction,
-        GetPlanByNameAction                    $getPlanByNameAction,
-        GetChurchesByPlanIdAction              $getChurchesByPlanIdAction,
-        GetReviewerAction                      $getReviewerAction,
-        GetFinancialGroupAction                $getFinancialGroupAction,
-        MinioStorageService                    $minioStorageService,
-        UpdateStatusAction                     $updateStatusAction,
-        CheckConsolidationStatusAction         $checkConsolidationStatusAction,
-        ReceiptProcessingData                  $receiptProcessingData,
-        CreateReceiptProcessing                $createReceiptProcessing
-    )
-    {
+        UpdateReceiptLinkEntryAction $updateReceiptLinkEntryAction,
+        UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction,
+        EntryData $entryData,
+        MemberData $memberData,
+        OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
+        ConsolidationEntriesData $consolidationEntriesData,
+        GetPlansAction $getPlansAction,
+        GetPlanByNameAction $getPlanByNameAction,
+        GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
+        GetReviewerAction $getReviewerAction,
+        GetFinancialGroupAction $getFinancialGroupAction,
+        MinioStorageService $minioStorageService,
+        UpdateStatusAction $updateStatusAction,
+        CheckConsolidationStatusAction $checkConsolidationStatusAction,
+        ReceiptProcessingData $receiptProcessingData,
+        CreateReceiptProcessing $createReceiptProcessing
+    ) {
         $this->createEntryAction = $createEntryAction;
         $this->getMemberByMiddleCPFAction = $getMemberByMiddleCPFAction;
         $this->getSyncStorageDataAction = $getSyncStorageDataAction;
@@ -154,7 +192,6 @@ class ProcessingBankEntriesTransferReceipts
         $this->createReceiptProcessing = $createReceiptProcessing;
     }
 
-
     /**
      * @throws GeneralExceptions
      * @throws Throwable
@@ -164,8 +201,7 @@ class ProcessingBankEntriesTransferReceipts
      */
     public function handle(): void
     {
-        try
-        {
+        try {
             $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
 
             foreach ($tenants as $tenant) {
@@ -177,15 +213,11 @@ class ProcessingBankEntriesTransferReceipts
                     $this->process($data, $tenant);
                 }
             }
-        }
-        catch(GeneralExceptions $e)
-        {
+        } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
 
     }
-
-
 
     /**
      * @throws GeneralExceptions
@@ -195,7 +227,7 @@ class ProcessingBankEntriesTransferReceipts
      */
     private function process(SyncStorageData $data, $tenant): void
     {
-        $basePathTemp = self::STORAGE_BASE_PATH . "tenants/{$tenant}/temp";
+        $basePathTemp = self::STORAGE_BASE_PATH."tenants/{$tenant}/temp";
         $this->minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
 
         $downloadedFile = $this->minioStorageService->downloadFile($data->path, $tenant, $basePathTemp);
@@ -204,8 +236,6 @@ class ProcessingBankEntriesTransferReceipts
             $this->processFile($downloadedFile, $data, $tenant);
         }
     }
-
-
 
     /**
      * @throws GeneralExceptions
@@ -216,15 +246,15 @@ class ProcessingBankEntriesTransferReceipts
     {
         $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
 
-        if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
-        {
+        if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS') {
             $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
             $middleCpf = $extractedData['data']['middle_cpf'];
             $member = $this->findMember($middleCpf);
 
-            if ($this->isDuplicateEntry($timestampValueCpf)){
+            if ($this->isDuplicateEntry($timestampValueCpf)) {
                 $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
+
                 return;
             }
 
@@ -233,8 +263,9 @@ class ProcessingBankEntriesTransferReceipts
             $entry = $this->createEntryAction->execute($this->entryData, $this->consolidationEntriesData);
             $this->updateTimestampValueCPFEntryAction->execute($entry->id, $timestampValueCpf);
 
-            if($extractedData['data']['doc_sub_type'] == EntryRepository::TITHE_VALUE && !$member)
+            if ($extractedData['data']['doc_sub_type'] == EntryRepository::TITHE_VALUE && ! $member) {
                 $this->updateIdentificationPendingEntryAction->execute($entry->id, self::IDENTIFICATION_PENDING_1);
+            }
 
             $sharedPath = $syncStorageData->path;
             $syncStorageData->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $syncStorageData->path);
@@ -243,19 +274,19 @@ class ProcessingBankEntriesTransferReceipts
             $path = implode('/', $urlParts);
             $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
 
-            if(!empty($fileUrl))
+            if (! empty($fileUrl)) {
                 $this->minioStorageService->delete($sharedPath, $tenant);
+            }
 
             $this->updateReceiptLinkEntryAction->execute($entry->id, $fileUrl);
             $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
 
-        }
-        else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
-        {
+        } elseif (count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS') {
             $linkReceipt = $this->minioStorageService->upload($downloadedFile['fileUploaded'], self::SYNC_STORAGE_ENTRIES_ERROR_RECEIPTS, $tenant, true);
 
-            if(!empty($linkReceipt))
+            if (! empty($linkReceipt)) {
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
+            }
 
             $this->setReceiptProcessingData($extractedData, $syncStorageData, $linkReceipt);
             $this->createReceiptProcessing->execute($this->receiptProcessingData);
@@ -263,12 +294,9 @@ class ProcessingBankEntriesTransferReceipts
         }
     }
 
-
     /**
-     * @param $extractedData
-     * @param mixed $data
-     * @param string $linkReceipt
-     * @return void
+     * @param  mixed  $data
+     *
      * @throws Throwable
      */
     public function setReceiptProcessingData($extractedData, SyncStorageData $data, string $linkReceipt): void
@@ -280,8 +308,6 @@ class ProcessingBankEntriesTransferReceipts
             $data, $extractedData, $linkReceipt, $reviewer, $financialGroup
         );
     }
-
-
 
     /**
      * @throws GeneralExceptions
@@ -295,21 +321,18 @@ class ProcessingBankEntriesTransferReceipts
 
         $member = $this->getMemberByMiddleCPFAction->execute($middleCpf);
 
-        if (!$member)
-        {
+        if (! $member) {
             $member = $this->getMemberByCPFAction->execute($middleCpf);
 
-            if ($member)
+            if ($member) {
                 $this->updateMiddleCpfMemberAction->execute($member->id, $middleCpf);
+            }
         }
 
         return $member;
     }
 
-
     /**
-     * @param string $timestampValueCpf
-     * @return bool
      * @throws Throwable
      */
     private function isDuplicateEntry(string $timestampValueCpf): bool
@@ -321,16 +344,14 @@ class ProcessingBankEntriesTransferReceipts
         $entry = $this->getEntryByTimestampValueCpfAction->execute($timestampValueCpf);
         if ($entry) {
             $this->entryData->duplicityVerified = true;
+
             return true;
         }
 
         return false;
     }
 
-
     /**
-     * @param string $date
-     * @return bool
      * @throws Throwable
      */
     private function isEntryInsertionInClosedMonth(string $date): bool
@@ -338,34 +359,25 @@ class ProcessingBankEntriesTransferReceipts
         return $this->checkConsolidationStatusAction->execute($date);
     }
 
-
-
     /**
-     * @return int|null
      * @throws BindingResolutionException
      * @throws Throwable
      */
-    public function getReturnReceivingGroup(): int | null
+    public function getReturnReceivingGroup(): ?int
     {
         $group = $this->getReturnReceivingGroupAction->execute();
 
-        if(!is_null($group))
-        {
+        if (! is_null($group)) {
             return $group->id;
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
-
-
     /**
-     *
      * @throws \Exception
      */
-    function getNextBusinessDay($date): string
+    public function getNextBusinessDay($date): string
     {
         $holidays = [
             '01-01', // Confraternização Universal (Ano Novo)
@@ -382,23 +394,18 @@ class ProcessingBankEntriesTransferReceipts
         $dayOfWeek = $currentDate->format('N');
         $monthDay = $currentDate->format('m-d');
 
-
         if (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays)) {
-            do
-            {
+            do {
                 $currentDate->modify('+1 day');
                 $dayOfWeek = $currentDate->format('N');
                 $monthDay = $currentDate->format('m-d');
-            }
-            while (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays));
+            } while (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays));
 
             return $currentDate->format('Y-m-d');
         }
 
         return $currentDate->format('Y-m-d');
     }
-
-
 
     /**
      * @throws GeneralExceptions
@@ -410,28 +417,22 @@ class ProcessingBankEntriesTransferReceipts
         $arrTenants = [];
         $plan = $this->getPlanByNameAction->execute($planName);
 
-        if(!is_null($plan))
-        {
+        if (! is_null($plan)) {
             $tenants = $this->getChurchesByPlanIdAction->execute($plan->id);
 
-            if(count($tenants) > 0)
-            {
-                foreach ($tenants as $tenant)
+            if (count($tenants) > 0) {
+                foreach ($tenants as $tenant) {
                     $arrTenants[] = $tenant->tenant_id;
+                }
 
                 return $arrTenants;
             }
-        }
-        else
-        {
+        } else {
             return $arrTenants;
         }
     }
 
-
-
     /**
-     *
      * @throws \Exception
      * @throws Throwable
      */

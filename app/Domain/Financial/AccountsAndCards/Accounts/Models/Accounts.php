@@ -27,6 +27,8 @@ class Accounts extends Model
         'bank_name',
         'agency_number',
         'account_number',
+        'initial_balance',
+        'initial_balance_date',
         'activated',
     ];
 
@@ -37,5 +39,6 @@ class Accounts extends Model
      */
     protected $casts = [
         'activated' => 'boolean',
+        'initial_balance' => 'decimal:2',
     ];
 }

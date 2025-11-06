@@ -5,64 +5,59 @@ namespace Application\Api\v1\Financial\Exits\Exits\Resources;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Collection;
 use JsonSerializable;
 
 class AmountByExitTypeResource extends JsonResource
 {
     public static $wrap = 'indicators';
 
-
-
     /**
      * Transform the resource into an array.
-     *
-     * @param Request $request
-     * @return array|Arrayable|JsonSerializable
      */
     public function toArray(Request $request): array|JsonSerializable|Arrayable
     {
         $result = $this->resource;
 
         return [
-            'payments'              => [
+            'payments' => [
                 'total' => $result['payments']['total'],
                 'accounts' => self::validateAccounts($result['payments']),
             ],
-            'transfers'             => [
+            'transfers' => [
                 'total' => $result['transfers']['total'],
                 'accounts' => self::validateAccounts($result['transfers']),
             ],
-            'ministerialTransfers'  => [
+            'ministerialTransfers' => [
                 'total' => $result['ministerialTransfers']['total'],
                 'accounts' => self::validateAccounts($result['ministerialTransfers']),
             ],
-            'contributions'         => [
+            'contributions' => [
                 'total' => $result['contributions']['total'],
                 'accounts' => self::validateAccounts($result['contributions']),
             ],
-            'total'                 => $result['total'],
+            'anonymous' => [
+                'total' => $result['anonymous']['total'],
+                'accounts' => self::validateAccounts($result['anonymous']),
+            ],
+            'total' => $result['total'],
         ];
     }
 
-
     /**
      * Validate if accounts array has data
-     *
-     * @param array $result
-     * @return array|null
      */
     public function validateAccounts(array $result): ?array
     {
         $accounts = $result['accounts'];
 
         // Se for Collection, converte para array
-        if ($accounts instanceof \Illuminate\Support\Collection) {
+        if ($accounts instanceof Collection) {
             $accounts = $accounts->toArray();
         }
 
         foreach ($accounts as $key => $value) {
-            if($value != null)
-            {
+            if ($value != null) {
                 return $accounts;
             }
         }
