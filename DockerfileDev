@@ -62,8 +62,11 @@ RUN docker-php-ext-install pdo_mysql exif pcntl
 RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/include/
 RUN docker-php-ext-install gd
 
-# Install Swoole
-RUN pecl install swoole && docker-php-ext-enable swoole
+# Install Swoole with retry logic
+RUN pecl config-set http_proxy "" && \
+    pecl config-set php_ini /usr/local/etc/php/php.ini && \
+    (pecl install swoole || pecl install swoole || pecl install swoole) && \
+    docker-php-ext-enable swoole
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

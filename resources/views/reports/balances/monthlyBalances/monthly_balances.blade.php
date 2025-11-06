@@ -129,26 +129,20 @@
                         <tbody>
                             <tr class="border-b border-gray-300">
                                 <td class="py-3 px-4 text-gray-700">Saldo do mês anterior - {{ $previousMonth }}</td>
-                                <td class="py-3 px-4 text-right text-gray-700 font-bold">
-                                    {{ number_format($reportData->balancesData->previousBalance, 2, ',', '.') }}
-                                </td>
+                                <td class="py-3 px-4 text-right text-gray-700">R$ {{ number_format($reportData->balancesData->previousBalance, 2, ',', '.') }}</td>
                             </tr>
                             <tr class="border-b border-gray-300">
                                 <td class="py-3 px-4 text-gray-700 font-semibold">+ Total de Entradas</td>
-                                <td class="py-3 px-4 text-right text-gray-700 font-bold">
-                                    {{ number_format($reportData->balancesData->totalEntries, 2, ',', '.') }}
-                                </td>
+                                <td class="py-3 px-4 text-right text-gray-700">R$ {{ number_format($reportData->balancesData->totalEntries, 2, ',', '.') }}</td>
                             </tr>
                             <tr class="border-b border-gray-300">
                                 <td class="py-3 px-4 text-gray-700 font-semibold">- Total de Saídas</td>
-                                <td class="py-3 px-4 text-right text-gray-700 font-bold">
-                                    {{ number_format($reportData->balancesData->totalExits, 2, ',', '.') }}
-                                </td>
+                                <td class="py-3 px-4 text-right text-gray-700">R$ {{ number_format($reportData->balancesData->totalExits, 2, ',', '.') }}</td>
                             </tr>
                             <tr class="border-b-2 border-gray-300">
                                 <td class="py-4 px-4 text-gray-800 font-bold text-lg">Saldo atual - {{ $currentMonthShort }}</td>
-                                <td class="py-4 px-4 text-right text-gray-800 font-bold text-lg">
-                                    {{ number_format($reportData->balancesData->currentBalance, 2, ',', '.') }}
+                                <td class="py-4 px-4 text-right">
+                                    <span class="text-lg font-bold text-gray-800">R$ {{ number_format($reportData->balancesData->currentBalance, 2, ',', '.') }}</span>
                                 </td>
                             </tr>
                         </tbody>
