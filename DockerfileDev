@@ -63,9 +63,7 @@ RUN docker-php-ext-configure gd --with-freetype=/usr/include/ --with-jpeg=/usr/i
 RUN docker-php-ext-install gd
 
 # Install Swoole with retry logic
-RUN pecl config-set http_proxy "" && \
-    pecl config-set php_ini /usr/local/etc/php/php.ini && \
-    (pecl install swoole || pecl install swoole || pecl install swoole) && \
+RUN (pecl install swoole || pecl install swoole || pecl install swoole) && \
     docker-php-ext-enable swoole
 
 # Install composer
