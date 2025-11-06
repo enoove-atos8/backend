@@ -13,11 +13,10 @@ return new class extends Migration
      */
     public function up()
     {
-        if (!Schema::hasTable('exits'))
-        {
+        if (! Schema::hasTable('exits')) {
             Schema::create('exits', function (Blueprint $table) {
                 $table->integer('id', true);
-                $table->integer('reviewer_id')->nullable(false);
+                $table->integer('reviewer_id')->nullable();
                 $table->string('exit_type')->nullable(false);
                 $table->integer('division_id')->nullable();
                 $table->integer('group_id')->nullable();
@@ -32,7 +31,7 @@ return new class extends Migration
                 $table->string('timestamp_exit_transaction')->nullable();
                 $table->decimal('amount', 10, 2)->nullable();
                 $table->string('comments')->nullable();
-                $table->string('receipt_link')->nullable(false);
+                $table->string('receipt_link')->nullable();
 
                 $table->timestamps();
 

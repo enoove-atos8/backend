@@ -6,6 +6,9 @@ use App\Application\Api\v1\Auth\Controllers\AuthController;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers\GroupController;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountFilesController;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountMovementsController;
+use App\Application\Api\v1\Financial\Reports\Balances\Controllers\MonthlyBalancesReportsController;
+use App\Application\Api\v1\Financial\Reports\Entries\Controllers\MonthlyReportsController;
+use App\Application\Api\v1\Financial\Reports\Exits\Controllers\MonthlyExitsReportsController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
@@ -19,13 +22,11 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\Entrie
 use Application\Api\v1\Financial\Entries\Entries\Controllers\DuplicityAnalisys\DuplicityAnalisysController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
-use Application\Api\v1\Financial\Entries\Reports\Controllers\MonthlyReportsController;
 use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InvoiceController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\PurchaseController;
-use Application\Api\v1\Financial\Exits\Reports\Controllers\MonthlyExitsReportsController;
 use Application\Api\v1\Financial\Movements\Controllers\MovementController;
 use Application\Api\v1\Financial\ReceiptProcessing\Controllers\ReceiptProcessingController;
 use Application\Api\v1\Mobile\SyncStorage\Controllers\SyncStorageController;
@@ -430,40 +431,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 /*
                 |--------------------------------------------------------------------------
-                | Reports Financial routes
-                |--------------------------------------------------------------------------
-                |
-                */
-                Route::prefix('reports')->group(function () {
-
-                    /*
-                     * Action: POST
-                     * EndPoint: /generateMonthlyReceiptsReport
-                     * Description: Include report to be process by job schedule
-                     */
-
-                    Route::post('/generateMonthlyReceiptsReport', [MonthlyReportsController::class, 'generateMonthlyReceiptsReport']);
-
-                    /*
-                     * Action: POST
-                     * EndPoint: /generateMonthlyEntriesReport
-                     * Description: Include report to be process by job schedule
-                     */
-
-                    Route::post('/generateMonthlyEntriesReport', [MonthlyReportsController::class, 'generateMonthlyEntriesReport']);
-
-                    /*
-                     * Action: POST
-                     * EndPoint: /generateReport
-                     * Description: Include report to be process by job schedule
-                     */
-
-                    Route::get('/getReports', [MonthlyReportsController::class, 'getReports']);
-
-                });
-
-                /*
-                |--------------------------------------------------------------------------
                 | Receipts routes
                 |--------------------------------------------------------------------------
                 |
@@ -771,14 +738,39 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     });
 
                 });
+            });
 
-                /*
-                |--------------------------------------------------------------------------
-                | Reports Financial routes
-                |--------------------------------------------------------------------------
-                |
-                */
-                Route::prefix('reports')->group(function () {
+            Route::prefix('reports')->group(function () {
+
+                Route::prefix('entries')->group(function () {
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyReceiptsReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyReceiptsReport', [MonthlyReportsController::class, 'generateMonthlyReceiptsReport']);
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyEntriesReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyEntriesReport', [MonthlyReportsController::class, 'generateMonthlyEntriesReport']);
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::get('/getReports', [MonthlyReportsController::class, 'getReports']);
+
+                });
+
+                Route::prefix('exits')->group(function () {
 
                     /*
                      * Action: POST
@@ -805,6 +797,27 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                     Route::get('/getReports', [MonthlyExitsReportsController::class, 'getReports']);
 
                 });
+
+                Route::prefix('balances')->group(function () {
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyBalancesReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyBalancesReport', [MonthlyBalancesReportsController::class, 'generateMonthlyBalancesReport']);
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getReports
+                     * Description: Get all balances reports
+                     */
+
+                    Route::get('/getReports', [MonthlyBalancesReportsController::class, 'getReports']);
+
+                });
+
             });
 
             /*

@@ -20,46 +20,81 @@ use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
 
 class ExitRepository extends BaseRepository implements ExitRepositoryInterface
 {
-
     protected mixed $model = Exits::class;
 
     const TABLE_NAME = 'exits';
+
     const EXIT_TYPE = 'exit';
 
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
+
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'exits.date_transaction_compensation';
+
     const PIX_VALUE = 'pix';
+
     const BANK_SLIP_VALUE = 'bank_slip';
+
     const EXITS_VALUE = 'exits';
+
     const TRANSACTIONS_COMPENSATION_COLUMN = 'transaction_compensation';
+
     const TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'exits.transaction_compensation';
+
     const DATE_EXIT_REGISTER_COLUMN = 'date_exit_register';
+
     const DATE_EXIT_REGISTER_COLUMN_JOINED = 'exits.date_exit_register';
+
     const DELETED_COLUMN = 'deleted';
+
     const DELETED_COLUMN_JOINED = 'exits.deleted';
+
     const COMPENSATED_VALUE = 'compensated';
+
     const TO_COMPENSATE_VALUE = 'to_compensate';
+
     const TIMESTAMP_EXIT_TRANSACTION_COLUMN = 'timestamp_exit_transaction';
 
     const REVIEWER_ID_COLUMN_JOINED = 'exits.reviewer_id';
+
     const ACCOUNT_ID_COLUMN_JOINED = 'exits.account_id';
+
+    const ACCOUNT_ID = 'accountId';
+
     const ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE = 'exits_account_id';
+
     const DIVISION_ID_COLUMN_JOINED = 'exits.division_id';
+
     const GROUP_ID_COLUMN_JOINED = 'exits.group_id';
+
     const PAYMENT_CATEGORY_ID_COLUMN_JOINED = 'exits.payment_category_id';
+
     const PAYMENT_ITEM_ID_COLUMN_JOINED = 'exits.payment_item_id';
 
     const ID_COLUMN_JOINED = 'exits.id';
+
     const AMOUNT_COLUMN = 'amount';
+
     const AMOUNT_COLUMN_JOINED = 'exits.amount';
+
     const AMOUNT_COLUMN_JOINED_WITH_UNDERLINE = 'exits_amount';
+
     const EXIT_TYPE_COLUMN = 'exit_type';
+
+    const EXIT_TYPE_COLUMN_JOINED_WITH_UNDERLINE = 'exits_exit_type';
+
     const PAYMENT_VALUE = 'payment';
+
     const PAYMENTS_VALUE = 'payments';
+
     const TRANSFER_VALUE = 'transfer';
+
     const MINISTERIAL_TRANSFER_VALUE = 'ministerial_transfer';
+
     const CONTRIBUTIONS_VALUE = 'contributions';
+
     const ACCOUNTS_TRANSFER_VALUE = 'accounts_transfer';
+
+    const ANONYMOUS_EXITS_VALUE = 'anonymous_exits';
 
     const PAGINATE_NUMBER = 30;
 
@@ -89,53 +124,135 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
      */
     private array $queryConditions = [];
 
-
-    /**
-     * @param ExitData $exitData
-     * @return Exits
-     */
     public function newExit(ExitData $exitData): Exits
     {
         return $this->create([
-            'reviewer_id'                        =>   $exitData->financialReviewer->id,
-            'account_id'                         =>   $exitData->accountId,
-            'exit_type'                          =>   $exitData->exitType,
-            'division_id'                        =>   $exitData->division->id,
-            'group_id'                           =>   $exitData->group->id,
-            'payment_category_id'                =>   $exitData->paymentCategory->id,
-            'payment_item_id'                    =>   $exitData->paymentItem->id,
-            'is_payment'                         =>   $exitData->isPayment,
-            'deleted'                            =>   $exitData->deleted,
-            'transaction_type'                   =>   $exitData->transactionType,
-            'transaction_compensation'           =>   $exitData->transactionCompensation,
-            'date_transaction_compensation'      =>   $exitData->dateTransactionCompensation,
-            'date_exit_register'                 =>   $exitData->dateExitRegister,
-            'timestamp_exit_transaction'         =>   $exitData->timestampExitTransaction,
-            'amount'                             =>   floatval($exitData->amount),
-            'comments'                           =>   $exitData->comments,
-            'receipt_link'                       =>   $exitData->receiptLink,
+            'reviewer_id' => $exitData->financialReviewer?->id,
+            'account_id' => $exitData->accountId,
+            'exit_type' => $exitData->exitType,
+            'division_id' => $exitData->division?->id,
+            'group_id' => $exitData->group?->id,
+            'payment_category_id' => $exitData->paymentCategory?->id,
+            'payment_item_id' => $exitData->paymentItem?->id,
+            'is_payment' => $exitData->isPayment,
+            'deleted' => $exitData->deleted,
+            'transaction_type' => $exitData->transactionType,
+            'transaction_compensation' => $exitData->transactionCompensation,
+            'date_transaction_compensation' => $exitData->dateTransactionCompensation,
+            'date_exit_register' => $exitData->dateExitRegister,
+            'timestamp_exit_transaction' => $exitData->timestampExitTransaction,
+            'amount' => floatval($exitData->amount),
+            'comments' => $exitData->comments,
+            'receipt_link' => $exitData->receiptLink,
         ]);
     }
 
-
     /**
-     * @param string|null $dates
-     * @param array $filters
-     * @param array $orderBy
-     * @param string $transactionCompensation
-     * @param bool $paginate
-     * @param bool $queryOnlyExitsTable
-     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getExits
-    (
+    public function getExitById(int $exitId): ?ExitData
+    {
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS,
+            DivisionRepository::DISPLAY_SELECT_COLUMNS,
+            GroupsRepository::DISPLAY_SELECT_COLUMNS,
+            PaymentCategoryRepository::DISPLAY_SELECT_COLUMNS,
+            PaymentItemRepository::DISPLAY_SELECT_COLUMNS,
+            AccountRepository::DISPLAY_SELECT_COLUMNS
+        );
+
+        $query = function () use ($exitId, $displayColumnsFromRelationship) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->select($displayColumnsFromRelationship)
+
+                ->leftJoin(
+                    FinancialReviewerRepository::TABLE_NAME,
+                    self::REVIEWER_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    FinancialReviewerRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    AccountRepository::TABLE_NAME,
+                    self::ACCOUNT_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    AccountRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    DivisionRepository::TABLE_NAME,
+                    self::DIVISION_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    DivisionRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    GroupsRepository::TABLE_NAME,
+                    self::GROUP_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    GroupsRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    PaymentCategoryRepository::TABLE_NAME,
+                    self::PAYMENT_CATEGORY_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    PaymentCategoryRepository::ID_COLUMN_JOINED)
+                ->leftJoin(
+                    PaymentItemRepository::TABLE_NAME,
+                    self::PAYMENT_ITEM_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    PaymentItemRepository::ID_COLUMN_JOINED)
+
+                ->where(self::ID_COLUMN_JOINED, BaseRepository::OPERATORS['EQUALS'], $exitId);
+
+            $result = $q->first();
+
+            if (! $result) {
+                return null;
+            }
+
+            return ExitData::fromResponse((array) $result);
+        };
+
+        return $this->doQuery($query);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function updateExit(int $exitId, ExitData $exitData): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $exitId,
+        ];
+
+        return $this->update($conditions, [
+            'reviewer_id' => $exitData->financialReviewer?->id,
+            'account_id' => $exitData->accountId,
+            'exit_type' => $exitData->exitType,
+            'division_id' => $exitData->division?->id,
+            'group_id' => $exitData->group?->id,
+            'payment_category_id' => $exitData->paymentCategory?->id,
+            'payment_item_id' => $exitData->paymentItem?->id,
+            'is_payment' => $exitData->isPayment,
+            'deleted' => $exitData->deleted,
+            'transaction_type' => $exitData->transactionType,
+            'transaction_compensation' => $exitData->transactionCompensation,
+            'date_transaction_compensation' => $exitData->dateTransactionCompensation,
+            'date_exit_register' => $exitData->dateExitRegister,
+            'timestamp_exit_transaction' => $exitData->timestampExitTransaction,
+            'amount' => floatval($exitData->amount),
+            'comments' => $exitData->comments,
+            'receipt_link' => $exitData->receiptLink,
+        ]);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     */
+    public function getExits(
         ?string $dates,
         array $filters,
         array $orderBy,
         string $transactionCompensation,
         bool $paginate = true,
-        bool $queryOnlyExitsTable = false): Collection | Paginator
+        bool $queryOnlyExitsTable = false): Collection|Paginator
     {
         $this->queryConditions = [];
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
@@ -147,47 +264,39 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             AccountRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($dates != 'all' && $dates != null)
+        if ($dates != 'all' && $dates != null) {
             $arrDates = explode(',', $dates);
+        }
 
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
+        if ($transactionCompensation == self::COMPENSATED_VALUE) {
+            $this->queryConditions[] = $this->whereEqual(self::TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $transactionCompensation, 'and');
 
-        if($transactionCompensation == self::COMPENSATED_VALUE)
-        {
-            $this->queryConditions [] = $this->whereEqual(self::TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $transactionCompensation, 'and');
+            if ($dates !== 'all' && $dates != null) {
+                $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+            }
 
-            if($dates !== 'all' && $dates != null)
-                $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
-
-            //if(count($filters) > 0)
+            // if(count($filters) > 0)
             //    $this->applyFilters($filters,true);
 
-        }
-        elseif ($transactionCompensation == self::TO_COMPENSATE_VALUE)
-        {
-            if($dates !== 'all')
-            {
-                $this->queryConditions [] = $this->whereLike(self::DATE_EXIT_REGISTER_COLUMN_JOINED, $arrDates, 'andWithOrInside');
-                $this->queryConditions [] = $this->whereEqual(self::TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $transactionCompensation, 'andWithOrInside');
-            }
-            else
-            {
-                $this->queryConditions [] = $this->whereEqual(self::TRANSACTIONS_COMPENSATION_COLUMN, $transactionCompensation, 'and');
+        } elseif ($transactionCompensation == self::TO_COMPENSATE_VALUE) {
+            if ($dates !== 'all') {
+                $this->queryConditions[] = $this->whereLike(self::DATE_EXIT_REGISTER_COLUMN_JOINED, $arrDates, 'andWithOrInside');
+                $this->queryConditions[] = $this->whereEqual(self::TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $transactionCompensation, 'andWithOrInside');
+            } else {
+                $this->queryConditions[] = $this->whereEqual(self::TRANSACTIONS_COMPENSATION_COLUMN, $transactionCompensation, 'and');
             }
         }
 
-        if($queryOnlyExitsTable)
+        if ($queryOnlyExitsTable) {
             return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
-        else
+        } else {
             return $this->qbGetExitsWithReviewers($this->queryConditions, $displayColumnsFromRelationship, $orderBy, $paginate);
+        }
     }
 
-
     /**
-     * @param string $dates
-     * @param string $exitType
-     * @return mixed
      * @throws BindingResolutionException
      */
     public function getAmountByExitType(string $dates, string $exitType = '*'): mixed
@@ -195,22 +304,20 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         $this->queryConditions = [];
         $arrDates = explode(',', $dates);
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
 
-        if($exitType != 'all')
-            $this->queryConditions [] = $this->whereEqual(self::EXIT_TYPE_COLUMN, $exitType, 'and');
+        if ($exitType != 'all') {
+            $this->queryConditions[] = $this->whereEqual(self::EXIT_TYPE_COLUMN, $exitType, 'and');
+        }
 
-        if($dates !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+        if ($dates !== 'all') {
+            $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
     /**
-     * @param int $exitId
-     * @param string $timestamp
-     * @return mixed
      * @throws BindingResolutionException
      */
     public function updateTimestamp(int $exitId, string $timestamp): mixed
@@ -223,15 +330,11 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             ];
 
         return $this->update($conditions, [
-            'timestamp_exit_transaction'  =>   $timestamp,
+            'timestamp_exit_transaction' => $timestamp,
         ]);
     }
 
-
     /**
-     * @param int $exitId
-     * @param string $link
-     * @return mixed
      * @throws BindingResolutionException
      */
     public function updateReceiptLink(int $exitId, string $link): mixed
@@ -244,31 +347,26 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             ];
 
         return $this->update($conditions, [
-            'receipt_link'  =>   $link,
+            'receipt_link' => $link,
         ]);
     }
 
-
     /**
-     * @param string $timestamp
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getExitByTimestamp(string $timestamp): Model | null
+    public function getExitByTimestamp(string $timestamp): ?Model
     {
         $this->queryConditions = [];
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::TIMESTAMP_EXIT_TRANSACTION_COLUMN, $timestamp, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::TIMESTAMP_EXIT_TRANSACTION_COLUMN, $timestamp, 'and');
 
         return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
-
     /**
-     * @param int $id
      * @return mixed
+     *
      * @throws BindingResolutionException
      */
     public function deleteExit(int $id): bool
@@ -280,10 +378,9 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         ];
 
         return $this->update($conditions, [
-            'deleted' =>   1,
+            'deleted' => 1,
         ]);
     }
-
 
     /*
     |------------------------------------------------------------------------------------------
@@ -294,12 +391,6 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     /**
      * Get entries with members and reviewers joins
      *
-     * @param array $queryClausesAndConditions
-     * @param array $selectColumns
-     * @param array $orderBy
-     * @param bool $paginate
-     * @param string $sort
-     * @return Collection | Paginator
      * @throws BindingResolutionException
      */
     public function qbGetExitsWithReviewers(
@@ -307,13 +398,12 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         array $selectColumns,
         array $orderBy,
         bool $paginate = true,
-        string $sort = 'desc'): Collection | Paginator
+        string $sort = 'desc'): Collection|Paginator
     {
         $query = function () use (
             $queryClausesAndConditions,
             $selectColumns,
             $orderBy,
-            $sort,
             $paginate) {
 
             $q = DB::table(ExitRepository::TABLE_NAME)
@@ -348,81 +438,70 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
                     ExitRepository::PAYMENT_ITEM_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     PaymentItemRepository::ID_COLUMN_JOINED)
-                ->where(function ($q) use($queryClausesAndConditions){
-                    if(count($queryClausesAndConditions) > 0){
+                ->where(function ($q) use ($queryClausesAndConditions) {
+                    if (count($queryClausesAndConditions) > 0) {
                         foreach ($queryClausesAndConditions as $key => $clause) {
-                            if($clause['type'] == 'and')
-                            {
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
-                                {
+                            if ($clause['type'] == 'and') {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE']) {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS']) {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL']) {
                                     $q->whereNull($clause['condition']['field']);
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['BETWEEN'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['BETWEEN']) {
                                     $arrDates = explode(',', $clause['condition']['value'][0]);
                                     $q->whereBetween($clause['condition']['field'], $arrDates);
                                 }
                             }
-                            if($clause['type'] == 'andWithOrInside')
-                            {
-                                $q->where(function($query) use($clause)
-                                {
-                                    if(count($clause['condition']) > 0)
-                                    {
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
-                                        {
-                                            foreach ($clause['condition']['value'] as $value)
-                                            {
+                            if ($clause['type'] == 'andWithOrInside') {
+                                $q->where(function ($query) use ($clause) {
+                                    if (count($clause['condition']) > 0) {
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS']) {
+                                            foreach ($clause['condition']['value'] as $value) {
                                                 $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], $value);
                                             }
                                         }
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
-                                        {
-                                            foreach ($clause['condition']['value'] as $value){
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE']) {
+                                            foreach ($clause['condition']['value'] as $value) {
                                                 $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
                                             }
                                         }
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
-                                        {
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL']) {
                                             $query->orWhereNull($clause['condition']['field']);
                                         }
                                     }
                                 });
                             }
-                            if($clause['type'] == 'or'){
+                            if ($clause['type'] == 'or') {
                                 $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                             }
-                            if($clause['type'] == 'in'){
+                            if ($clause['type'] == 'in') {
                                 $q->whereIn($clause['condition']['field'], $clause['condition']['value']);
                             }
-                            if($clause['type'] == 'not_in'){
+                            if ($clause['type'] == 'not_in') {
                                 $q->whereNot($clause['condition']['field'], $clause['condition']['value']);
                             }
                         }
                     }
                 });
 
-            if(count($orderBy) > 0)
-                foreach ($orderBy as $clause)
+            if (count($orderBy) > 0) {
+                foreach ($orderBy as $clause) {
                     $q->orderByDesc($clause);
-
-            if($paginate)
-            {
-                $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
-                return $paginator->setCollection($paginator->getCollection()->map(fn($item) => ExitData::fromResponse((array) $item)));
+                }
             }
-            else
-            {
+
+            if ($paginate) {
+                $paginator = $q->simplePaginate(self::PAGINATE_NUMBER);
+
+                return $paginator->setCollection($paginator->getCollection()->map(fn ($item) => ExitData::fromResponse((array) $item)));
+            } else {
                 $result = $q->get();
-                return collect($result)->map(fn($item) => ExitData::fromResponse((array) $item));
+
+                return collect($result)->map(fn ($item) => ExitData::fromResponse((array) $item));
             }
         };
 

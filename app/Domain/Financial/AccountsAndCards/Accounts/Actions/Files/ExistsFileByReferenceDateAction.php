@@ -2,10 +2,8 @@
 
 namespace App\Domain\Financial\AccountsAndCards\Accounts\Actions\Files;
 
-use Domain\Financial\AccountsAndCards\Accounts\Constants\ReturnMessages;
+use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
-use Illuminate\Support\Collection;
-use Infrastructure\Exceptions\GeneralExceptions;
 
 class ExistsFileByReferenceDateAction
 {
@@ -16,14 +14,8 @@ class ExistsFileByReferenceDateAction
         $this->accountFileRepository = $accountFileRepository;
     }
 
-
-    /**
-     * @param int $accountId
-     * @param string $referenceDate
-     * @return bool
-     */
-    public function execute(int $accountId, string $referenceDate): bool
+    public function execute(int $accountId, string $referenceDate): ?AccountFileData
     {
-        return $this->accountFileRepository->existFileByReferenceDate($accountId, $referenceDate);
+        return $this->accountFileRepository->getFileByAccountAndReferenceDate($accountId, $referenceDate);
     }
 }

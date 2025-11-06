@@ -5,10 +5,10 @@ echo "🔧 Ajustando permissões da pasta storage..."
 chown -R www-data:www-data /var/www/backend/html/storage
 chmod -R 775 /var/www/backend/html/storage
 
-# Garante que a pasta temp de relatórios exista
+# Garante que a pasta temp de relatórios exista com permissões corretas
 mkdir -p /var/www/backend/html/storage/tenants/iebrd/reports/temp
 chown -R www-data:www-data /var/www/backend/html/storage/tenants
-chmod -R 775 /var/www/backend/html/storage/tenants
+chmod -R 777 /var/www/backend/html/storage/tenants
 
 # Start cron em background
 cron &

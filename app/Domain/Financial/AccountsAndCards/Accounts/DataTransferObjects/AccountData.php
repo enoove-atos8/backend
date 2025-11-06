@@ -7,30 +7,25 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class AccountData extends DataTransferObject
 {
-    /** @var int|null */
     public ?int $id;
 
-    /** @var string|null */
     public ?string $accountType;
 
-    /** @var string|null */
     public ?string $bankName;
 
-    /** @var string|null */
     public ?string $agencyNumber;
 
-    /** @var string|null */
     public ?string $accountNumber;
 
-    /** @var boolean|null */
-    public ?bool $activated;
+    public ?float $initialBalance;
 
+    public ?string $initialBalanceDate;
+
+    public ?bool $activated;
 
     /**
      * Create a CardData instance from an array response.
      *
-     * @param array $data
-     * @return self
      * @throws UnknownProperties
      */
     public static function fromResponse(array $data): self
@@ -41,6 +36,8 @@ class AccountData extends DataTransferObject
             'bankName' => $data['bank_name'] ?? null,
             'agencyNumber' => $data['agency_number'] ?? null,
             'accountNumber' => $data['account_number'] ?? null,
+            'initialBalance' => isset($data['initial_balance']) ? (float) $data['initial_balance'] : null,
+            'initialBalanceDate' => $data['initial_balance_date'] ?? null,
             'activated' => $data['activated'] ?? null,
         ]);
     }

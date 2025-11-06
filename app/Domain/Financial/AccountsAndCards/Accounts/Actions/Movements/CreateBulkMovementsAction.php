@@ -9,25 +9,26 @@ use Throwable;
 class CreateBulkMovementsAction
 {
     private AccountMovementsRepositoryInterface $accountMovementsRepository;
-    private CreateAnonymousOffersByMovements $createAnonymousOffersByMovements;
+
+    private CreateAnonymousOffersByMovementsAction $createAnonymousOffersByMovementsAction;
+
+    private CreateAnonymousExitsByMovementsAction $createAnonymousExitsByMovementsAction;
 
     public function __construct(
         AccountMovementsRepositoryInterface $accountMovementsRepository,
-        CreateAnonymousOffersByMovements $createAnonymousOffersByMovements
-    )
-    {
+        CreateAnonymousOffersByMovementsAction $createAnonymousOffersByMovementsAction,
+        CreateAnonymousExitsByMovementsAction $createAnonymousExitsByMovementsAction
+    ) {
         $this->accountMovementsRepository = $accountMovementsRepository;
-        $this->createAnonymousOffersByMovements = $createAnonymousOffersByMovements;
+        $this->createAnonymousOffersByMovementsAction = $createAnonymousOffersByMovementsAction;
+        $this->createAnonymousExitsByMovementsAction = $createAnonymousExitsByMovementsAction;
     }
 
     /**
      * Execute bulk creation of account movements
      *
-     * @param Collection $movements
-     * @param int $accountId
-     * @param int $fileId
-     * @param string|null $referenceDate Date in format YYYY-MM for anonymous offers calculation
-     * @return bool
+     * @param  string|null  $referenceDate  Date in format YYYY-MM for anonymous offers calculation
+     *
      * @throws Throwable
      */
     public function execute(Collection $movements, int $accountId, int $fileId, ?string $referenceDate = null): bool
@@ -35,7 +36,8 @@ class CreateBulkMovementsAction
         $result = $this->accountMovementsRepository->bulkCreateMovements($movements, $accountId, $fileId);
 
         if ($result && $referenceDate) {
-            $this->createAnonymousOffersByMovements->execute($accountId, $referenceDate);
+            $this->createAnonymousOffersByMovementsAction->execute($accountId, $referenceDate);
+            $this->createAnonymousExitsByMovementsAction->execute($accountId, $referenceDate);
         }
 
         return $result;

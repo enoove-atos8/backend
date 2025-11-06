@@ -10,8 +10,6 @@ class AccountRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
-     *
-     * @return bool
      */
     public function authorize(): bool
     {
@@ -26,30 +24,46 @@ class AccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'id'             => '',
-            'accountType'    => 'required',
-            'bankName'       => 'required',
-            'agencyNumber'   => 'required',
-            'accountNumber'  => 'required',
-            'activated'      => 'required',
+            'id' => '',
+            'accountType' => 'required',
+            'bankName' => 'required',
+            'agencyNumber' => 'required',
+            'accountNumber' => 'required',
+            'initialBalance' => 'required',
+            'initialBalanceDate' => 'required',
+            'activated' => 'required',
+        ];
+    }
+
+    /**
+     * Get custom validation messages
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'initialBalance.required' => 'O saldo inicial deve informado.',
+            'initialBalanceDate.required' => 'Selecione o mês e o ano do saldo inicial.',
         ];
     }
 
     /**
      * Convert request to CardData DTO
      *
-     * @return AccountData
      * @throws UnknownProperties
      */
     public function accountData(): AccountData
     {
         return new AccountData(
-            id:             $this->input('id'),
-            accountType:    $this->input('accountType'),
-            bankName:       $this->input('bankName'),
-            agencyNumber:   $this->input('agencyNumber'),
-            accountNumber:  $this->input('accountNumber'),
-            activated:      $this->input('activated'),
+            id: $this->input('id'),
+            accountType: $this->input('accountType'),
+            bankName: $this->input('bankName'),
+            agencyNumber: $this->input('agencyNumber'),
+            accountNumber: $this->input('accountNumber'),
+            initialBalance: $this->input('initialBalance'),
+            initialBalanceDate: $this->input('initialBalanceDate'),
+            activated: $this->input('activated'),
         );
     }
 }

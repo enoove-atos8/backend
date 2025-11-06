@@ -2,20 +2,20 @@
 
 namespace App\Application\Core\Jobs\Financial\Exits\ReceiptsProcessing;
 
+use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
+use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
+use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Services\Atos8\Financial\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
-use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
-use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitByTimestampAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateReceiptLinkAction;
@@ -43,73 +43,99 @@ use Throwable;
 
 class ProcessingBankExitsTransferReceipts
 {
-    //Properties
+    // Properties
 
     private GetPlanByNameAction $getPlanByNameAction;
+
     protected Collection $syncStorageCollection;
+
     private GetSyncStorageDataAction $getSyncStorageDataAction;
+
     private MinioStorageService $minioStorageService;
+
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
+
     private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
+
     private GetExitByTimestampAction $getExitByTimestampAction;
+
     private UpdateTimestampAction $updateTimestampAction;
+
     private UpdateStatusAction $updateStatusAction;
+
     private CreateExitAction $createExitAction;
+
     private CreateEntryAction $createEntryAction;
-    private UpdateReceiptLinkAction    $updateReceiptLinkAction;
+
+    private UpdateReceiptLinkAction $updateReceiptLinkAction;
+
     private ExitData $exitData;
+
     private EntryData $entryData;
+
     private PaymentCategoryData $paymentCategoryData;
+
     private PaymentItemData $paymentItemData;
+
     private GroupData $groupData;
+
     private DivisionData $divisionData;
+
     private FinancialReviewerData $financialReviewerData;
+
     private GetReviewerAction $getReviewerAction;
+
     private CreateReceiptProcessing $createReceiptProcessing;
+
     private ReceiptProcessingData $receiptProcessingData;
+
     private SyncStorageData $syncStorageData;
+
     private UpdateStatusInvoiceAction $updateStatusInvoiceAction;
+
     private UpdateStatusInstallmentAction $updateStatusInstallmentAction;
+
     private GetInvoiceByIdAction $getInvoiceByIdAction;
 
-
-
-    //Constants
+    // Constants
 
     const STORAGE_BASE_PATH = '/var/www/backend/html/storage/';
+
     const SUFFIX_TIMEZONE = 'T03:00:00.000Z';
+
     const SHARED_RECEIPTS_FOLDER_NAME = 'shared_receipts';
+
     const STORED_RECEIPTS_FOLDER_NAME = 'stored_receipts';
+
     const SYNC_STORAGE_EXITS_ERROR_RECEIPTS = 'sync_storage/financial/error_receipts/exits';
 
     public function __construct(
-        GetPlanByNameAction              $getPlanByNameAction,
-        GetSyncStorageDataAction         $getSyncStorageDataAction,
-        MinioStorageService              $minioStorageService,
-        GetChurchesByPlanIdAction        $getChurchesByPlanIdAction,
+        GetPlanByNameAction $getPlanByNameAction,
+        GetSyncStorageDataAction $getSyncStorageDataAction,
+        MinioStorageService $minioStorageService,
+        GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
         OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
-        GetExitByTimestampAction         $getExitByTimestampAction,
-        UpdateStatusAction               $updateStatusAction,
-        CreateExitAction                 $createExitAction,
-        CreateEntryAction                $createEntryAction,
-        UpdateTimestampAction            $updateExitTimestampAction,
-        UpdateReceiptLinkAction          $updateReceiptLinkAction,
-        GetReviewerAction                $getReviewerAction,
-        ExitData                         $exitData,
-        EntryData                        $entryData,
-        PaymentCategoryData              $paymentCategoryData,
-        PaymentItemData                  $paymentItemData,
-        GroupData                        $groupData,
-        DivisionData                     $divisionData,
-        FinancialReviewerData            $financialReviewerData,
-        CreateReceiptProcessing          $createReceiptProcessing,
-        ReceiptProcessingData            $receiptProcessingData,
-        SyncStorageData                  $syncStorageData,
-        UpdateStatusInvoiceAction        $updateStatusInvoiceAction,
-        UpdateStatusInstallmentAction   $updateStatusInstallmentAction,
-        GetInvoiceByIdAction            $getInvoiceByIdAction
-    )
-    {
+        GetExitByTimestampAction $getExitByTimestampAction,
+        UpdateStatusAction $updateStatusAction,
+        CreateExitAction $createExitAction,
+        CreateEntryAction $createEntryAction,
+        UpdateTimestampAction $updateExitTimestampAction,
+        UpdateReceiptLinkAction $updateReceiptLinkAction,
+        GetReviewerAction $getReviewerAction,
+        ExitData $exitData,
+        EntryData $entryData,
+        PaymentCategoryData $paymentCategoryData,
+        PaymentItemData $paymentItemData,
+        GroupData $groupData,
+        DivisionData $divisionData,
+        FinancialReviewerData $financialReviewerData,
+        CreateReceiptProcessing $createReceiptProcessing,
+        ReceiptProcessingData $receiptProcessingData,
+        SyncStorageData $syncStorageData,
+        UpdateStatusInvoiceAction $updateStatusInvoiceAction,
+        UpdateStatusInstallmentAction $updateStatusInstallmentAction,
+        GetInvoiceByIdAction $getInvoiceByIdAction
+    ) {
         $this->getPlanByNameAction = $getPlanByNameAction;
         $this->getSyncStorageDataAction = $getSyncStorageDataAction;
         $this->minioStorageService = $minioStorageService;
@@ -137,7 +163,6 @@ class ProcessingBankExitsTransferReceipts
         $this->getInvoiceByIdAction = $getInvoiceByIdAction;
     }
 
-
     /**
      * @throws GeneralExceptions
      * @throws Throwable
@@ -147,39 +172,32 @@ class ProcessingBankExitsTransferReceipts
      */
     public function handle(): void
     {
-        try
-        {
+        try {
             $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
 
-            foreach ($tenants as $tenant)
-            {
+            foreach ($tenants as $tenant) {
                 tenancy()->initialize($tenant);
 
                 $this->syncStorageCollection = $this->getSyncStorageDataAction->execute(
-                                    SyncStorageRepository::EXITS_VALUE_DOC_TYPE,
-                                    null,
-                                    SyncStorageRepository::PURCHASE_SUB_TYPE_VALUE);
+                    SyncStorageRepository::EXITS_VALUE_DOC_TYPE,
+                    null,
+                    SyncStorageRepository::PURCHASE_SUB_TYPE_VALUE);
 
-                foreach ($this->syncStorageCollection as $data)
-                {
+                foreach ($this->syncStorageCollection as $data) {
                     $this->process($data, $tenant);
 
-                    if($data->creditCardPayment){
+                    if ($data->creditCardPayment) {
                         $invoiceData = $this->getInvoiceByIdAction->execute($data->invoiceId);
                         $this->updateStatusInvoiceAction->execute($data->invoiceId, CardInvoiceRepository::INVOICE_PAID_VALUE);
                         $this->updateStatusInstallmentAction->execute($data->invoiceId, $invoiceData->referenceDate, CardInstallmentsRepository::PAID_VALUE);
                     }
                 }
             }
-        }
-        catch(GeneralExceptions $e)
-        {
+        } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
 
     }
-
-
 
     /**
      * @throws GeneralExceptions
@@ -188,7 +206,7 @@ class ProcessingBankExitsTransferReceipts
      */
     private function process(SyncStorageData $data, $tenant): void
     {
-        $basePathTemp = self::STORAGE_BASE_PATH . "tenants/{$tenant}/temp";
+        $basePathTemp = self::STORAGE_BASE_PATH."tenants/{$tenant}/temp";
         $this->minioStorageService->deleteFilesInLocalDirectory($basePathTemp);
 
         $downloadedFile = $this->minioStorageService->downloadFile($data->path, $tenant, $basePathTemp);
@@ -198,8 +216,6 @@ class ProcessingBankExitsTransferReceipts
         }
     }
 
-
-
     /**
      * @throws Throwable
      */
@@ -207,27 +223,25 @@ class ProcessingBankExitsTransferReceipts
     {
         $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
 
-        if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS')
-        {
+        if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS') {
             $timestamp = $extractedData['data']['timestamp_value_cpf'];
 
-            if($timestamp != '')
-            {
-                if ($this->isDuplicateExit($timestamp)){
+            if ($timestamp != '') {
+                if ($this->isDuplicateExit($timestamp)) {
                     $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
                     $this->minioStorageService->delete($syncStorageData->path, $tenant);
+
                     return;
                 }
             }
-
 
             $this->setExitData($extractedData, $syncStorageData);
 
             $exit = $this->createExitAction->execute($this->exitData);
 
-            if($timestamp != '')
+            if ($timestamp != '') {
                 $this->updateTimestampAction->execute($exit->id, $timestamp);
-
+            }
 
             $sharedPath = $syncStorageData->path;
             $syncStorageData->path = str_replace(self::SHARED_RECEIPTS_FOLDER_NAME, self::STORED_RECEIPTS_FOLDER_NAME, $syncStorageData->path);
@@ -236,25 +250,24 @@ class ProcessingBankExitsTransferReceipts
             $path = implode('/', $urlParts);
             $fileUrl = $this->minioStorageService->upload($downloadedFile['fileUploaded'], $path, $tenant);
 
-            if(!empty($fileUrl))
+            if (! empty($fileUrl)) {
                 $this->minioStorageService->delete($sharedPath, $tenant);
+            }
 
             $this->updateReceiptLinkAction->execute($exit->id, $fileUrl);
             $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
 
-            if ($syncStorageData->docSubType == ExitRepository::ACCOUNTS_TRANSFER_VALUE)
-            {
+            if ($syncStorageData->docSubType == ExitRepository::ACCOUNTS_TRANSFER_VALUE) {
                 $this->setEntryDataFromTransfer($extractedData, $fileUrl, $syncStorageData);
                 $this->createEntryAction->execute($this->entryData, null);
             }
 
-        }
-        else if(count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS')
-        {
+        } elseif (count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS') {
             $linkReceipt = $this->minioStorageService->upload($downloadedFile['fileUploaded'], self::SYNC_STORAGE_EXITS_ERROR_RECEIPTS, $tenant, true);
 
-            if(!empty($linkReceipt))
+            if (! empty($linkReceipt)) {
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
+            }
 
             $this->setReceiptProcessingData($extractedData, $syncStorageData, $linkReceipt);
             $this->createReceiptProcessing->execute($this->receiptProcessingData);
@@ -262,12 +275,9 @@ class ProcessingBankExitsTransferReceipts
         }
     }
 
-
     /**
-     * @param $extractedData
-     * @param mixed $data
-     * @param string $linkReceipt
-     * @return void
+     * @param  mixed  $data
+     *
      * @throws Throwable
      */
     public function setReceiptProcessingData($extractedData, SyncStorageData $data, string $linkReceipt): void
@@ -279,8 +289,6 @@ class ProcessingBankExitsTransferReceipts
         );
     }
 
-
-
     /**
      * @throws GeneralExceptions
      * @throws BindingResolutionException
@@ -291,43 +299,38 @@ class ProcessingBankExitsTransferReceipts
         $arrTenants = [];
         $plan = $this->getPlanByNameAction->execute($planName);
 
-        if(!is_null($plan))
-        {
+        if (! is_null($plan)) {
             $tenants = $this->getChurchesByPlanIdAction->execute($plan->id);
 
-            if(count($tenants) > 0)
-            {
-                foreach ($tenants as $tenant)
+            if (count($tenants) > 0) {
+                foreach ($tenants as $tenant) {
                     $arrTenants[] = $tenant->tenant_id;
+                }
             }
         }
 
         return $arrTenants;
     }
 
-
     /**
-     * @param string $timestamp
-     * @return bool
      * @throws Throwable
      */
     private function isDuplicateExit(string $timestamp): bool
     {
-        if (empty($timestamp))
+        if (empty($timestamp)) {
             return false;
+        }
 
         $exit = $this->getExitByTimestampAction->execute($timestamp);
 
-        if ($exit)
+        if ($exit) {
             return true;
+        }
 
         return false;
     }
 
-
-
     /**
-     *
      * @throws Exception
      * @throws Throwable
      */
@@ -345,13 +348,10 @@ class ProcessingBankExitsTransferReceipts
 
     }
 
-
-
     /**
-     *
      * @throws Exception
      */
-    function getNextBusinessDay($date): string
+    public function getNextBusinessDay($date): string
     {
         $holidays = [
             '01-01', // Confraternização Universal (Ano Novo)
@@ -368,22 +368,18 @@ class ProcessingBankExitsTransferReceipts
         $dayOfWeek = $currentDate->format('N');
         $monthDay = $currentDate->format('m-d');
 
-
         if (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays)) {
-            do
-            {
+            do {
                 $currentDate->modify('+1 day');
                 $dayOfWeek = $currentDate->format('N');
                 $monthDay = $currentDate->format('m-d');
-            }
-            while (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays));
+            } while (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays));
 
             return $currentDate->format('Y-m-d');
         }
 
         return $currentDate->format('Y-m-d');
     }
-
 
     /**
      * Cria EntryData a partir de dados de transferência entre contas
@@ -398,7 +394,7 @@ class ProcessingBankExitsTransferReceipts
         $extractedDate = $extractedData['data']['date'];
         $nextBusinessDay = $this->getNextBusinessDay($extractedDate);
 
-        $dateTransactionCompensation = $nextBusinessDay . 'T03:00:00.000Z';
+        $dateTransactionCompensation = $nextBusinessDay.'T03:00:00.000Z';
 
         $this->entryData = new EntryData([
             'id' => null,

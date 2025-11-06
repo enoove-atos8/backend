@@ -11,48 +11,42 @@ use Throwable;
 class GetAmountByExitTypeAction
 {
     private ExitRepositoryInterface $exitRepository;
+
     private GetAccountsAction $getAccountsAction;
 
     public function __construct(
         ExitRepositoryInterface $exitRepositoryInterface,
         GetAccountsAction $getAccountsAction
-    )
-    {
+    ) {
         $this->exitRepository = $exitRepositoryInterface;
         $this->getAccountsAction = $getAccountsAction;
     }
 
-
-
     /**
      * @throws Throwable
      */
-    public function execute($rangeDates, $exitType = 'all'): null | array
+    public function execute($rangeDates, $exitType = 'all'): ?array
     {
         $exits = $this->exitRepository->getAmountByExitType($rangeDates, $exitType);
         $accounts = $this->getAccountsAction->execute();
 
-        $groupByAccounts = function ($collection) use ($accounts)
-        {
+        $groupByAccounts = function ($collection) use ($accounts) {
             return $collection
-                ->groupBy(function ($item) use ($accounts)
-                {
-                    if($item->account_id != null)
-                    {
+                ->groupBy(function ($item) use ($accounts) {
+                    if ($item->account_id != null) {
                         $account = $accounts->firstWhere('id', $item->account_id);
-                        return $account ? $account->bankName . ' - ' . $account->accountType : 'Conta desconhecida';
+
+                        return $account ? $account->bankName.' - '.$account->accountType : 'Conta desconhecida';
                     }
                 })
-                ->map(function ($items, $key)
-                {
-                    if($key != '')
-                    {
+                ->map(function ($items, $key) {
+                    if ($key != '') {
                         [$bankName, $accountType] = explode(' - ', $key);
 
                         return [
-                            'bankName'    => $bankName,
+                            'bankName' => $bankName,
                             'accountType' => $accountType,
-                            'total'       => $items->sum(ExitRepository::AMOUNT_COLUMN),
+                            'total' => $items->sum(ExitRepository::AMOUNT_COLUMN),
                         ];
                     }
 
@@ -72,25 +66,31 @@ class GetAmountByExitTypeAction
         $contributions = $exits->where(ExitRepository::EXIT_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], ExitRepository::CONTRIBUTIONS_VALUE);
         $totalContributions = $contributions->sum(ExitRepository::AMOUNT_COLUMN);
 
+        $anonymous = $exits->where(ExitRepository::EXIT_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], ExitRepository::ANONYMOUS_EXITS_VALUE);
+        $totalAnonymous = $anonymous->sum(ExitRepository::AMOUNT_COLUMN);
 
         return [
-            'payments'              =>  [
-                'total'    => $totalPayment,
+            'payments' => [
+                'total' => $totalPayment,
                 'accounts' => $groupByAccounts($payments),
             ],
-            'transfers'             =>  [
-                'total'    => $totalTransfer,
+            'transfers' => [
+                'total' => $totalTransfer,
                 'accounts' => $groupByAccounts($transfers),
             ],
-            'ministerialTransfers'  =>  [
-                'total'    => $totalMinisterialTransfers,
+            'ministerialTransfers' => [
+                'total' => $totalMinisterialTransfers,
                 'accounts' => $groupByAccounts($ministerialTransfers),
             ],
-            'contributions'         =>  [
-                'total'    => $totalContributions,
+            'contributions' => [
+                'total' => $totalContributions,
                 'accounts' => $groupByAccounts($contributions),
             ],
-            'total'                 =>  $totalPayment + $totalTransfer + $totalMinisterialTransfers + $totalContributions,
+            'anonymous' => [
+                'total' => $totalAnonymous,
+                'accounts' => $groupByAccounts($anonymous),
+            ],
+            'total' => $totalPayment + $totalTransfer + $totalMinisterialTransfers + $totalContributions + $totalAnonymous,
         ];
     }
 }

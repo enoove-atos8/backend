@@ -4,24 +4,30 @@ namespace Application\Core\Providers;
 
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
+use App\Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountsBalancesRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
-use App\Domain\Financial\Entries\Reports\Interfaces\MonthlyReportsRepositoryInterface;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardInstallmentsRepositoryInterface;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardInvoiceRepositoryInterface;
 use App\Domain\Financial\Exits\Purchases\Interfaces\CardPurchaseRepositoryInterface;
-use App\Domain\Financial\Exits\Reports\Interfaces\MonthlyExitsReportsRepositoryInterface;
+use App\Domain\Financial\Reports\Balances\Interfaces\MonthlyBalancesReportsRepositoryInterface;
+use App\Domain\Financial\Reports\Entries\Interfaces\MonthlyReportsRepositoryInterface;
+use App\Domain\Financial\Reports\Exits\Interfaces\MonthlyExitsReportsRepositoryInterface;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
 use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
 use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use App\Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountsBalancesRepository;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\AmountDevolutionEntries\AmountDevolutionEntriesRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTarget\TithesMonthlyTargetEntriesRepository;
+use App\Infrastructure\Repositories\Financial\Reports\Balances\MonthlyBalancesReportsRepository;
+use App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository;
+use App\Infrastructure\Repositories\Financial\Reports\Exits\MonthlyExitsReportsRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
@@ -59,11 +65,9 @@ use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardRepository;
 use Infrastructure\Repositories\Financial\Entries\Cults\CultRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\AmountToCompensate\AmountToCompensateRepository;
 use Infrastructure\Repositories\Financial\Entries\Indicators\TotalGeneral\TotalGeneralRepository;
-use Infrastructure\Repositories\Financial\Entries\Reports\MonthlyReportsRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentCategoryRepository;
 use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
-use Infrastructure\Repositories\Financial\Exits\Reports\MonthlyExitsReportsRepository;
 use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 use Infrastructure\Repositories\Financial\ReceiptProcessing\ReceiptProcessingRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
@@ -74,8 +78,6 @@ class RepositoryServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
-     *
-     * @return void
      */
     public function register(): void
     {
@@ -114,7 +116,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(AccountMovementsRepositoryInterface::class, AccountMovementsRepository::class);
         $this->app->bind(MovementsRepositoryInterface::class, MovementsRepository::class);
         $this->app->bind(MonthlyExitsReportsRepositoryInterface::class, MonthlyExitsReportsRepository::class);
-
+        $this->app->bind(MonthlyBalancesReportsRepositoryInterface::class, MonthlyBalancesReportsRepository::class);
+        $this->app->bind(AccountsBalancesRepositoryInterface::class, AccountsBalancesRepository::class);
 
     }
 

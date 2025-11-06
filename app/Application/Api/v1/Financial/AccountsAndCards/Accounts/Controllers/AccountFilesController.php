@@ -21,41 +21,30 @@ class AccountFilesController
     /**
      * Save a new account or update an existing one
      *
-     * @param AccountFileRequest $accountFileRequest
-     * @param SaveAccountFileAction $saveAccountFileAction
-     * @return ResponseFactory|Application|Response
      * @throws GeneralExceptions
      */
     public function saveFile(AccountFileRequest $accountFileRequest, SaveAccountFileAction $saveAccountFileAction): ResponseFactory|Application|Response
     {
-        try
-        {
+        try {
             $saveAccountFileAction->execute($accountFileRequest->accountFileData());
 
             return response([
-                'message'   =>  ReturnMessages::FILE_CREATED,
+                'message' => ReturnMessages::FILE_CREATED,
             ], 201);
 
-        } catch (Exception $e)
-        {
+        } catch (Exception $e) {
             throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
     }
 
-
     /**
      * Process a file as data extraction or bank conciliation
      *
-     * @param Request $request
-     * @param HandleFileProcessAction $handleFileProcessAction
-     * @param ChangeFileProcessingStatusAction $changeFileProcessingStatusAction
-     * @return ResponseFactory|Application|Response
      * @throws GeneralExceptions
      */
     public function processFile(Request $request, HandleFileProcessAction $handleFileProcessAction, ChangeFileProcessingStatusAction $changeFileProcessingStatusAction): ResponseFactory|Application|Response
     {
-        try
-        {
+        try {
             $fileId = $request->input('id');
             $type = $request->input('type');
             $tenant = explode('.', $request->getHost())[0];
@@ -63,34 +52,26 @@ class AccountFilesController
             $handleFileProcessAction->execute($fileId, $type, $tenant);
 
             return response([
-                'message'   =>  ReturnMessages::FILE_PUT_TO_PROCESS,
+                'message' => ReturnMessages::FILE_PUT_TO_PROCESS,
             ], 201);
 
-        } catch (Exception $e)
-        {
+        } catch (Exception $e) {
             throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
         }
     }
 
-
     /**
-     * @param Request $request
-     * @param GetAccountFilesAction $getAccountFilesAction
-     * @return AccountsFilesResourcesCollection
      * @throws GeneralExceptions
      */
     public function getAccountsFiles(Request $request, GetAccountFilesAction $getAccountFilesAction): AccountsFilesResourcesCollection
     {
-        try
-        {
+        try {
             $accountId = $request->input('accountId');
             $files = $getAccountFilesAction->execute($accountId);
 
             return new AccountsFilesResourcesCollection($files);
-        }
-        catch (Exception $e)
-        {
-            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        } catch (Exception $e) {
+            throw new GeneralExceptions($e->getMessage(), is_int($e->getCode()) ? $e->getCode() : 500, $e);
         }
     }
 }
