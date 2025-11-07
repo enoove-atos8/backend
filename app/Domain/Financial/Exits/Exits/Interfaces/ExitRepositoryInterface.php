@@ -27,4 +27,6 @@ interface ExitRepositoryInterface
     public function updateTimestamp(int $exitId, string $timestamp): mixed;
 
     public function updateReceiptLink(int $exitId, string $link): mixed;
+
+    public function deleteAnonymousExitsByAccountAndDate(int $accountId, string $referenceDate): bool;
 }

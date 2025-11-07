@@ -337,14 +337,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $normalizedConditions = isset($conditions['field']) ? [$conditions] : $conditions;
 
         $query = function () use ($normalizedConditions, $data) {
-            return $this->model
-                ->with($this->requiredRelationships)
+            $queryBuilder = $this->model
                 ->where(function ($query) use ($normalizedConditions) {
                     foreach ($normalizedConditions as $condition) {
                         $query->where($condition['field'], $condition['operator'], $condition['value']);
                     }
-                })
-                ->update($data);
+                });
+
+            return $queryBuilder->update($data);
         };
 
         return $this->doQuery($query);

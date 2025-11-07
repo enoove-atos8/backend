@@ -85,13 +85,13 @@
                                 </div>
                             </div>
                             <div class="flex-grow">
-                                <h2 class="text-lg font-bold text-gray-800">Nome da Igreja</h2>
+                                <h2 class="text-lg font-bold text-gray-800">{{ $reportData->churchData->name }}</h2>
                             </div>
                         </div>
                         <div class="text-sm text-gray-700 space-y-2">
-                            <div>Endereço da Igreja</div>
-                            <div><span class="font-semibold">Contato:</span> (00) 00000-0000</div>
-                            <div><span class="font-semibold">CNPJ:</span> 00.000.000/0000-00</div>
+                            <div>{{ $reportData->churchData->address }}</div>
+                            <div><span class="font-semibold">Contato:</span> {{ $reportData->churchData->cellPhone }}</div>
+                            <div><span class="font-semibold">CNPJ:</span> {{ $reportData->churchData->docNumber }}</div>
                         </div>
                     </div>
                 </div>

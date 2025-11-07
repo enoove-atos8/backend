@@ -24,86 +24,154 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     protected mixed $model = Entry::class;
 
     const TABLE_NAME = 'entries';
+
     const ENTRY_TYPE = 'entry';
+
     const DATE_ENTRY_REGISTER_COLUMN = 'date_entry_register';
+
     const DATE_ENTRY_REGISTER_COLUMN_JOINED = 'entries.date_entry_register';
+
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN = 'date_transaction_compensation';
+
     const DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED = 'entries.date_transaction_compensation';
+
     const TRANSACTION_TYPE_COLUMN = 'transaction_type';
+
     const TRANSACTION_TYPE_COLUMN_JOINED = 'entries.transaction_type';
+
     const PIX_TRANSACTION_TYPE = 'pix';
+
     const CASH_TRANSACTION_TYPE = 'cash';
+
     const ENTRIES_VALUE = 'entries';
+
     const DELETED_COLUMN = 'deleted';
+
     const DELETED_COLUMN_JOINED = 'entries.deleted';
+
     const REVIEWER_ID_COLUMN_JOINED = 'entries.reviewer_id';
+
     const COMPENSATED_COLUMN = 'transaction_compensation';
+
     const COMPENSATED_COLUMN_JOINED = 'entries.transaction_compensation';
+
     const COMPENSATED_VALUE = 'compensated';
+
     const TO_COMPENSATE_VALUE = 'to_compensate';
+
     const ID_COLUMN = 'id';
 
     const TIMESTAMP_VALUE_CPF_COLUMN = 'timestamp_value_cpf';
+
     const MEMBER_ID_COLUMN_JOINED = 'entries.member_id';
+
     const ACCOUNT_ID_COLUMN_JOINED = 'entries.account_id';
+    const ACCOUNT_ID_COLUMN = 'account_id';
+
     const ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE = 'entries_account_id';
+
     const MEMBER_ID_COLUMN = 'member_id';
+
     const ID_COLUMN_JOINED = 'entries.id';
+
     const ENTRY_TYPE_COLUMN = 'entry_type';
+
     const ENTRY_TYPE_COLUMN_JOINED = 'entries.entry_type';
+
     const CULT_ID_COLUMN_JOINED = 'entries.cult_id';
+
     const ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE = 'entries_entry_type';
+
     const AMOUNT_COLUMN = 'amount';
+
     const AMOUNT_COLUMN_JOINED = 'entries.amount';
+
     const AMOUNT_COLUMN_WITH_ENTRIES_ALIAS = 'entries_amount';
+
     const AMOUNT_COLUMN_JOINED_WITH_UNDERLINE = 'entries_amount';
+
     const GROUP_RECEIVED_ID_COLUMN_JOINED = 'entries.group_received_id';
+
     const GROUP_RECEIVED_ID_COLUMN = 'group_received_id';
+
     const ENTRIES_AMOUNT_COLUMN_ALIAS = 'entries_amount';
+
     const DEVOLUTION_COLUMN = 'devolution';
+
     const DEVOLUTION_COLUMN_JOINED = 'entries.devolution';
+
     const TITHE_VALUE = 'tithe';
+
     const DESIGNATED_VALUE = 'designated';
+
     const OFFER_VALUE = 'offer';
+
     const ANONYMOUS_OFFERS_VALUE = 'anonymous_offers';
+
     const ACCOUNTS_TRANSFER_VALUE = 'accounts_transfer';
+
     const REGISTER_INDICATOR = 'register';
+
     const TRANSACTION_INDICATOR = 'transaction';
+
     const PAGINATE_NUMBER = 30;
+
     const ENTRY_TYPES_FILTER = 'entryTypes';
+
     const AMOUNT_FILTER = 'amount';
+
     const MEMBER_ID_FILTER = 'memberId';
+
     const RECIPIENT_FILTER = 'recipient';
+
     const GROUP_RECEIVED_ID_FILTER = 'groupReceivedId';
+
     const CUSTOM_DATES_FILTER = 'customDates';
+
     const TRANSACTION_TYPE_FILTER = 'transactionType';
+
     const MEMBERS_TYPE_FILTER = 'membersType';
+
     const MEMBERS_GENDERS_FILTER = 'membersGenders';
+
     const TITHES_NOT_IDENTIFIER_FILTER = 'tithesNotIdentifies';
 
     const EXCLUDED_ENTRIES_DUPLICATE_KEY = 'excluded';
+
     const KEPT_ENTRIES_DUPLICATE_KEY = 'kept';
 
-    const DUP_ENTRY_TYPE_COLUMN          = 'dup.entry_type';
-    const DUP_AMOUNT_COLUMN              = 'dup.amount';
-    const DUP_TRANSACTION_TYPE_COLUMN    = 'dup.transaction_type';
-    const DUP_DATE_TRANSACTION_COLUMN    = 'dup.date_transaction_compensation';
-    const DUP_MEMBER_ID_COLUMN           = 'dup.member_id';
-    const DUP_REPETITION_COUNT_COLUMN    = 'dup.repetition_count';
-    const REPETITION_COUNT_COLUMN    = 'repetition_count';
+    const DUP_ENTRY_TYPE_COLUMN = 'dup.entry_type';
 
-    const MEMBER_FULL_NAME_COLUMN        = 'm.full_name';
-    const GROUP_RECEIVED_NAME_COLUMN     = 'g.name';
+    const DUP_AMOUNT_COLUMN = 'dup.amount';
+
+    const DUP_TRANSACTION_TYPE_COLUMN = 'dup.transaction_type';
+
+    const DUP_DATE_TRANSACTION_COLUMN = 'dup.date_transaction_compensation';
+
+    const DUP_MEMBER_ID_COLUMN = 'dup.member_id';
+
+    const DUP_REPETITION_COUNT_COLUMN = 'dup.repetition_count';
+
+    const REPETITION_COUNT_COLUMN = 'repetition_count';
+
+    const MEMBER_FULL_NAME_COLUMN = 'm.full_name';
+
+    const GROUP_RECEIVED_NAME_COLUMN = 'g.name';
 
     // Aliases usados na query
-    const MEMBER_FULL_NAME_ALIAS         = 'member_full_name';
-    const GROUP_RECEIVED_NAME_ALIAS      = 'group_received_name';
-    const GROUP_RETURNED_ID_ALIAS        = 'group_returned_id';
-    const GROUP_RECEIVED_ID_ALIAS        = 'group_received_id';
-    const DUPLICATE_IDS_ALIAS            = 'duplicate_ids';
+    const MEMBER_FULL_NAME_ALIAS = 'member_full_name';
 
-    const DUPLICITY_VERIFIED_COLUMN            = 'duplicity_verified';
-    const DUPLICITY_VERIFIED_COLUMN_JOINED     = 'entries.duplicity_verified';
+    const GROUP_RECEIVED_NAME_ALIAS = 'group_received_name';
+
+    const GROUP_RETURNED_ID_ALIAS = 'group_returned_id';
+
+    const GROUP_RECEIVED_ID_ALIAS = 'group_received_id';
+
+    const DUPLICATE_IDS_ALIAS = 'duplicate_ids';
+
+    const DUPLICITY_VERIFIED_COLUMN = 'duplicity_verified';
+
+    const DUPLICITY_VERIFIED_COLUMN_JOINED = 'entries.duplicity_verified';
 
     const DUPLICATES_DISPLAY_SELECT_COLUMNS = [
         'dup.entry_type',
@@ -118,7 +186,6 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         'MIN(g.name) AS group_received_name',
         'JSON_ARRAYAGG(e.id) AS duplicate_ids',
     ];
-
 
     const DISPLAY_SELECT_COLUMNS = [
         'entries.id as entries_id',
@@ -145,77 +212,63 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         'entries.receipt_link as entries_receipt_link',
     ];
 
-
     const DISPLAY_SUM_AMOUNT_COLUMN = [
-        'SUM(entries.amount) as tithe_amount'
+        'SUM(entries.amount) as tithe_amount',
     ];
-
 
     /**
      * Array of conditions
      */
     private array $queryConditions = [];
 
-
-
     /**
-     * @param EntryData $entryData
-     * @return Entry
      * @throws Throwable
      */
     public function newEntry(EntryData $entryData): Entry
     {
         return $this->create([
-            'member_id'                                         =>   $entryData->memberId,
-            'account_id'                                        =>   $entryData->accountId,
-            'reviewer_id'                                       =>   $entryData->reviewerId,
-            'cult_id'                                           =>   $entryData->cultId,
-            'group_returned_id'                                 =>   $entryData->groupReturnedId,
-            'group_received_id'                                 =>   $entryData->groupReceivedId,
-            'identification_pending'                            =>   $entryData->identificationPending,
-            'entry_type'                                        =>   $entryData->entryType == 'tithes' ? 'tithe' : $entryData->entryType,
-            'transaction_type'                                  =>   $entryData->transactionType,
-            'transaction_compensation'                          =>   $entryData->transactionCompensation,
-            'date_transaction_compensation'                     =>   $entryData->dateTransactionCompensation,
-            'date_entry_register'                               =>   $entryData->dateEntryRegister,
-            'amount'                                            =>   floatval($entryData->amount),
-            'recipient'                                         =>   $entryData->recipient,
-            'duplicity_verified'                                =>   $entryData->duplicityVerified,
-            'timestamp_value_cpf'                               =>   $entryData->timestampValueCpf,
-            'devolution'                                        =>   $entryData->devolution,
-            'residual_value'                                    =>   $entryData->residualValue,
-            'deleted'                                           =>   $entryData->deleted,
-            'comments'                                          =>   $entryData->comments,
-            'receipt_link'                                      =>   $entryData->receipt,
+            'member_id' => $entryData->memberId,
+            'account_id' => $entryData->accountId,
+            'reviewer_id' => $entryData->reviewerId,
+            'cult_id' => $entryData->cultId,
+            'group_returned_id' => $entryData->groupReturnedId,
+            'group_received_id' => $entryData->groupReceivedId,
+            'identification_pending' => $entryData->identificationPending,
+            'entry_type' => $entryData->entryType == 'tithes' ? 'tithe' : $entryData->entryType,
+            'transaction_type' => $entryData->transactionType,
+            'transaction_compensation' => $entryData->transactionCompensation,
+            'date_transaction_compensation' => $entryData->dateTransactionCompensation,
+            'date_entry_register' => $entryData->dateEntryRegister,
+            'amount' => floatval($entryData->amount),
+            'recipient' => $entryData->recipient,
+            'duplicity_verified' => $entryData->duplicityVerified,
+            'timestamp_value_cpf' => $entryData->timestampValueCpf,
+            'devolution' => $entryData->devolution,
+            'residual_value' => $entryData->residualValue,
+            'deleted' => $entryData->deleted,
+            'comments' => $entryData->comments,
+            'receipt_link' => $entryData->receipt,
         ]);
     }
 
-
-
     /**
-     * @param string|null $dates
-     * @return Collection
      * @throws BindingResolutionException
      */
-    public function getAllEntries(string|null $dates): Collection
+    public function getAllEntries(?string $dates): Collection
     {
         $this->queryConditions = [];
         $arrDates = explode(',', $dates);
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
 
-        if($dates !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+        if ($dates !== 'all') {
+            $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
-
-
     /**
-     * @param string $date
-     * @return Collection
      * @throws BindingResolutionException
      */
     public function getDuplicitiesEntries(string $date): Collection
@@ -228,7 +281,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     self::TRANSACTION_TYPE_COLUMN,
                     self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
                     self::MEMBER_ID_COLUMN,
-                    DB::raw('COUNT(*) AS ' . self::REPETITION_COUNT_COLUMN) // alias simples
+                    DB::raw('COUNT(*) AS '.self::REPETITION_COUNT_COLUMN), // alias simples
                 ])
                 ->where(self::DELETED_COLUMN, 0)
                 ->where(self::COMPENSATED_COLUMN, self::COMPENSATED_VALUE) // Laravel já coloca binding correto
@@ -239,74 +292,67 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     self::AMOUNT_COLUMN,
                     self::TRANSACTION_TYPE_COLUMN,
                     self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
-                    self::MEMBER_ID_COLUMN
+                    self::MEMBER_ID_COLUMN,
                 ])
                 ->havingRaw('COUNT(*) > 1');
 
-            $q = DB::table(self::TABLE_NAME . ' AS e')
+            $q = DB::table(self::TABLE_NAME.' AS e')
                 ->select([
                     self::DUP_ENTRY_TYPE_COLUMN,
                     self::DUP_AMOUNT_COLUMN,
                     self::DUP_TRANSACTION_TYPE_COLUMN,
                     self::DUP_DATE_TRANSACTION_COLUMN,
                     self::DUP_MEMBER_ID_COLUMN,
-                    DB::raw('MIN(' . self::MEMBER_FULL_NAME_COLUMN . ') AS ' . self::MEMBER_FULL_NAME_ALIAS),
-                    'dup.' . self::REPETITION_COUNT_COLUMN,
-                    DB::raw('MIN(e.group_returned_id) AS ' . self::GROUP_RETURNED_ID_ALIAS),
-                    DB::raw('MIN(e.group_received_id) AS ' . self::GROUP_RECEIVED_ID_ALIAS),
-                    DB::raw('MIN(' . self::GROUP_RECEIVED_NAME_COLUMN . ') AS ' . self::GROUP_RECEIVED_NAME_ALIAS),
-                    DB::raw('MIN(e.' . self::DUPLICITY_VERIFIED_COLUMN . ') AS ' . self::DUPLICITY_VERIFIED_COLUMN),
-                    DB::raw('JSON_ARRAYAGG(e.id) AS ' . self::DUPLICATE_IDS_ALIAS),
+                    DB::raw('MIN('.self::MEMBER_FULL_NAME_COLUMN.') AS '.self::MEMBER_FULL_NAME_ALIAS),
+                    'dup.'.self::REPETITION_COUNT_COLUMN,
+                    DB::raw('MIN(e.group_returned_id) AS '.self::GROUP_RETURNED_ID_ALIAS),
+                    DB::raw('MIN(e.group_received_id) AS '.self::GROUP_RECEIVED_ID_ALIAS),
+                    DB::raw('MIN('.self::GROUP_RECEIVED_NAME_COLUMN.') AS '.self::GROUP_RECEIVED_NAME_ALIAS),
+                    DB::raw('MIN(e.'.self::DUPLICITY_VERIFIED_COLUMN.') AS '.self::DUPLICITY_VERIFIED_COLUMN),
+                    DB::raw('JSON_ARRAYAGG(e.id) AS '.self::DUPLICATE_IDS_ALIAS),
                 ])
-                ->leftJoin(MemberRepository::TABLE_NAME . ' AS m', 'e.member_id', '=', 'm.id')
-                ->leftJoin(GroupsRepository::TABLE_NAME . ' AS g', 'e.group_received_id', '=', 'g.id')
+                ->leftJoin(MemberRepository::TABLE_NAME.' AS m', 'e.member_id', '=', 'm.id')
+                ->leftJoin(GroupsRepository::TABLE_NAME.' AS g', 'e.group_received_id', '=', 'g.id')
                 ->joinSub($dupSub, 'dup', function ($join) {
-                    $join->on(self::DUP_ENTRY_TYPE_COLUMN, '=', 'e.' . self::ENTRY_TYPE_COLUMN)
-                        ->on(self::DUP_AMOUNT_COLUMN, '=', 'e.' . self::AMOUNT_COLUMN)
-                        ->on(self::DUP_TRANSACTION_TYPE_COLUMN, '=', 'e.' . self::TRANSACTION_TYPE_COLUMN)
-                        ->on(self::DUP_DATE_TRANSACTION_COLUMN, '=', 'e.' . self::DATE_TRANSACTIONS_COMPENSATION_COLUMN)
+                    $join->on(self::DUP_ENTRY_TYPE_COLUMN, '=', 'e.'.self::ENTRY_TYPE_COLUMN)
+                        ->on(self::DUP_AMOUNT_COLUMN, '=', 'e.'.self::AMOUNT_COLUMN)
+                        ->on(self::DUP_TRANSACTION_TYPE_COLUMN, '=', 'e.'.self::TRANSACTION_TYPE_COLUMN)
+                        ->on(self::DUP_DATE_TRANSACTION_COLUMN, '=', 'e.'.self::DATE_TRANSACTIONS_COMPENSATION_COLUMN)
                         ->where(function ($cond) {
                             $cond->where(function ($q) {
                                 $q->whereNull(self::DUP_MEMBER_ID_COLUMN)
-                                    ->whereNull('e.' . self::MEMBER_ID_COLUMN);
+                                    ->whereNull('e.'.self::MEMBER_ID_COLUMN);
                             })
-                                ->orWhereColumn(self::DUP_MEMBER_ID_COLUMN, 'e.' . self::MEMBER_ID_COLUMN);
+                                ->orWhereColumn(self::DUP_MEMBER_ID_COLUMN, 'e.'.self::MEMBER_ID_COLUMN);
                         });
                 })
-                ->where('e.' . self::DELETED_COLUMN, 0)
-                ->where('e.' . self::COMPENSATED_COLUMN, self::COMPENSATED_VALUE)
-                ->where('e.' . self::DUPLICITY_VERIFIED_COLUMN, 0)
-                ->where('e.' . self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
+                ->where('e.'.self::DELETED_COLUMN, 0)
+                ->where('e.'.self::COMPENSATED_COLUMN, self::COMPENSATED_VALUE)
+                ->where('e.'.self::DUPLICITY_VERIFIED_COLUMN, 0)
+                ->where('e.'.self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
                 ->groupBy([
                     self::DUP_ENTRY_TYPE_COLUMN,
                     self::DUP_AMOUNT_COLUMN,
                     self::DUP_TRANSACTION_TYPE_COLUMN,
                     self::DUP_DATE_TRANSACTION_COLUMN,
                     self::DUP_MEMBER_ID_COLUMN,
-                    'dup.' . self::REPETITION_COUNT_COLUMN,
+                    'dup.'.self::REPETITION_COUNT_COLUMN,
                 ])
                 ->orderByDesc(self::DUP_DATE_TRANSACTION_COLUMN)
                 ->orderByDesc(self::DUP_ENTRY_TYPE_COLUMN);
 
             $result = $q->get();
-            return collect($result)->map(fn($item) => DuplicityAnalisysEntriesData::fromResponse((array) $item));
+
+            return collect($result)->map(fn ($item) => DuplicityAnalisysEntriesData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
-
-
-
     /**
-     * @param string|null $dates
-     * @param bool $devolutionStatus
-     * @param array $orderBy
-     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getDevolutionEntries(string|null $dates, bool $devolutionStatus = true, array $orderBy = [self::ID_COLUMN_JOINED]): Collection | Paginator
+    public function getDevolutionEntries(?string $dates, bool $devolutionStatus = true, array $orderBy = [self::ID_COLUMN_JOINED]): Collection|Paginator
     {
         $this->queryConditions = [];
         $arrDates = explode(',', $dates);
@@ -315,11 +361,12 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::DEVOLUTION_COLUMN_JOINED, $devolutionStatus, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DEVOLUTION_COLUMN_JOINED, $devolutionStatus, 'and');
 
-        if($dates !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
+        if ($dates !== 'all') {
+            $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
+        }
 
         return $this->qbGetEntriesWithMembersAndReviewers(
             $this->queryConditions,
@@ -329,23 +376,15 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         );
     }
 
-
     /**
-     * @param string|null $dates
-     * @param string|null $transactionCompensation
-     * @param array $filters
-     * @param array $orderBy
-     * @param bool $paginate
-     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getAllEntriesWithMembersAndReviewers
-    (
-        string|null $dates,
-        string|null $transactionCompensation,
+    public function getAllEntriesWithMembersAndReviewers(
+        ?string $dates,
+        ?string $transactionCompensation,
         array $filters,
         array $orderBy,
-        bool $paginate = true): Collection | Paginator
+        bool $paginate = true): Collection|Paginator
     {
         $arrDates = [];
         $this->queryConditions = [];
@@ -355,212 +394,193 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             AccountRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($dates != 'all' && $dates != null)
+        if ($dates != 'all' && $dates != null) {
             $arrDates = explode(',', $dates);
-
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
-
-        if($transactionCompensation == 'compensated')
-        {
-            $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
-
-            if($dates !== 'all' && $dates != null)
-                $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
-
-            if ($dates == 'all')
-                $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
-
-            if(count($filters) > 0)
-                $this->applyFilters($filters,true);
-
         }
-        elseif ($transactionCompensation == 'to_compensate')
-        {
-            if($dates !== 'all')
-            {
-                $this->queryConditions [] = $this->whereLike(self::DATE_ENTRY_REGISTER_COLUMN_JOINED, $arrDates, 'andWithOrInside');
-                $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::TO_COMPENSATE_VALUE, 'andWithOrInside');
+
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN_JOINED, false, 'and');
+
+        if ($transactionCompensation == 'compensated') {
+            $this->queryConditions[] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
+
+            if ($dates !== 'all' && $dates != null) {
+                $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED, $arrDates, 'andWithOrInside');
             }
-            else
-            {
-                $this->queryConditions [] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::TO_COMPENSATE_VALUE, 'and');
+
+            if ($dates == 'all') {
+                $this->queryConditions[] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::COMPENSATED_VALUE, 'and');
+            }
+
+            if (count($filters) > 0) {
+                $this->applyFilters($filters, true);
+            }
+
+        } elseif ($transactionCompensation == 'to_compensate') {
+            if ($dates !== 'all') {
+                $this->queryConditions[] = $this->whereLike(self::DATE_ENTRY_REGISTER_COLUMN_JOINED, $arrDates, 'andWithOrInside');
+                $this->queryConditions[] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::TO_COMPENSATE_VALUE, 'andWithOrInside');
+            } else {
+                $this->queryConditions[] = $this->whereEqual(self::COMPENSATED_COLUMN_JOINED, self::TO_COMPENSATE_VALUE, 'and');
             }
         }
 
         return $this->qbGetEntriesWithMembersAndReviewers($this->queryConditions, $displayColumnsFromRelationship, $orderBy, $paginate);
     }
 
-
-
     /**
-     * @param array $filters
-     * @param bool $joinQuery
-     * @param bool $returnConditions
      * @return array|void
      */
     public function applyFilters(array $filters, bool $joinQuery = false, bool $returnConditions = false)
     {
         $this->queryConditions = count($this->queryConditions) > 0 ? $this->queryConditions : [];
 
-        foreach ($filters as $key => $filter)
-        {
-            if($key == self::ENTRY_TYPES_FILTER)
-            {
+        foreach ($filters as $key => $filter) {
+            if ($key == self::ENTRY_TYPES_FILTER) {
                 $entryTypes = explode(',', $filter);
                 $column = $joinQuery ? self::ENTRY_TYPE_COLUMN_JOINED : self::ENTRY_TYPE_COLUMN;
 
-                if(is_array($entryTypes))
-                    $this->queryConditions [] = $this->whereEqual($column, $entryTypes, 'andWithOrInside');
-                else
-                    $this->queryConditions [] = $this->whereEqual($column, $filter, 'and');
-            }
-
-            if($key == self::GROUP_RECEIVED_ID_FILTER)
-            {
-                if($filter != null)
-                {
-                    $column = $joinQuery ? self::GROUP_RECEIVED_ID_COLUMN_JOINED : self::GROUP_RECEIVED_ID_COLUMN;
-                    $this->queryConditions [] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+                if (is_array($entryTypes)) {
+                    $this->queryConditions[] = $this->whereEqual($column, $entryTypes, 'andWithOrInside');
+                } else {
+                    $this->queryConditions[] = $this->whereEqual($column, $filter, 'and');
                 }
             }
 
-            if($key == self::CUSTOM_DATES_FILTER)
-            {
-                $column = $joinQuery ? self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED : self::DATE_TRANSACTIONS_COMPENSATION_COLUMN;
-                $this->queryConditions [] = $this->whereBetween($column, [$filter], 'and');
+            if ($key == self::GROUP_RECEIVED_ID_FILTER) {
+                if ($filter != null) {
+                    $column = $joinQuery ? self::GROUP_RECEIVED_ID_COLUMN_JOINED : self::GROUP_RECEIVED_ID_COLUMN;
+                    $this->queryConditions[] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+                }
             }
 
-            if($key == self::TRANSACTION_TYPE_FILTER)
-            {
+            if ($key == self::CUSTOM_DATES_FILTER) {
+                $column = $joinQuery ? self::DATE_TRANSACTIONS_COMPENSATION_COLUMN_JOINED : self::DATE_TRANSACTIONS_COMPENSATION_COLUMN;
+                $this->queryConditions[] = $this->whereBetween($column, [$filter], 'and');
+            }
+
+            if ($key == self::TRANSACTION_TYPE_FILTER) {
                 $transactionTypes = explode(',', $filter);
                 $column = $joinQuery ? self::TRANSACTION_TYPE_COLUMN_JOINED : self::TRANSACTION_TYPE_COLUMN;
 
-                if(is_array($transactionTypes))
-                    $this->queryConditions [] = $this->whereEqual($column, $transactionTypes, 'andWithOrInside');
-                else
-                    $this->queryConditions [] = $this->whereEqual($column, $filter, 'and');
+                if (is_array($transactionTypes)) {
+                    $this->queryConditions[] = $this->whereEqual($column, $transactionTypes, 'andWithOrInside');
+                } else {
+                    $this->queryConditions[] = $this->whereEqual($column, $filter, 'and');
+                }
 
             }
 
-            if($key == self::AMOUNT_FILTER)
-            {
+            if ($key == self::AMOUNT_FILTER) {
                 $column = $joinQuery ? self::AMOUNT_COLUMN_JOINED : self::AMOUNT_COLUMN;
-                $this->queryConditions [] = $this->whereEqual($column, floatval($filter), 'and');
+                $this->queryConditions[] = $this->whereEqual($column, floatval($filter), 'and');
             }
 
-            if($key == self::MEMBERS_TYPE_FILTER)
-            {
+            if ($key == self::MEMBERS_TYPE_FILTER) {
                 $membersTypes = explode(',', $filter);
                 $column = $joinQuery ? MemberRepository::MEMBER_TYPE_COLUMN_JOINED : MemberRepository::MEMBER_TYPE_COLUMN;
 
-                if(is_array($membersTypes))
-                    $this->queryConditions [] = $this->whereEqual($column, $membersTypes, 'andWithOrInside');
-                else
-                    $this->queryConditions [] = $this->whereEqual($column, $filter, 'and');
+                if (is_array($membersTypes)) {
+                    $this->queryConditions[] = $this->whereEqual($column, $membersTypes, 'andWithOrInside');
+                } else {
+                    $this->queryConditions[] = $this->whereEqual($column, $filter, 'and');
+                }
             }
 
-            if($key == self::MEMBERS_GENDERS_FILTER)
-            {
+            if ($key == self::MEMBERS_GENDERS_FILTER) {
                 $membersGender = explode(',', $filter);
                 $column = $joinQuery ? MemberRepository::MEMBER_GENDER_COLUMN_JOINED : MemberRepository::MEMBER_GENDER_COLUMN;
 
-                if(is_array($membersGender))
-                    $this->queryConditions [] = $this->whereEqual($column, $membersGender, 'andWithOrInside');
-                else
-                    $this->queryConditions [] = $this->whereEqual($column, $filter, 'and');
+                if (is_array($membersGender)) {
+                    $this->queryConditions[] = $this->whereEqual($column, $membersGender, 'andWithOrInside');
+                } else {
+                    $this->queryConditions[] = $this->whereEqual($column, $filter, 'and');
+                }
 
             }
 
-            if($key == self::MEMBER_ID_FILTER)
-            {
+            if ($key == self::MEMBER_ID_FILTER) {
                 $entryTypes = explode(',', $filters[self::ENTRY_TYPES_FILTER]);
                 $column = $joinQuery ? self::MEMBER_ID_COLUMN_JOINED : self::MEMBER_ID_COLUMN;
 
-                if(!array_key_exists(self::TITHES_NOT_IDENTIFIER_FILTER, $filters) and
-                    (!in_array(self::DESIGNATED_VALUE, $entryTypes) and
-                        !in_array(self::OFFER_VALUE, $entryTypes)))
+                if (! array_key_exists(self::TITHES_NOT_IDENTIFIER_FILTER, $filters) and
+                    (! in_array(self::DESIGNATED_VALUE, $entryTypes) and
+                        ! in_array(self::OFFER_VALUE, $entryTypes))) {
 
-                    $this->queryConditions [] = $this->whereEqual($column, [$filter], 'andWithOrInside');
-                else
-                    $this->queryConditions [] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+                    $this->queryConditions[] = $this->whereEqual($column, [$filter], 'andWithOrInside');
+                } else {
+                    $this->queryConditions[] = $this->whereEqual($column, [$filter, null], 'andWithOrInside');
+                }
 
             }
 
-            if($key == self::TITHES_NOT_IDENTIFIER_FILTER and $filter !== false)
-            {
+            if ($key == self::TITHES_NOT_IDENTIFIER_FILTER and $filter !== false) {
                 $column = $joinQuery ? self::MEMBER_ID_COLUMN_JOINED : MemberRepository::ID_COLUMN;
-                $this->queryConditions [] = $this->whereIsNull($column, 'and');
+                $this->queryConditions[] = $this->whereIsNull($column, 'and');
             }
         }
 
-        if($returnConditions)
+        if ($returnConditions) {
             return $this->queryConditions;
+        }
     }
-
-
 
     /**
      * @throws BindingResolutionException
      */
-    public function getAllEntriesByDateAndType(string|null $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection
+    public function getAllEntriesByDateAndType(?string $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection
     {
         $this->requiredRelationships = ['member'];
         $this->queryConditions = [];
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
 
-        if($dateType == self::REGISTER_INDICATOR)
-            $this->queryConditions [] = $this->whereLike(self::DATE_ENTRY_REGISTER_COLUMN, $date, 'and');
+        if ($dateType == self::REGISTER_INDICATOR) {
+            $this->queryConditions[] = $this->whereLike(self::DATE_ENTRY_REGISTER_COLUMN, $date, 'and');
+        } elseif ($dateType == self::TRANSACTION_INDICATOR) {
+            $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $date, 'and');
+        }
 
-        elseif($dateType == self::TRANSACTION_INDICATOR)
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $date, 'and');
-
-        if ($entryType != '*')
-            $this->queryConditions [] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
+        if ($entryType != '*') {
+            $this->queryConditions[] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
     /**
-     * @param int $id
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getEntryById(int $id): Model | null
+    public function getEntryById(int $id): ?Model
     {
         $this->requiredRelationships = ['member'];
         $this->queryConditions = [];
 
-        $this->queryConditions [] = $this->whereEqual(self::ID_COLUMN, $id, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::ID_COLUMN, $id, 'and');
 
         return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
-
     /**
-     * @param int $id
      * @return Model|null
+     *
      * @throws BindingResolutionException
      */
-    public function getEntriesByCultId(int $id): Collection | null
+    public function getEntriesByCultId(int $id): ?Collection
     {
         $this->requiredRelationships = ['member', 'group'];
         $this->queryConditions = [];
 
-        $this->queryConditions [] = $this->whereEqual(self::CULT_ID_COLUMN_JOINED, $id, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::CULT_ID_COLUMN_JOINED, $id, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
     /**
-     * @param array $ids
      * @return Model|null
+     *
      * @throws BindingResolutionException
      */
-    public function getReceiptsEntriesByIds(array $ids): Collection | null
+    public function getReceiptsEntriesByIds(array $ids): ?Collection
     {
 
         $query = function () use (
@@ -570,68 +590,61 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                 ->whereIn(self::ID_COLUMN_JOINED, $ids);
 
             $result = $q->get();
-            return collect($result)->map(fn($item) => ReceiptsByIdsData::fromResponse((array) $item));
+
+            return collect($result)->map(fn ($item) => ReceiptsByIdsData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
     /**
-     * @param string $timestampValueCpf
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getEntryByTimestampValueCpf(string $timestampValueCpf): Model | null
+    public function getEntryByTimestampValueCpf(string $timestampValueCpf): ?Model
     {
         $this->requiredRelationships = ['member'];
         $this->queryConditions = [];
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
-        $this->queryConditions [] = $this->whereEqual(self::TIMESTAMP_VALUE_CPF_COLUMN, $timestampValueCpf, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::TIMESTAMP_VALUE_CPF_COLUMN, $timestampValueCpf, 'and');
 
         return $this->getItemWithRelationshipsAndWheres($this->queryConditions);
     }
 
-
-
     /**
-     * @param int $id
-     * @param EntryData $entryData
      * @return bool
+     *
      * @throws Throwable
      */
     public function updateEntry(int $id, EntryData $entryData): mixed
     {
-        $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id,];
+        $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id];
 
         return $this->update($conditions, [
-            'member_id'                                         =>   $entryData->memberId,
-            'account_id'                                        =>   $entryData->accountId,
-            'reviewer_id'                                       =>   $entryData->reviewerId,
-            'group_returned_id'                                 =>   $entryData->groupReturnedId,
-            'group_received_id'                                 =>   $entryData->groupReceivedId,
-            'identification_pending'                            =>   $entryData->identificationPending,
-            'entry_type'                                        =>   $entryData->entryType == 'tithes' ? 'tithe' : $entryData->entryType,
-            'transaction_type'                                  =>   $entryData->transactionType,
-            'transaction_compensation'                          =>   $entryData->transactionCompensation,
-            'date_transaction_compensation'                     =>   $entryData->dateTransactionCompensation,
-            'amount'                                            =>   floatval($entryData->amount),
-            'recipient'                                         =>   $entryData->recipient,
-            'timestamp_value_cpf'                               =>   $entryData->timestampValueCpf,
-            'devolution'                                        =>   $entryData->devolution,
-            'residual_value'                                    =>   $entryData->residualValue,
-            'deleted'                                           =>   $entryData->deleted,
-            'comments'                                          =>   $entryData->comments,
-            'receipt_link'                                      =>   $entryData->receipt,
+            'member_id' => $entryData->memberId,
+            'account_id' => $entryData->accountId,
+            'reviewer_id' => $entryData->reviewerId,
+            'group_returned_id' => $entryData->groupReturnedId,
+            'group_received_id' => $entryData->groupReceivedId,
+            'identification_pending' => $entryData->identificationPending,
+            'entry_type' => $entryData->entryType == 'tithes' ? 'tithe' : $entryData->entryType,
+            'transaction_type' => $entryData->transactionType,
+            'transaction_compensation' => $entryData->transactionCompensation,
+            'date_transaction_compensation' => $entryData->dateTransactionCompensation,
+            'amount' => floatval($entryData->amount),
+            'recipient' => $entryData->recipient,
+            'timestamp_value_cpf' => $entryData->timestampValueCpf,
+            'devolution' => $entryData->devolution,
+            'residual_value' => $entryData->residualValue,
+            'deleted' => $entryData->deleted,
+            'comments' => $entryData->comments,
+            'receipt_link' => $entryData->receipt,
         ]);
     }
 
-
     /**
-     * @param int $entryId
-     * @param int $identificationPending
      * @return bool
+     *
      * @throws BindingResolutionException
      */
     public function updateIdentificationPending(int $entryId, int $identificationPending): mixed
@@ -644,15 +657,13 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             ];
 
         return $this->update($conditions, [
-            'identification_pending'  =>   $identificationPending,
+            'identification_pending' => $identificationPending,
         ]);
     }
 
-
     /**
-     * @param int $entryId
-     * @param string $timestampValueCpf
      * @return bool
+     *
      * @throws BindingResolutionException
      */
     public function updateTimestampValueCpf(int $entryId, string $timestampValueCpf): mixed
@@ -665,16 +676,13 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             ];
 
         return $this->update($conditions, [
-            'timestamp_value_cpf'  =>   $timestampValueCpf,
+            'timestamp_value_cpf' => $timestampValueCpf,
         ]);
     }
 
-
-
     /**
-     * @param int $entryId
-     * @param string $receiptLink
      * @return bool
+     *
      * @throws BindingResolutionException
      */
     public function updateReceiptLink(int $entryId, string $receiptLink): mixed
@@ -687,14 +695,11 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             ];
 
         return $this->update($conditions, [
-            'receipt_link'  =>   $receiptLink,
+            'receipt_link' => $receiptLink,
         ]);
     }
 
-
     /**
-     * @param int $entryId
-     * @return void
      * @throws BindingResolutionException
      */
     public function setDuplicityAnalysis(int $entryId): void
@@ -707,14 +712,13 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             ];
 
         $this->update($conditions, [
-            'duplicity_verified'  =>   true,
+            'duplicity_verified' => true,
         ]);
     }
 
-
     /**
-     * @param int $id
      * @return mixed
+     *
      * @throws BindingResolutionException
      */
     public function deleteEntry(int $id): bool
@@ -726,15 +730,45 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         ];
 
         return $this->update($conditions, [
-            'deleted' =>   1,
+            'deleted' => 1,
         ]);
     }
 
+    /**
+     * Delete anonymous entries (anonymous_offers only) by account and reference date
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     *
+     * @throws BindingResolutionException
+     */
+    public function deleteAnonymousEntriesByAccountAndDate(int $accountId, string $referenceDate): bool
+    {
+        $conditions = [
+            [
+                'field' => self::ACCOUNT_ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $accountId,
+            ],
+            [
+                'field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                'operator' => BaseRepository::OPERATORS['LIKE'],
+                'value' => "%{$referenceDate}%",
+            ],
+            [
+                'field' => self::ENTRY_TYPE_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => self::ANONYMOUS_OFFERS_VALUE,
+            ],
+        ];
+
+        return $this->update($conditions, [
+            'deleted' => 1,
+        ]);
+    }
 
     /**
-     * @param string $dates
-     * @param string $entryType
      * @return Collection
+     *
      * @throws BindingResolutionException
      */
     public function getAmountByEntryType(string $dates, string $entryType = 'all'): mixed
@@ -742,18 +776,18 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         $this->queryConditions = [];
         $arrDates = explode(',', $dates);
 
-        $this->queryConditions [] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::DELETED_COLUMN, false, 'and');
 
-        if($entryType != 'all')
-            $this->queryConditions [] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
+        if ($entryType != 'all') {
+            $this->queryConditions[] = $this->whereEqual(self::ENTRY_TYPE_COLUMN, $entryType, 'and');
+        }
 
-        if($dates !== 'all')
-            $this->queryConditions [] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+        if ($dates !== 'all') {
+            $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
+        }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
     }
-
-
 
     /*
     |------------------------------------------------------------------------------------------
@@ -764,12 +798,6 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     /**
      * Get entries with members and reviewers joins
      *
-     * @param array $queryClausesAndConditions
-     * @param array $selectColumns
-     * @param array $orderBy
-     * @param bool $paginate
-     * @param string $sort
-     * @return Collection | Paginator
      * @throws BindingResolutionException
      */
     public function qbGetEntriesWithMembersAndReviewers(
@@ -777,13 +805,12 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         array $selectColumns,
         array $orderBy,
         bool $paginate = true,
-        string $sort = 'desc'): Collection | Paginator
+        string $sort = 'desc'): Collection|Paginator
     {
         $query = function () use (
             $queryClausesAndConditions,
             $selectColumns,
             $orderBy,
-            $sort,
             $paginate) {
             $q = DB::table(EntryRepository::TABLE_NAME)
                 ->select($selectColumns)
@@ -802,76 +829,67 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                     EntryRepository::ACCOUNT_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
                     AccountRepository::ID_COLUMN_JOINED)
-                ->where(function ($q) use($queryClausesAndConditions){
-                    if(count($queryClausesAndConditions) > 0){
+                ->where(function ($q) use ($queryClausesAndConditions) {
+                    if (count($queryClausesAndConditions) > 0) {
                         foreach ($queryClausesAndConditions as $key => $clause) {
-                            if($clause['type'] == 'and')
-                            {
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
-                                {
+                            if ($clause['type'] == 'and') {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE']) {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS']) {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL']) {
                                     $q->whereNull($clause['condition']['field']);
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['BETWEEN'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['BETWEEN']) {
                                     $arrDates = explode(',', $clause['condition']['value'][0]);
                                     $q->whereBetween($clause['condition']['field'], $arrDates);
                                 }
                             }
-                            if($clause['type'] == 'andWithOrInside')
-                            {
-                                $q->where(function($query) use($clause)
-                                {
-                                    if(count($clause['condition']) > 0)
-                                    {
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
-                                        {
-                                            foreach ($clause['condition']['value'] as $value)
-                                            {
+                            if ($clause['type'] == 'andWithOrInside') {
+                                $q->where(function ($query) use ($clause) {
+                                    if (count($clause['condition']) > 0) {
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS']) {
+                                            foreach ($clause['condition']['value'] as $value) {
                                                 $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], $value);
                                             }
                                         }
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
-                                        {
-                                            foreach ($clause['condition']['value'] as $value){
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE']) {
+                                            foreach ($clause['condition']['value'] as $value) {
                                                 $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
                                             }
                                         }
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
-                                        {
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL']) {
                                             $query->orWhereNull($clause['condition']['field']);
                                         }
                                     }
                                 });
                             }
-                            if($clause['type'] == 'or'){
+                            if ($clause['type'] == 'or') {
                                 $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                             }
-                            if($clause['type'] == 'in'){
+                            if ($clause['type'] == 'in') {
                                 $q->whereIn($clause['condition']['field'], $clause['condition']['value']);
                             }
-                            if($clause['type'] == 'not_in'){
+                            if ($clause['type'] == 'not_in') {
                                 $q->whereNot($clause['condition']['field'], $clause['condition']['value']);
                             }
                         }
                     }
                 });
 
-            if(count($orderBy) > 0)
-                foreach ($orderBy as $clause)
+            if (count($orderBy) > 0) {
+                foreach ($orderBy as $clause) {
                     $q->orderByDesc($clause);
+                }
+            }
 
-            if($paginate)
+            if ($paginate) {
                 return $q->simplePaginate(self::PAGINATE_NUMBER);
-            else
+            } else {
                 return $q->get();
+            }
         };
 
         return $this->doQuery($query);

@@ -89,6 +89,8 @@
                             </div>
                         </div>
                         <div class="text-sm text-gray-700 space-y-2">
+                            <div>{{ $churchData->address }}</div>
+                            <div><span class="font-semibold">Contato:</span> {{ $churchData->cellPhone }}</div>
                             <div><span class="font-semibold">CNPJ:</span> {{ $churchData->docNumber }}</div>
                         </div>
                     </div>
