@@ -64,7 +64,9 @@
                             </div>
                         </div>
                         <div class="text-sm text-gray-700 space-y-2">
-                            <div><span class="font-semibold">CNPJ:</span>{{ $reportData->churchData->docNumber }}</div>
+                            <div>{{ $reportData->churchData->address }}</div>
+                            <div><span class="font-semibold">Contato:</span> {{ $reportData->churchData->cellPhone }}</div>
+                            <div><span class="font-semibold">CNPJ:</span> {{ $reportData->churchData->docNumber }}</div>
                         </div>
                     </div>
                 </div>

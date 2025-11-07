@@ -13,30 +13,36 @@ interface EntryRepositoryInterface
     public function newEntry(EntryData $entryData): Entry;
 
     public function updateEntry(int $id, EntryData $entryData): mixed;
+
     public function updateIdentificationPending(int $entryId, int $identificationPending): mixed;
+
     public function updateTimestampValueCpf(int $entryId, string $timestampValueCpf): mixed;
+
     public function updateReceiptLink(int $entryId, string $receiptLink): mixed;
 
     public function setDuplicityAnalysis(int $entryId): void;
 
     public function deleteEntry(int $id): bool;
 
-    public function getAllEntriesWithMembersAndReviewers(string|null $dates, string $transactionCompensation, array $filters, array $orderBy): Collection | Paginator;
+    public function getAllEntriesWithMembersAndReviewers(?string $dates, string $transactionCompensation, array $filters, array $orderBy): Collection|Paginator;
 
-    public function getAllEntries(string|null $dates): Collection;
+    public function getAllEntries(?string $dates): Collection;
+
     public function getDuplicitiesEntries(string $date): Collection;
 
-    public function getDevolutionEntries(string|null $dates, bool $devolutionStatus, array $orderBy): Collection | Paginator;
+    public function getDevolutionEntries(?string $dates, bool $devolutionStatus, array $orderBy): Collection|Paginator;
 
     public function getAllEntriesByDateAndType(string $date, string $dateType = 'register' | 'transaction', string $entryType = '*'): Collection;
 
-    public function getEntryById(int $id): Model | null;
+    public function getEntryById(int $id): ?Model;
 
-    public function getEntriesByCultId(int $id): Collection | null;
+    public function getEntriesByCultId(int $id): ?Collection;
 
-    public function getEntryByTimestampValueCpf(string $timestampValueCpf): Model | null;
+    public function getEntryByTimestampValueCpf(string $timestampValueCpf): ?Model;
 
     public function getAmountByEntryType(string $dates, string $entryType = '*'): mixed;
+
+    public function deleteAnonymousEntriesByAccountAndDate(int $accountId, string $referenceDate): bool;
 
     public function applyFilters(array $filters, bool $joinQuery, bool $returnConditions);
 }

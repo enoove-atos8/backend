@@ -69,6 +69,9 @@ class GetAmountByExitTypeAction
         $anonymous = $exits->where(ExitRepository::EXIT_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], ExitRepository::ANONYMOUS_EXITS_VALUE);
         $totalAnonymous = $anonymous->sum(ExitRepository::AMOUNT_COLUMN);
 
+        $accountsTransfer = $exits->where(ExitRepository::EXIT_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], ExitRepository::ACCOUNTS_TRANSFER_VALUE);
+        $totalAccountsTransfer = $accountsTransfer->sum(ExitRepository::AMOUNT_COLUMN);
+
         return [
             'payments' => [
                 'total' => $totalPayment,
@@ -90,7 +93,11 @@ class GetAmountByExitTypeAction
                 'total' => $totalAnonymous,
                 'accounts' => $groupByAccounts($anonymous),
             ],
-            'total' => $totalPayment + $totalTransfer + $totalMinisterialTransfers + $totalContributions + $totalAnonymous,
+            'accountsTransfer' => [
+                'total' => $totalAccountsTransfer,
+                'accounts' => $groupByAccounts($accountsTransfer),
+            ],
+            'total' => $totalPayment + $totalTransfer + $totalMinisterialTransfers + $totalContributions + $totalAnonymous + $totalAccountsTransfer,
         ];
     }
 }

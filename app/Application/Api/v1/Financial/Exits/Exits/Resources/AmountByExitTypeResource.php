@@ -40,6 +40,10 @@ class AmountByExitTypeResource extends JsonResource
                 'total' => $result['anonymous']['total'],
                 'accounts' => self::validateAccounts($result['anonymous']),
             ],
+            'accountsTransfer' => [
+                'total' => $result['accountsTransfer']['total'],
+                'accounts' => self::validateAccounts($result['accountsTransfer']),
+            ],
             'total' => $result['total'],
         ];
     }

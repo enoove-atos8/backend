@@ -18,17 +18,21 @@ class HandleFileProcessAction
 
     private DeleteAccountMovementsAction $deleteAccountMovementsAction;
 
+    private DeleteAnonymousEntriesAndExitsAction $deleteAnonymousEntriesAndExitsAction;
+
     private GetLastProcessedFileAction $getLastProcessedFileAction;
 
     public function __construct(
         ChangeFileProcessingStatusAction $changeFileProcessingStatusAction,
         AccountFileRepositoryInterface $accountFilesRepository,
         DeleteAccountMovementsAction $deleteAccountMovementsAction,
+        DeleteAnonymousEntriesAndExitsAction $deleteAnonymousEntriesAndExitsAction,
         GetLastProcessedFileAction $getLastProcessedFileAction
     ) {
         $this->changeFileProcessingStatusAction = $changeFileProcessingStatusAction;
         $this->accountFilesRepository = $accountFilesRepository;
         $this->deleteAccountMovementsAction = $deleteAccountMovementsAction;
+        $this->deleteAnonymousEntriesAndExitsAction = $deleteAnonymousEntriesAndExitsAction;
         $this->getLastProcessedFileAction = $getLastProcessedFileAction;
     }
 
@@ -43,6 +47,7 @@ class HandleFileProcessAction
         if ($file->status === AccountFilesRepository::MOVEMENTS_DONE) {
             $this->validateReprocessingIsLastMonth($file->accountId, $file->referenceDate);
             $this->deleteAccountMovementsAction->execute($file->accountId, $fileId);
+            $this->deleteAnonymousEntriesAndExitsAction->execute($file->accountId, $file->referenceDate);
         }
 
         $status = $processingType == AccountFilesRepository::TYPE_PROCESSING_MOVEMENTS_EXTRACTION
@@ -52,7 +57,7 @@ class HandleFileProcessAction
         $statusChanged = $this->changeFileProcessingStatusAction->execute($fileId, $status);
 
         if ($statusChanged) {
-            ProcessAccountFileJob::dispatchSync($fileId, $processingType, $tenant);
+            ProcessAccountFileJob::dispatch($fileId, $processingType, $tenant);
         }
     }
 

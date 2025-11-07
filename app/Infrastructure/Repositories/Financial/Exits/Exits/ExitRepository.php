@@ -57,6 +57,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const REVIEWER_ID_COLUMN_JOINED = 'exits.reviewer_id';
 
     const ACCOUNT_ID_COLUMN_JOINED = 'exits.account_id';
+    const ACCOUNT_ID_COLUMN = 'account_id';
 
     const ACCOUNT_ID = 'accountId';
 
@@ -375,6 +376,38 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
             'field' => self::ID_COLUMN,
             'operator' => BaseRepository::OPERATORS['EQUALS'],
             'value' => $id,
+        ];
+
+        return $this->update($conditions, [
+            'deleted' => 1,
+        ]);
+    }
+
+    /**
+     * Delete anonymous exits (anonymous_exits only) by account and reference date
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     *
+     * @throws BindingResolutionException
+     */
+    public function deleteAnonymousExitsByAccountAndDate(int $accountId, string $referenceDate): bool
+    {
+        $conditions = [
+            [
+                'field' => self::ACCOUNT_ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $accountId,
+            ],
+            [
+                'field' => self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                'operator' => BaseRepository::OPERATORS['LIKE'],
+                'value' => "%{$referenceDate}%",
+            ],
+            [
+                'field' => self::EXIT_TYPE_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => self::ANONYMOUS_EXITS_VALUE,
+            ],
         ];
 
         return $this->update($conditions, [
