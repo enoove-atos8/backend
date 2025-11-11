@@ -10,6 +10,7 @@ use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsWithDivi
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Groups\Actions\CreateNewGroupAction;
+use Domain\Ecclesiastical\Groups\Actions\ExportMovementsGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupByIdAction;
@@ -17,6 +18,7 @@ use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -166,6 +168,34 @@ class GroupController extends Controller
             else
                 return new GroupsToMobileAppResourceCollection($response);
 
+        }
+        catch (GeneralExceptions $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Export movements group data to PDF or XLSX
+     *
+     * @param Request $request
+     * @param ExportMovementsGroupAction $exportMovementsGroupAction
+     * @return JsonResponse
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function exportMovementsGroupData(Request $request, ExportMovementsGroupAction $exportMovementsGroupAction): JsonResponse
+    {
+        try
+        {
+            $groupId = (int) $request->input('id');
+            $dates = $request->input('dates', 'all');
+            $type = $request->input('type', 'PDF');
+            $paginate = false;
+
+            $result = $exportMovementsGroupAction->execute($groupId, $dates, $type, $paginate);
+
+            return response()->json($result);
         }
         catch (GeneralExceptions $e)
         {

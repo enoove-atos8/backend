@@ -30,12 +30,13 @@ class GetMovementsByGroupAction
      *
      * @param int $groupId
      * @param string $dates
+     * @param bool $paginate
      * @return Collection|Paginator
      * @throws GeneralExceptions
      */
-    public function execute(int $groupId, string $dates):  Collection | Paginator
+    public function execute(int $groupId, string $dates, bool $paginate = true):  Collection | Paginator
     {
-        $movements = $this->movementRepository->getMovementsByGroup($groupId, $dates);
+        $movements = $this->movementRepository->getMovementsByGroup($groupId, $dates, $paginate);
 
         if (!$movements->isEmpty())
         {

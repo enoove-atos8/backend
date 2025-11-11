@@ -1355,7 +1355,19 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 |
                 */
 
-                Route::prefix('details')->group(function () {});
+                Route::prefix('details')->group(function () {
+
+
+                    Route::prefix('movements')->group(function () {
+
+
+                        Route::get('/exportMovementsGroupData', [GroupController::class, 'exportMovementsGroupData']);
+
+
+                    });
+
+
+                });
 
             });
 
