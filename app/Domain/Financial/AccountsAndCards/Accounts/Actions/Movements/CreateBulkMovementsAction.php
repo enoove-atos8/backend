@@ -14,14 +14,18 @@ class CreateBulkMovementsAction
 
     private CreateAnonymousExitsByMovementsAction $createAnonymousExitsByMovementsAction;
 
+    private ReconcileAccountMovementsAction $reconcileAccountMovementsAction;
+
     public function __construct(
         AccountMovementsRepositoryInterface $accountMovementsRepository,
         CreateAnonymousOffersByMovementsAction $createAnonymousOffersByMovementsAction,
-        CreateAnonymousExitsByMovementsAction $createAnonymousExitsByMovementsAction
+        CreateAnonymousExitsByMovementsAction $createAnonymousExitsByMovementsAction,
+        ReconcileAccountMovementsAction $reconcileAccountMovementsAction
     ) {
         $this->accountMovementsRepository = $accountMovementsRepository;
         $this->createAnonymousOffersByMovementsAction = $createAnonymousOffersByMovementsAction;
         $this->createAnonymousExitsByMovementsAction = $createAnonymousExitsByMovementsAction;
+        $this->reconcileAccountMovementsAction = $reconcileAccountMovementsAction;
     }
 
     /**
@@ -35,9 +39,15 @@ class CreateBulkMovementsAction
     {
         $result = $this->accountMovementsRepository->bulkCreateMovements($movements, $accountId, $fileId);
 
-        if ($result && $referenceDate) {
-            $this->createAnonymousOffersByMovementsAction->execute($accountId, $referenceDate);
-            $this->createAnonymousExitsByMovementsAction->execute($accountId, $referenceDate);
+        if ($result) {
+            // Realizar conciliação bancária após inserção dos movimentos
+            $this->reconcileAccountMovementsAction->execute($accountId, $fileId);
+
+            // Criar ofertas e saídas anônimas se necessário
+            if ($referenceDate) {
+                $this->createAnonymousOffersByMovementsAction->execute($accountId, $referenceDate);
+                $this->createAnonymousExitsByMovementsAction->execute($accountId, $referenceDate);
+            }
         }
 
         return $result;
