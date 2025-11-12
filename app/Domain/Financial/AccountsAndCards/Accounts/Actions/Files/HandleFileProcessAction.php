@@ -57,7 +57,7 @@ class HandleFileProcessAction
         $statusChanged = $this->changeFileProcessingStatusAction->execute($fileId, $status);
 
         if ($statusChanged) {
-            ProcessAccountFileJob::dispatchSync($fileId, $processingType, $tenant);
+            ProcessAccountFileJob::dispatch($fileId, $processingType, $tenant);
         }
     }
 
