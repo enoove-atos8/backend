@@ -27,9 +27,9 @@ class GetCultsAction
     /**
      * @throws GeneralExceptions
      */
-    public function execute(bool $paginate = true): Collection | Paginator
+    public function execute(bool $paginate = true, ?string $dates = null): Collection | Paginator
     {
-        $cults = $this->cultRepository->getCults($paginate);
+        $cults = $this->cultRepository->getCults($paginate, $dates);
 
         if(count($cults) > 0)
         {
