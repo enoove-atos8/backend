@@ -13,7 +13,7 @@ interface CultRepositoryInterface
 
     public function updateCult($id, CultData $cultData): mixed;
 
-    public function getCults(bool $paginate = true): Collection | Paginator;
+    public function getCults(bool $paginate = true, ?string $dates = null): Collection | Paginator;
 
     public function getCultById(int $id): Model;
 

@@ -28,6 +28,7 @@ class ExitData extends DataTransferObject
     const PAYMENT_CATEGORY_PROPERTY = 'paymentCategory';
 
     const PAYMENT_ITEM_PROPERTY = 'paymentItem';
+    const DATE_TRANSACTION_COMPENSATION_ITEM_PROPERTY = 'dateTransactionCompensation';
 
     public ?int $id;
 

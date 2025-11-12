@@ -22,6 +22,7 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
     const ID_COLUMN = 'cults.id';
     const PAGINATE_NUMBER = 30;
     const REVIEWER__ID_COLUMN = 'cults.reviewer_id';
+    const DATE_TRANSACTION_COMPENSATION_COLUMN = 'cults.date_transaction_compensation';
 
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -106,16 +107,17 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
 
     /**
      * @param bool $paginate
+     * @param string|null $dates
      * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getCults(bool $paginate = true): Collection | Paginator
+    public function getCults(bool $paginate = true, ?string $dates = null): Collection | Paginator
     {
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             FinancialReviewerRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        $query = function () use ($paginate, $displayColumnsFromRelationship) {
+        $query = function () use ($paginate, $displayColumnsFromRelationship, $dates) {
             $q = DB::table(CultRepository::TABLE_NAME)
                 ->select($displayColumnsFromRelationship)
                 ->leftJoin(
@@ -124,6 +126,16 @@ class CultRepository extends BaseRepository implements CultRepositoryInterface
                     BaseRepository::OPERATORS['EQUALS'],
                     FinancialReviewerRepository::ID_COLUMN_JOINED)
                 ->orderBy(self::ID_COLUMN, BaseRepository::ORDERS['DESC']);
+
+            // Aplicar filtro de datas se fornecido
+            if ($dates !== null && $dates !== 'all') {
+                $arrDates = explode(',', $dates);
+                $q->where(function($query) use ($arrDates) {
+                    foreach ($arrDates as $date) {
+                        $query->orWhere(self::DATE_TRANSACTION_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%");
+                    }
+                });
+            }
 
             if($paginate)
                 return $q->simplePaginate(self::PAGINATE_NUMBER);
