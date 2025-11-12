@@ -48,6 +48,12 @@ class ReconcileAccountMovementsAction
 
     private const FIELD_CULTS_DATE_TRANSACTION_COMPENSATION = 'cults_date_transaction_compensation';
 
+    private const FIELD_CULTS_TITHES_AMOUNT = 'cults_tithes_amount';
+
+    private const FIELD_CULTS_DESIGNATED_AMOUNT = 'cults_designated_amount';
+
+    private const FIELD_CULTS_OFFER_AMOUNT = 'cults_offer_amount';
+
     private const FIELD_EXITS_DATE_TRANSACTION_COMPENSATION = 'exits_date_transaction_compensation';
 
     private const FIELD_EXITS_AMOUNT = 'exits_amount';
@@ -57,6 +63,9 @@ class ReconcileAccountMovementsAction
 
     // Tolerância para comparação de valores decimais
     private const AMOUNT_TOLERANCE = 0.01;
+
+    // Limite máximo para depósitos em dinheiro
+    private const MAX_CASH_DEPOSIT = 2000.00;
 
     public function __construct(
         private readonly AccountMovementsRepositoryInterface $accountMovementsRepository,
@@ -148,43 +157,69 @@ class ReconcileAccountMovementsAction
     private function reconcileCredit($movement, Collection $allMovements, Collection $pixEntries, Collection $cults): string
     {
         $movementDate = $movement->{self::FIELD_MOVEMENT_DATE};
+        $movementAmount = $movement->{self::FIELD_AMOUNT};
 
         // Verificar PIX (1:1)
-        $pix = $pixEntries->first(function ($e) use ($movementDate, $movement) {
+        $pix = $pixEntries->first(function ($e) use ($movementDate, $movementAmount) {
             $entryDate = Carbon::parse($e->{self::FIELD_ENTRIES_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
             return $entryDate === $movementDate &&
-                abs($e->{self::FIELD_ENTRIES_AMOUNT} - $movement->{self::FIELD_AMOUNT}) < self::AMOUNT_TOLERANCE;
+                abs($e->{self::FIELD_ENTRIES_AMOUNT} - $movementAmount) < self::AMOUNT_TOLERANCE;
         });
 
         if ($pix) {
             return self::STATUS_CONCILIATED;
         }
 
-        // Verificar depósito em dinheiro (agregado por cultos)
-        $depositsOfDay = $allMovements->filter(fn ($m) => $m->{self::FIELD_MOVEMENT_DATE} === $movementDate &&
-            $m->{self::FIELD_MOVEMENT_TYPE} === self::MOVEMENT_TYPE_CREDIT
-        );
-
-        $totalDeposits = $depositsOfDay->sum(self::FIELD_AMOUNT);
-
-        $cultsOfDay = $cults->filter(function ($c) use ($movementDate) {
+        // Verificar depósito em dinheiro via culto
+        $cult = $cults->first(function ($c) use ($movementDate, $movementAmount) {
             $cultDate = Carbon::parse($c->{self::FIELD_CULTS_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
-            return $cultDate === $movementDate;
+
+            if ($cultDate !== $movementDate) {
+                return false;
+            }
+
+            // Valor total do culto = dízimos + ofertas designadas + ofertas
+            $totalCultAmount = ($c->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
+                + ($c->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
+                + ($c->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
+
+            // Se o culto tem <= R$ 2.000, verifica se bate com o movimento
+            if ($totalCultAmount <= self::MAX_CASH_DEPOSIT) {
+                return abs($totalCultAmount - $movementAmount) < self::AMOUNT_TOLERANCE;
+            }
+
+            // Se o culto tem > R$ 2.000, verifica se o movimento corresponde a uma das parcelas
+            return $this->isValidCultDepositPart($totalCultAmount, $movementAmount);
         });
 
-        if ($cultsOfDay->isEmpty()) {
-            return self::STATUS_MOVEMENT_NOT_FOUND;
-        }
-
-        // Somar entradas dos cultos (já vem na propriedade 'entries' do culto)
-        $totalCultEntries = $cultsOfDay->sum(fn ($cult) => collect($cult->{self::FIELD_ENTRIES} ?? [])->sum(self::FIELD_AMOUNT)
-        );
-
-        if (abs($totalDeposits - $totalCultEntries) < self::AMOUNT_TOLERANCE) {
+        if ($cult) {
             return self::STATUS_CONCILIATED;
         }
 
         return self::STATUS_MOVEMENT_NOT_FOUND;
+    }
+
+    /**
+     * Verifica se o valor do movimento corresponde a uma parcela válida de depósito do culto
+     * Exemplo: Culto de R$ 9.000 gera 4 depósitos de R$ 2.000 e 1 de R$ 1.000
+     */
+    private function isValidCultDepositPart(float $totalCultAmount, float $movementAmount): bool
+    {
+        // Calcular quantos depósitos de R$ 2.000 são necessários
+        $fullDeposits = floor($totalCultAmount / self::MAX_CASH_DEPOSIT);
+        $remainder = $totalCultAmount - ($fullDeposits * self::MAX_CASH_DEPOSIT);
+
+        // Verificar se o movimento é um depósito completo de R$ 2.000
+        if (abs($movementAmount - self::MAX_CASH_DEPOSIT) < self::AMOUNT_TOLERANCE) {
+            return true;
+        }
+
+        // Verificar se o movimento é o depósito restante (última parcela)
+        if ($remainder > 0 && abs($movementAmount - $remainder) < self::AMOUNT_TOLERANCE) {
+            return true;
+        }
+
+        return false;
     }
 
     private function reconcileDebit($movement, Collection $exits): string
