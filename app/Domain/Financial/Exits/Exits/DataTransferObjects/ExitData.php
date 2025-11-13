@@ -18,6 +18,7 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class ExitData extends DataTransferObject
 {
     const ACCOUNT_ID_PROPERTY = 'accountId';
+    const ID_PROPERTY = 'id';
 
     const AMOUNT_PROPERTY = 'amount';
 
