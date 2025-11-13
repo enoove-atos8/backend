@@ -159,39 +159,52 @@ class ReconcileAccountMovementsAction
         $reconciliationMap = [];
         $entriesToUpdate = [];
 
-        // Contadores para rastrear quantas vezes cada item foi conciliado
-        $entryUsageCount = []; // ['entry_id' => count]
-        $cultUsageCount = []; // ['cult_id' => count]
-        $exitUsageCount = []; // ['exit_id' => count]
+        // Inicializar todos os movimentos como não encontrados
+        foreach ($movements as $movement) {
+            $reconciliationMap[$movement->{self::FIELD_ID}] = self::STATUS_MOVEMENT_NOT_FOUND;
+        }
 
-        // Filtrar entradas únicas: PIX e DOC/TED/TEV (sem culto)
+        // FASE 1: Conciliar CULTOS (Culto → Extrato)
+        // Itera pelos cultos e busca os depósitos correspondentes no extrato
+        $cultsResult = $this->reconcileCults($cults, $movements, $reconciliationMap);
+        $reconciliationMap = $cultsResult['reconciliation_map'];
+        $entriesToUpdate = array_merge($entriesToUpdate, $cultsResult['entries_to_update']);
+
+        // FASE 2: Conciliar ENTRADAS PIX/DOC (Extrato → Entradas)
+        // Itera pelos movimentos de crédito ainda não conciliados
         $uniqueEntries = $entries->whereIn(self::FIELD_TRANSACTION_TYPE, [
             self::TRANSACTION_TYPE_PIX,
             self::TRANSACTION_TYPE_DOC_TED_TEV
         ])->whereNull(self::FIELD_CULT_ID);
 
+        $entryUsageCount = [];
         foreach ($movements as $movement) {
-            $status = self::STATUS_MOVEMENT_NOT_FOUND;
+            // Só processar se ainda não foi conciliado
+            if ($reconciliationMap[$movement->{self::FIELD_ID}] === self::STATUS_MOVEMENT_NOT_FOUND
+                && $movement->{self::FIELD_MOVEMENT_TYPE} === self::MOVEMENT_TYPE_CREDIT) {
 
-            if ($movement->{self::FIELD_MOVEMENT_TYPE} === self::MOVEMENT_TYPE_CREDIT) {
-                $result = $this->reconcileCredit($movement, $movements, $uniqueEntries, $cults, $entryUsageCount, $cultUsageCount);
-                $status = $result[self::RESULT_KEY_STATUS];
+                $result = $this->reconcileUniqueEntry($movement, $uniqueEntries, $entryUsageCount);
 
-                // Se conciliou uma entrada PIX, coletar ID para atualizar account_id
-                if ($status === self::STATUS_CONCILIATED && isset($result[self::RESULT_KEY_ENTRY_ID])) {
+                if ($result[self::RESULT_KEY_STATUS] === self::STATUS_CONCILIATED) {
+                    $reconciliationMap[$movement->{self::FIELD_ID}] = self::STATUS_CONCILIATED;
                     $entriesToUpdate[] = $result[self::RESULT_KEY_ENTRY_ID];
                 }
-
-                // Se conciliou um culto, coletar IDs das entradas do culto para atualizar account_id
-                if ($status === self::STATUS_CONCILIATED && isset($result[self::RESULT_KEY_CULT_ENTRY_IDS])) {
-                    $entriesToUpdate = array_merge($entriesToUpdate, $result[self::RESULT_KEY_CULT_ENTRY_IDS]);
-                }
-            } elseif ($movement->{self::FIELD_MOVEMENT_TYPE} === self::MOVEMENT_TYPE_DEBIT) {
-                $result = $this->reconcileDebit($movement, $exits, $exitUsageCount);
-                $status = $result[self::RESULT_KEY_STATUS];
             }
+        }
 
-            $reconciliationMap[$movement->{self::FIELD_ID}] = $status;
+        // FASE 3: Conciliar SAÍDAS (Extrato → Saídas)
+        $exitUsageCount = [];
+        foreach ($movements as $movement) {
+            // Só processar se ainda não foi conciliado
+            if ($reconciliationMap[$movement->{self::FIELD_ID}] === self::STATUS_MOVEMENT_NOT_FOUND
+                && $movement->{self::FIELD_MOVEMENT_TYPE} === self::MOVEMENT_TYPE_DEBIT) {
+
+                $result = $this->reconcileExit($movement, $exits, $exitUsageCount);
+
+                if ($result[self::RESULT_KEY_STATUS] === self::STATUS_CONCILIATED) {
+                    $reconciliationMap[$movement->{self::FIELD_ID}] = self::STATUS_CONCILIATED;
+                }
+            }
         }
 
         return [
@@ -200,13 +213,134 @@ class ReconcileAccountMovementsAction
         ];
     }
 
-    private function reconcileCredit($movement, Collection $allMovements, Collection $pixEntries, Collection $cults, array &$entryUsageCount, array &$cultUsageCount): array
+    /**
+     * FASE 1: Conciliar cultos (Culto → Extrato)
+     * Para cada culto, busca os depósitos correspondentes no extrato
+     */
+    private function reconcileCults(Collection $cults, Collection $movements, array $reconciliationMap): array
+    {
+        $entriesToUpdate = [];
+
+        // Ordenar cultos por valor total (MAIOR para MENOR)
+        $cultsSorted = $cults->sortByDesc(function ($c) {
+            return ($c->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
+                + ($c->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
+                + ($c->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
+        });
+
+        foreach ($cultsSorted as $cult) {
+            $cultId = $cult->{self::FIELD_CULTS_ID};
+            $cultDate = Carbon::parse($cult->{self::FIELD_CULTS_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
+
+            // Calcular valor total do culto
+            $totalCultAmount = ($cult->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
+                + ($cult->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
+                + ($cult->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
+
+            // Calcular quais depósitos esse culto deve gerar
+            $expectedDeposits = $this->calculateCultDeposits($totalCultAmount);
+
+            // Buscar no extrato os depósitos correspondentes
+            $foundMovements = $this->findCultDepositsInExtract($movements, $cultDate, $expectedDeposits, $reconciliationMap);
+
+            // Marcar movimentos como conciliados
+            foreach ($foundMovements as $movementId) {
+                $reconciliationMap[$movementId] = self::STATUS_CONCILIATED;
+            }
+
+            // Se conciliou algum movimento, adicionar entradas do culto para atualização
+            if (count($foundMovements) > 0) {
+                $cultEntryIds = collect($cult->{self::FIELD_ENTRIES} ?? [])->pluck('id')->filter()->values()->toArray();
+                $entriesToUpdate = array_merge($entriesToUpdate, $cultEntryIds);
+            }
+        }
+
+        return [
+            'reconciliation_map' => $reconciliationMap,
+            'entries_to_update' => $entriesToUpdate,
+        ];
+    }
+
+    /**
+     * Calcula quais depósitos um culto deve gerar
+     * Exemplo: R$ 8.920 → [2000, 2000, 2000, 2000, 920]
+     */
+    private function calculateCultDeposits(float $totalAmount): array
+    {
+        $deposits = [];
+
+        if ($totalAmount <= self::MAX_CASH_DEPOSIT) {
+            // Culto <= R$ 2.000 gera 1 depósito
+            $deposits[] = $totalAmount;
+        } else {
+            // Culto > R$ 2.000 gera múltiplos depósitos
+            $remaining = $totalAmount;
+
+            while ($remaining > self::MAX_CASH_DEPOSIT) {
+                $deposits[] = self::MAX_CASH_DEPOSIT;
+                $remaining -= self::MAX_CASH_DEPOSIT;
+            }
+
+            if ($remaining > 0) {
+                $deposits[] = $remaining;
+            }
+        }
+
+        return $deposits;
+    }
+
+    /**
+     * Busca no extrato os depósitos de um culto
+     */
+    private function findCultDepositsInExtract(
+        Collection $movements,
+        string $cultDate,
+        array $expectedDeposits,
+        array $reconciliationMap
+    ): array {
+        $foundMovementIds = [];
+
+        // Para cada depósito esperado
+        foreach ($expectedDeposits as $expectedAmount) {
+            // Buscar movimento não conciliado com a data e valor
+            $movement = $movements->first(function ($m) use ($cultDate, $expectedAmount, $reconciliationMap) {
+                // Só considerar se ainda não foi conciliado
+                if ($reconciliationMap[$m->{self::FIELD_ID}] !== self::STATUS_MOVEMENT_NOT_FOUND) {
+                    return false;
+                }
+
+                // Verificar se é crédito e mesma data
+                if ($m->{self::FIELD_MOVEMENT_TYPE} !== self::MOVEMENT_TYPE_CREDIT) {
+                    return false;
+                }
+
+                if ($m->{self::FIELD_MOVEMENT_DATE} !== $cultDate) {
+                    return false;
+                }
+
+                // Verificar se o valor bate
+                return abs($m->{self::FIELD_AMOUNT} - $expectedAmount) < self::AMOUNT_TOLERANCE;
+            });
+
+            if ($movement) {
+                $foundMovementIds[] = $movement->{self::FIELD_ID};
+                // Marcar como conciliado temporariamente para não reusar
+                $reconciliationMap[$movement->{self::FIELD_ID}] = self::STATUS_CONCILIATED;
+            }
+        }
+
+        return $foundMovementIds;
+    }
+
+    /**
+     * FASE 2: Conciliar entrada PIX/DOC única (1:1)
+     */
+    private function reconcileUniqueEntry(object $movement, Collection $uniqueEntries, array &$entryUsageCount): array
     {
         $movementDate = $movement->{self::FIELD_MOVEMENT_DATE};
         $movementAmount = $movement->{self::FIELD_AMOUNT};
 
-        // Verificar PIX/DOC/TED/TEV (1:1 - cada entrada só pode conciliar 1 vez)
-        $pix = $pixEntries->first(function ($e) use ($movementDate, $movementAmount, $entryUsageCount) {
+        $entry = $uniqueEntries->first(function ($e) use ($movementDate, $movementAmount, $entryUsageCount) {
             $entryDate = Carbon::parse($e->{self::FIELD_ENTRIES_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
             $entryId = $e->{self::FIELD_ENTRIES_ID};
 
@@ -219,10 +353,10 @@ class ReconcileAccountMovementsAction
                 abs($e->{self::FIELD_ENTRIES_AMOUNT} - $movementAmount) < self::AMOUNT_TOLERANCE;
         });
 
-        if ($pix) {
-            $entryId = $pix->{self::FIELD_ENTRIES_ID};
+        if ($entry) {
+            $entryId = $entry->{self::FIELD_ENTRIES_ID};
 
-            // Incrementar contador de uso
+            // Marcar como usada
             if (!isset($entryUsageCount[$entryId])) {
                 $entryUsageCount[$entryId] = 0;
             }
@@ -234,99 +368,13 @@ class ReconcileAccountMovementsAction
             ];
         }
 
-        // Verificar depósito em dinheiro via culto
-        $cult = $cults->first(function ($c) use ($movementDate, $movementAmount, $cultUsageCount) {
-            $cultDate = Carbon::parse($c->{self::FIELD_CULTS_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
-            $cultId = $c->{self::FIELD_CULTS_ID};
-
-            if ($cultDate !== $movementDate) {
-                return false;
-            }
-
-            // Valor total do culto = dízimos + ofertas designadas + ofertas
-            $totalCultAmount = ($c->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
-                + ($c->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
-                + ($c->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
-
-            // Calcular quantos depósitos esse culto deve gerar
-            $expectedDeposits = $this->calculateExpectedDeposits($totalCultAmount);
-
-            // Verificar se já atingiu o limite de conciliações
-            $currentUsage = $cultUsageCount[$cultId] ?? 0;
-            if ($currentUsage >= $expectedDeposits) {
-                return false; // Já conciliou todos os depósitos esperados
-            }
-
-            // Se o culto tem <= R$ 2.000, verifica se bate com o movimento
-            if ($totalCultAmount <= self::MAX_CASH_DEPOSIT) {
-                return abs($totalCultAmount - $movementAmount) < self::AMOUNT_TOLERANCE;
-            }
-
-            // Se o culto tem > R$ 2.000, verifica se o movimento corresponde a uma das parcelas
-            return $this->isValidCultDepositPart($totalCultAmount, $movementAmount);
-        });
-
-        if ($cult) {
-            $cultId = $cult->{self::FIELD_CULTS_ID};
-
-            // Incrementar contador de uso do culto
-            if (!isset($cultUsageCount[$cultId])) {
-                $cultUsageCount[$cultId] = 0;
-            }
-            $cultUsageCount[$cultId]++;
-
-            // Extrair IDs das entradas do culto
-            $cultEntryIds = collect($cult->{self::FIELD_ENTRIES} ?? [])->pluck('id')->filter()->values()->toArray();
-
-            return [
-                self::RESULT_KEY_STATUS => self::STATUS_CONCILIATED,
-                self::RESULT_KEY_CULT_ENTRY_IDS => $cultEntryIds,
-            ];
-        }
-
         return [self::RESULT_KEY_STATUS => self::STATUS_MOVEMENT_NOT_FOUND];
     }
 
     /**
-     * Calcula quantos depósitos um culto deve gerar baseado no valor total
+     * FASE 3: Conciliar saída (1:1)
      */
-    private function calculateExpectedDeposits(float $totalCultAmount): int
-    {
-        if ($totalCultAmount <= self::MAX_CASH_DEPOSIT) {
-            return 1;
-        }
-
-        $fullDeposits = floor($totalCultAmount / self::MAX_CASH_DEPOSIT);
-        $remainder = $totalCultAmount - ($fullDeposits * self::MAX_CASH_DEPOSIT);
-
-        // Se há resto, precisa de mais um depósito
-        return $remainder > 0 ? $fullDeposits + 1 : $fullDeposits;
-    }
-
-    /**
-     * Verifica se o valor do movimento corresponde a uma parcela válida de depósito do culto
-     * Exemplo: Culto de R$ 9.000 gera 4 depósitos de R$ 2.000 e 1 de R$ 1.000
-     */
-    private function isValidCultDepositPart(float $totalCultAmount, float $movementAmount): bool
-    {
-        // Calcular quantos depósitos de R$ 2.000 são necessários
-        $fullDeposits = floor($totalCultAmount / self::MAX_CASH_DEPOSIT);
-        $remainder = $totalCultAmount - ($fullDeposits * self::MAX_CASH_DEPOSIT);
-
-        // Verificar se o movimento é um depósito completo de R$ 2.000
-        if (abs($movementAmount - self::MAX_CASH_DEPOSIT) < self::AMOUNT_TOLERANCE) {
-            return true;
-        }
-
-        // Verificar se o movimento é o depósito restante (última parcela)
-        if ($remainder > 0 && abs($movementAmount - $remainder) < self::AMOUNT_TOLERANCE) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private function reconcileDebit($movement, Collection $exits, array &$exitUsageCount): array
+    private function reconcileExit(object $movement, Collection $exits, array &$exitUsageCount): array
     {
         $movementDate = $movement->{self::FIELD_MOVEMENT_DATE};
 
@@ -334,7 +382,7 @@ class ReconcileAccountMovementsAction
             $exitDate = Carbon::parse($e->{ExitData::DATE_TRANSACTION_COMPENSATION_ITEM_PROPERTY})->format('Y-m-d');
             $exitId = $e->{ExitData::ID_PROPERTY};
 
-            // Verificar se já foi conciliada (1:1)
+            // Verificar se já foi conciliada
             if (isset($exitUsageCount[$exitId]) && $exitUsageCount[$exitId] >= 1) {
                 return false;
             }
@@ -346,7 +394,7 @@ class ReconcileAccountMovementsAction
         if ($exit) {
             $exitId = $exit->{ExitData::ID_PROPERTY};
 
-            // Incrementar contador de uso
+            // Marcar como usada
             if (!isset($exitUsageCount[$exitId])) {
                 $exitUsageCount[$exitId] = 0;
             }
