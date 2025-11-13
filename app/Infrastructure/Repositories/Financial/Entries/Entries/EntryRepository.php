@@ -894,4 +894,28 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+    /**
+     * Atualiza o account_id de múltiplas entradas em massa
+     *
+     * @param array $entryIds
+     * @param int $accountId
+     * @return bool
+     */
+    public function bulkUpdateAccountId(array $entryIds, int $accountId): bool
+    {
+        if (empty($entryIds)) {
+            return true;
+        }
+
+        try {
+            DB::table(self::TABLE_NAME)
+                ->whereIn(self::ID_COLUMN, $entryIds)
+                ->update([self::ACCOUNT_ID_COLUMN => $accountId]);
+
+            return true;
+        } catch (Throwable $e) {
+            return false;
+        }
+    }
 }

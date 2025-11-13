@@ -44,5 +44,7 @@ interface EntryRepositoryInterface
 
     public function deleteAnonymousEntriesByAccountAndDate(int $accountId, string $referenceDate): bool;
 
+    public function bulkUpdateAccountId(array $entryIds, int $accountId): bool;
+
     public function applyFilters(array $filters, bool $joinQuery, bool $returnConditions);
 }
