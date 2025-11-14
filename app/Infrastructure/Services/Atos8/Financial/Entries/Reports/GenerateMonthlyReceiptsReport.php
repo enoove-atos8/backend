@@ -10,6 +10,7 @@ use App\Domain\Financial\Reports\Entries\DataTransferObjects\MonthlyReportData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository;
 use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
+use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByIdAction;
 use Exception;
 use Illuminate\Support\Facades\Http;
@@ -30,6 +31,8 @@ class GenerateMonthlyReceiptsReport
     private UpdateAmountsReportRequestsAction $updateAmountsReportRequestsAction;
 
     private GetGroupsByIdAction $getGroupsByIdAction;
+
+    private GetChurchAction $getChurchAction;
 
     private UploadFile $uploadFile;
 
@@ -57,6 +60,7 @@ class GenerateMonthlyReceiptsReport
         UpdateLinkReportRequestsAction $updateLinkReportRequestsAction,
         GetGroupsByIdAction $getGroupsByIdAction,
         UpdateAmountsReportRequestsAction $updateAmountsReportRequestsAction,
+        GetChurchAction $getChurchAction,
         UploadFile $uploadFile
     ) {
         $this->getEntriesAction = $getEntriesAction;
@@ -64,6 +68,7 @@ class GenerateMonthlyReceiptsReport
         $this->updateLinkReportRequestsAction = $updateLinkReportRequestsAction;
         $this->getGroupsByIdAction = $getGroupsByIdAction;
         $this->updateAmountsReportRequestsAction = $updateAmountsReportRequestsAction;
+        $this->getChurchAction = $getChurchAction;
         $this->uploadFile = $uploadFile;
     }
 
@@ -138,9 +143,9 @@ class GenerateMonthlyReceiptsReport
                     $this->cleanReportTempDir(self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_TEMP_DIR);
                     $this->cleanReportTempDir(self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_DIR);
 
-                    $this->updateStatusReportRequestsAction->execute($report->id, \App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository::DONE_STATUS_VALUE);
+                    $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::DONE_STATUS_VALUE);
                 } else {
-                    $this->updateStatusReportRequestsAction->execute($report->id, \App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
+                    $this->updateStatusReportRequestsAction->execute($report->id, MonthlyReportsRepository::NO_RECEIPTS_STATUS_VALUE);
                 }
             } catch (Exception $e) {
                 throw new GeneralExceptions(
@@ -178,6 +183,8 @@ class GenerateMonthlyReceiptsReport
 
     /**
      * Combina os comprovantes em um único PDF.
+     *
+     * @throws Throwable
      */
     private function generateSinglePDF(string $tenant, array $links, array $filters, array $dates, mixed $group, array $entryTypesAmount): string
     {
@@ -190,7 +197,16 @@ class GenerateMonthlyReceiptsReport
 
         $pdfPath = $directoryPath.'/'.$timestamp.'_'.self::MONTHLY_RECEIPTS_REPORT_NAME;
 
+        // Buscar dados da igreja
+        $churchData = $this->getChurchAction->execute($tenant);
+
+        // Criar objeto reportData com as informações necessárias
+        $reportData = (object) [
+            'churchData' => $churchData,
+        ];
+
         $html = view(self::MONTHLY_RECEIPTS_BLADE_VIEW, [
+            'reportData' => $reportData,
             'tenant' => $tenant,
             'links' => $links,
             'filters' => $filters,

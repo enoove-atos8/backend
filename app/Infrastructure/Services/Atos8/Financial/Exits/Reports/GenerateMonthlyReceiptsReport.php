@@ -167,13 +167,18 @@ class GenerateMonthlyReceiptsReport
 
         $pdfPath = $directoryPath.'/'.$timestamp.'_'.self::MONTHLY_RECEIPTS_REPORT_NAME;
 
+        // Criar objeto reportData com as informações necessárias
+        $reportData = (object) [
+            'churchData' => $churchData,
+        ];
+
         $html = view(self::MONTHLY_RECEIPTS_BLADE_VIEW, [
+            'reportData' => $reportData,
             'tenant' => $tenant,
             'links' => $links,
             'filters' => $filters,
             'dates' => $dates,
             'exitTypesAmount' => $exitTypesAmount,
-            'churchData' => $churchData,
         ])->render();
 
         PDFGenerator::save($html, $pdfPath);

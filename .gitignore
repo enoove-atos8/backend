@@ -21,3 +21,7 @@ supervisord.pid
 supervisord.log
 /config/tenancy.php
 /CLAUDE.md
+/boost.json
+/scripts/python/image_preprocessor/main.py
+/.junie/mcp/mcp.json
+/postcss.config.js
