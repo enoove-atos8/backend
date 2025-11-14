@@ -11,6 +11,12 @@ use Infrastructure\Exceptions\GeneralExceptions;
 class CaixaStatementExtractor implements BankStatementExtractorInterface
 {
     /**
+     * Identificador de depósito em dinheiro no extrato TXT da Caixa
+     * Usado para conciliação de cultos (que são sempre em dinheiro)
+     */
+    public const TXT_CASH_DEPOSIT_IDENTIFIER = 'DIN';
+
+    /**
      * Extract bank statement data from Caixa file
      *
      * @param  string  $filePath  * @return array

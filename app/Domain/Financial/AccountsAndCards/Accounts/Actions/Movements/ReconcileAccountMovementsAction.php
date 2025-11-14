@@ -5,11 +5,16 @@ namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Movements;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
 use App\Domain\Financial\Entries\Entries\Actions\UpdateEntriesAccountIdAction;
 use Carbon\Carbon;
+use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountByIdAction;
+use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountMovementsRepositoryInterface;
+use Domain\Financial\AccountsAndCards\Accounts\Services\BankStatements\BankStatementExtractorFactory;
+use Domain\Financial\AccountsAndCards\Accounts\Services\BankStatements\Extractors\CaixaStatementExtractor;
 use Domain\Financial\Entries\Cults\Actions\GetCultsAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class ReconcileAccountMovementsAction
 {
@@ -82,12 +87,19 @@ class ReconcileAccountMovementsAction
     // Limite máximo para depósitos em dinheiro
     private const MAX_CASH_DEPOSIT = 2000.00;
 
+    /**
+     * Dados da conta sendo processada (disponível para toda a classe)
+     */
+    private ?AccountData $account = null;
+
     public function __construct(
         private readonly AccountMovementsRepositoryInterface $accountMovementsRepository,
         private readonly GetEntriesAction $getEntriesAction,
         private readonly GetCultsAction $getCultsAction,
         private readonly GetExitsAction $getExitsAction,
-        private readonly UpdateEntriesAccountIdAction $updateEntriesAccountIdAction
+        private readonly UpdateEntriesAccountIdAction $updateEntriesAccountIdAction,
+        private readonly GetAccountByIdAction $getAccountByIdAction,
+        private readonly BankStatementExtractorFactory $extractorFactory
     ) {}
 
     /**
@@ -96,31 +108,34 @@ class ReconcileAccountMovementsAction
      */
     public function execute(int $accountId, int $fileId): bool
     {
-        // 1. Buscar movimentos do arquivo
+        // 1. Buscar dados da conta (disponível para toda a classe)
+        $this->account = $this->getAccountByIdAction->execute($accountId);
+
+        // 2. Buscar movimentos do arquivo
         $movements = $this->accountMovementsRepository->getMovementsByAccountAndFile($accountId, $fileId);
 
         if ($movements->isEmpty()) {
             return false;
         }
 
-        // 2. Extrair período de datas dos movimentos
+        // 3. Extrair período de datas dos movimentos
         $dateRange = $this->extractDateRange($movements);
 
         // Extrair apenas o formato YYYY-MM para busca com LIKE (entries, cults e exits usam LIKE)
         $yearMonthDates = $this->extractYearMonthFromDates($dateRange);
 
-        // 3. Buscar dados necessários usando Actions
+        // 4. Buscar dados necessários usando Actions
         $entries = $this->getEntriesAction->execute($yearMonthDates, [self::FIELD_ACCOUNT_ID => $accountId], false);
         $cults = $this->getCultsAction->execute(false, $yearMonthDates);
         $exits = $this->getExitsAction->execute($yearMonthDates, [self::FIELD_ACCOUNT_ID => $accountId], false);
 
-        // 4. Processar conciliação
+        // 5. Processar conciliação
         $reconciliationResult = $this->processReconciliation($movements, $entries, $cults, $exits, $accountId);
 
-        // 5. Atualizar status dos movimentos em massa
+        // 6. Atualizar status dos movimentos em massa
         $this->accountMovementsRepository->bulkUpdateConciliationStatus($reconciliationResult['movements']);
 
-        // 6. Atualizar account_id das entradas conciliadas (segunda camada de identificação)
+        // 7. Atualizar account_id das entradas conciliadas (segunda camada de identificação)
         if (!empty($reconciliationResult['entries_to_update'])) {
             $this->updateEntriesAccountIdAction->execute($reconciliationResult['entries_to_update'], $accountId);
         }
@@ -221,6 +236,9 @@ class ReconcileAccountMovementsAction
     {
         $entriesToUpdate = [];
 
+        // Obter identificador de depósito em dinheiro do banco
+        $cashDepositIdentifier = $this->getCashDepositIdentifier();
+
         // Ordenar cultos por valor total (MAIOR para MENOR)
         $cultsSorted = $cults->sortByDesc(function ($c) {
             return ($c->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
@@ -241,7 +259,7 @@ class ReconcileAccountMovementsAction
             $expectedDeposits = $this->calculateCultDeposits($totalCultAmount);
 
             // Buscar no extrato os depósitos correspondentes
-            $foundMovements = $this->findCultDepositsInExtract($movements, $cultDate, $expectedDeposits, $reconciliationMap);
+            $foundMovements = $this->findCultDepositsInExtract($movements, $cultDate, $expectedDeposits, $reconciliationMap, $cashDepositIdentifier);
 
             // Marcar movimentos como conciliados
             foreach ($foundMovements as $movementId) {
@@ -296,14 +314,15 @@ class ReconcileAccountMovementsAction
         Collection $movements,
         string $cultDate,
         array $expectedDeposits,
-        array $reconciliationMap
+        array $reconciliationMap,
+        ?string $cashDepositIdentifier = null
     ): array {
         $foundMovementIds = [];
 
         // Para cada depósito esperado
         foreach ($expectedDeposits as $expectedAmount) {
             // Buscar movimento não conciliado com a data e valor
-            $movement = $movements->first(function ($m) use ($cultDate, $expectedAmount, $reconciliationMap) {
+            $movement = $movements->first(function ($m) use ($cultDate, $expectedAmount, $reconciliationMap, $cashDepositIdentifier) {
                 // Só considerar se ainda não foi conciliado
                 if ($reconciliationMap[$m->{self::FIELD_ID}] !== self::STATUS_MOVEMENT_NOT_FOUND) {
                     return false;
@@ -316,6 +335,14 @@ class ReconcileAccountMovementsAction
 
                 if ($m->{self::FIELD_MOVEMENT_DATE} !== $cultDate) {
                     return false;
+                }
+
+                // IMPORTANTE: Cultos são SEMPRE em dinheiro (cash)
+                // Verificar se o movimento é um depósito em dinheiro através do transactionType do MovementsData
+                if ($cashDepositIdentifier !== null) {
+                    if (stripos($m->transactionType, $cashDepositIdentifier) === false) {
+                        return false;
+                    }
                 }
 
                 // Verificar se o valor bate
@@ -404,5 +431,32 @@ class ReconcileAccountMovementsAction
         }
 
         return [self::RESULT_KEY_STATUS => self::STATUS_MOVEMENT_NOT_FOUND];
+    }
+
+    /**
+     * Obtém o identificador de depósito em dinheiro do banco
+     * Usa os dados da conta armazenados na propriedade $account
+     *
+     * @return string|null
+     */
+    private function getCashDepositIdentifier(): ?string
+    {
+        if ($this->account === null) {
+            return null;
+        }
+
+        // Normalizar nome do banco
+        $bankName = Str::lower(Str::ascii($this->account->bankName));
+
+        // Criar extrator do banco usando a factory
+        $extractor = $this->extractorFactory->make($bankName);
+
+        // Se for Caixa, retornar o identificador de depósito em dinheiro
+        if ($extractor instanceof CaixaStatementExtractor) {
+            return CaixaStatementExtractor::TXT_CASH_DEPOSIT_IDENTIFIER;
+        }
+
+        // Para outros bancos, retornar null (sem verificação específica)
+        return null;
     }
 }
