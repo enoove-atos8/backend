@@ -8,128 +8,130 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class MemberData extends DataTransferObject
 {
     public const ID = 'id';
+
     public const ACTIVATED = 'activated';
+
     public const DELETED = 'deleted';
+
     public const AVATAR = 'avatar';
+
     public const FULL_NAME = 'fullName';
+
     public const GENDER = 'gender';
+
     public const CPF = 'cpf';
+
     public const MIDDLE_CPF = 'middleCpf';
+
     public const RG = 'rg';
+
     public const WORK = 'work';
+
     public const BORN_DATE = 'bornDate';
+
     public const EMAIL = 'email';
+
     public const PHONE = 'phone';
+
     public const CELL_PHONE = 'cellPhone';
+
     public const ADDRESS = 'address';
+
     public const DISTRICT = 'district';
+
     public const CITY = 'city';
+
     public const UF = 'uf';
+
     public const MARITAL_STATUS = 'maritalStatus';
+
     public const SPOUSE = 'spouse';
+
     public const FATHER = 'father';
+
     public const MOTHER = 'mother';
+
     public const ECCLESIASTICAL_FUNCTION = 'ecclesiasticalFunction';
+
     public const MEMBER_TYPE = 'memberType';
+
     public const BAPTISM_DATE = 'baptismDate';
+
     public const BLOOD_TYPE = 'bloodType';
+
     public const EDUCATION = 'education';
 
-    /** @var integer  */
+    public const GROUP_IDS = 'groupIds';
+
     public int $id = 0;
 
-    /** @var bool | null  */
-    public bool | null $activated;
+    public ?bool $activated;
 
-    /** @var bool | null  */
-    public bool | null $deleted;
+    public ?bool $deleted;
 
-    /** @var string | null  */
-    public string | null $avatar;
+    public ?string $avatar;
 
-    /** @var string | null  */
-    public string | null $fullName;
+    public ?string $fullName;
 
-    /** @var string | null  */
-    public string | null $gender;
+    public ?string $gender;
 
-    /** @var string|null  */
-    public string | null $cpf;
+    public ?string $cpf;
 
-    /** @var string | null  */
-    public string | null $middleCpf;
+    public ?string $middleCpf;
 
-    /** @var string|null  */
-    public string | null $rg;
+    public ?string $rg;
 
-    /** @var string|null  */
-    public string | null $work;
+    public ?string $work;
 
-    /** @var string | null  */
-    public string | null $bornDate;
+    public ?string $bornDate;
 
-    /** @var string|null  */
-    public string | null $email;
+    public ?string $email;
 
-    /** @var string|null  */
-    public string | null $phone;
+    public ?string $phone;
 
-    /** @var string | null  */
-    public string | null $cellPhone;
+    public ?string $cellPhone;
 
-    /** @var string | null  */
-    public string | null $address;
+    public ?string $address;
 
-    /** @var string | null  */
-    public string | null $district;
+    public ?string $district;
 
-    /** @var string | null  */
-    public string | null $city;
+    public ?string $city;
 
-    /** @var string | null  */
-    public string | null $uf;
+    public ?string $uf;
 
-    /** @var string|null  */
-    public string | null $maritalStatus;
+    public ?string $maritalStatus;
 
-    /** @var string|null  */
-    public string | null $spouse;
+    public ?string $spouse;
 
-    /** @var string|null  */
-    public string | null $father;
+    public ?string $father;
 
-    /** @var string | null  */
-    public string | null $mother;
+    public ?string $mother;
 
-    /** @var array|string|null  */
-    public array | string | null $ecclesiasticalFunction;
+    public array|string|null $ecclesiasticalFunction;
 
-    /** @var string | null  */
-    public string | null $memberType;
+    public ?string $memberType;
 
-    /** @var string|null  */
-    public string | null $baptismDate;
+    public ?string $baptismDate;
 
-    /** @var string|null  */
-    public string | null $bloodType;
+    public ?string $bloodType;
 
-    /** @var string|null  */
-    public string | null $education;
+    public ?string $education;
 
-    /** @var float|null  */
-    public float | null $titheAmount;
+    public array|string|null $groupIds;
+
+    public ?float $titheAmount;
 
     /**
      * Create a MemberData instance from response data
      *
-     * @param array $data Response data from repository
+     * @param  array  $data  Response data from repository
      * @return array New MemberData instance
      */
     private static function getMemberPrefixedData(array $data): array
     {
         return [
-            'activated' => isset($data['members_activated']) ? (bool)$data['members_activated'] : null,
-            'deleted' => isset($data['members_deleted']) ? (bool)$data['members_deleted'] : null,
+            'activated' => isset($data['members_activated']) ? (bool) $data['members_activated'] : null,
+            'deleted' => isset($data['members_deleted']) ? (bool) $data['members_deleted'] : null,
             'avatar' => $data['members_avatar'] ?? null,
             'fullName' => $data['members_full_name'] ?? null,
             'gender' => $data['members_gender'] ?? null,
@@ -154,6 +156,7 @@ class MemberData extends DataTransferObject
             'baptismDate' => $data['members_baptism_date'] ?? null,
             'bloodType' => $data['members_blood_type'] ?? null,
             'education' => $data['members_education'] ?? null,
+            'groupIds' => isset($data['members_group_ids']) ? (is_string($data['members_group_ids']) ? json_decode($data['members_group_ids'], true) : $data['members_group_ids']) : null,
             'titheAmount' => $data['tithe_amount'] ?? null,
         ];
     }
@@ -161,8 +164,8 @@ class MemberData extends DataTransferObject
     private static function getNonPrefixedData(array $data): array
     {
         return [
-            'activated' => isset($data['activated']) ? (bool)$data['activated'] : null,
-            'deleted' => isset($data['deleted']) ? (bool)$data['deleted'] : null,
+            'activated' => isset($data['activated']) ? (bool) $data['activated'] : null,
+            'deleted' => isset($data['deleted']) ? (bool) $data['deleted'] : null,
             'avatar' => $data['avatar'] ?? null,
             'fullName' => $data['full_name'] ?? null,
             'gender' => $data['gender'] ?? null,
@@ -187,6 +190,7 @@ class MemberData extends DataTransferObject
             'baptismDate' => $data['baptism_date'] ?? null,
             'bloodType' => $data['blood_type'] ?? null,
             'education' => $data['education'] ?? null,
+            'groupIds' => isset($data['group_ids']) ? (is_string($data['group_ids']) ? json_decode($data['group_ids'], true) : $data['group_ids']) : null,
         ];
     }
 
@@ -200,11 +204,10 @@ class MemberData extends DataTransferObject
 
         $mergedData = array_merge(
             ['id' => $data['id'] ?? 0],
-            array_filter($prefixedData, fn($value) => $value !== null) ?:
-                array_filter($nonPrefixedData, fn($value) => $value !== null)
+            array_filter($prefixedData, fn ($value) => $value !== null) ?:
+                array_filter($nonPrefixedData, fn ($value) => $value !== null)
         );
 
         return new self($mergedData);
     }
 }
-

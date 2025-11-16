@@ -3,9 +3,7 @@
 namespace Domain\Secretary\Membership\Actions;
 
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
-use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
-use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMemberByCPFAction
 {
@@ -16,22 +14,13 @@ class GetMemberByCPFAction
         $this->memberRepository = $memberRepositoryInterface;
     }
 
-
-    /**
-     * @param string $cpf
-     * @param bool $searchWithMiddleCpf
-     * @return Model|null
-     */
-    public function execute(string $cpf, bool $searchWithMiddleCpf = false): Model | null
+    public function execute(string $cpf, bool $searchWithMiddleCpf = false): ?Model
     {
         $member = $this->memberRepository->getMembersByCpf($cpf, $searchWithMiddleCpf);
 
-        if(!is_null($member))
-        {
+        if (! is_null($member)) {
             return $member;
-        }
-        else
-        {
+        } else {
             return null;
         }
     }

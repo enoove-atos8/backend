@@ -2,7 +2,6 @@
 
 namespace Domain\Secretary\Membership\Interfaces;
 
-
 use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Database\Eloquent\Model;
@@ -13,17 +12,25 @@ interface MemberRepositoryInterface
 {
     public function createMember(MemberData $memberData): Member;
 
-    public function getMembers(array $filters, string | null $term, bool $paginate): array;
-    public function getMembersByMiddleCpf(string $cpf): Model | null;
-    public function getMembersByCpf(string $cpf): Model | null;
+    public function getMembers(array $filters, ?string $term, bool $paginate): array;
 
-    public function getMemberById(string $id): MemberData | null;
+    public function getMembersByMiddleCpf(string $cpf): ?Model;
 
-    public function getMembersByBornMonth(string $month, string $fields): Collection | null;
-    public function getTithersByMonth(string $month, bool $paginate): Collection | Paginator;
+    public function getMembersByCpf(string $cpf): ?Model;
+
+    public function getMemberById(string $id): ?MemberData;
+
+    public function getMembersByBornMonth(string $month, string $fields): ?Collection;
+
+    public function getTithersByMonth(string $month, bool $paginate): Collection|Paginator;
 
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Member|Collection;
+
+    public function getMembersByGroupId(int $groupId): ?Collection;
+
     public function updateStatus($id, $status): mixed;
+
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed;
+
     public function updateMember($id, MemberData $memberData): mixed;
 }

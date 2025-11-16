@@ -2,42 +2,36 @@
 
 namespace Infrastructure\Repositories;
 
-use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Query\Builder;
-use Illuminate\Support\Collection;
-use Illuminate\Database\Query\JoinClause;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
-use Illuminate\Database\Eloquent\Model;
-use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Traits\Repositories\CacheResults;
 use Infrastructure\Traits\Repositories\ThrowsHttpExceptions;
-use PhpParser\Node\Expr\AssignOp\Mod;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
-    use ThrowsHttpExceptions, CacheResults;
+    use CacheResults, ThrowsHttpExceptions;
 
     const OPERATORS = [
-      'LIKE' => 'LIKE',
-      'BETWEEN' => 'BETWEEN',
-      'EQUALS' => '=',
-      'NOT_EQUALS' => '<>',
-      'DIFFERENT' => '!=',
-      'MINOR' => '<',
-      'MAJOR' => '>',
-      'NOT_IN' => 'NOT IN',
-      'IN' => 'IN',
-      'NOT_NULL' => 'NOT NULL',
-      'IS_NULL' => 'IS NULL',
-      'IS' => 'IS',
+        'LIKE' => 'LIKE',
+        'BETWEEN' => 'BETWEEN',
+        'EQUALS' => '=',
+        'NOT_EQUALS' => '<>',
+        'DIFFERENT' => '!=',
+        'MINOR' => '<',
+        'MAJOR' => '>',
+        'NOT_IN' => 'NOT IN',
+        'IN' => 'IN',
+        'NOT_NULL' => 'NOT NULL',
+        'IS_NULL' => 'IS NULL',
+        'IS' => 'IS',
     ];
 
     const SQL_FUNCTIONS = [
-        'SUBSTRING' =>  'SUBSTRING'
+        'SUBSTRING' => 'SUBSTRING',
     ];
 
     const ORDERS = [
@@ -46,33 +40,32 @@ abstract class BaseRepository implements BaseRepositoryInterface
     ];
 
     const ID_COLUMN = 'id';
+
     const LIMIT_ENTRIES_DATA = '1000';
+
     const ALL_DATA_SELECT = ['entries.id'];
 
-
-    //public array $queryConditions = [];
+    // public array $queryConditions = [];
 
     /**
      * Name of model associated with this repository
+     *
      * @var Model
      */
     protected mixed $model;
 
     /**
      * Array of method names of relationships available to use
-     * @var array
      */
     protected array $relationships = [];
 
     /**
      * Array of relationships to include in next query
-     * @var string|array
      */
     protected string|array $requiredRelationships = [];
 
     /**
      * Array of traits being used by the repository.
-     * @var array
      */
     protected array $uses = [];
 
@@ -82,6 +75,7 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Get the model from the IoC container
+     *
      * @throws BindingResolutionException
      */
     public function __construct()
@@ -103,10 +97,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
     /**
      * Get all items
      *
-     * @param string $columns specific columns to select
-     * @param string $orderBy column to sort by
-     * @param string $sort sort direction
-     * @return Collection
+     * @param  string  $columns  specific columns to select
+     * @param  string  $orderBy  column to sort by
+     * @param  string  $sort  sort direction
+     *
      * @throws BindingResolutionException
      */
     public function getAll(string $columns = '*', string $orderBy = 'created_at', string $sort = 'desc'): Collection
@@ -122,15 +116,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Get paged items
      *
-     * @param integer $paged Items per page
-     * @param string $orderBy Column to sort by
-     * @param string $sort Sort direction
-     * @return Paginator
+     * @param  int  $paged  Items per page
+     * @param  string  $orderBy  Column to sort by
+     * @param  string  $sort  Sort direction
+     *
      * @throws BindingResolutionException
      */
     public function getPaginated(int $paged = 15, string $orderBy = 'created_at', string $sort = 'desc'): Paginator
@@ -146,16 +138,15 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Items for select options
      *
-     * @param string $data column to display in the option
-     * @param string $key column to be used as the value in option
-     * @param string $orderBy column to sort by
-     * @param string $sort sort direction
-     * @return array           array with key value pairs
+     * @param  string  $data  column to display in the option
+     * @param  string  $key  column to be used as the value in option
+     * @param  string  $orderBy  column to sort by
+     * @param  string  $sort  sort direction
+     * @return array array with key value pairs
+     *
      * @throws BindingResolutionException
      */
     public function getForSelect(string $data, string $key = 'id', string $orderBy = 'created_at', string $sort = 'desc'): array
@@ -171,13 +162,11 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Get item by its id
      *
-     * @param integer $id
-     * @return Model
+     * @param  int  $id
+     *
      * @throws BindingResolutionException
      */
     public function getById($id): Model
@@ -191,28 +180,24 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
     /**
      * Get instance of model by column
      *
-     * @param string $column column to search
-     * @param string $operator
-     * @param mixed $term search term
-     * @return Model|null
+     * @param  string  $column  column to search
+     * @param  mixed  $term  search term
+     *
      * @throws BindingResolutionException
      */
-    public function getItemByColumn(string $column, string $operator, mixed $term): Model|null
+    public function getItemByColumn(string $column, string $operator, mixed $term): ?Model
     {
         $query = function () use ($column, $operator, $term) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where(function ($q) use($column, $operator, $term){
-                    if($operator == BaseRepository::OPERATORS['LIKE'])
-                    {
+                ->where(function ($q) use ($column, $operator, $term) {
+                    if ($operator == BaseRepository::OPERATORS['LIKE']) {
                         $q->where($column, $operator, "%{$term}%");
                     }
-                    if($operator == BaseRepository::OPERATORS['EQUALS'])
-                    {
+                    if ($operator == BaseRepository::OPERATORS['EQUALS']) {
                         $q->where($column, $operator, $term);
                     }
                 })
@@ -222,16 +207,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Get instance of model by column
      *
-     * @param string $column column to search
-     * @param mixed $term search term
-     * @param string $orderByCollumn
-     * @param string $sortType
-     * @return Collection
+     * @param  string  $column  column to search
+     * @param  mixed  $term  search term
+     *
      * @throws BindingResolutionException
      */
     public function getItemsByColumn(string $column, mixed $term, string $orderByCollumn = 'id', string $sortType = 'desc'): Collection
@@ -248,14 +229,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Get a collection of items with conditions
      *
-     * @param array $columns
-     * @param array $conditions
-     * @return Collection
      * @throws BindingResolutionException
      */
     public function getItemsByWhere(array $columns = ['*'], array $conditions = []): Collection
@@ -270,13 +246,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
     /**
      * Get an item with conditions
      *
-     * @param array $columns
-     * @param array $conditions
-     * @return Model|null
      * @throws BindingResolutionException
      */
     public function getItemByWhere(array $columns = ['*'], array $conditions = []): ?Model
@@ -290,14 +262,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Get item by id or column
      *
-     * @param mixed $term id or term
-     * @param string $column column to search
-     * @return Model
+     * @param  mixed  $term  id or term
+     * @param  string  $column  column to search
+     *
      * @throws BindingResolutionException
      */
     public function getActively(mixed $term, string $column = 'slug'): Model
@@ -309,12 +279,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->getItemByColumn($term, '=', $column);
     }
 
-
-
     /**
      * Create new using mass assignment
      *
-     * @param array $data
      * @return mixed
      */
     public function create(array $data): Model
@@ -322,14 +289,12 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->model->create($data);
     }
 
-
-
     /**
      * Update a record using the primary key.
      *
-     * @param array $conditions Single condition or array of conditions
-     * @param $data array
-     * @return mixed
+     * @param  array  $conditions  Single condition or array of conditions
+     * @param  $data  array
+     *
      * @throws BindingResolutionException
      */
     public function update(array $conditions, array $data): mixed
@@ -350,20 +315,18 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
     /**
      * Update or crate a record and return the entity
      *
-     * @param array $data
-     * @param array|null $identifiers columns to search for
-     * @return mixed
+     * @param  array|null  $identifiers  columns to search for
      */
     public function updateOrCreate(array $data, ?array $identifiers = null): mixed
     {
         $existing = false;
 
-        if(!is_null($identifiers))
+        if (! is_null($identifiers)) {
             $existing = $this->model->where($identifiers['field'], $identifiers['operator'], $identifiers['value'])->first();
+        }
 
         if ($existing) {
             $existing->update($data);
@@ -374,26 +337,16 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->create($data);
     }
 
-
-
     /**
      * Delete a record by the primary key.
-     *
-     * @param $id
-     * @return bool
      */
     public function delete($id): bool
     {
         return $this->model->where($this->model->getKeyName(), $id)->delete();
     }
 
-
-
     /**
      * Check if a record exists by the primary key.
-     *
-     * @param $id
-     * @return bool
      */
     public function exists($id): bool
     {
@@ -402,20 +355,13 @@ abstract class BaseRepository implements BaseRepositoryInterface
             ->exists();
     }
 
-
-
     /**
      * Delete a record by the column specified.
-     *
-     * @param string $column
-     * @param string $data
-     * @return bool
      */
     public function deleteByColumn(string $column, string $data): bool
     {
         return $this->model->where($column, $data)->delete();
     }
-
 
     /*
     |------------------------------------------------------------------------------------------
@@ -427,11 +373,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
     |------------------------------------------------------------------------------------------
     */
 
-
     /**
      * Choose what relationships to return with query.
      *
-     * @param mixed $relationships
      * @return $this
      */
     public function with(mixed $relationships): static
@@ -451,16 +395,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this;
     }
 
-
     /**
      * Get instance of model by column
      *
-     * @param array $queryClausesAndConditions
-     * @param string $orderBy
-     * @param string $sort
-     * @param string $limit
-     * @param array $selectColumns
-     * @return Collection
      * @throws BindingResolutionException
      */
     public function getItemsWithRelationshipsAndWheres(
@@ -470,59 +407,49 @@ abstract class BaseRepository implements BaseRepositoryInterface
         string $limit = '999999',
         array $selectColumns = ['*']): Collection
     {
-        $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $limit, $selectColumns) {
+        $query = function () use ($queryClausesAndConditions, $orderBy, $sort, $selectColumns) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where(function ($q) use($queryClausesAndConditions){
-                    if(count($queryClausesAndConditions) > 0){
+                ->where(function ($q) use ($queryClausesAndConditions) {
+                    if (count($queryClausesAndConditions) > 0) {
                         foreach ($queryClausesAndConditions as $key => $clause) {
-                            if($clause['type'] == 'and'){
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
-                                {
+                            if ($clause['type'] == 'and') {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE']) {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], "%{$clause['condition']['value']}%");
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS']) {
                                     $q->where($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                                 }
-                                if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
-                                {
+                                if ($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL']) {
                                     $q->whereNull($clause['condition']['field']);
                                 }
                             }
-                            if($clause['type'] == 'andWithOrInside')
-                            {
-                                $q->where(function($query) use($clause)
-                                {
-                                    if(count($clause['condition']) > 0)
-                                    {
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS'])
-                                        {
-                                            foreach ($clause['condition']['value'] as $value)
-                                            {
+                            if ($clause['type'] == 'andWithOrInside') {
+                                $q->where(function ($query) use ($clause) {
+                                    if (count($clause['condition']) > 0) {
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['EQUALS']) {
+                                            foreach ($clause['condition']['value'] as $value) {
                                                 $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], $value);
                                             }
                                         }
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE'])
-                                        {
-                                            foreach ($clause['condition']['value'] as $value){
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['LIKE']) {
+                                            foreach ($clause['condition']['value'] as $value) {
                                                 $query->orWhere($clause['condition']['field'], $clause['condition']['operator'], "%{$value}%");
                                             }
                                         }
-                                        if($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL'])
-                                        {
+                                        if ($clause['condition']['operator'] == BaseRepository::OPERATORS['IS_NULL']) {
                                             $query->orWhereNull($clause['condition']['field']);
                                         }
                                     }
                                 });
                             }
-                            if($clause['type'] == 'or'){
+                            if ($clause['type'] == 'or') {
                                 $q->orWhere($clause['condition']['field'], $clause['condition']['operator'], $clause['condition']['value']);
                             }
-                            if($clause['type'] == 'in'){
+                            if ($clause['type'] == 'in') {
                                 $q->whereIn($clause['condition']['field'], $clause['condition']['value']);
                             }
-                            if($clause['type'] == 'not_in'){
+                            if ($clause['type'] == 'not_in') {
                                 $q->whereNot($clause['condition']['field'], $clause['condition']['value']);
                             }
                         }
@@ -536,29 +463,22 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
     /**
      * Get instance of model by column
      *
-     * @param array $queryClausesAndConditions
-     * @param string $orderByColumn
-     * @param array $selectColumns
-     * @param string $orderDirection
-     * @return Model|null
      * @throws BindingResolutionException
      */
     public function getItemWithRelationshipsAndWheres(
         array $queryClausesAndConditions,
         string $orderByColumn = 'id',
         array $selectColumns = ['*'],
-        string $orderDirection = 'desc'): Model | null
+        string $orderDirection = 'desc'): ?Model
     {
         $query = function () use ($queryClausesAndConditions, $orderByColumn, $orderDirection, $selectColumns) {
             return $this->model
                 ->with($this->requiredRelationships)
-                ->where(function ($q) use($queryClausesAndConditions){
-                    foreach ($queryClausesAndConditions as $condition)
-                    {
+                ->where(function ($q) use ($queryClausesAndConditions) {
+                    foreach ($queryClausesAndConditions as $condition) {
                         $c = $condition['condition'];
                         $q->where($c['field'], $c['operator'], $c['value']);
                     }
@@ -571,13 +491,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doQuery($query);
     }
 
-
-
     /**
      * Perform the repository query.
      *
-     * @param $callback
-     * @return mixed
      * @throws BindingResolutionException
      */
     protected function doQuery($callback): mixed
@@ -591,15 +507,9 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this->doAfterQuery($result, $methodName, $arguments);
     }
 
-
-
     /**
      *  Apply any modifiers to the query.
      *
-     * @param $callback
-     * @param $methodName
-     * @param $arguments
-     * @return mixed
      * @throws BindingResolutionException
      */
     private function doBeforeQuery($callback, $methodName, $arguments): mixed
@@ -615,11 +525,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
 
     /**
      * Handle the query result.
-     *
-     * @param $result
-     * @param $methodName
-     * @param $arguments
-     * @return mixed
      */
     private function doAfterQuery($result, $methodName, $arguments): mixed
     {
@@ -642,9 +547,6 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $result;
     }
 
-    /**
-     * @return int
-     */
     protected function getCacheTtl(): int
     {
         return $this->cacheTtl;
@@ -660,14 +562,10 @@ abstract class BaseRepository implements BaseRepositoryInterface
         return $this;
     }
 
-    /**
-     * @return array
-     */
     protected function getUsedTraits(): array
     {
         return $this->uses;
     }
-
 
     /*
     |------------------------------------------------------------------------------------------
@@ -678,93 +576,51 @@ abstract class BaseRepository implements BaseRepositoryInterface
     |------------------------------------------------------------------------------------------
     */
 
-
-    /**
-     * @param string $column
-     * @param mixed $value
-     * @param string $whereType
-     * @return array
-     */
     public function whereEqual(string $column, mixed $value, string $whereType): array
     {
         return [
-                'type' => $whereType,
-                'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $value,]
+            'type' => $whereType,
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $value],
         ];
     }
 
-
-
-    /**
-     * @param string $column
-     * @param mixed $value
-     * @param string $whereType
-     * @return array
-     */
     public function whereBetween(string $column, mixed $value, string $whereType): array
     {
         return [
             'type' => $whereType,
-            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['BETWEEN'], 'value' => $value,]
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['BETWEEN'], 'value' => $value],
         ];
     }
 
-
-    /**
-     * @param string $column
-     * @param mixed $value
-     * @param string $whereType
-     * @return array
-     */
     public function whereLike(string $column, mixed $value, string $whereType): array
     {
         return [
             'type' => $whereType,
-            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $value,]
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['LIKE'], 'value' => $value],
         ];
     }
 
-
-    /**
-     * @param string $column
-     * @param string $whereType
-     * @return array
-     */
-    public function whereIsNull(string $column,  string $whereType): array
+    public function whereIsNull(string $column, string $whereType): array
     {
         return [
             'type' => $whereType,
-            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['IS_NULL']]
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['IS_NULL']],
         ];
     }
 
-
-    /**
-     * @param string $column
-     * @param mixed $value
-     * @param string $whereType
-     * @return array
-     */
     public function whereNotIn(string $column, mixed $value, string $whereType): array
     {
         return [
             'type' => $whereType,
-            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['NOT_IN'], 'value' => $value,]
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['NOT_IN'], 'value' => $value],
         ];
     }
 
-
-    /**
-     * @param string $column
-     * @param mixed $value
-     * @param string $whereType
-     * @return array
-     */
     public function whereIn(string $column, mixed $value, string $whereType): array
     {
         return [
             'type' => $whereType,
-            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['IN'], 'value' => $value,]
+            'condition' => ['field' => $column, 'operator' => BaseRepository::OPERATORS['IN'], 'value' => $value],
         ];
     }
 }

@@ -2,42 +2,56 @@
 
 namespace Infrastructure\Repositories\Ecclesiastical\Groups;
 
+use App\Infrastructure\Repositories\Secretary\Membership\MemberRepository;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Divisions\Models\Division;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Models\Group;
 use Illuminate\Contracts\Container\BindingResolutionException;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
-use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
-use Infrastructure\Repositories\Member\MemberRepository;
-use Illuminate\Database\Eloquent\Model;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class GroupsRepository extends BaseRepository implements GroupRepositoryInterface
 {
     protected mixed $model = Group::class;
+
     const TABLE_NAME = 'ecclesiastical_divisions_groups';
+
     const ID_COLUMN = 'id';
 
     const ID_COLUMN_JOINED = 'ecclesiastical_divisions_groups.id';
+
     const GROUP_RECEIVED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_received';
+
     const GROUP_RETURNED_TABLE_NAME = 'ecclesiastical_divisions_groups as group_returned';
+
     const MEMBER_TABLE_NAME = 'members';
+
     const ENABLED_TABLE_COLUMN = 'enabled';
+
     const FINANCIAL_GROUP_COLUMN = 'financial_group';
+
     const RETURN_RECEIVING_TABLE_COLUMN = 'return_receiving';
 
     const ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.ecclesiastical_division_id';
+
     const ID_TABLE_COLUMN = 'ecclesiastical_divisions_groups.id';
+
     const GROUP_ID_WITH_UNDERLINE = 'groups_id';
+
     const LEADER_ID_COLUMN = 'ecclesiastical_divisions_groups.leader_id';
+
     const MEMBER_ECCLESIASTICAL_DIVISION_GROUPS_ID_COLUMN = 'members.ecclesiastical_divisions_group_id';
+
     const MEMBER_ID_COLUMN = 'members.id';
+
     const MEMBER_GROUP_LEADER_COLUMN = 'members.group_leader';
+
     const NAME_GROUP_COLUMN = 'name';
+
     const SLUG_GROUP_COLUMN = 'slug';
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -99,24 +113,17 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     private array $queryConditions = [];
 
-
-    /**
-     * @param DivisionData $division
-     * @return Collection
-     */
     public function getGroupsByDivision(DivisionData $division): Collection
     {
         $groups = $this->getGroups($division);
 
-        return $groups->map(fn($item) => GroupData::fromResponse((array) $item));
+        return $groups->map(fn ($item) => GroupData::fromResponse((array) $item));
     }
 
-
     /**
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getFinancialGroup(): Model | null
+    public function getFinancialGroup(): ?Model
     {
         return $this->getItemByColumn(
             self::FINANCIAL_GROUP_COLUMN,
@@ -125,58 +132,48 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         );
     }
 
-
     /**
      * Get Groups and leaders members data
      */
-    public function getGroups(DivisionData $divisionData = null): Collection
+    public function getGroups(?DivisionData $divisionData = null): Collection
     {
         $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if($divisionData != null)
-        {
-            if($divisionData->requireLeader == 1)
-            {
+        if ($divisionData != null) {
+            if ($divisionData->requireLeader == 1) {
                 $q = DB::table(self::TABLE_NAME)
                     ->join(self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
                         BaseRepository::OPERATORS['EQUALS'],
                         self::MEMBER_ID_COLUMN)
                     ->select($displayColumnsFromRelationship);
-            }
-            else
-            {
+            } else {
                 $q = DB::table(self::TABLE_NAME)
                     ->select(self::DISPLAY_SELECT_COLUMNS);
             }
-        }
-        else
-        {
+        } else {
             $q = DB::table(self::TABLE_NAME)
                 ->select(self::DISPLAY_SELECT_COLUMNS);
         }
 
-        if($divisionData != null)
+        if ($divisionData != null) {
             $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionData->id);
+        }
 
         $q->where(self::ENABLED_TABLE_COLUMN, 1);
-
 
         return $q->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
             ->get();
     }
 
-
-
     /**
-     * @return Collection
      * @throws BindingResolutionException
      */
     public function getAllGroups(): Collection
     {
         $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::ENABLED_TABLE_COLUMN, 1, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::ENABLED_TABLE_COLUMN, 1, 'and');
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
@@ -185,13 +182,10 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         );
     }
 
-
     /**
-     * @param int $id
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getGroupsById(int $id): Model | null
+    public function getGroupsById(int $id): ?Model
     {
         return $this->getItemByColumn(
             self::ID_COLUMN,
@@ -202,8 +196,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     /**
      * Recupera um grupo por ID como um objeto GroupData
-     * @param int $id
-     * @return GroupData|null
+     *
      * @throws UnknownProperties
      */
     public function getGroupById(int $id): ?GroupData
@@ -222,24 +215,22 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
                 MemberRepository::ID_COLUMN_JOINED
             )
             ->where(self::ID_COLUMN_JOINED, $id)
-            ->where(self::TABLE_NAME . '.' . self::ENABLED_TABLE_COLUMN, 1)
+            ->where(self::TABLE_NAME.'.'.self::ENABLED_TABLE_COLUMN, 1)
             ->first();
 
-        if (!$group) {
+        if (! $group) {
             return null;
         }
 
         $attributes = $group->getAttributes();
+
         return GroupData::fromResponse($attributes);
     }
 
-
     /**
-     * @param string $name
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getGroupsByName(string $name): Model | null
+    public function getGroupsByName(string $name): ?Model
     {
         return $this->getItemByColumn(
             self::SLUG_GROUP_COLUMN,
@@ -248,41 +239,32 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         );
     }
 
-
-
-
-    /**
-     * @param GroupData $groupData
-     * @return Group
-     */
     public function save(GroupData $groupData): Group
     {
         return $this->create([
-            'ecclesiastical_division_id'    =>   $groupData->divisionId,
-            'parent_group_id'               =>   $groupData->parentGroupId,
-            'leader_id'                     =>   $groupData->leaderId,
-            'name'                          =>   $groupData->name,
-            'description'                   =>   $groupData->description,
-            'slug'                          =>   $groupData->slug,
-            'financial_transactions_exists' =>   $groupData->financialMovement,
-            'enabled'                       =>   $groupData->enabled,
-            'temporary_event'               =>   $groupData->temporaryEvent,
-            'return_values'                 =>   $groupData->returnValues,
-            'financial_group'               =>   $groupData->financialGroup,
-            'start_date'                    =>   $groupData->startDate,
-            'end_date'                      =>   $groupData->endDate,
+            'ecclesiastical_division_id' => $groupData->divisionId,
+            'parent_group_id' => $groupData->parentGroupId,
+            'leader_id' => $groupData->leaderId,
+            'name' => $groupData->name,
+            'description' => $groupData->description,
+            'slug' => $groupData->slug,
+            'financial_transactions_exists' => $groupData->financialMovement,
+            'enabled' => $groupData->enabled,
+            'temporary_event' => $groupData->temporaryEvent,
+            'return_values' => $groupData->returnValues,
+            'financial_group' => $groupData->financialGroup,
+            'start_date' => $groupData->startDate,
+            'end_date' => $groupData->endDate,
         ]);
     }
 
-
     /**
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getReturnReceivingGroup(): Model | null
+    public function getReturnReceivingGroup(): ?Model
     {
         $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::RETURN_RECEIVING_TABLE_COLUMN, 1, 'and');
+        $this->queryConditions[] = $this->whereEqual(self::RETURN_RECEIVING_TABLE_COLUMN, 1, 'and');
 
         return $this->getItemWithRelationshipsAndWheres(
             $this->queryConditions,

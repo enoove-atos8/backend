@@ -1199,6 +1199,17 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 });
 
+                Route::prefix('teams')->group(function () {
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getMembersByGroupId
+                     */
+
+                    Route::get('/getMembersByGroupId', [MemberController::class, 'getMembersByGroupId']);
+
+                });
+
             });
 
         });
@@ -1357,15 +1368,23 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::prefix('details')->group(function () {
 
-
                     Route::prefix('movements')->group(function () {
-
 
                         Route::get('/exportMovementsGroupData', [GroupController::class, 'exportMovementsGroupData']);
 
-
                     });
 
+                    Route::prefix('teams')->group(function () {
+
+                        /*
+                         * Action: GET
+                         * EndPoint: /getMembersByGroupId
+                         * Description: Get members by group id
+                         */
+
+                        Route::get('/getMembersByGroupId', [MemberController::class, 'getMembersByGroupId']);
+
+                    });
 
                 });
 

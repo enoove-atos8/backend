@@ -46,5 +46,7 @@ interface EntryRepositoryInterface
 
     public function bulkUpdateAccountId(array $entryIds, int $accountId): bool;
 
+    public function getHistoryTitheByMemberId(int $memberId, int $months = 6): array;
+
     public function applyFilters(array $filters, bool $joinQuery, bool $returnConditions);
 }
