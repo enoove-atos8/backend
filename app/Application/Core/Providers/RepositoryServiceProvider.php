@@ -29,6 +29,7 @@ use App\Infrastructure\Repositories\Financial\Reports\Balances\MonthlyBalancesRe
 use App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository;
 use App\Infrastructure\Repositories\Financial\Reports\Exits\MonthlyExitsReportsRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
+use App\Infrastructure\Repositories\Secretary\Membership\MemberRepository;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
@@ -69,7 +70,6 @@ use Infrastructure\Repositories\Financial\Exits\Payments\PaymentItemRepository;
 use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 use Infrastructure\Repositories\Financial\ReceiptProcessing\ReceiptProcessingRepository;
 use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
-use Infrastructure\Repositories\Member\MemberRepository;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
 
 class RepositoryServiceProvider extends ServiceProvider

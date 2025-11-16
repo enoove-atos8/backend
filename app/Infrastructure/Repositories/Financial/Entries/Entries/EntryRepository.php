@@ -7,6 +7,7 @@ use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
+use App\Infrastructure\Repositories\Secretary\Membership\MemberRepository;
 use Domain\Financial\Entries\DuplicitiesAnalisys\DataTransferObjects\ReceiptsByIdsData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountRepository;
-use Infrastructure\Repositories\Member\MemberRepository;
 use Throwable;
 
 class EntryRepository extends BaseRepository implements EntryRepositoryInterface
@@ -66,6 +66,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     const MEMBER_ID_COLUMN_JOINED = 'entries.member_id';
 
     const ACCOUNT_ID_COLUMN_JOINED = 'entries.account_id';
+
     const ACCOUNT_ID_COLUMN = 'account_id';
 
     const ACCOUNT_ID_COLUMN_JOINED_WITH_UNDERLINE = 'entries_account_id';
@@ -897,10 +898,6 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
     /**
      * Atualiza o account_id de múltiplas entradas em massa
-     *
-     * @param array $entryIds
-     * @param int $accountId
-     * @return bool
      */
     public function bulkUpdateAccountId(array $entryIds, int $accountId): bool
     {
@@ -917,5 +914,50 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
         } catch (Throwable $e) {
             return false;
         }
+    }
+
+    /**
+     * @param int $memberId
+     * @param int $months
+     * @return array
+     * @throws BindingResolutionException
+     */
+    public function getHistoryTitheByMemberId(int $memberId, int $months = 6): array
+    {
+        $query = function () use ($memberId, $months) {
+            $history = [];
+            $currentDate = now();
+
+            // Gera os últimos N meses
+            for ($i = $months - 1; $i >= 0; $i--) {
+                $monthKey = $currentDate->copy()->subMonths($i)->format('Y-m');
+                $history[$monthKey] = false;
+            }
+
+            // Busca os dízimos do membro nos últimos N meses
+            $tithes = DB::table(self::TABLE_NAME)
+                ->where(self::MEMBER_ID_COLUMN, $memberId)
+                ->where(self::ENTRY_TYPE_COLUMN, self::TITHE_VALUE)
+                ->where(self::DELETED_COLUMN, false)
+                ->whereNotNull(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN)
+                ->get([self::DATE_TRANSACTIONS_COMPENSATION_COLUMN]);
+
+            // Marca os meses que têm dízimos
+            foreach ($tithes as $tithe) {
+                $date = $tithe->date_transaction_compensation;
+                if (!empty($date)) {
+                    // Extrai YYYY-MM do formato ISO 8601 (2024-03-01T03:00:00.000Z)
+                    $monthKey = substr($date, 0, 7); // YYYY-MM
+
+                    if (array_key_exists($monthKey, $history)) {
+                        $history[$monthKey] = true;
+                    }
+                }
+            }
+
+            return $history;
+        };
+
+        return $this->doQuery($query);
     }
 }

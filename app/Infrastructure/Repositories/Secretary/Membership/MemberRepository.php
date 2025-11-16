@@ -1,6 +1,6 @@
 <?php
 
-namespace Infrastructure\Repositories\Member;
+namespace App\Infrastructure\Repositories\Secretary\Membership;
 
 ;
 
@@ -14,10 +14,8 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\BaseRepository;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
-use Throwable;
 
 class MemberRepository extends BaseRepository implements MemberRepositoryInterface
 {
@@ -120,6 +118,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'baptism_date'                =>  $memberData->baptismDate,
             'blood_type'                  =>  $memberData->bloodType,
             'education'                   =>  $memberData->education,
+            'group_ids'                   =>  $memberData->groupIds,
         ]);
     }
 
@@ -452,6 +451,28 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
 
     /**
+     * @param int $groupId
+     * @return Collection|null
+     * @throws BindingResolutionException
+     */
+    public function getMembersByGroupId(int $groupId): Collection | null
+    {
+        $query = function () use ($groupId) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->whereRaw('JSON_CONTAINS(group_ids, ?, "$")', [(string)$groupId])
+                ->where(self::ACTIVATED_COLUMN, 1)
+                ->orderBy(self::FULL_NAME_COLUMN);
+
+            $result = $q->get();
+            return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+
+    /**
      * @param null $id
      * @param $status
      * @return int
@@ -524,6 +545,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'baptism_date'              =>  $memberData->baptismDate,
             'blood_type'                =>  $memberData->bloodType,
             'education'                 =>  $memberData->education,
+            'group_ids'                 =>  $memberData->groupIds,
         ]);
     }
 }

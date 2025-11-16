@@ -2,10 +2,10 @@
 
 namespace Domain\Secretary\Membership\Actions;
 
+use App\Infrastructure\Repositories\Secretary\Membership\MemberRepository;
 use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Infrastructure\Repositories\BaseRepository;
-use Infrastructure\Repositories\Member\MemberRepository;
 
 class GetMembersCountersAction
 {
@@ -16,17 +16,13 @@ class GetMembersCountersAction
         $this->memberRepository = $memberRepositoryInterface;
     }
 
-
-    /**
-     * @return array
-     */
     public function execute(): array
     {
         $data = $this->memberRepository->getMembers([], null, false)['results'];
 
         $members = $data->where(MemberData::MEMBER_TYPE,
-                                    BaseRepository::OPERATORS['EQUALS'],
-                                MemberRepository::MEMBER_VALUE)->count();
+            BaseRepository::OPERATORS['EQUALS'],
+            MemberRepository::MEMBER_VALUE)->count();
 
         $congregates = $data->where(MemberData::MEMBER_TYPE,
             BaseRepository::OPERATORS['EQUALS'],
@@ -37,10 +33,10 @@ class GetMembersCountersAction
             false)->count();
 
         return [
-            'indicators'  => [
-                'members'   =>  $members,
-                'congregates'   =>  $congregates,
-                'inactives'   =>  $inactives,
+            'indicators' => [
+                'members' => $members,
+                'congregates' => $congregates,
+                'inactives' => $inactives,
             ],
         ];
     }

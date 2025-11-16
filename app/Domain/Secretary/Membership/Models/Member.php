@@ -40,8 +40,15 @@ class Member extends Model
         'baptism_date',
         'blood_type',
         'education',
+        'group_ids',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'group_ids' => 'array',
+        ];
+    }
 
     public function group(): BelongsTo
     {
