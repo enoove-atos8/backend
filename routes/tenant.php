@@ -1384,6 +1384,14 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                         Route::get('/getMembersByGroupId', [MemberController::class, 'getMembersByGroupId']);
 
+                        /*
+                         * Action: POST
+                         * EndPoint: /addMembersToGroup
+                         * Description: Add members to group
+                         */
+
+                        Route::post('/addMembersToGroup', [GroupController::class, 'addMembersToGroup']);
+
                     });
 
                 });

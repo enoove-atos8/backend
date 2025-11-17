@@ -917,9 +917,6 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     }
 
     /**
-     * @param int $memberId
-     * @param int $months
-     * @return array
      * @throws BindingResolutionException
      */
     public function getHistoryTitheByMemberId(int $memberId, int $months = 6): array
@@ -928,8 +925,8 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             $history = [];
             $currentDate = now();
 
-            // Gera os últimos N meses
-            for ($i = $months - 1; $i >= 0; $i--) {
+            // Gera os últimos N meses (excluindo o mês atual)
+            for ($i = 1; $i <= $months; $i++) {
                 $monthKey = $currentDate->copy()->subMonths($i)->format('Y-m');
                 $history[$monthKey] = false;
             }
@@ -945,7 +942,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             // Marca os meses que têm dízimos
             foreach ($tithes as $tithe) {
                 $date = $tithe->date_transaction_compensation;
-                if (!empty($date)) {
+                if (! empty($date)) {
                     // Extrai YYYY-MM do formato ISO 8601 (2024-03-01T03:00:00.000Z)
                     $monthKey = substr($date, 0, 7); // YYYY-MM
 
