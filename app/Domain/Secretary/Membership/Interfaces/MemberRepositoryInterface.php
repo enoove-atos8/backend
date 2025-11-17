@@ -28,6 +28,8 @@ interface MemberRepositoryInterface
 
     public function getMembersByGroupId(int $groupId): ?Collection;
 
+    public function addMembersToGroup(int $groupId, array $memberIds): bool;
+
     public function updateStatus($id, $status): mixed;
 
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed;

@@ -2,8 +2,6 @@
 
 namespace App\Infrastructure\Repositories\Secretary\Membership;
 
-;
-
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
@@ -20,30 +18,49 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class MemberRepository extends BaseRepository implements MemberRepositoryInterface
 {
     protected mixed $model = Member::class;
+
     const TABLE_NAME = 'members';
+
     const MEMBER_VALUE = 'member';
+
     const CONGREGATE_VALUE = 'congregate';
 
     const ID_COLUMN_JOINED = 'members.id';
+
     const MEMBER_TYPE_COLUMN_JOINED = 'members.member_type';
+
     const MEMBER_TYPE_COLUMN = 'member_type';
+
     const PAGINATE_NUMBER = 30;
 
     const DELETED_COLUMN = 'deleted';
+
     const MEMBER_GENDER_COLUMN_JOINED = 'members.gender';
+
     const MEMBER_GENDER_COLUMN = 'gender';
+
     const ID_COLUMN = 'id';
+
     const ACTIVATED_COLUMN = 'activated';
+
     const MIDDLE_CPF_COLUMN = 'middle_cpf';
+
     const CPF_COLUMN = 'cpf';
+
     const ALL_COLUMNS = '*';
+
     const FULL_NAME_COLUMN = 'full_name';
+
     const BORN_DATE_COLUMN = 'born_date';
+
     const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
+
     const GROUP_LEADER_COLUMN = 'group_leader';
 
     const CHILDREN_VALUE = 'children';
+
     const YOUNG_VALUE = 'young';
+
     const TEEN_VALUE = 'teen';
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -72,106 +89,92 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         'members.member_type as members_member_type',
         'members.baptism_date as members_baptism_date',
         'members.blood_type as members_blood_type',
-        'members.education as members_education'
+        'members.education as members_education',
     ];
-
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
      */
     private array $queryClausesAndConditions = [
-        'where_clause'    =>  [
+        'where_clause' => [
             'exists' => false,
-            'clause'   =>  [],
-        ]
+            'clause' => [],
+        ],
     ];
 
-    /**
-     * @param MemberData $memberData
-     * @return Member
-     */
     public function createMember(MemberData $memberData): Member
     {
         return $this->create([
-            'activated'                   =>  $memberData->activated,
-            'deleted'                     =>  $memberData->deleted,
-            'avatar'                      =>  $memberData->avatar,
-            'full_name'                   =>  $memberData->fullName,
-            'gender'                      =>  $memberData->gender,
-            'cpf'                         =>  $memberData->cpf,
-            'rg'                          =>  $memberData->rg,
-            'work'                        =>  $memberData->work,
-            'born_date'                   =>  $memberData->bornDate,
-            'email'                       =>  strtolower($memberData->email),
-            'phone'                       =>  $memberData->phone,
-            'cell_phone'                  =>  $memberData->cellPhone,
-            'address'                     =>  $memberData->address,
-            'district'                    =>  $memberData->district,
-            'city'                        =>  $memberData->city,
-            'uf'                          =>  $memberData->uf,
-            'marital_status'              =>  $memberData->maritalStatus,
-            'spouse'                      =>  $memberData->spouse,
-            'father'                      =>  $memberData->father,
-            'mother'                      =>  $memberData->mother,
-            //'ecclesiastical_function'     =>  $memberData->ecclesiasticalFunction,
-            'member_type'                 =>  $memberData->memberType,
-            'baptism_date'                =>  $memberData->baptismDate,
-            'blood_type'                  =>  $memberData->bloodType,
-            'education'                   =>  $memberData->education,
-            'group_ids'                   =>  $memberData->groupIds,
+            'activated' => $memberData->activated,
+            'deleted' => $memberData->deleted,
+            'avatar' => $memberData->avatar,
+            'full_name' => $memberData->fullName,
+            'gender' => $memberData->gender,
+            'cpf' => $memberData->cpf,
+            'rg' => $memberData->rg,
+            'work' => $memberData->work,
+            'born_date' => $memberData->bornDate,
+            'email' => strtolower($memberData->email),
+            'phone' => $memberData->phone,
+            'cell_phone' => $memberData->cellPhone,
+            'address' => $memberData->address,
+            'district' => $memberData->district,
+            'city' => $memberData->city,
+            'uf' => $memberData->uf,
+            'marital_status' => $memberData->maritalStatus,
+            'spouse' => $memberData->spouse,
+            'father' => $memberData->father,
+            'mother' => $memberData->mother,
+            // 'ecclesiastical_function'     =>  $memberData->ecclesiasticalFunction,
+            'member_type' => $memberData->memberType,
+            'baptism_date' => $memberData->baptismDate,
+            'blood_type' => $memberData->bloodType,
+            'education' => $memberData->education,
+            'group_ids' => $memberData->groupIds,
         ]);
     }
 
-
     /**
-     * @param array $filters
-     * @param string|null $term
-     * @param bool $paginate
-     * @return array
      * @throws BindingResolutionException
      */
-    public function getMembers(array $filters, string | null $term, bool $paginate): array
+    public function getMembers(array $filters, ?string $term, bool $paginate): array
     {
         $query = function () use ($filters, $term, $paginate) {
 
             $q = DB::table(self::TABLE_NAME)
-                ->where(function ($q) use($filters, $term){
-                    if($term != null)
+                ->where(function ($q) use ($filters, $term) {
+                    if ($term != null) {
                         $q->where(self::FULL_NAME_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$term}%");
+                    }
 
-                    if(count($filters) > 0)
-                    {
-                        if(Arr::exists($filters, 'memberTypes'))
-                        {
+                    if (count($filters) > 0) {
+                        if (Arr::exists($filters, 'memberTypes')) {
                             $memberTypes = explode(',', $filters['memberTypes']);
 
-                            foreach ($memberTypes as $memberType)
-                            {
-                                if($memberType == 'inactive')
+                            foreach ($memberTypes as $memberType) {
+                                if ($memberType == 'inactive') {
                                     $q->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false);
-                                else
+                                } else {
                                     $q->where(self::MEMBER_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $memberType);
+                                }
                             }
                         }
 
-                        if(Arr::exists($filters, 'membersGenders'))
-                        {
+                        if (Arr::exists($filters, 'membersGenders')) {
                             $membersGenders = explode(',', $filters['membersGenders']);
 
-                            foreach ($membersGenders as $membersGender)
+                            foreach ($membersGenders as $membersGender) {
                                 $q->where(self::MEMBER_GENDER_COLUMN, BaseRepository::OPERATORS['EQUALS'], $membersGender);
+                            }
                         }
 
-                        if(Arr::exists($filters, 'ageGroupMembers'))
-                        {
+                        if (Arr::exists($filters, 'ageGroupMembers')) {
                             $ageGroupMembers = explode(',', $filters['ageGroupMembers']);
 
-                            foreach ($ageGroupMembers as $ageGroupMember)
-                            {
-                                if($ageGroupMember == self::YOUNG_VALUE)
-                                {
+                            foreach ($ageGroupMembers as $ageGroupMember) {
+                                if ($ageGroupMember == self::YOUNG_VALUE) {
                                     $q->whereBetween(
-                                        DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                        DB::raw('STR_TO_DATE('.self::BORN_DATE_COLUMN.", '%d%m%Y')"),
                                         [
                                             now()->subYears(35)->toDateString(),
                                             now()->subYears(18)->toDateString(),
@@ -180,10 +183,9 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
                                 }
 
-                                if($ageGroupMember == self::TEEN_VALUE)
-                                {
+                                if ($ageGroupMember == self::TEEN_VALUE) {
                                     $q->whereBetween(
-                                        DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                        DB::raw('STR_TO_DATE('.self::BORN_DATE_COLUMN.", '%d%m%Y')"),
                                         [
                                             now()->subYears(17)->toDateString(),
                                             now()->subYears(12)->toDateString(),
@@ -191,10 +193,9 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                                     );
                                 }
 
-                                if($ageGroupMember == self::CHILDREN_VALUE)
-                                {
+                                if ($ageGroupMember == self::CHILDREN_VALUE) {
                                     $q->whereBetween(
-                                        DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                        DB::raw('STR_TO_DATE('.self::BORN_DATE_COLUMN.", '%d%m%Y')"),
                                         [
                                             now()->subYears(11)->toDateString(),
                                             now()->subYears(0)->toDateString(),
@@ -209,24 +210,22 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                             $ageTo = $filters['ageTo'];
 
                             $q->whereBetween(
-                                DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                DB::raw('STR_TO_DATE('.self::BORN_DATE_COLUMN.", '%d%m%Y')"),
                                 [
                                     now()->subYears($ageTo)->toDateString(),
                                     now()->subYears($ageFrom)->toDateString(),
                                 ]
                             );
-                        }
-                        elseif (Arr::exists($filters, 'ageFrom')) {
+                        } elseif (Arr::exists($filters, 'ageFrom')) {
                             $ageFrom = $filters['ageFrom'];
                             $q->where(
-                                DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                DB::raw('STR_TO_DATE('.self::BORN_DATE_COLUMN.", '%d%m%Y')"),
                                 '<=', now()->subYears($ageFrom)->toDateString()
                             );
-                        }
-                        elseif (Arr::exists($filters, 'ageTo')) {
+                        } elseif (Arr::exists($filters, 'ageTo')) {
                             $ageTo = $filters['ageTo'];
                             $q->where(
-                                DB::raw("STR_TO_DATE(" . self::BORN_DATE_COLUMN . ", '%d%m%Y')"),
+                                DB::raw('STR_TO_DATE('.self::BORN_DATE_COLUMN.", '%d%m%Y')"),
                                 '>=', now()->subYears($ageTo)->toDateString()
                             );
                         }
@@ -234,14 +233,12 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 })
                 ->orderBy(self::FULL_NAME_COLUMN);
 
-
-            if($paginate)
-            {
+            if ($paginate) {
                 $countRows = count($q->get());
                 $result = $q->simplePaginate(self::PAGINATE_NUMBER);
 
                 $result->setCollection(
-                    $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
+                    $result->getCollection()->map(fn ($item) => MemberData::fromResponse((array) $item))
                 );
 
                 return [
@@ -249,12 +246,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     'countRows' => $countRows,
                 ];
 
-            }
-            else
-            {
+            } else {
                 $countRows = count($q->get());
                 $result = $q->get();
-                $results = collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+                $results = collect($result)->map(fn ($item) => MemberData::fromResponse((array) $item));
 
                 return [
                     'results' => $results,
@@ -266,13 +261,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         return $this->doQuery($query);
     }
 
-
     /**
-     * @param string $cpf
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getMembersByMiddleCpf(string $cpf): Model | null
+    public function getMembersByMiddleCpf(string $cpf): ?Model
     {
         return $this->getItemByColumn(
             self::MIDDLE_CPF_COLUMN,
@@ -280,13 +272,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             $cpf);
     }
 
-
     /**
-     * @param string $cpf
-     * @return Model|null
      * @throws BindingResolutionException
      */
-    public function getMembersByCpf(string $cpf): Model | null
+    public function getMembersByCpf(string $cpf): ?Model
     {
         return $this->getItemByColumn(
             self::CPF_COLUMN,
@@ -294,40 +283,37 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             $cpf);
     }
 
-
     /**
-     * @param string $id
      * @return Model|null
+     *
      * @throws BindingResolutionException
      * @throws UnknownProperties
      */
-    public function getMemberById(string $id): MemberData | null
+    public function getMemberById(string $id): ?MemberData
     {
         $group = $this->model
             ->where(self::ID_COLUMN_JOINED, $id)
             ->first();
 
-        if (!$group) {
+        if (! $group) {
             return null;
         }
 
         $attributes = $group->getAttributes();
+
         return MemberData::fromResponse($attributes);
     }
 
-
     /**
-     * @param string $month
-     * @param string|null $fields
      * @return Model|null
+     *
      * @throws BindingResolutionException
      */
-    public function getMembersByBornMonth(string $month, string $fields = null): Collection | null
+    public function getMembersByBornMonth(string $month, ?string $fields = null): ?Collection
     {
         $arrFields = explode(',', $fields);
 
-        if(($key = array_search('age', $arrFields)) !== false)
-        {
+        if (($key = array_search('age', $arrFields)) !== false) {
             unset($arrFields[$key]);
             $arrFields = array_values($arrFields);
         }
@@ -335,9 +321,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         $query = function () use ($month, $fields, $arrFields) {
 
             $q = DB::table(self::TABLE_NAME)
-                ->where(function ($q) use($month){
-                    if($month != null)
-                        $q->whereRaw("SUBSTRING(" . self::BORN_DATE_COLUMN . ", 3, 2) = ?", [$month]);
+                ->where(function ($q) use ($month) {
+                    if ($month != null) {
+                        $q->whereRaw('SUBSTRING('.self::BORN_DATE_COLUMN.', 3, 2) = ?', [$month]);
+                    }
                 })
                 ->where(self::ACTIVATED_COLUMN, 1);
 
@@ -345,25 +332,22 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 $q = $q->select($arrFields);
             }
 
-            $q = $q->orderByRaw("SUBSTRING(" . self::BORN_DATE_COLUMN . ", 1, 2)");
+            $q = $q->orderByRaw('SUBSTRING('.self::BORN_DATE_COLUMN.', 1, 2)');
 
             $result = $q->get();
-            return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+
+            return collect($result)->map(fn ($item) => MemberData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
     /**
-     * @param string $month
-     * @param bool $paginate
-     * @return Collection|Paginator
      * @throws BindingResolutionException
      */
-    public function getTithersByMonth(string $month, bool $paginate = false): Collection | Paginator
+    public function getTithersByMonth(string $month, bool $paginate = false): Collection|Paginator
     {
-        $selectColumns  = array_merge(
+        $selectColumns = array_merge(
             self::DISPLAY_SELECT_COLUMNS,
             EntryRepository::DISPLAY_SUM_AMOUNT_COLUMN,
         );
@@ -381,7 +365,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     EntryRepository::TABLE_NAME,
                     EntryRepository::MEMBER_ID_COLUMN_JOINED,
                     BaseRepository::OPERATORS['EQUALS'],
-                    self::TABLE_NAME . '.' . self::ID_COLUMN
+                    self::TABLE_NAME.'.'.self::ID_COLUMN
                 )
                 ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED, EntryRepository::TITHE_VALUE)
                 ->where(EntryRepository::DELETED_COLUMN_JOINED, false)
@@ -393,7 +377,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     );
                 });
 
-
             $groupByColumns = array_map(function ($column) {
                 return trim(explode(' as ', $column)[0]);
             }, self::DISPLAY_SELECT_COLUMNS);
@@ -401,31 +384,27 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             $q->groupBy(...$groupByColumns);
             $q = $q->orderBy(self::FULL_NAME_COLUMN);
 
-            if($paginate)
-            {
+            if ($paginate) {
                 $result = $q->simplePaginate(self::PAGINATE_NUMBER);
 
                 $result->setCollection(
-                    $result->getCollection()->map(fn($item) => MemberData::fromResponse((array) $item))
+                    $result->getCollection()->map(fn ($item) => MemberData::fromResponse((array) $item))
                 );
+
                 return $result;
-            }
-            else
-            {
+            } else {
                 $result = $q->get();
-                return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+
+                return collect($result)->map(fn ($item) => MemberData::fromResponse((array) $item));
             }
         };
 
         return $this->doQuery($query);
     }
 
-
-
     /**
-     * @param int $groupId
-     * @param bool $groupLeader
      * @return Collection|Model
+     *
      * @throws BindingResolutionException
      */
     public function getMemberAsGroupLeader(int $groupId, bool $groupLeader = true): Collection|Member
@@ -434,12 +413,12 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             [
                 'field' => self::ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => $groupId
+                'value' => $groupId,
             ],
             [
                 'field' => self::GROUP_LEADER_COLUMN,
                 'operator' => BaseRepository::OPERATORS['EQUALS'],
-                'value' => true
+                'value' => true,
             ],
         ];
 
@@ -449,33 +428,30 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         );
     }
 
-
     /**
-     * @param int $groupId
-     * @return Collection|null
      * @throws BindingResolutionException
      */
-    public function getMembersByGroupId(int $groupId): Collection | null
+    public function getMembersByGroupId(int $groupId): ?Collection
     {
         $query = function () use ($groupId) {
 
             $q = DB::table(self::TABLE_NAME)
-                ->whereRaw('JSON_CONTAINS(group_ids, ?, "$")', [(string)$groupId])
+                ->whereRaw('JSON_CONTAINS(group_ids, ?, "$")', [(string) $groupId])
                 ->where(self::ACTIVATED_COLUMN, 1)
                 ->orderBy(self::FULL_NAME_COLUMN);
 
             $result = $q->get();
-            return collect($result)->map(fn($item) => MemberData::fromResponse((array) $item));
+
+            return collect($result)->map(fn ($item) => MemberData::fromResponse((array) $item));
         };
 
         return $this->doQuery($query);
     }
 
-
     /**
-     * @param null $id
-     * @param $status
+     * @param  null  $id
      * @return int
+     *
      * @throws BindingResolutionException
      */
     public function updateStatus($id, $status): mixed
@@ -483,17 +459,15 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         $conditions = [
             'field' => self::ID_COLUMN,
             'operator' => BaseRepository::OPERATORS['EQUALS'],
-            'value' => $id
+            'value' => $id,
         ];
 
-        return $this->update($conditions, ['activated' =>  $status]);
+        return $this->update($conditions, ['activated' => $status]);
     }
 
-
     /**
-     * @param int $memberId
-     * @param string $middleCpf
      * @return bool
+     *
      * @throws BindingResolutionException
      */
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed
@@ -501,51 +475,80 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         $conditions = [
             'field' => self::ID_COLUMN,
             'operator' => BaseRepository::OPERATORS['EQUALS'],
-            'value' => $memberId
+            'value' => $memberId,
         ];
 
-        return $this->update($conditions, [self::MIDDLE_CPF_COLUMN =>  $middleCpf]);
+        return $this->update($conditions, [self::MIDDLE_CPF_COLUMN => $middleCpf]);
     }
 
-
     /**
-     * @param null $id
-     * @param MemberData $memberData
+     * @param  null  $id
      * @return bool
+     *
      * @throws BindingResolutionException
      */
     public function updateMember($id, MemberData $memberData): mixed
     {
-        $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id,];
+        $conditions = ['field' => self::ID_COLUMN, 'operator' => BaseRepository::OPERATORS['EQUALS'], 'value' => $id];
 
         return $this->update($conditions, [
-            'activated'                 =>  $memberData->activated,
-            'deleted'                   =>  $memberData->activated,
-            'avatar'                    =>  $memberData->avatar,
-            'full_name'                 =>  $memberData->fullName,
-            'gender'                    =>  $memberData->gender,
-            'cpf'                       =>  $memberData->cpf,
-            'rg'                        =>  $memberData->rg,
-            'work'                      =>  $memberData->work,
-            'born_date'                 =>  $memberData->bornDate,
-            'email'                     =>  strtolower($memberData->email),
-            'phone'                     =>  $memberData->phone,
-            'cell_phone'                =>  $memberData->cellPhone,
-            'address'                   =>  $memberData->address,
-            'district'                  =>  $memberData->district,
-            'city'                      =>  $memberData->city,
-            'uf'                        =>  $memberData->uf,
-            'marital_status'            =>  $memberData->maritalStatus,
-            'spouse'                    =>  $memberData->spouse,
-            'father'                    =>  $memberData->father,
-            'mother'                    =>  $memberData->mother,
-            'ecclesiastical_function'   =>  $memberData->ecclesiasticalFunction,
-            'member_type'               =>  $memberData->memberType,
-            //'ministries'                =>  $memberData->ministries,
-            'baptism_date'              =>  $memberData->baptismDate,
-            'blood_type'                =>  $memberData->bloodType,
-            'education'                 =>  $memberData->education,
-            'group_ids'                 =>  $memberData->groupIds,
+            'activated' => $memberData->activated,
+            'deleted' => $memberData->activated,
+            'avatar' => $memberData->avatar,
+            'full_name' => $memberData->fullName,
+            'gender' => $memberData->gender,
+            'cpf' => $memberData->cpf,
+            'rg' => $memberData->rg,
+            'work' => $memberData->work,
+            'born_date' => $memberData->bornDate,
+            'email' => strtolower($memberData->email),
+            'phone' => $memberData->phone,
+            'cell_phone' => $memberData->cellPhone,
+            'address' => $memberData->address,
+            'district' => $memberData->district,
+            'city' => $memberData->city,
+            'uf' => $memberData->uf,
+            'marital_status' => $memberData->maritalStatus,
+            'spouse' => $memberData->spouse,
+            'father' => $memberData->father,
+            'mother' => $memberData->mother,
+            'ecclesiastical_function' => $memberData->ecclesiasticalFunction,
+            'member_type' => $memberData->memberType,
+            // 'ministries'                =>  $memberData->ministries,
+            'baptism_date' => $memberData->baptismDate,
+            'blood_type' => $memberData->bloodType,
+            'education' => $memberData->education,
+            'group_ids' => $memberData->groupIds,
         ]);
+    }
+
+    /**
+     * @throws BindingResolutionException
+     * @throws UnknownProperties
+     */
+    public function addMembersToGroup(int $groupId, array $memberIds): bool
+    {
+        try {
+            foreach ($memberIds as $memberId) {
+                $memberData = $this->getMemberById($memberId);
+
+                if ($memberData) {
+                    $groupIds = $memberData->groupIds ?? [];
+
+                    // Adiciona o groupId se não existir
+                    if (! in_array($groupId, $groupIds)) {
+                        $groupIds[] = $groupId;
+                        $memberData->groupIds = $groupIds;
+
+                        // Atualiza o membro
+                        $this->updateMember($memberId, $memberData);
+                    }
+                }
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 }
