@@ -172,7 +172,7 @@ class AccountFilesRepository extends BaseRepository implements AccountFileReposi
     }
 
     /**
-     * @return AccountFileData \App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData
+     * @return AccountFileData \App\Domain\Financial\AccountsAndCards\Users\DataTransferObjects\AccountFileData
      *
      * @throws BindingResolutionException
      */

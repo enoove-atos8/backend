@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repositories\Accounts\User;
+namespace App\Infrastructure\Repositories\Users\User;
 
 use App\Domain\Accounts\Users\DataTransferObjects\UserData;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
@@ -103,5 +103,28 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             'changed_password'      =>  $userData->changedPassword,
             'access_quantity'       =>  $userData->accessQuantity,
         ]);
+    }
+
+
+    /**
+     * @param int $userId
+     * @param string $newPassword
+     * @return bool
+     * @throws BindingResolutionException
+     */
+    public function changePassword(int $userId, string $newPassword): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $userId
+        ];
+
+        $updated = $this->update($conditions, [
+            'password'          =>  bcrypt($newPassword),
+            'changed_password'  =>  true,
+        ]);
+
+        return $updated > 0;
     }
 }
