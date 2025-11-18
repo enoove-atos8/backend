@@ -16,4 +16,6 @@ interface UserRepositoryInterface
     public function updateStatus($id, $status): int;
 
     public function updateUser($id, UserData $userData): int;
+
+    public function changePassword(int $userId, string $newPassword): bool;
 }

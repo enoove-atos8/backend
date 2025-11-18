@@ -7,6 +7,8 @@ use App\Domain\Accounts\Users\Actions\GetUsersAction;
 use App\Domain\Accounts\Users\Actions\GetUserByIdAction;
 use App\Domain\Accounts\Users\Actions\UpdateUserAction;
 use App\Domain\Accounts\Users\Actions\UpdateStatusUserAction;
+use App\Domain\Auth\Actions\ChangePasswordAction;
+use Application\Api\v1\Users\Requests\ChangePasswordRequest;
 use Application\Api\v1\Users\Requests\UserAvatarRequest;
 use Application\Api\v1\Users\Requests\UserRequest;
 use Application\Core\Http\Controllers\Controller;
@@ -38,6 +40,8 @@ class UserController extends Controller
      */
     public function createUser(UserRequest $userRequest, CreateUserAction $createUserAction): Response
     {
+        \Log::info('CreateUser method called', ['data' => $userRequest->all()]);
+
         try
         {
             $tenant = explode('.', $userRequest->getHost())[0];
@@ -174,6 +178,36 @@ class UserController extends Controller
                 ], 200);
         }
         catch (Exception $e)
+        {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param ChangePasswordRequest $changePasswordRequest
+     * @param ChangePasswordAction $changePasswordAction
+     * @return Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function changePassword(ChangePasswordRequest $changePasswordRequest, ChangePasswordAction $changePasswordAction): Response
+    {
+        \Log::info('ChangePassword method called', ['data' => $changePasswordRequest->all()]);
+
+        try
+        {
+            $response = $changePasswordAction->execute($changePasswordRequest->changePasswordData());
+
+            if ($response) {
+                return response([
+                    'message' => ReturnMessages::SUCCESS_CHANGE_PASSWORD,
+                ], 200);
+            }
+
+            throw new GeneralExceptions(ReturnMessages::ERROR_CHANGE_PASSWORD, 500);
+        }
+        catch (GeneralExceptions $e)
         {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }

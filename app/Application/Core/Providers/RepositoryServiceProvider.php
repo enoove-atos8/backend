@@ -17,8 +17,8 @@ use App\Domain\Financial\Reports\Exits\Interfaces\MonthlyExitsReportsRepositoryI
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
 use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
-use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
-use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use App\Infrastructure\Repositories\Users\User\UserDetailRepository;
+use App\Infrastructure\Repositories\Users\User\UserRepository;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountsBalancesRepository;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;

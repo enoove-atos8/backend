@@ -1041,6 +1041,22 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         Route::prefix('users')->group(function () {
 
             /*
+             * Action: PUT
+             * EndPoint: /change-password
+             * Description: Change user password
+             */
+
+            Route::put('/change-password', [UserController::class, 'changePassword']);
+
+            /*
+             * Action: POST
+             * EndPoint: /files/assets/avatar
+             * Description: Upload a avatar user image
+             */
+
+            Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
+
+            /*
              * Action: GET
              * EndPoint: /
              * Description: Get All users
@@ -1079,14 +1095,6 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::put('/{id}', [UserController::class, 'updateUser']);
-
-            /*
-             * Action: POST
-             * EndPoint: /Files/assets/avatar
-             * Description: Upload a avatar user image
-             */
-
-            Route::post('/files/assets/avatar', [UserController::class, 'uploadUserAvatar']);
         });
 
         /*
