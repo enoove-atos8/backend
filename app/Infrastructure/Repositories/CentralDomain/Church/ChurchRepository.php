@@ -1,15 +1,16 @@
 <?php
 
-namespace Infrastructure\Repositories\Church;
+namespace App\Infrastructure\Repositories\CentralDomain\Church;
 
 use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Churches\Church\Models\Church;
+use Domain\CentralDomain\Plans\DataTransferObjects\PlanData;
 use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 use Throwable;
 
@@ -18,6 +19,7 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
     protected mixed $model = Church::class;
 
     const TABLE_NAME = 'churches';
+    const ID_COLUMN = 'id';
     const TENANT_ID_COLUMN = 'tenant_id';
     const PLAN_ID_COLUMN = 'plan_id';
     const ACTIVATED_COLUMN = 'activated';
@@ -54,6 +56,7 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
             'doc_type'            =>  $churchData->docType,
             'doc_number'          =>  $churchData->docNumber,
             'aws_s3_bucket'       =>  $awsS3Bucket,
+            'stripe_id'           =>  $churchData->stripeId,
         ]);
     }
 
@@ -69,6 +72,22 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
             $result = DB::table(ChurchRepository::TABLE_NAME)
                 ->where(self::TENANT_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $tenantId)
                 ->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], true)
+                ->first();
+
+            return $result ? ChurchData::fromResponse((array) $result) : null;
+        });
+    }
+
+    /**
+     * @param int $churchId
+     * @return ChurchData|null
+     * @throws UnknownProperties
+     */
+    public function getChurchById(int $churchId): ?ChurchData
+    {
+        return tenancy()->central(function () use ($churchId) {
+            $result = DB::table(self::TABLE_NAME)
+                ->where(self::ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $churchId)
                 ->first();
 
             return $result ? ChurchData::fromResponse((array) $result) : null;
@@ -105,6 +124,29 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
             $this->queryConditions [] = $this->whereEqual(self::PLAN_ID_COLUMN, $id, 'and');
 
             return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+        });
+    }
+
+    /**
+     * @param int $churchId
+     * @return PlanData|null
+     * @throws UnknownProperties
+     */
+    public function getChurchPlan(int $churchId): ?PlanData
+    {
+        return tenancy()->central(function () use ($churchId) {
+            $result = DB::table(self::TABLE_NAME)
+                ->join(
+                    PlanRepository::TABLE_NAME,
+                    self::TABLE_NAME . '.' . self::PLAN_ID_COLUMN,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    PlanRepository::TABLE_NAME . '.' . PlanRepository::ID_COLUMN
+                )
+                ->where(self::TABLE_NAME . '.' . self::ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $churchId)
+                ->select(PlanRepository::TABLE_NAME . '.*')
+                ->first();
+
+            return $result ? PlanData::fromResponse((array) $result) : null;
         });
     }
 }

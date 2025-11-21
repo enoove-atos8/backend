@@ -7,7 +7,7 @@ use App\Domain\Accounts\Users\DataTransferObjects\UserData;
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\Accounts\Users\Models\User;
-use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use App\Infrastructure\Repositories\Users\User\UserRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 
 class UpdateUserAction

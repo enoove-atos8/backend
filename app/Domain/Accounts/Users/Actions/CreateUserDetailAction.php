@@ -6,7 +6,7 @@ namespace App\Domain\Accounts\Users\Actions;
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Models\UserDetail;
-use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
+use App\Infrastructure\Repositories\Users\User\UserDetailRepository;
 use Throwable;
 
 class CreateUserDetailAction
