@@ -54,4 +54,5 @@ Route::prefix('v1')->group(function () {
    */
 
     Route::post('loginFromApp', [AuthController::class, 'loginFromApp'])->name('loginFromApp');
+
 });

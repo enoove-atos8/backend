@@ -5,7 +5,7 @@ namespace App\Infrastructure\Repositories\Financial\Reports\Exits;
 use App\Domain\Financial\Reports\Exits\DataTransferObjects\MonthlyExitsReportData;
 use App\Domain\Financial\Reports\Exits\Interfaces\MonthlyExitsReportsRepositoryInterface;
 use App\Domain\Financial\Reports\Exits\Models\ExitsReportRequests;
-use App\Infrastructure\Repositories\Accounts\User\UserDetailRepository;
+use App\Infrastructure\Repositories\Users\User\UserDetailRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;

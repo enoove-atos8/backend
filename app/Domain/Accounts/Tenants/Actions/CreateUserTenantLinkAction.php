@@ -8,7 +8,7 @@ use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\Accounts\Users\Models\User;
 use App\Domain\Notifications\Actions\Church\NewChurchUserNotificationAction;
 use App\Domain\Notifications\Actions\User\NewUserNotificationAction;
-use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use App\Infrastructure\Repositories\Users\User\UserRepository;
 use Exception;
 use Throwable;
 

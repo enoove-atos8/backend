@@ -5,15 +5,15 @@ namespace Domain\CentralDomain\Churches\Church\Actions;
 use App\Domain\Accounts\Users\Actions\CreateUserAction;
 use App\Domain\Accounts\Users\DataTransferObjects\UserData;
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
+use App\Infrastructure\Repositories\CentralDomain\Church\ChurchRepository;
 use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;
-use Domain\CentralDomain\Churches\Church\Constants\S3DefaultFolders;
 use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\Churches\Church\Models\Tenant;
+use Domain\CentralDomain\PaymentGateway\Actions\CreateStripeCustomerAction;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Artisan;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Church\ChurchRepository;
 use Infrastructure\Util\Storage\S3\ConnectS3;
 use Infrastructure\Util\Storage\S3\CreateDirectory;
 use Stancl\Tenancy\Exceptions\TenantCouldNotBeIdentifiedById;
@@ -26,6 +26,7 @@ class CreateChurchAction
     private CreateUserAction $createUserAction;
     private CreateDirectory $createDirectory;
     private CreateS3DefaultFoldersAction $createS3DefaultFoldersAction;
+    private CreateStripeCustomerAction $createStripeCustomerAction;
 
     private ConnectS3 $s3;
 
@@ -35,6 +36,7 @@ class CreateChurchAction
         CreateUserAction                $createUserAction,
         ConnectS3                       $connectS3,
         CreateS3DefaultFoldersAction    $createS3DefaultFoldersAction,
+        CreateStripeCustomerAction      $createStripeCustomerAction,
     )
     {
         $this->churchRepository = $churchRepositoryInterface;
@@ -42,6 +44,7 @@ class CreateChurchAction
         $this->createUserAction = $createUserAction;
         $this->s3 = $connectS3;
         $this->createS3DefaultFoldersAction = $createS3DefaultFoldersAction;
+        $this->createStripeCustomerAction = $createStripeCustomerAction;
     }
 
     /**
@@ -61,6 +64,11 @@ class CreateChurchAction
 
         Artisan::call('tenants:seed', ['--tenants' => [$churchData->tenantId],]);
 
+        // Criar Stripe Customer
+        $stripeCustomerId = $this->createStripeCustomerAction->execute($churchData);
+        if ($stripeCustomerId) {
+            $churchData->stripeId = $stripeCustomerId;
+        }
 
         if (is_object($newTenant))
         {

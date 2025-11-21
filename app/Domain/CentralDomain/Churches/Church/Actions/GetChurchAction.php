@@ -4,11 +4,8 @@ namespace Domain\CentralDomain\Churches\Church\Actions;
 
 use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
-use Domain\CentralDomain\Churches\Church\Models\Church;
 use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Church\ChurchRepository;
 use Throwable;
 
 class GetChurchAction

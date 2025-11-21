@@ -25,5 +25,17 @@ class Plan extends Model
         'description',
         'price',
         'activated',
+        'stripe_product_id',
+        'stripe_price_id',
+        'billing_interval',
+        'trial_period_days',
+        'features',
+    ];
+
+    protected $casts = [
+        'features' => 'array',
+        'trial_period_days' => 'integer',
+        'price' => 'float',
+        'activated' => 'boolean',
     ];
 }

@@ -4,11 +4,8 @@ namespace Domain\CentralDomain\Churches\Church\Actions;
 
 use Domain\CentralDomain\Churches\Church\Constants\ReturnMessages;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
-use Exception;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Church\ChurchRepository;
 use Throwable;
 
 class GetChurchesAction

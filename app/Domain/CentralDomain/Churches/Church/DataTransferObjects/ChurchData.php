@@ -40,6 +40,9 @@ class ChurchData extends DataTransferObject
     /** @var string| null  */
     public ?string $docNumber;
 
+    /** @var string| null  */
+    public ?string $stripeId;
+
     /**
      * @throws UnknownProperties
      */
@@ -57,6 +60,7 @@ class ChurchData extends DataTransferObject
             'mail' => $data['mail'] ?? null,
             'docType' => $data['doc_type'] ?? null,
             'docNumber' => $data['doc_number'] ?? null,
+            'stripeId' => $data['stripe_id'] ?? null,
         ]);
     }
 }

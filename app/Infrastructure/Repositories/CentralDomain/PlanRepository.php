@@ -2,19 +2,25 @@
 
 namespace Infrastructure\Repositories\CentralDomain;
 
+use Domain\CentralDomain\Plans\DataTransferObjects\PlanData;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\CentralDomain\Plans\Models\Plan;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Repositories\BaseRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class PlanRepository extends BaseRepository implements PlanRepositoryInterface
 {
     protected mixed $model = Plan::class;
 
+    const TABLE_NAME = 'plans';
+    const ID_COLUMN = 'id';
     const PLAN_GOLD_NAME = 'gold';
     const PLAN_NAME_COLUMN = 'name';
+    const ACTIVATED_COLUMN = 'activated';
 
     /**
      * Array of where, between and another clauses that was mounted dynamically
@@ -30,11 +36,18 @@ class PlanRepository extends BaseRepository implements PlanRepositoryInterface
     /**
      * @return Collection
      * @throws BindingResolutionException
+     * @throws UnknownProperties
      */
     public function getPlans(): Collection
     {
         return tenancy()->central(function (){
-            return $this->getItemsByWhere();
+            $results = DB::table(self::TABLE_NAME)
+                ->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], true)
+                ->get();
+
+            return $results->map(function ($result) {
+                return PlanData::fromResponse((array) $result);
+            });
         });
     }
 

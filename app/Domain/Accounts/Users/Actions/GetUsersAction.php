@@ -4,7 +4,7 @@ namespace App\Domain\Accounts\Users\Actions;
 
 
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
-use App\Infrastructure\Repositories\Accounts\User\UserRepository;
+use App\Infrastructure\Repositories\Users\User\UserRepository;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;

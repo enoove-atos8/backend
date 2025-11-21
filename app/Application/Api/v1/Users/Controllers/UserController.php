@@ -40,8 +40,6 @@ class UserController extends Controller
      */
     public function createUser(UserRequest $userRequest, CreateUserAction $createUserAction): Response
     {
-        \Log::info('CreateUser method called', ['data' => $userRequest->all()]);
-
         try
         {
             $tenant = explode('.', $userRequest->getHost())[0];
@@ -193,8 +191,6 @@ class UserController extends Controller
      */
     public function changePassword(ChangePasswordRequest $changePasswordRequest, ChangePasswordAction $changePasswordAction): Response
     {
-        \Log::info('ChangePassword method called', ['data' => $changePasswordRequest->all()]);
-
         try
         {
             $response = $changePasswordAction->execute($changePasswordRequest->changePasswordData());

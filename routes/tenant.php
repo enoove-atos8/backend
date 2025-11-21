@@ -11,6 +11,7 @@ use App\Application\Api\v1\Financial\Reports\Entries\Controllers\MonthlyReportsC
 use App\Application\Api\v1\Financial\Reports\Exits\Controllers\MonthlyExitsReportsController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
+use Application\Api\v1\Billing\Controllers\BillingController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
@@ -1405,6 +1406,36 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                 });
 
             });
+
+        });
+
+        /*
+        |------------------------------------------------------------------------------------------
+        | Resource: Billing
+        | EndPoints:
+        |
+        |   1   - GET    - /billing/plans - Get all available plans
+        |   2   - GET    - /billing/subscription - Get billing details for the authenticated church
+        |------------------------------------------------------------------------------------------
+        */
+
+        Route::prefix('billing')->group(function () {
+
+            /*
+             * Action: GET
+             * EndPoint: /plans
+             * Description: Get all available plans
+             */
+
+            Route::get('/plans', [BillingController::class, 'getPlans']);
+
+            /*
+             * Action: GET
+             * EndPoint: /subscription
+             * Description: Get billing details for the authenticated church (tenant)
+             */
+
+            Route::get('/subscription', [BillingController::class, 'getBillingDetails']);
 
         });
 

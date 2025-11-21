@@ -2,12 +2,9 @@
 
 namespace Domain\CentralDomain\Churches\Church\Actions;
 
+use App\Infrastructure\Repositories\CentralDomain\Church\ChurchRepository;
 use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
-use Domain\CentralDomain\Churches\Church\Models\Church;
-use Exception;
 use Illuminate\Support\Collection;
-use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Church\ChurchRepository;
 use Throwable;
 
 class GetChurchesByPlanIdAction

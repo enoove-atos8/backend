@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Infrastructure\Repositories\Accounts\User;
+namespace App\Infrastructure\Repositories\Users\User;
 
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
