@@ -7,6 +7,7 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
+use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class GetPlansAction
 {
@@ -19,7 +20,7 @@ class GetPlansAction
 
 
     /**
-     * @throws BindingResolutionException|GeneralExceptions
+     * @throws GeneralExceptions|UnknownProperties
      */
     public function execute(): Collection
     {

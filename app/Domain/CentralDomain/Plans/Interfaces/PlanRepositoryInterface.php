@@ -8,10 +8,9 @@ use Illuminate\Support\Collection;
 
 interface PlanRepositoryInterface
 {
-    /**
-     * @return Collection
-     */
     public function getPlans(): Collection;
 
-    public function getPlanByName(string $name): Model | null;
+    public function getPlanByName(string $name): ?Model;
+
+    public function getPlanById(int $id): ?PlanData;
 }

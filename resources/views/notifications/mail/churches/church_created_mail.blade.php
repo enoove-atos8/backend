@@ -45,7 +45,7 @@
                                     "
                             bgcolor="#ffffff"
                         >
-                            {{ explode(' ', $userDetailData->full_name)[0] }}, você criou um ambiente de gestão eclesiástica completo para a {{ strtoupper($tenant) }}!
+                            {{ explode(' ', $userDetailData->name)[0] }}, você criou um ambiente de gestão eclesiástica completo para a {{ strtoupper($tenant) }}!
                         </td>
                     </tr>
                     </tbody>

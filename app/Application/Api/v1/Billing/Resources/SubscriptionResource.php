@@ -15,13 +15,13 @@ class SubscriptionResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'stripe_subscription_id' => $this->stripeSubscriptionId,
+            'stripeSubscriptionId' => $this->stripeSubscriptionId,
             'status' => $this->status,
-            'next_billing_date' => $this->nextBillingDate,
-            'trial_ends_at' => $this->trialEndsAt,
-            'on_trial' => $this->onTrial,
-            'has_subscription' => $this->hasSubscription,
-            'payment_method' => $this->paymentMethod,
+            'nextBillingDate' => $this->nextBillingDate,
+            'trialEndsAt' => $this->trialEndsAt,
+            'onTrial' => $this->onTrial,
+            'hasSubscription' => $this->hasSubscription,
+            'paymentMethod' => $this->paymentMethod,
         ];
     }
 }

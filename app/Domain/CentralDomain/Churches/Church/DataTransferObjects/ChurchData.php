@@ -7,41 +7,33 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class ChurchData extends DataTransferObject
 {
-    /** @var integer | null */
     public ?int $id = 0;
 
-    /** @var string| null  */
     public ?string $tenantId;
 
-    /** @var integer| null  */
     public ?int $planId;
 
-    /** @var string| null  */
     public ?string $name;
 
-    /** @var boolean  */
     public bool $activated;
 
-    /** @var string| null  */
     public ?string $logo;
 
-    /** @var string| null  */
     public ?string $address;
 
-    /** @var string| null  */
     public ?string $cellPhone;
 
-    /** @var string| null  */
     public ?string $mail;
 
-    /** @var string| null  */
     public ?string $docType;
 
-    /** @var string| null  */
     public ?string $docNumber;
 
-    /** @var string| null  */
     public ?string $stripeId;
+
+    public ?string $paymentMethodId;
+
+    public ?int $memberCount;
 
     /**
      * @throws UnknownProperties
@@ -61,6 +53,8 @@ class ChurchData extends DataTransferObject
             'docType' => $data['doc_type'] ?? null,
             'docNumber' => $data['doc_number'] ?? null,
             'stripeId' => $data['stripe_id'] ?? null,
+            'paymentMethodId' => $data['payment_method_id'] ?? null,
+            'memberCount' => $data['member_count'] ?? null,
         ]);
     }
 }
