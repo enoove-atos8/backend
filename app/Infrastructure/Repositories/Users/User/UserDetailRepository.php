@@ -13,6 +13,7 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
     protected mixed $model = UserDetail::class;
 
     const TABLE_NAME = 'user_details';
+
     const USER_ID_COLUMN = 'user_id';
 
     const DISPLAY_SELECT_COLUMNS = [
@@ -30,35 +31,25 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
         'user_details.birthday as user_detail_birthday',
     ];
 
-
-    /**
-     * @param $userId
-     * @param UserDetailData $userDetailData
-     * @return UserDetail
-     */
     public function createUserDetail($userId, UserDetailData $userDetailData): UserDetail
     {
         return $this->create([
-            'user_id'      =>  $userId,
-            'full_name'    =>  ucwords(strtolower($userDetailData->full_name)),
-            'avatar'       =>  $userDetailData->avatar,
-            'type'         =>  $userDetailData->type,
-            'title'        =>  $userDetailData->title,
-            'gender'       =>  $userDetailData->gender,
-            'phone'        =>  $userDetailData->phone,
-            'address'      =>  ucwords(strtolower($userDetailData->address)),
-            'district'     =>  $userDetailData->district,
-            'city'         =>  $userDetailData->city,
-            'country'      =>  $userDetailData->country,
-            'birthday'     =>  $userDetailData->birthday,
+            'user_id' => $userId,
+            'full_name' => ucwords(strtolower($userDetailData->name)),
+            'avatar' => $userDetailData->avatar,
+            'type' => $userDetailData->type,
+            'title' => $userDetailData->title,
+            'gender' => $userDetailData->gender,
+            'phone' => $userDetailData->phone,
+            'address' => ucwords(strtolower($userDetailData->address)),
+            'district' => $userDetailData->district,
+            'city' => $userDetailData->city,
+            'country' => $userDetailData->country,
+            'birthday' => $userDetailData->birthday,
         ]);
     }
 
-
     /**
-     * @param $id
-     * @param UserDetailData $userDetailData
-     * @return int
      * @throws BindingResolutionException
      */
     public function updateUserDetail($id, UserDetailData $userDetailData): int
@@ -66,20 +57,21 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
         $conditions = [
             'field' => self::USER_ID_COLUMN,
             'operator' => BaseRepository::OPERATORS['EQUALS'],
-            'value' => $id
+            'value' => $id,
         ];
+
         return $this->update($conditions, [
-            'full_name'    =>  ucwords(strtolower($userDetailData->full_name)),
-            'avatar'       =>  $userDetailData->avatar,
-            'type'         =>  $userDetailData->type,
-            'title'        =>  $userDetailData->title,
-            'gender'       =>  $userDetailData->gender,
-            'phone'        =>  $userDetailData->phone,
-            'address'      =>  ucwords(strtolower($userDetailData->address)),
-            'district'     =>  $userDetailData->district,
-            'city'         =>  $userDetailData->city,
-            'country'      =>  $userDetailData->country,
-            'birthday'     =>  $userDetailData->birthday,
+            'full_name' => ucwords(strtolower($userDetailData->name)),
+            'avatar' => $userDetailData->avatar,
+            'type' => $userDetailData->type,
+            'title' => $userDetailData->title,
+            'gender' => $userDetailData->gender,
+            'phone' => $userDetailData->phone,
+            'address' => ucwords(strtolower($userDetailData->address)),
+            'district' => $userDetailData->district,
+            'city' => $userDetailData->city,
+            'country' => $userDetailData->country,
+            'birthday' => $userDetailData->birthday,
         ]);
     }
 }

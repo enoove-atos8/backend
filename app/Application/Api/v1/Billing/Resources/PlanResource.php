@@ -19,11 +19,11 @@ class PlanResource extends JsonResource
             'name' => $this->name,
             'description' => $this->description,
             'price' => $this->price,
-            'billing_interval' => $this->billingInterval,
-            'trial_period_days' => $this->trialPeriodDays,
+            'billingInterval' => $this->billingInterval,
+            'trialPeriodDays' => $this->trialPeriodDays,
             'features' => $this->features,
-            'stripe_product_id' => $this->stripeProductId,
-            'stripe_price_id' => $this->stripePriceId,
+            'stripeProductId' => $this->stripeProductId,
+            'stripePriceId' => $this->stripePriceId,
         ];
     }
 }

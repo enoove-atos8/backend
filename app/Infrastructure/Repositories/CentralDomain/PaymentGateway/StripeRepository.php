@@ -10,29 +10,46 @@ class StripeRepository implements StripeRepositoryInterface
     private StripeClient $stripe;
 
     const SUBSCRIPTION_KEY = 'subscription';
+
     const PAYMENT_METHOD_KEY = 'payment_method';
+
     const ID_KEY = 'id';
+
     const STATUS_KEY = 'status';
+
     const CURRENT_PERIOD_END_KEY = 'current_period_end';
+
     const CURRENT_PERIOD_START_KEY = 'current_period_start';
+
     const TRIAL_END_KEY = 'trial_end';
+
     const DEFAULT_PAYMENT_METHOD_KEY = 'default_payment_method';
+
     const CUSTOMER_KEY = 'customer';
+
     const TYPE_KEY = 'type';
+
     const BRAND_KEY = 'brand';
+
     const LAST4_KEY = 'last4';
+
     const EXP_MONTH_KEY = 'exp_month';
+
     const EXP_YEAR_KEY = 'exp_year';
+
     const NAME_KEY = 'name';
+
     const EMAIL_KEY = 'email';
+
     const PHONE_KEY = 'phone';
+
     const METADATA_KEY = 'metadata';
 
     public function __construct()
     {
         $secretKey = config('cashier.secret') ?? env('STRIPE_SECRET');
 
-        if (!$secretKey) {
+        if (! $secretKey) {
             throw new \Exception('Stripe secret key not configured. Set STRIPE_SECRET in .env file.');
         }
 
@@ -41,9 +58,6 @@ class StripeRepository implements StripeRepositoryInterface
 
     /**
      * Get subscription details from Stripe
-     *
-     * @param string $subscriptionId
-     * @return array|null
      */
     public function getSubscriptionDetails(string $subscriptionId): ?array
     {
@@ -66,9 +80,6 @@ class StripeRepository implements StripeRepositoryInterface
 
     /**
      * Get payment method details from Stripe
-     *
-     * @param string $paymentMethodId
-     * @return array|null
      */
     public function getPaymentMethod(string $paymentMethodId): ?array
     {
@@ -89,21 +100,30 @@ class StripeRepository implements StripeRepositoryInterface
 
     /**
      * Create a new subscription in Stripe
-     *
-     * @param string $customerId
-     * @param string $priceId
-     * @param array $options
-     * @return array|null
      */
     public function createSubscription(string $customerId, string $priceId, array $options = []): ?array
     {
         try {
+            // Extrair quantity das options se existir
+            $quantity = $options['quantity'] ?? null;
+            unset($options['quantity']);
+
+            // Construir item com price e quantity (se fornecido)
+            $item = ['price' => $priceId];
+            if ($quantity !== null) {
+                $item['quantity'] = $quantity;
+            }
+
             $params = array_merge([
                 self::CUSTOMER_KEY => $customerId,
-                'items' => [
-                    ['price' => $priceId],
-                ],
+                'items' => [$item],
             ], $options);
+
+            \Log::info('StripeRepository - Criando subscription com params', [
+                'params' => $params,
+                'item' => $item,
+                'quantity' => $quantity,
+            ]);
 
             $subscription = $this->stripe->subscriptions->create($params);
 
@@ -114,20 +134,25 @@ class StripeRepository implements StripeRepositoryInterface
                 self::TRIAL_END_KEY => $subscription->trial_end,
             ];
         } catch (\Exception $e) {
+            \Log::error('Stripe: Erro ao criar subscription', [
+                'customer_id' => $customerId,
+                'price_id' => $priceId,
+                'options' => $options,
+                'error' => $e->getMessage(),
+            ]);
+
             return null;
         }
     }
 
     /**
      * Cancel a subscription in Stripe
-     *
-     * @param string $subscriptionId
-     * @return bool
      */
     public function cancelSubscription(string $subscriptionId): bool
     {
         try {
             $this->stripe->subscriptions->cancel($subscriptionId);
+
             return true;
         } catch (\Exception $e) {
             return false;
@@ -136,9 +161,6 @@ class StripeRepository implements StripeRepositoryInterface
 
     /**
      * Create a new customer in Stripe
-     *
-     * @param array $customerData
-     * @return array|null
      */
     public function createCustomer(array $customerData): ?array
     {
@@ -153,6 +175,67 @@ class StripeRepository implements StripeRepositoryInterface
             ];
         } catch (\Exception $e) {
             return null;
+        }
+    }
+
+    /**
+     * Attach a payment method to a customer
+     */
+    public function attachPaymentMethod(string $paymentMethodId, string $customerId): bool
+    {
+        try {
+            $this->stripe->paymentMethods->attach($paymentMethodId, [
+                self::CUSTOMER_KEY => $customerId,
+            ]);
+
+            return true;
+        } catch (\Stripe\Exception\InvalidRequestException $e) {
+            // Se o payment method já está anexado a ESTE customer, considerar sucesso
+            if (str_contains($e->getMessage(), 'already been attached')) {
+                return true;
+            }
+
+            // Logar erro específico para debug
+            \Log::error('Stripe: Erro ao anexar payment method', [
+                'payment_method_id' => $paymentMethodId,
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        } catch (\Exception $e) {
+            // Logar erro genérico
+            \Log::error('Stripe: Erro desconhecido ao anexar payment method', [
+                'payment_method_id' => $paymentMethodId,
+                'customer_id' => $customerId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
+    /**
+     * Set default payment method for a customer
+     */
+    public function setDefaultPaymentMethod(string $customerId, string $paymentMethodId): bool
+    {
+        try {
+            $this->stripe->customers->update($customerId, [
+                'invoice_settings' => [
+                    self::DEFAULT_PAYMENT_METHOD_KEY => $paymentMethodId,
+                ],
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Stripe: Erro ao definir payment method padrão', [
+                'customer_id' => $customerId,
+                'payment_method_id' => $paymentMethodId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return false;
         }
     }
 }

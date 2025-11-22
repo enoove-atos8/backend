@@ -23,7 +23,7 @@ class CreateStripeCustomerAction
     {
         try {
             $customerData = [
-                StripeRepository::NAME_KEY => $churchData->name,
+                StripeRepository::NAME_KEY => $churchData->tenantId,
                 StripeRepository::EMAIL_KEY => $churchData->mail,
                 StripeRepository::PHONE_KEY => $churchData->cellPhone,
                 StripeRepository::METADATA_KEY => [

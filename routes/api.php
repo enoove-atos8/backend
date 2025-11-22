@@ -1,10 +1,16 @@
 <?php
 
 use App\Application\Api\v1\Auth\Controllers\AuthController;
+use Application\Api\v1\Billing\Controllers\BillingController;
 use Application\Api\v1\Church\Controllers\ChurchController;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Stripe Webhook Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/stripe/webhook', '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook');
 
 Route::prefix('v1')->group(function () {
 
@@ -16,11 +22,22 @@ Route::prefix('v1')->group(function () {
 
     Route::get('/version', function () {
         return [
-            'api_version'   =>  env('API_VERSION'),
-            'branch'        =>  'develop',
-            'tenant'        =>  'central'
+            'api_version' => env('API_VERSION'),
+            'branch' => 'develop',
+            'tenant' => 'central',
         ];
     });
+
+    /*
+    |------------------------------------------------------------------------------------------
+    | Resource: Plans
+    | EndPoints:
+    |
+    |   1   - GET    - /plans - Get all available plans
+    |------------------------------------------------------------------------------------------
+    */
+
+    Route::get('/plans', [BillingController::class, 'getPlans']);
 
     /*
     |------------------------------------------------------------------------------------------
@@ -36,13 +53,11 @@ Route::prefix('v1')->group(function () {
     * Description: Create a new church
     */
 
-
-    Route::prefix('/church')->group(function (){
+    Route::prefix('/church')->group(function () {
 
         Route::post('/', [ChurchController::class, 'createChurch']);
 
     });
-
 
     /*
    |------------------------------------------------------------------------------------------

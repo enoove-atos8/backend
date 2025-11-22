@@ -15,16 +15,20 @@ class SubscriptionRepository extends BaseRepository implements SubscriptionRepos
     protected mixed $model = Subscription::class;
 
     const TABLE_NAME = 'subscriptions';
+
     const ID_COLUMN = 'id';
+
     const BILLABLE_TYPE_COLUMN = 'billable_type';
+
     const BILLABLE_ID_COLUMN = 'billable_id';
+
     const STRIPE_ID_COLUMN = 'stripe_id';
+
     const STRIPE_STATUS_COLUMN = 'stripe_status';
+
     const TRIAL_ENDS_AT_COLUMN = 'trial_ends_at';
 
     /**
-     * @param int $churchId
-     * @return SubscriptionData|null
      * @throws UnknownProperties
      */
     public function getChurchSubscription(int $churchId): ?SubscriptionData
@@ -36,6 +40,38 @@ class SubscriptionRepository extends BaseRepository implements SubscriptionRepos
                 ->first();
 
             return $result ? SubscriptionData::fromResponse((array) $result) : null;
+        });
+    }
+
+    /**
+     * Save or update church subscription
+     */
+    public function saveSubscription(int $churchId, array $subscriptionData): bool
+    {
+        return tenancy()->central(function () use ($churchId, $subscriptionData) {
+            try {
+                DB::table(self::TABLE_NAME)->updateOrInsert(
+                    [
+                        self::BILLABLE_TYPE_COLUMN => Church::class,
+                        self::BILLABLE_ID_COLUMN => $churchId,
+                    ],
+                    [
+                        'type' => $subscriptionData['type'] ?? 'default',
+                        self::STRIPE_ID_COLUMN => $subscriptionData['stripe_id'],
+                        self::STRIPE_STATUS_COLUMN => $subscriptionData['stripe_status'],
+                        'stripe_price' => $subscriptionData['stripe_price'] ?? null,
+                        'quantity' => $subscriptionData['quantity'] ?? 1,
+                        self::TRIAL_ENDS_AT_COLUMN => $subscriptionData['trial_ends_at'] ?? null,
+                        'ends_at' => $subscriptionData['ends_at'] ?? null,
+                        'updated_at' => now(),
+                        'created_at' => DB::raw('COALESCE(created_at, NOW())'),
+                    ]
+                );
+
+                return true;
+            } catch (\Exception $e) {
+                return false;
+            }
         });
     }
 }
