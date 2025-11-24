@@ -84,7 +84,7 @@ class EntryData extends DataTransferObject
      * @param mixed $member Member entity or null
      * @param SyncStorageData $data Sync storage data
      * @param object $reviewer Reviewer object
-     * @param string|null $returnReceivingGroupId Return receiving group ID (if applicable)
+     * @param int|null $returnReceivingGroupId Return receiving group ID (if applicable)
      * @param string|null $nextBusinessDay Function to get next business day from a date
      * @return self New EntryData instance
      * @throws UnknownProperties
@@ -95,7 +95,7 @@ class EntryData extends DataTransferObject
         mixed $member,
         SyncStorageData $data,
         object $reviewer,
-        ?string $returnReceivingGroupId = null,
+        ?int $returnReceivingGroupId = null,
         ?string $nextBusinessDay = null
     ): self {
         $currentDate = date('Y-m-d');
