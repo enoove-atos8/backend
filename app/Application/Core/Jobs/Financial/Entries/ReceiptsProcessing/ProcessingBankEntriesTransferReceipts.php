@@ -32,6 +32,7 @@ use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
@@ -201,20 +202,62 @@ class ProcessingBankEntriesTransferReceipts
      */
     public function handle(): void
     {
+        Log::info('ProcessingBankEntriesTransferReceipts::handle() - INICIANDO');
+
         try {
             $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
+            Log::info('ProcessingBankEntriesTransferReceipts::handle() - Tenants encontrados', ['count' => count($tenants), 'tenants' => $tenants]);
 
             foreach ($tenants as $tenant) {
+                Log::info('ProcessingBankEntriesTransferReceipts::handle() - Processando tenant', ['tenant' => $tenant]);
+
                 tenancy()->initialize($tenant);
 
                 $this->syncStorageData = $this->getSyncStorageDataAction->execute(SyncStorageRepository::ENTRIES_VALUE_DOC_TYPE);
+                Log::info('ProcessingBankEntriesTransferReceipts::handle() - SyncStorage encontrados', ['tenant' => $tenant, 'count' => count($this->syncStorageData)]);
 
                 foreach ($this->syncStorageData as $data) {
+                    Log::info('ProcessingBankEntriesTransferReceipts::handle() - Iniciando processamento de registro', [
+                        'tenant' => $tenant,
+                        'sync_storage_id' => $data->id,
+                        'doc_type' => $data->docType,
+                        'doc_sub_type' => $data->docSubType,
+                        'path' => $data->path
+                    ]);
+
                     $this->process($data, $tenant);
+
+                    Log::info('ProcessingBankEntriesTransferReceipts::handle() - Registro processado com sucesso', ['sync_storage_id' => $data->id]);
                 }
             }
+
+            Log::info('ProcessingBankEntriesTransferReceipts::handle() - FINALIZADO COM SUCESSO');
+        } catch (\TypeError $e) {
+            Log::error('ProcessingBankEntriesTransferReceipts::handle() - 🔴🔴🔴 TYPEERROR ORIGINAL CAPTURADO! 🔴🔴🔴', [
+                'error_class' => get_class($e),
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new GeneralExceptions('TypeError no processamento: ' . $e->getMessage(), 500, $e);
         } catch (GeneralExceptions $e) {
+            Log::error('ProcessingBankEntriesTransferReceipts::handle() - GeneralExceptions capturada', [
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
+            ]);
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        } catch (\Throwable $e) {
+            Log::error('ProcessingBankEntriesTransferReceipts::handle() - 🔴 ERRO INESPERADO CAPTURADO! 🔴', [
+                'error_class' => get_class($e),
+                'error_message' => $e->getMessage(),
+                'error_file' => $e->getFile(),
+                'error_line' => $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw new GeneralExceptions('Erro no processamento: ' . $e->getMessage(), 500, $e);
         }
 
     }
@@ -244,21 +287,68 @@ class ProcessingBankEntriesTransferReceipts
      */
     private function processFile(array $downloadedFile, SyncStorageData $syncStorageData, string $tenant): void
     {
+        Log::info('ProcessingBankEntriesTransferReceipts::processFile() - INICIANDO', [
+            'sync_storage_id' => $syncStorageData->id,
+            'tenant' => $tenant,
+            'file_path' => $downloadedFile['fileUploaded'] ?? 'N/A'
+        ]);
+
         $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
 
+        Log::info('ProcessingBankEntriesTransferReceipts::processFile() - OCR executado', [
+            'sync_storage_id' => $syncStorageData->id,
+            'status' => $extractedData['status'] ?? 'N/A',
+            'data_keys' => isset($extractedData['data']) ? array_keys($extractedData['data']) : [],
+            'extracted_data_structure' => json_encode($extractedData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        ]);
+
         if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS') {
+            Log::info('ProcessingBankEntriesTransferReceipts::processFile() - OCR SUCCESS - Extraindo dados', [
+                'sync_storage_id' => $syncStorageData->id,
+                'data_date' => $extractedData['data']['date'] ?? 'N/A',
+                'data_date_type' => isset($extractedData['data']['date']) ? gettype($extractedData['data']['date']) : 'N/A',
+                'timestamp_value_cpf' => $extractedData['data']['timestamp_value_cpf'] ?? 'N/A',
+                'middle_cpf' => $extractedData['data']['middle_cpf'] ?? 'N/A',
+                'amount' => $extractedData['data']['amount'] ?? 'N/A'
+            ]);
+
             $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];
             $middleCpf = $extractedData['data']['middle_cpf'];
+
+            Log::info('ProcessingBankEntriesTransferReceipts::processFile() - Buscando membro', [
+                'sync_storage_id' => $syncStorageData->id,
+                'middle_cpf' => $middleCpf
+            ]);
+
             $member = $this->findMember($middleCpf);
 
             if ($this->isDuplicateEntry($timestampValueCpf)) {
+                Log::info('ProcessingBankEntriesTransferReceipts::processFile() - Entrada duplicada detectada', [
+                    'sync_storage_id' => $syncStorageData->id,
+                    'timestamp_value_cpf' => $timestampValueCpf
+                ]);
                 $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
 
                 return;
             }
 
-            $this->setEntryData($extractedData, $member, $syncStorageData);
+            Log::info('ProcessingBankEntriesTransferReceipts::processFile() - Chamando setEntryData', [
+                'sync_storage_id' => $syncStorageData->id
+            ]);
+
+            try {
+                $this->setEntryData($extractedData, $member, $syncStorageData);
+            } catch (\TypeError $e) {
+                Log::error('ProcessingBankEntriesTransferReceipts::processFile() - 🔴 TYPEERROR CAPTURADO!', [
+                    'sync_storage_id' => $syncStorageData->id,
+                    'error_message' => $e->getMessage(),
+                    'error_file' => $e->getFile(),
+                    'error_line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+                throw $e;
+            }
 
             $entry = $this->createEntryAction->execute($this->entryData, $this->consolidationEntriesData);
             $this->updateTimestampValueCPFEntryAction->execute($entry->id, $timestampValueCpf);
@@ -282,16 +372,39 @@ class ProcessingBankEntriesTransferReceipts
             $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DONE_VALUE);
 
         } elseif (count($extractedData) > 0 && $extractedData['status'] != 'SUCCESS') {
+            Log::info('ProcessingBankEntriesTransferReceipts::processFile() - OCR FALHOU - Processando erro', [
+                'sync_storage_id' => $syncStorageData->id,
+                'status' => $extractedData['status'] ?? 'N/A'
+            ]);
+
             $linkReceipt = $this->minioStorageService->upload($downloadedFile['fileUploaded'], self::SYNC_STORAGE_ENTRIES_ERROR_RECEIPTS, $tenant, true);
 
             if (! empty($linkReceipt)) {
                 $this->minioStorageService->delete($syncStorageData->path, $tenant);
             }
 
-            $this->setReceiptProcessingData($extractedData, $syncStorageData, $linkReceipt);
-            $this->createReceiptProcessing->execute($this->receiptProcessingData);
-            $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::ERROR_VALUE);
+            try {
+                $this->setReceiptProcessingData($extractedData, $syncStorageData, $linkReceipt);
+                $this->createReceiptProcessing->execute($this->receiptProcessingData);
+                $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::ERROR_VALUE);
+            } catch (\TypeError $e) {
+                Log::error('ProcessingBankEntriesTransferReceipts::processFile() - 🔴 TYPEERROR no processamento de erro!', [
+                    'sync_storage_id' => $syncStorageData->id,
+                    'error_message' => $e->getMessage(),
+                    'error_file' => $e->getFile(),
+                    'error_line' => $e->getLine()
+                ]);
+                throw $e;
+            }
+
+            Log::info('ProcessingBankEntriesTransferReceipts::processFile() - Erro processado e salvo', [
+                'sync_storage_id' => $syncStorageData->id
+            ]);
         }
+
+        Log::info('ProcessingBankEntriesTransferReceipts::processFile() - FINALIZADO', [
+            'sync_storage_id' => $syncStorageData->id
+        ]);
     }
 
     /**
@@ -301,12 +414,33 @@ class ProcessingBankEntriesTransferReceipts
      */
     public function setReceiptProcessingData($extractedData, SyncStorageData $data, string $linkReceipt): void
     {
+        Log::info('ProcessingBankEntriesTransferReceipts::setReceiptProcessingData() - INICIANDO', [
+            'sync_storage_id' => $data->id,
+            'link_receipt' => $linkReceipt
+        ]);
+
         $reviewer = $this->getReviewerAction->execute();
+        Log::info('ProcessingBankEntriesTransferReceipts::setReceiptProcessingData() - Reviewer obtido', [
+            'sync_storage_id' => $data->id,
+            'reviewer_id' => $reviewer?->id ?? null,
+            'reviewer_type' => gettype($reviewer)
+        ]);
+
         $financialGroup = $this->getFinancialGroupAction->execute();
+        Log::info('ProcessingBankEntriesTransferReceipts::setReceiptProcessingData() - FinancialGroup obtido', [
+            'sync_storage_id' => $data->id,
+            'financial_group_id' => $financialGroup?->id ?? null,
+            'financial_group_type' => gettype($financialGroup),
+            'is_null' => is_null($financialGroup)
+        ]);
 
         $this->receiptProcessingData = ReceiptProcessingData::fromExtractedData(
             $data, $extractedData, $linkReceipt, $reviewer, $financialGroup
         );
+
+        Log::info('ProcessingBankEntriesTransferReceipts::setReceiptProcessingData() - FINALIZADO', [
+            'sync_storage_id' => $data->id
+        ]);
     }
 
     /**
@@ -379,6 +513,12 @@ class ProcessingBankEntriesTransferReceipts
      */
     public function getNextBusinessDay($date): string
     {
+        Log::info('ProcessingBankEntriesTransferReceipts::getNextBusinessDay() - INICIANDO', [
+            'date_input' => $date,
+            'date_input_type' => gettype($date),
+            'date_input_length' => is_string($date) ? strlen($date) : 'N/A'
+        ]);
+
         $holidays = [
             '01-01', // Confraternização Universal (Ano Novo)
             '04-21', // Tiradentes
@@ -390,7 +530,29 @@ class ProcessingBankEntriesTransferReceipts
             '12-25', // Natal
         ];
 
+        Log::info('ProcessingBankEntriesTransferReceipts::getNextBusinessDay() - Tentando criar DateTime', [
+            'date_input' => $date,
+            'format' => 'd/m/Y'
+        ]);
+
         $currentDate = DateTime::createFromFormat('d/m/Y', $date);
+
+        Log::info('ProcessingBankEntriesTransferReceipts::getNextBusinessDay() - DateTime criado', [
+            'currentDate' => $currentDate !== false ? $currentDate->format('Y-m-d H:i:s') : 'FALSE',
+            'currentDate_type' => gettype($currentDate),
+            'is_false' => $currentDate === false
+        ]);
+
+        if ($currentDate === false) {
+            Log::error('ProcessingBankEntriesTransferReceipts::getNextBusinessDay() - ERRO: createFromFormat retornou FALSE', [
+                'date_input' => $date,
+                'date_input_type' => gettype($date),
+                'format_expected' => 'd/m/Y',
+                'date_errors' => DateTime::getLastErrors()
+            ]);
+            throw new \Exception("Data inválida recebida: '{$date}'. Formato esperado: d/m/Y");
+        }
+
         $dayOfWeek = $currentDate->format('N');
         $monthDay = $currentDate->format('m-d');
 
@@ -401,10 +563,20 @@ class ProcessingBankEntriesTransferReceipts
                 $monthDay = $currentDate->format('m-d');
             } while (in_array($dayOfWeek, [6, 7]) || in_array($monthDay, $holidays));
 
-            return $currentDate->format('Y-m-d');
+            $result = $currentDate->format('Y-m-d');
+            Log::info('ProcessingBankEntriesTransferReceipts::getNextBusinessDay() - FINALIZADO (com ajuste)', [
+                'date_input' => $date,
+                'result' => $result
+            ]);
+            return $result;
         }
 
-        return $currentDate->format('Y-m-d');
+        $result = $currentDate->format('Y-m-d');
+        Log::info('ProcessingBankEntriesTransferReceipts::getNextBusinessDay() - FINALIZADO (sem ajuste)', [
+            'date_input' => $date,
+            'result' => $result
+        ]);
+        return $result;
     }
 
     /**
@@ -438,9 +610,45 @@ class ProcessingBankEntriesTransferReceipts
      */
     public function setEntryData(array $extractedData, mixed $member, SyncStorageData $data): void
     {
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - INICIANDO', [
+            'sync_storage_id' => $data->id,
+            'extracted_date' => $extractedData['data']['date'] ?? 'N/A',
+            'extracted_date_type' => isset($extractedData['data']['date']) ? gettype($extractedData['data']['date']) : 'N/A',
+            'member_id' => $member?->id ?? null,
+            'doc_sub_type' => $data->docSubType
+        ]);
+
         $reviewer = $this->getReviewerAction->execute();
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - Reviewer obtido', [
+            'sync_storage_id' => $data->id,
+            'reviewer_id' => $reviewer?->id ?? null,
+            'reviewer_type' => gettype($reviewer)
+        ]);
+
         $returnReceivingGroupId = $this->getReturnReceivingGroup();
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - ReturnReceivingGroup obtido', [
+            'sync_storage_id' => $data->id,
+            'return_receiving_group_id' => $returnReceivingGroupId,
+            'type' => gettype($returnReceivingGroupId)
+        ]);
+
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - Chamando getNextBusinessDay', [
+            'sync_storage_id' => $data->id,
+            'date_input' => $extractedData['data']['date'],
+            'date_input_type' => gettype($extractedData['data']['date'])
+        ]);
+
         $nextBusinessDay = $this->getNextBusinessDay($extractedData['data']['date']);
+
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - NextBusinessDay calculado', [
+            'sync_storage_id' => $data->id,
+            'next_business_day' => $nextBusinessDay,
+            'type' => gettype($nextBusinessDay)
+        ]);
+
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - Criando EntryData', [
+            'sync_storage_id' => $data->id
+        ]);
 
         $this->entryData = EntryData::fromExtractedData(
             $extractedData,
@@ -451,6 +659,15 @@ class ProcessingBankEntriesTransferReceipts
             $nextBusinessDay
         );
 
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - Criando consolidationEntriesData->date', [
+            'sync_storage_id' => $data->id,
+            'date_input' => $extractedData['data']['date']
+        ]);
+
         $this->consolidationEntriesData->date = DateTime::createFromFormat('d/m/Y', $extractedData['data']['date'])->format('Y-m-d');
+
+        Log::info('ProcessingBankEntriesTransferReceipts::setEntryData() - FINALIZADO COM SUCESSO', [
+            'sync_storage_id' => $data->id
+        ]);
     }
 }
