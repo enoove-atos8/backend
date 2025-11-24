@@ -45,33 +45,37 @@ class SubscriptionRepository extends BaseRepository implements SubscriptionRepos
 
     /**
      * Save or update church subscription
+     *
+     * @param  array  $stripeSubscription  Raw Stripe subscription data
+     * @return array Processed subscription data that was saved
      */
-    public function saveSubscription(int $churchId, array $subscriptionData): bool
+    public function saveSubscription(int $churchId, array $stripeSubscription): array
     {
-        return tenancy()->central(function () use ($churchId, $subscriptionData) {
-            try {
-                DB::table(self::TABLE_NAME)->updateOrInsert(
-                    [
-                        self::BILLABLE_TYPE_COLUMN => Church::class,
-                        self::BILLABLE_ID_COLUMN => $churchId,
-                    ],
-                    [
-                        'type' => $subscriptionData['type'] ?? 'default',
-                        self::STRIPE_ID_COLUMN => $subscriptionData['stripe_id'],
-                        self::STRIPE_STATUS_COLUMN => $subscriptionData['stripe_status'],
-                        'stripe_price' => $subscriptionData['stripe_price'] ?? null,
-                        'quantity' => $subscriptionData['quantity'] ?? 1,
-                        self::TRIAL_ENDS_AT_COLUMN => $subscriptionData['trial_ends_at'] ?? null,
-                        'ends_at' => $subscriptionData['ends_at'] ?? null,
-                        'updated_at' => now(),
-                        'created_at' => DB::raw('COALESCE(created_at, NOW())'),
-                    ]
-                );
+        return tenancy()->central(function () use ($churchId, $stripeSubscription) {
+            // Mapear dados do Stripe para o formato do banco
+            $subscriptionData = [
+                'type' => 'default',
+                self::STRIPE_ID_COLUMN => $stripeSubscription['id'],
+                self::STRIPE_STATUS_COLUMN => $stripeSubscription['status'],
+                'stripe_price' => null,
+                'quantity' => $stripeSubscription['items']['data'][0]['quantity'] ?? 1,
+                self::TRIAL_ENDS_AT_COLUMN => isset($stripeSubscription['trial_end'])
+                    ? date('Y-m-d H:i:s', $stripeSubscription['trial_end'])
+                    : null,
+                'ends_at' => null,
+                'updated_at' => now(),
+                'created_at' => DB::raw('COALESCE(created_at, NOW())'),
+            ];
 
-                return true;
-            } catch (\Exception $e) {
-                return false;
-            }
+            DB::table(self::TABLE_NAME)->updateOrInsert(
+                [
+                    self::BILLABLE_TYPE_COLUMN => Church::class,
+                    self::BILLABLE_ID_COLUMN => $churchId,
+                ],
+                $subscriptionData
+            );
+
+            return $subscriptionData;
         });
     }
 }

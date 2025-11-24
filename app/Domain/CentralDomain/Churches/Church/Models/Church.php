@@ -10,6 +10,7 @@ class Church extends Model
     use Billable;
 
     protected $table = 'churches';
+
     /**
      * The attributes that are mass assignable.
      *
@@ -31,5 +32,6 @@ class Church extends Model
         'pm_type',
         'pm_last_four',
         'trial_ends_at',
+        'member_count',
     ];
 }
