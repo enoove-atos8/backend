@@ -204,7 +204,7 @@ class ReceiptProcessingData extends DataTransferObject
             $data->docSubType == ExitRepository::TRANSFER_VALUE ||
             $data->docSubType == ExitRepository::MINISTERIAL_TRANSFER_VALUE) {
 
-            $groupReceived = new GroupData(['id' => $data->isDevolution ? $financialGroup->id : (int) $data->groupId]);
+            $groupReceived = new GroupData(['id' => $data->isDevolution ? ($financialGroup?->id ?? null) : (int) $data->groupId]);
             $groupReturned = new GroupData(['id' => $data->isDevolution ? (int) $data->groupId : null]);
         }
 
