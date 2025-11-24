@@ -8,5 +8,5 @@ interface SubscriptionRepositoryInterface
 {
     public function getChurchSubscription(int $churchId): ?SubscriptionData;
 
-    public function saveSubscription(int $churchId, array $subscriptionData): bool;
+    public function saveSubscription(int $churchId, array $stripeSubscription): array;
 }

@@ -5,7 +5,6 @@ namespace Domain\CentralDomain\Churches\Church\Interfaces;
 use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Churches\Church\Models\Church;
 use Domain\CentralDomain\Plans\DataTransferObjects\PlanData;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 interface ChurchRepositoryInterface
@@ -21,4 +20,6 @@ interface ChurchRepositoryInterface
     public function getChurchesByPlanId(int $id): Collection;
 
     public function getChurchPlan(int $churchId): ?PlanData;
+
+    public function updateChurch(int $churchId, array $data): bool;
 }
