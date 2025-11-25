@@ -3,6 +3,7 @@
 namespace App\Application\Core\Jobs\Financial\Entries\ReceiptsProcessing;
 
 use App\Domain\CentralDomain\Plans\Actions\GetPlansAction;
+use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
 use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntryByTimestampValueCpfAction;
@@ -81,6 +82,8 @@ class ProcessingBankEntriesTransferReceipts
 
     private CheckConsolidationStatusAction $checkConsolidationStatusAction;
 
+    private GetChurchesAction $getChurchesAction;
+
     private string $entryType;
 
     protected Collection $foldersData;
@@ -151,7 +154,8 @@ class ProcessingBankEntriesTransferReceipts
         UpdateStatusAction $updateStatusAction,
         CheckConsolidationStatusAction $checkConsolidationStatusAction,
         ReceiptProcessingData $receiptProcessingData,
-        CreateReceiptProcessing $createReceiptProcessing
+        CreateReceiptProcessing $createReceiptProcessing,
+        GetChurchesAction $getChurchesAction
     ) {
         $this->createEntryAction = $createEntryAction;
         $this->getMemberByMiddleCPFAction = $getMemberByMiddleCPFAction;
@@ -175,6 +179,7 @@ class ProcessingBankEntriesTransferReceipts
         $this->checkConsolidationStatusAction = $checkConsolidationStatusAction;
         $this->receiptProcessingData = $receiptProcessingData;
         $this->createReceiptProcessing = $createReceiptProcessing;
+        $this->getChurchesAction = $getChurchesAction;
     }
 
     /**
@@ -187,15 +192,15 @@ class ProcessingBankEntriesTransferReceipts
     public function handle(): void
     {
         try {
-            $tenants = tenancy()->all();
+            $churches = $this->getChurchesAction->execute();
 
-            foreach ($tenants as $tenant) {
-                tenancy()->initialize($tenant);
+            foreach ($churches as $church) {
+                tenancy()->initialize($church->tenantId);
 
                 $this->syncStorageData = $this->getSyncStorageDataAction->execute(SyncStorageRepository::ENTRIES_VALUE_DOC_TYPE);
 
                 foreach ($this->syncStorageData as $data) {
-                    $this->process($data, $tenant->getTenantKey());
+                    $this->process($data, $church->tenantId);
                 }
             }
         } catch (GeneralExceptions $e) {
