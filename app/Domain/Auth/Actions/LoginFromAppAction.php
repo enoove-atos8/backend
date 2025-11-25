@@ -38,7 +38,7 @@ class LoginFromAppAction
 
         foreach ($churches as $church)
         {
-            tenancy()->initialize($church->tenant_id);
+            tenancy()->initialize($church->tenantId);
 
             if(Auth::attempt($authData->toArray()))
             {
@@ -49,7 +49,7 @@ class LoginFromAppAction
                 foreach ($user->roles()->get() as $role)
                     $userRoles [] = $role->name;
 
-                $church = $this->getChurchAction->execute($church->tenant_id);
+                $church = $this->getChurchAction->execute($church->tenantId);
 
                 if ($user->activated)
                 {

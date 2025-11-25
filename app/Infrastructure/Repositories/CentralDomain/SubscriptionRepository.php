@@ -28,6 +28,18 @@ class SubscriptionRepository extends BaseRepository implements SubscriptionRepos
 
     const TRIAL_ENDS_AT_COLUMN = 'trial_ends_at';
 
+    const TYPE = 'type';
+
+    const STRIPE_PRICE = 'stripe_price';
+
+    const QUANTITY = 'quantity';
+
+    const ENDS_AT = 'ends_at';
+
+    const UPDATED_AT = 'updated_at';
+
+    const CREATED_AT = 'created_at';
+
     /**
      * @throws UnknownProperties
      */
@@ -54,17 +66,17 @@ class SubscriptionRepository extends BaseRepository implements SubscriptionRepos
         return tenancy()->central(function () use ($churchId, $stripeSubscription) {
             // Mapear dados do Stripe para o formato do banco
             $subscriptionData = [
-                'type' => 'default',
+                self::TYPE => 'default',
                 self::STRIPE_ID_COLUMN => $stripeSubscription['id'],
                 self::STRIPE_STATUS_COLUMN => $stripeSubscription['status'],
-                'stripe_price' => null,
-                'quantity' => $stripeSubscription['items']['data'][0]['quantity'] ?? 1,
+                self::STRIPE_PRICE => null,
+                self::QUANTITY => $stripeSubscription['items']['data'][0]['quantity'] ?? 1,
                 self::TRIAL_ENDS_AT_COLUMN => isset($stripeSubscription['trial_end'])
                     ? date('Y-m-d H:i:s', $stripeSubscription['trial_end'])
                     : null,
-                'ends_at' => null,
-                'updated_at' => now(),
-                'created_at' => DB::raw('COALESCE(created_at, NOW())'),
+                self::ENDS_AT => null,
+                self::UPDATED_AT => now(),
+                self::CREATED_AT => DB::raw('COALESCE(created_at, NOW())'),
             ];
 
             DB::table(self::TABLE_NAME)->updateOrInsert(

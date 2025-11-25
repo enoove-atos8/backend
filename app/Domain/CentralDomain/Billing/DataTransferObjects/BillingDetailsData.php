@@ -2,14 +2,15 @@
 
 namespace Domain\CentralDomain\Billing\DataTransferObjects;
 
+use Domain\CentralDomain\Churches\Church\DataTransferObjects\ChurchData;
 use Domain\CentralDomain\Plans\DataTransferObjects\PlanData;
 use Spatie\DataTransferObject\DataTransferObject;
 
 class BillingDetailsData extends DataTransferObject
 {
-    /** @var PlanData|null */
-    public PlanData|null $plan;
+    public ?ChurchData $church;
 
-    /** @var SubscriptionData|null */
-    public SubscriptionData|null $subscription;
+    public ?PlanData $plan;
+
+    public ?SubscriptionData $subscription;
 }
