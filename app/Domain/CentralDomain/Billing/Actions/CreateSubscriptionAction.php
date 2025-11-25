@@ -56,11 +56,8 @@ class CreateSubscriptionAction
                 $subscriptionOptions['trial_period_days'] = $plan->trialPeriodDays;
             }
 
-            // Adicionar quantity se memberCount for fornecido
-            \Log::info('CreateSubscriptionAction - memberCount recebido', ['memberCount' => $memberCount]);
             if ($memberCount !== null && $memberCount > 0) {
                 $subscriptionOptions['quantity'] = $memberCount;
-                \Log::info('CreateSubscriptionAction - quantity adicionada às options', ['quantity' => $memberCount]);
             }
 
             $subscription = $this->stripeRepository->createSubscription(

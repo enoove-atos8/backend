@@ -119,12 +119,6 @@ class StripeRepository implements StripeRepositoryInterface
                 'items' => [$item],
             ], $options);
 
-            \Log::info('StripeRepository - Criando subscription com params', [
-                'params' => $params,
-                'item' => $item,
-                'quantity' => $quantity,
-            ]);
-
             $subscription = $this->stripe->subscriptions->create($params);
 
             return [
@@ -132,15 +126,9 @@ class StripeRepository implements StripeRepositoryInterface
                 self::STATUS_KEY => $subscription->status,
                 self::CURRENT_PERIOD_END_KEY => $subscription->current_period_end,
                 self::TRIAL_END_KEY => $subscription->trial_end,
+                'items' => $subscription->items->toArray(),
             ];
         } catch (\Exception $e) {
-            \Log::error('Stripe: Erro ao criar subscription', [
-                'customer_id' => $customerId,
-                'price_id' => $priceId,
-                'options' => $options,
-                'error' => $e->getMessage(),
-            ]);
-
             return null;
         }
     }
@@ -190,27 +178,12 @@ class StripeRepository implements StripeRepositoryInterface
 
             return true;
         } catch (\Stripe\Exception\InvalidRequestException $e) {
-            // Se o payment method já está anexado a ESTE customer, considerar sucesso
             if (str_contains($e->getMessage(), 'already been attached')) {
                 return true;
             }
 
-            // Logar erro específico para debug
-            \Log::error('Stripe: Erro ao anexar payment method', [
-                'payment_method_id' => $paymentMethodId,
-                'customer_id' => $customerId,
-                'error' => $e->getMessage(),
-            ]);
-
             return false;
         } catch (\Exception $e) {
-            // Logar erro genérico
-            \Log::error('Stripe: Erro desconhecido ao anexar payment method', [
-                'payment_method_id' => $paymentMethodId,
-                'customer_id' => $customerId,
-                'error' => $e->getMessage(),
-            ]);
-
             return false;
         }
     }
@@ -229,12 +202,6 @@ class StripeRepository implements StripeRepositoryInterface
 
             return true;
         } catch (\Exception $e) {
-            \Log::error('Stripe: Erro ao definir payment method padrão', [
-                'customer_id' => $customerId,
-                'payment_method_id' => $paymentMethodId,
-                'error' => $e->getMessage(),
-            ]);
-
             return false;
         }
     }
