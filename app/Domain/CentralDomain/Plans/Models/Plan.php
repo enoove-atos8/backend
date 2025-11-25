@@ -2,18 +2,11 @@
 
 namespace Domain\CentralDomain\Plans\Models;
 
-use App\Domain\Financial\Entries\Entries\Models\Entry;
-use App\Domain\Financial\Reviewers\Models\FinancialReviewer;
-use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Plan extends Model
 {
     protected $table = 'plans';
-
-
 
     /**
      * The attributes that are mass assignable.
@@ -27,6 +20,7 @@ class Plan extends Model
         'activated',
         'stripe_product_id',
         'stripe_price_id',
+        'billing_unit',
         'billing_interval',
         'trial_period_days',
         'features',
@@ -37,5 +31,6 @@ class Plan extends Model
         'trial_period_days' => 'integer',
         'price' => 'float',
         'activated' => 'boolean',
+        'billing_unit' => 'boolean',
     ];
 }

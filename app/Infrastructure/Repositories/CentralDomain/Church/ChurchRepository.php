@@ -95,16 +95,16 @@ class ChurchRepository extends BaseRepository implements ChurchRepositoryInterfa
     }
 
     /**
-     * @throws BindingResolutionException
+     * @throws UnknownProperties
      */
     public function getChurches(): Collection
     {
         return tenancy()->central(function () {
+            $results = DB::table(self::TABLE_NAME)
+                ->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], true)
+                ->get();
 
-            $this->queryConditions = [];
-            $this->queryConditions[] = $this->whereEqual(self::ACTIVATED_COLUMN, true, 'and');
-
-            return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+            return $results->map(fn ($item) => ChurchData::fromResponse((array) $item));
         });
     }
 

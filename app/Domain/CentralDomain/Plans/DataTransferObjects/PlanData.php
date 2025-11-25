@@ -7,41 +7,31 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class PlanData extends DataTransferObject
 {
-    /** @var integer */
     public int $id = 0;
 
-    /** @var string|null */
-    public string|null $name;
+    public ?string $name;
 
-    /** @var string|null */
-    public string|null $description;
+    public ?string $description;
 
-    /** @var float|null */
-    public float|null $price;
+    public ?float $price;
 
-    /** @var boolean|null */
-    public bool|null $activated;
+    public ?bool $activated;
 
-    /** @var string|null */
-    public string|null $stripeProductId;
+    public ?string $stripeProductId;
 
-    /** @var string|null */
-    public string|null $stripePriceId;
+    public ?string $stripePriceId;
 
-    /** @var string|null */
-    public string|null $billingInterval;
+    public ?bool $billingUnit;
 
-    /** @var int|null */
-    public int|null $trialPeriodDays;
+    public ?string $billingInterval;
 
-    /** @var array|null */
-    public array|null $features;
+    public ?int $trialPeriodDays;
+
+    public ?array $features;
 
     /**
      * Create PlanData from database response
      *
-     * @param array $data
-     * @return self
      * @throws UnknownProperties
      */
     public static function fromResponse(array $data): self
@@ -54,6 +44,7 @@ class PlanData extends DataTransferObject
             activated: isset($data['activated']) ? (bool) $data['activated'] : null,
             stripeProductId: $data['stripe_product_id'] ?? null,
             stripePriceId: $data['stripe_price_id'] ?? null,
+            billingUnit: isset($data['billing_unit']) ? (bool) $data['billing_unit'] : false,
             billingInterval: $data['billing_interval'] ?? null,
             trialPeriodDays: isset($data['trial_period_days']) ? (int) $data['trial_period_days'] : null,
             features: isset($data['features']) ? json_decode($data['features'], true) : null,

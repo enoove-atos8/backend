@@ -7,32 +7,25 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class SubscriptionData extends DataTransferObject
 {
-    /** @var string|null */
-    public string|null $stripeSubscriptionId;
+    public ?string $stripeSubscriptionId;
 
-    /** @var string|null */
-    public string|null $status;
+    public ?string $status;
 
-    /** @var string|null */
-    public string|null $nextBillingDate;
+    public ?string $nextBillingDate;
 
-    /** @var string|null */
-    public string|null $trialEndsAt;
+    public ?string $trialEndsAt;
 
-    /** @var bool */
     public bool $onTrial;
 
-    /** @var bool */
     public bool $hasSubscription;
 
-    /** @var array|null */
-    public array|null $paymentMethod;
+    public ?array $paymentMethod;
+
+    public ?int $memberCount;
 
     /**
      * Create SubscriptionData from database response (subscriptions table)
      *
-     * @param array $data
-     * @return self
      * @throws UnknownProperties
      */
     public static function fromResponse(array $data): self
@@ -45,6 +38,31 @@ class SubscriptionData extends DataTransferObject
             onTrial: isset($data['trial_ends_at']) && strtotime($data['trial_ends_at']) > time(),
             hasSubscription: isset($data['stripe_id']),
             paymentMethod: null, // Será preenchido com dados do Stripe
+            memberCount: isset($data['quantity']) ? (int) $data['quantity'] : null,
+        );
+    }
+
+    /**
+     * Create new SubscriptionData from current instance with Stripe data
+     *
+     * @param  array  $stripeSubscription  Stripe subscription data
+     * @param  array|null  $paymentMethod  Stripe payment method data
+     *
+     * @throws UnknownProperties
+     */
+    public static function fromSelf(self $current, array $stripeSubscription, ?array $paymentMethod = null): self
+    {
+        return new self(
+            stripeSubscriptionId: $current->stripeSubscriptionId,
+            status: $stripeSubscription['status'] ?? $current->status,
+            nextBillingDate: isset($stripeSubscription['current_period_end'])
+                ? date('Y-m-d H:i:s', $stripeSubscription['current_period_end'])
+                : $current->nextBillingDate,
+            trialEndsAt: $current->trialEndsAt,
+            onTrial: $current->onTrial,
+            hasSubscription: true,
+            paymentMethod: $paymentMethod ?? $current->paymentMethod,
+            memberCount: $stripeSubscription['items']['data'][0]['quantity'] ?? $current->memberCount,
         );
     }
 }

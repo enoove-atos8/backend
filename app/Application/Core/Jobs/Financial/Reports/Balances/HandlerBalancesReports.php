@@ -94,7 +94,7 @@ class HandlerBalancesReports implements ShouldQueue
 
         if (count($tenants) > 0) {
             foreach ($tenants as $tenant) {
-                $arrTenants[] = $tenant->tenant_id;
+                $arrTenants[] = $tenant->tenantId;
             }
         }
 
