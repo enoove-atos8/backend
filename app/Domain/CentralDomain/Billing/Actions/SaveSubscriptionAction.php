@@ -10,6 +10,16 @@ use Infrastructure\Repositories\CentralDomain\PaymentGateway\StripeRepository;
 
 class SaveSubscriptionAction
 {
+    private const TRIAL_ENDS_AT = 'trial_ends_at';
+
+    private const MEMBER_COUNT = 'member_count';
+
+    private const QUANTITY = 'quantity';
+
+    private const PM_TYPE = 'pm_type';
+
+    private const PM_LAST_FOUR = 'pm_last_four';
+
     public function __construct(
         private SubscriptionRepositoryInterface $subscriptionRepository,
         private UpdateChurchAction $updateChurchAction
@@ -32,22 +42,18 @@ class SaveSubscriptionAction
             $subscription = $subscriptionResult[StripeRepository::SUBSCRIPTION_KEY];
             $paymentMethod = $subscriptionResult[StripeRepository::PAYMENT_METHOD_KEY];
 
-            // Salvar subscription (repository mapeia os dados do Stripe)
             $subscriptionData = $this->subscriptionRepository->saveSubscription($churchId, $subscription);
 
-            // Preparar dados para atualizar church
             $churchUpdateData = [
-                'trial_ends_at' => $subscriptionData['trial_ends_at'],
-                'member_count' => $subscriptionData['quantity'],
+                self::TRIAL_ENDS_AT => $subscriptionData[self::TRIAL_ENDS_AT],
+                self::MEMBER_COUNT => $subscriptionData[self::QUANTITY],
             ];
 
-            // Adicionar payment method se fornecido
             if ($paymentMethod && isset($paymentMethod[StripeRepository::BRAND_KEY]) && isset($paymentMethod[StripeRepository::LAST4_KEY])) {
-                $churchUpdateData['pm_type'] = $paymentMethod[StripeRepository::BRAND_KEY];
-                $churchUpdateData['pm_last_four'] = $paymentMethod[StripeRepository::LAST4_KEY];
+                $churchUpdateData[self::PM_TYPE] = $paymentMethod[StripeRepository::BRAND_KEY];
+                $churchUpdateData[self::PM_LAST_FOUR] = $paymentMethod[StripeRepository::LAST4_KEY];
             }
 
-            // Atualizar dados da church
             $this->updateChurchAction->execute($churchId, $churchUpdateData);
 
             return true;
