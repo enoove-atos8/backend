@@ -17,10 +17,22 @@ class SubscriptionMessages
 
     const ERROR_SAVE_SUBSCRIPTION = 'Erro ao salvar assinatura no banco de dados';
 
+    const ERROR_PAYMENT_METHOD_NOT_FOUND = 'Método de pagamento não encontrado';
+
+    const ERROR_DETACH_PAYMENT_METHOD = 'Erro ao remover método de pagamento';
+
+    const ERROR_CANNOT_DELETE_DEFAULT_PAYMENT_METHOD = 'Não é possível remover o método de pagamento padrão';
+
     // Success Messages
     const SUCCESS_SUBSCRIPTION_CREATED = 'Assinatura criada com sucesso';
 
     const SUCCESS_SUBSCRIPTION_CANCELLED = 'Assinatura cancelada com sucesso';
 
     const SUCCESS_PAYMENT_METHOD_UPDATED = 'Método de pagamento atualizado com sucesso';
+
+    const SUCCESS_PAYMENT_METHOD_ADDED = 'Método de pagamento adicionado com sucesso';
+
+    const SUCCESS_PAYMENT_METHOD_DELETED = 'Método de pagamento removido com sucesso';
+
+    const SUCCESS_DEFAULT_PAYMENT_METHOD_SET = 'Método de pagamento padrão definido com sucesso';
 }
