@@ -38,4 +38,19 @@ interface StripeRepositoryInterface
      * Set default payment method for a customer
      */
     public function setDefaultPaymentMethod(string $customerId, string $paymentMethodId): bool;
+
+    /**
+     * List all payment methods for a customer
+     */
+    public function listPaymentMethods(string $customerId): array;
+
+    /**
+     * Detach a payment method from a customer
+     */
+    public function detachPaymentMethod(string $paymentMethodId): bool;
+
+    /**
+     * Get customer details from Stripe
+     */
+    public function getCustomer(string $customerId): ?array;
 }

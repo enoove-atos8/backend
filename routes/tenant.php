@@ -12,6 +12,7 @@ use App\Application\Api\v1\Financial\Reports\Exits\Controllers\MonthlyExitsRepor
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Billing\Controllers\BillingController;
+use Application\Api\v1\Billing\Controllers\PaymentMethodController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
@@ -1416,6 +1417,10 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         |
         |   1   - GET    - /billing/plans - Get all available plans
         |   2   - GET    - /billing/subscription - Get billing details for the authenticated church
+        |   3   - GET    - /billing/payment-methods - List all payment methods
+        |   4   - POST   - /billing/payment-methods - Add a new payment method
+        |   5   - PUT    - /billing/payment-methods/{id}/default - Set payment method as default
+        |   6   - DELETE - /billing/payment-methods/{id} - Delete a payment method
         |------------------------------------------------------------------------------------------
         */
 
@@ -1436,6 +1441,38 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::get('/subscription', [BillingController::class, 'getBillingDetails']);
+
+            /*
+             * Action: GET
+             * EndPoint: /payment-methods
+             * Description: List all payment methods for the authenticated church
+             */
+
+            Route::get('/payment-methods', [PaymentMethodController::class, 'getPaymentMethods']);
+
+            /*
+             * Action: POST
+             * EndPoint: /payment-methods
+             * Description: Add a new payment method
+             */
+
+            Route::post('/payment-methods', [PaymentMethodController::class, 'addPaymentMethod']);
+
+            /*
+             * Action: PUT
+             * EndPoint: /payment-methods/{paymentMethodId}/default
+             * Description: Set a payment method as default
+             */
+
+            Route::put('/payment-methods/{paymentMethodId}/default', [PaymentMethodController::class, 'setDefaultPaymentMethod']);
+
+            /*
+             * Action: DELETE
+             * EndPoint: /payment-methods/{paymentMethodId}
+             * Description: Delete a payment method
+             */
+
+            Route::delete('/payment-methods/{paymentMethodId}', [PaymentMethodController::class, 'deletePaymentMethod']);
 
         });
 

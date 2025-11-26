@@ -205,4 +205,59 @@ class StripeRepository implements StripeRepositoryInterface
             return false;
         }
     }
+
+    public function listPaymentMethods(string $customerId): array
+    {
+        try {
+            $paymentMethods = $this->stripe->paymentMethods->all([
+                self::CUSTOMER_KEY => $customerId,
+                self::TYPE_KEY => 'card',
+            ]);
+
+            $customer = $this->getCustomer($customerId);
+            $defaultPaymentMethodId = $customer['default_payment_method'] ?? null;
+
+            return array_map(function ($pm) use ($defaultPaymentMethodId) {
+                return [
+                    self::ID_KEY => $pm->id,
+                    self::TYPE_KEY => $pm->type,
+                    self::BRAND_KEY => $pm->card->brand ?? null,
+                    self::LAST4_KEY => $pm->card->last4 ?? null,
+                    self::EXP_MONTH_KEY => $pm->card->exp_month ?? null,
+                    self::EXP_YEAR_KEY => $pm->card->exp_year ?? null,
+                    'is_default' => $pm->id === $defaultPaymentMethodId,
+                ];
+            }, $paymentMethods->data);
+        } catch (\Exception $e) {
+            return [];
+        }
+    }
+
+    public function detachPaymentMethod(string $paymentMethodId): bool
+    {
+        try {
+            $this->stripe->paymentMethods->detach($paymentMethodId);
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
+    public function getCustomer(string $customerId): ?array
+    {
+        try {
+            $customer = $this->stripe->customers->retrieve($customerId);
+
+            return [
+                self::ID_KEY => $customer->id,
+                self::NAME_KEY => $customer->name,
+                self::EMAIL_KEY => $customer->email,
+                self::PHONE_KEY => $customer->phone,
+                'default_payment_method' => $customer->invoice_settings->default_payment_method ?? null,
+            ];
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
