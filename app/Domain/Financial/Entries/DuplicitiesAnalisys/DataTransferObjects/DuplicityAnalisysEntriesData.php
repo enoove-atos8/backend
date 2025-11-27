@@ -8,8 +8,8 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 class DuplicityAnalisysEntriesData extends DataTransferObject
 {
 
-    /** @var string|null */
-    public string|null $entryType;
+    /** @var array|null */
+    public array|null $entryType;
 
     /** @var float | null */
     public float | null $amount;
@@ -20,8 +20,8 @@ class DuplicityAnalisysEntriesData extends DataTransferObject
     /** @var string|null */
     public string|null $dateTransactionCompensation;
 
-    /** @var integer|null */
-    public int | null $memberId;
+    /** @var array|null */
+    public array|null $memberId;
 
     /** @var string|null */
     public string|null $memberFullName;
@@ -53,11 +53,11 @@ class DuplicityAnalisysEntriesData extends DataTransferObject
     public static function fromResponse(array $data): self
     {
         return new self([
-            'entryType' => $data['entry_type'] ?? null,
+            'entryType' => json_decode(str_replace("'", '"', $data['entry_type'] ?? ''), true) ?? null,
             'amount' => $data['amount'] ?? null,
             'transactionType' => $data['transaction_type'] ?? null,
             'dateTransactionCompensation' => $data['date_transaction_compensation'] ?? null,
-            'memberId' => $data['member_id'] ?? null,
+            'memberId' => json_decode(str_replace("'", '"', $data['member_id'] ?? ''), true) ?? null,
             'memberFullName' => $data['member_full_name'] ?? null,
             'repetitionCount' => $data['repetition_count'] ?? null,
             'groupReturnedId' => $data['group_returned_id'] ?? null,
