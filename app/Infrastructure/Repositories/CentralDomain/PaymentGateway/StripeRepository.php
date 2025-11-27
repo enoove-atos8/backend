@@ -2,7 +2,14 @@
 
 namespace Infrastructure\Repositories\CentralDomain\PaymentGateway;
 
+use App\Domain\CentralDomain\Billing\Constants\InvoiceMessages;
+use App\Domain\CentralDomain\Billing\Constants\InvoiceStatus;
+use App\Domain\CentralDomain\Billing\Constants\PaymentMethodType;
+use Domain\CentralDomain\Billing\DataTransferObjects\BoletoPaymentData;
+use Domain\CentralDomain\Billing\DataTransferObjects\InvoiceData;
+use Domain\CentralDomain\Billing\DataTransferObjects\PixPaymentData;
 use Domain\CentralDomain\PaymentGateway\Interfaces\StripeRepositoryInterface;
+use Illuminate\Support\Collection;
 use Stripe\StripeClient;
 
 class StripeRepository implements StripeRepositoryInterface
@@ -44,6 +51,62 @@ class StripeRepository implements StripeRepositoryInterface
     const PHONE_KEY = 'phone';
 
     const METADATA_KEY = 'metadata';
+
+    const LIMIT_KEY = 'limit';
+
+    const AMOUNT_KEY = 'amount';
+
+    const CURRENCY_KEY = 'currency';
+
+    const CURRENCY_BRL = 'brl';
+
+    const PAYMENT_METHOD_TYPES_KEY = 'payment_method_types';
+
+    const PAYMENT_METHOD_DATA_KEY = 'payment_method_data';
+
+    const PAYMENT_TYPE_BOLETO = 'boleto';
+
+    const PAYMENT_TYPE_PIX = 'pix';
+
+    const PAYMENT_TYPE_CARD = 'card';
+
+    const TAX_ID_KEY = 'tax_id';
+
+    const BILLING_DETAILS_KEY = 'billing_details';
+
+    const ADDRESS_KEY = 'address';
+
+    const LINE1_KEY = 'line1';
+
+    const CITY_KEY = 'city';
+
+    const STATE_KEY = 'state';
+
+    const POSTAL_CODE_KEY = 'postal_code';
+
+    const COUNTRY_KEY = 'country';
+
+    const COUNTRY_BR = 'BR';
+
+    const CONFIRM_KEY = 'confirm';
+
+    const INVOICE_ID_KEY = 'invoice_id';
+
+    const IS_DEFAULT_KEY = 'is_default';
+
+    const INVOICE_SETTINGS_KEY = 'invoice_settings';
+
+    const ITEMS_KEY = 'items';
+
+    const PRICE_KEY = 'price';
+
+    const QUANTITY_KEY = 'quantity';
+
+    const DETAILS_KEY = 'details';
+
+    const INVOICE_PDF_KEY = 'invoice_pdf';
+
+    const HOSTED_INVOICE_URL_KEY = 'hosted_invoice_url';
 
     public function __construct()
     {
@@ -109,14 +172,14 @@ class StripeRepository implements StripeRepositoryInterface
             unset($options['quantity']);
 
             // Construir item com price e quantity (se fornecido)
-            $item = ['price' => $priceId];
+            $item = [self::PRICE_KEY => $priceId];
             if ($quantity !== null) {
-                $item['quantity'] = $quantity;
+                $item[self::QUANTITY_KEY] = $quantity;
             }
 
             $params = array_merge([
                 self::CUSTOMER_KEY => $customerId,
-                'items' => [$item],
+                self::ITEMS_KEY => [$item],
             ], $options);
 
             $subscription = $this->stripe->subscriptions->create($params);
@@ -126,7 +189,7 @@ class StripeRepository implements StripeRepositoryInterface
                 self::STATUS_KEY => $subscription->status,
                 self::CURRENT_PERIOD_END_KEY => $subscription->current_period_end,
                 self::TRIAL_END_KEY => $subscription->trial_end,
-                'items' => $subscription->items->toArray(),
+                self::ITEMS_KEY => $subscription->items->toArray(),
             ];
         } catch (\Exception $e) {
             return null;
@@ -195,7 +258,7 @@ class StripeRepository implements StripeRepositoryInterface
     {
         try {
             $this->stripe->customers->update($customerId, [
-                'invoice_settings' => [
+                self::INVOICE_SETTINGS_KEY => [
                     self::DEFAULT_PAYMENT_METHOD_KEY => $paymentMethodId,
                 ],
             ]);
@@ -211,11 +274,11 @@ class StripeRepository implements StripeRepositoryInterface
         try {
             $paymentMethods = $this->stripe->paymentMethods->all([
                 self::CUSTOMER_KEY => $customerId,
-                self::TYPE_KEY => 'card',
+                self::TYPE_KEY => self::PAYMENT_TYPE_CARD,
             ]);
 
             $customer = $this->getCustomer($customerId);
-            $defaultPaymentMethodId = $customer['default_payment_method'] ?? null;
+            $defaultPaymentMethodId = $customer[self::DEFAULT_PAYMENT_METHOD_KEY] ?? null;
 
             return array_map(function ($pm) use ($defaultPaymentMethodId) {
                 return [
@@ -225,7 +288,7 @@ class StripeRepository implements StripeRepositoryInterface
                     self::LAST4_KEY => $pm->card->last4 ?? null,
                     self::EXP_MONTH_KEY => $pm->card->exp_month ?? null,
                     self::EXP_YEAR_KEY => $pm->card->exp_year ?? null,
-                    'is_default' => $pm->id === $defaultPaymentMethodId,
+                    self::IS_DEFAULT_KEY => $pm->id === $defaultPaymentMethodId,
                 ];
             }, $paymentMethods->data);
         } catch (\Exception $e) {
@@ -254,8 +317,189 @@ class StripeRepository implements StripeRepositoryInterface
                 self::NAME_KEY => $customer->name,
                 self::EMAIL_KEY => $customer->email,
                 self::PHONE_KEY => $customer->phone,
-                'default_payment_method' => $customer->invoice_settings->default_payment_method ?? null,
+                self::DEFAULT_PAYMENT_METHOD_KEY => $customer->invoice_settings->default_payment_method ?? null,
             ];
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * List all invoices for a customer
+     */
+    public function listInvoices(string $customerId, int $limit = 20): Collection
+    {
+        try {
+            $invoices = $this->stripe->invoices->all([
+                self::CUSTOMER_KEY => $customerId,
+                self::LIMIT_KEY => $limit,
+            ]);
+
+            return collect($invoices->data)->map(fn ($invoice) => InvoiceData::fromResponse(
+                $this->mapInvoiceToArray($invoice)
+            ));
+        } catch (\Exception $e) {
+            return collect([]);
+        }
+    }
+
+    /**
+     * Get a specific invoice by ID
+     */
+    public function getInvoice(string $invoiceId): ?InvoiceData
+    {
+        try {
+            $invoice = $this->stripe->invoices->retrieve($invoiceId);
+
+            return InvoiceData::fromResponse($this->mapInvoiceToArray($invoice));
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Map Stripe invoice object to array for DTO
+     */
+    private function mapInvoiceToArray(object $invoice): array
+    {
+        $paymentMethodInfo = $this->getPaymentMethodInfoFromInvoice($invoice);
+
+        return [
+            InvoiceData::ID_KEY => $invoice->id,
+            InvoiceData::NUMBER_KEY => $invoice->number ?? InvoiceMessages::INVOICE_NUMBER_PREFIX . date(InvoiceMessages::DATE_FORMAT_YEAR_MONTH, $invoice->created),
+            InvoiceData::AMOUNT_KEY => $invoice->amount_due,
+            InvoiceData::STATUS_KEY => InvoiceStatus::fromStripeStatus($invoice->status),
+            InvoiceData::DUE_DATE_KEY => $invoice->due_date
+                ? date(InvoiceMessages::DATE_FORMAT_BR, $invoice->due_date)
+                : null,
+            InvoiceData::PAID_AT_KEY => $invoice->status === InvoiceStatus::STRIPE_PAID && $invoice->status_transitions?->paid_at
+                ? date(InvoiceMessages::DATE_FORMAT_BR, $invoice->status_transitions->paid_at)
+                : null,
+            InvoiceData::PAYMENT_METHOD_KEY => $paymentMethodInfo[self::TYPE_KEY] ?? null,
+            InvoiceData::PAYMENT_METHOD_DETAILS_KEY => $paymentMethodInfo[self::DETAILS_KEY] ?? null,
+            InvoiceData::INVOICE_PDF_KEY => $invoice->invoice_pdf ?? null,
+            InvoiceData::HOSTED_INVOICE_URL_KEY => $invoice->hosted_invoice_url ?? null,
+        ];
+    }
+
+    /**
+     * Get payment method info from invoice
+     *
+     * @return array{type: string|null, details: string|null}
+     */
+    private function getPaymentMethodInfoFromInvoice(object $invoice): array
+    {
+        if (! $invoice->payment_intent || ! $invoice->default_payment_method) {
+            return [self::TYPE_KEY => null, self::DETAILS_KEY => null];
+        }
+
+        $paymentMethod = $this->getPaymentMethod($invoice->default_payment_method);
+
+        if (! $paymentMethod) {
+            return [self::TYPE_KEY => null, self::DETAILS_KEY => null];
+        }
+
+        return [
+            self::TYPE_KEY => $paymentMethod[self::TYPE_KEY],
+            self::DETAILS_KEY => $this->formatPaymentMethodDetails($paymentMethod),
+        ];
+    }
+
+    /**
+     * Format payment method details for display
+     */
+    private function formatPaymentMethodDetails(array $paymentMethod): ?string
+    {
+        $type = $paymentMethod[self::TYPE_KEY] ?? null;
+
+        if ($type === PaymentMethodType::CARD && isset($paymentMethod[self::BRAND_KEY], $paymentMethod[self::LAST4_KEY])) {
+            return InvoiceData::formatCardDetails($paymentMethod[self::BRAND_KEY], $paymentMethod[self::LAST4_KEY]);
+        }
+
+        if ($type === PaymentMethodType::BOLETO) {
+            return InvoiceData::formatBoletoDetails();
+        }
+
+        if ($type === PaymentMethodType::PIX) {
+            return InvoiceData::formatPixDetails();
+        }
+
+        return null;
+    }
+
+    /**
+     * Create a PaymentIntent for Boleto payment
+     */
+    public function createBoletoPaymentIntent(array $params): ?BoletoPaymentData
+    {
+        try {
+            $paymentIntent = $this->stripe->paymentIntents->create([
+                self::AMOUNT_KEY => $params[self::AMOUNT_KEY],
+                self::CURRENCY_KEY => self::CURRENCY_BRL,
+                self::CUSTOMER_KEY => $params[self::CUSTOMER_KEY],
+                self::PAYMENT_METHOD_TYPES_KEY => [self::PAYMENT_TYPE_BOLETO],
+                self::PAYMENT_METHOD_DATA_KEY => [
+                    self::TYPE_KEY => self::PAYMENT_TYPE_BOLETO,
+                    self::PAYMENT_TYPE_BOLETO => [
+                        self::TAX_ID_KEY => $params[self::TAX_ID_KEY],
+                    ],
+                    self::BILLING_DETAILS_KEY => [
+                        self::NAME_KEY => $params[self::NAME_KEY],
+                        self::EMAIL_KEY => $params[self::EMAIL_KEY],
+                        self::ADDRESS_KEY => [
+                            self::LINE1_KEY => $params[self::ADDRESS_KEY][self::LINE1_KEY],
+                            self::CITY_KEY => $params[self::ADDRESS_KEY][self::CITY_KEY],
+                            self::STATE_KEY => $params[self::ADDRESS_KEY][self::STATE_KEY],
+                            self::POSTAL_CODE_KEY => $params[self::ADDRESS_KEY][self::POSTAL_CODE_KEY],
+                            self::COUNTRY_KEY => self::COUNTRY_BR,
+                        ],
+                    ],
+                ],
+                self::CONFIRM_KEY => true,
+                self::METADATA_KEY => [
+                    self::INVOICE_ID_KEY => $params[self::INVOICE_ID_KEY],
+                ],
+            ]);
+
+            $boletoDetails = $paymentIntent->next_action->boleto_display_details;
+
+            return BoletoPaymentData::fromResponse([
+                BoletoPaymentData::BARCODE_KEY => $boletoDetails->number,
+                BoletoPaymentData::PDF_URL_KEY => $boletoDetails->hosted_voucher_url,
+                BoletoPaymentData::EXPIRES_AT_KEY => date(InvoiceMessages::DATE_FORMAT_BR, $boletoDetails->expires_at),
+            ]);
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
+    /**
+     * Create a PaymentIntent for PIX payment
+     */
+    public function createPixPaymentIntent(array $params): ?PixPaymentData
+    {
+        try {
+            $paymentIntent = $this->stripe->paymentIntents->create([
+                self::AMOUNT_KEY => $params[self::AMOUNT_KEY],
+                self::CURRENCY_KEY => self::CURRENCY_BRL,
+                self::CUSTOMER_KEY => $params[self::CUSTOMER_KEY],
+                self::PAYMENT_METHOD_TYPES_KEY => [self::PAYMENT_TYPE_PIX],
+                self::PAYMENT_METHOD_DATA_KEY => [
+                    self::TYPE_KEY => self::PAYMENT_TYPE_PIX,
+                ],
+                self::CONFIRM_KEY => true,
+                self::METADATA_KEY => [
+                    self::INVOICE_ID_KEY => $params[self::INVOICE_ID_KEY],
+                ],
+            ]);
+
+            $pixDetails = $paymentIntent->next_action->pix_display_qr_code;
+
+            return PixPaymentData::fromResponse([
+                PixPaymentData::QR_CODE_KEY => $pixDetails->data,
+                PixPaymentData::QR_CODE_URL_KEY => $pixDetails->image_url_png,
+                PixPaymentData::EXPIRES_AT_KEY => date(InvoiceMessages::DATETIME_FORMAT_BR, $pixDetails->expires_at),
+            ]);
         } catch (\Exception $e) {
             return null;
         }
