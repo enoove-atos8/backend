@@ -12,6 +12,7 @@ use App\Application\Api\v1\Financial\Reports\Exits\Controllers\MonthlyExitsRepor
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Billing\Controllers\BillingController;
+use Application\Api\v1\Billing\Controllers\InvoiceController as BillingInvoiceController;
 use Application\Api\v1\Billing\Controllers\PaymentMethodController;
 use Application\Api\v1\Commons\Navigation\Controllers\NavigationMenuController;
 use Application\Api\v1\Commons\Utils\Files\Upload\FileUploadController;
@@ -1473,6 +1474,22 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::delete('/payment-methods/{paymentMethodId}', [PaymentMethodController::class, 'deletePaymentMethod']);
+
+            /*
+             * Action: GET
+             * EndPoint: /invoices
+             * Description: List all invoices for the authenticated church
+             */
+
+            Route::get('/invoices', [BillingInvoiceController::class, 'getInvoices']);
+
+            /*
+             * Action: POST
+             * EndPoint: /invoices/{invoiceId}/pay
+             * Description: Pay an invoice with Boleto or PIX
+             */
+
+            Route::post('/invoices/{invoiceId}/pay', [BillingInvoiceController::class, 'payInvoice']);
 
         });
 

@@ -2,6 +2,11 @@
 
 namespace Domain\CentralDomain\PaymentGateway\Interfaces;
 
+use Domain\CentralDomain\Billing\DataTransferObjects\BoletoPaymentData;
+use Domain\CentralDomain\Billing\DataTransferObjects\InvoiceData;
+use Domain\CentralDomain\Billing\DataTransferObjects\PixPaymentData;
+use Illuminate\Support\Collection;
+
 interface StripeRepositoryInterface
 {
     /**
@@ -53,4 +58,24 @@ interface StripeRepositoryInterface
      * Get customer details from Stripe
      */
     public function getCustomer(string $customerId): ?array;
+
+    /**
+     * List all invoices for a customer
+     */
+    public function listInvoices(string $customerId, int $limit = 20): Collection;
+
+    /**
+     * Get a specific invoice by ID
+     */
+    public function getInvoice(string $invoiceId): ?InvoiceData;
+
+    /**
+     * Create a PaymentIntent for Boleto payment
+     */
+    public function createBoletoPaymentIntent(array $params): ?BoletoPaymentData;
+
+    /**
+     * Create a PaymentIntent for PIX payment
+     */
+    public function createPixPaymentIntent(array $params): ?PixPaymentData;
 }
