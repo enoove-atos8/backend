@@ -48,11 +48,7 @@
         .image-container {
             page-break-after: always;
             break-after: page;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
+            text-align: center;
             padding: 20px;
         }
 
@@ -61,6 +57,8 @@
             max-height: 900px;
             width: auto;
             height: auto;
+            display: block;
+            margin: 0 auto;
         }
 
         .chip {
@@ -222,20 +220,20 @@
     @if ($localPath && file_exists($localPath))
         <div class="image-container">
             @if ($transactionType === 'cash')
-                <div class="bg-gray-200 rounded-xl p-4 mb-4 inline-block w-auto">
-                    <div class="flex items-center gap-8 font-inter">
+                <div class="bg-gray-200 rounded-xl p-4 mb-4 w-full">
+                    <div class="flex items-center justify-between font-inter">
                         <div class="flex items-center gap-2">
                             <span class="{{ $badgeColor }} text-white px-3 py-1 rounded-full text-xs font-semibold">{{ $badgeText }}</span>
                         </div>
                         @if ($dateCompensation)
-                            <div>
-                                <div class="text-secondary text-[12px] font-medium tracking-tight">DATA DE COMPENSAÇÃO</div>
+                            <div class="text-center">
+                                <div class="text-secondary text-[12px] font-medium tracking-tight">DATA DE TRANSAÇÃO</div>
                                 <div class="font-semibold text-gray-800 text-base">
                                     {{ Carbon::parse($dateCompensation)->format('d/m/Y') }}
                                 </div>
                             </div>
                         @endif
-                        <div>
+                        <div class="text-right">
                             <div class="text-secondary text-[12px] font-medium tracking-tight">VALOR DA ENTRADA</div>
                             <div class="font-semibold text-gray-800 text-base">
                                 R$ {{ number_format($amount, 2, ',', '.') }}
