@@ -14,6 +14,7 @@ use App\Domain\Financial\Exits\Purchases\Interfaces\CardPurchaseRepositoryInterf
 use App\Domain\Financial\Reports\Balances\Interfaces\MonthlyBalancesReportsRepositoryInterface;
 use App\Domain\Financial\Reports\Entries\Interfaces\MonthlyReportsRepositoryInterface;
 use App\Domain\Financial\Reports\Exits\Interfaces\MonthlyExitsReportsRepositoryInterface;
+use App\Domain\Financial\Reports\Purchases\Interfaces\MonthlyPurchasesReportsRepositoryInterface;
 use App\Domain\Financial\Reviewers\Interfaces\FinancialReviewerRepositoryInterface;
 use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterface;
 use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
@@ -27,6 +28,7 @@ use App\Infrastructure\Repositories\Financial\Entries\Indicators\TithesMonthlyTa
 use App\Infrastructure\Repositories\Financial\Reports\Balances\MonthlyBalancesReportsRepository;
 use App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository;
 use App\Infrastructure\Repositories\Financial\Reports\Exits\MonthlyExitsReportsRepository;
+use App\Infrastructure\Repositories\Financial\Reports\Purchases\MonthlyPurchasesReportsRepository;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
 use App\Infrastructure\Repositories\Secretary\Membership\MemberRepository;
 use App\Infrastructure\Repositories\Users\User\UserDetailRepository;
@@ -120,6 +122,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MonthlyExitsReportsRepositoryInterface::class, MonthlyExitsReportsRepository::class);
         $this->app->bind(MonthlyBalancesReportsRepositoryInterface::class, MonthlyBalancesReportsRepository::class);
         $this->app->bind(AccountsBalancesRepositoryInterface::class, AccountsBalancesRepository::class);
+        $this->app->bind(MonthlyPurchasesReportsRepositoryInterface::class, MonthlyPurchasesReportsRepository::class);
 
     }
 

@@ -23,7 +23,7 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
 
     const INVOICE_ID_COLUMN = 'invoice_id';
 
-    const PURCHASE_DATE_COLUMN = 'purchase_date';
+    const PURCHASE_DATE_COLUMN = 'date';
 
     const PENDING_VALUE = 'pending';
 
