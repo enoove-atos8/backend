@@ -9,6 +9,7 @@ use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\Accou
 use App\Application\Api\v1\Financial\Reports\Balances\Controllers\MonthlyBalancesReportsController;
 use App\Application\Api\v1\Financial\Reports\Entries\Controllers\MonthlyReportsController;
 use App\Application\Api\v1\Financial\Reports\Exits\Controllers\MonthlyExitsReportsController;
+use App\Application\Api\v1\Financial\Reports\Purchases\Controllers\MonthlyPurchasesReportsController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Billing\Controllers\BillingController;
@@ -818,6 +819,34 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::get('/getReports', [MonthlyBalancesReportsController::class, 'getReports']);
+
+                });
+
+                Route::prefix('purchases')->group(function () {
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyReceiptsReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyReceiptsReport', [MonthlyPurchasesReportsController::class, 'generateMonthlyReceiptsPurchaseReport']);
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /generateMonthlyPurchasesReport
+                     * Description: Include report to be process by job schedule
+                     */
+
+                    Route::post('/generateMonthlyPurchasesReport', [MonthlyPurchasesReportsController::class, 'generateMonthlyPurchasesReport']);
+
+                    /*
+                     * Action: GET
+                     * EndPoint: /getReports
+                     * Description: Get all purchases reports
+                     */
+
+                    Route::get('/getReports', [MonthlyPurchasesReportsController::class, 'getReports']);
 
                 });
 
