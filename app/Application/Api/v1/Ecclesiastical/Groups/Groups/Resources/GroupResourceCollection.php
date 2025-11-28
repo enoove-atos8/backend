@@ -81,9 +81,9 @@ class GroupResourceCollection extends ResourceCollection
      */
     private function getLeaderData($item): ?array
     {
-
-        if (!$this->shouldIncludeLeader())
+        if (! $this->shouldIncludeLeader()) {
             return null;
+        }
 
         if (isset($item->leader)) {
             return [
@@ -92,6 +92,7 @@ class GroupResourceCollection extends ResourceCollection
                 'avatar' => $item->leader->avatar,
                 'cellPhone' => $item->leader->cellPhone,
                 'email' => $item->leader->email,
+                'titheHistory' => $item->leader->titheHistory ?? [],
             ];
         }
 
