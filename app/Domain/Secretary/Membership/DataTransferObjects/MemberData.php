@@ -203,7 +203,7 @@ class MemberData extends DataTransferObject
         $nonPrefixedData = self::getNonPrefixedData($data);
 
         $mergedData = array_merge(
-            ['id' => $data['id'] ?? 0],
+            ['id' => $data['members_id'] ?? $data['id'] ?? 0],
             array_filter($prefixedData, fn ($value) => $value !== null) ?:
                 array_filter($nonPrefixedData, fn ($value) => $value !== null)
         );
