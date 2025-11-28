@@ -48,14 +48,17 @@
         .image-container {
             page-break-after: always;
             break-after: page;
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             padding: 20px;
-            min-height: 800px;
         }
 
         .image-container img {
             max-width: 90%;
-            max-height: 1000px;
+            max-height: 900px;
             width: auto;
             height: auto;
         }
@@ -194,10 +197,54 @@
 
 <div class="page-break"></div>
 
-@foreach ($links as $link)
-    @if (file_exists($link))
+@foreach ($links as $receipt)
+    @php
+        $localPath = is_array($receipt) ? ($receipt['localPath'] ?? null) : $receipt;
+        $transactionType = is_array($receipt) ? ($receipt['transactionType'] ?? 'pix') : 'pix';
+        $entryType = is_array($receipt) ? ($receipt['entryType'] ?? null) : null;
+        $amount = is_array($receipt) ? ($receipt['amount'] ?? 0) : 0;
+        $dateCompensation = is_array($receipt) ? ($receipt['dateCompensation'] ?? null) : null;
+
+        // Definir cor e texto da badge baseado no tipo de entrada
+        $badgeColor = 'bg-gray-500';
+        $badgeText = 'Entrada';
+        if ($entryType === 'designated') {
+            $badgeColor = 'bg-red-500';
+            $badgeText = 'Designada';
+        } elseif ($entryType === 'tithe') {
+            $badgeColor = 'bg-purple-500';
+            $badgeText = 'Dízimo';
+        } elseif ($entryType === 'offer') {
+            $badgeColor = 'bg-green-500';
+            $badgeText = 'Oferta';
+        }
+    @endphp
+    @if ($localPath && file_exists($localPath))
         <div class="image-container">
-            <img src="{{ $link }}" alt="Comprovante">
+            @if ($transactionType === 'cash')
+                <div class="bg-gray-200 rounded-xl p-4 mb-4 inline-block w-auto">
+                    <div class="flex items-center gap-8 font-inter">
+                        <div class="flex items-center gap-2">
+                            <span class="{{ $badgeColor }} text-white px-3 py-1 rounded-full text-xs font-semibold">{{ $badgeText }}</span>
+                        </div>
+                        @if ($dateCompensation)
+                            <div>
+                                <div class="text-secondary text-[12px] font-medium tracking-tight">DATA DE COMPENSAÇÃO</div>
+                                <div class="font-semibold text-gray-800 text-base">
+                                    {{ Carbon::parse($dateCompensation)->format('d/m/Y') }}
+                                </div>
+                            </div>
+                        @endif
+                        <div>
+                            <div class="text-secondary text-[12px] font-medium tracking-tight">VALOR DA ENTRADA</div>
+                            <div class="font-semibold text-gray-800 text-base">
+                                R$ {{ number_format($amount, 2, ',', '.') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+            <img src="{{ $localPath }}" alt="Comprovante">
         </div>
     @endif
 @endforeach

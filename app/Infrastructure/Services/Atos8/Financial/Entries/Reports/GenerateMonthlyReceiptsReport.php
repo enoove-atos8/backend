@@ -81,7 +81,7 @@ class GenerateMonthlyReceiptsReport
 
         if (count($dates) > 0) {
             try {
-                $arrPathReceiptsLocal = [];
+                $receiptsData = [];
                 $group = null;
                 $entryTypesAmount = [
                     'titheAmount' => 0,
@@ -103,7 +103,6 @@ class GenerateMonthlyReceiptsReport
 
                 foreach ($dates as $date) {
                     $entries = $this->getEntriesAction->execute($date, $filters, false);
-                    $linkReceiptEntries = [];
 
                     foreach ($entries as $entry) {
                         $entryTypesAmount['titheAmount'] += $entry->entries_entry_type == EntryRepository::TITHE_VALUE ? $entry->entries_amount : 0;
@@ -114,28 +113,52 @@ class GenerateMonthlyReceiptsReport
                             if ($entry->entries_transaction_type == self::CASH) {
                                 $cultId = $entry->entries_cult_id ?? 'no_cult';
                                 if (! isset($cashCultReceipts[$cultId])) {
-                                    $cashCultReceipts[$cultId] = $entry->entries_receipt_link;
-                                    $linkReceiptEntries[] = $entry->entries_receipt_link;
+                                    $cashCultReceipts[$cultId] = true;
+                                    $receiptsData[] = [
+                                        'link' => $entry->entries_receipt_link,
+                                        'transactionType' => self::CASH,
+                                        'entryType' => $entry->entries_entry_type,
+                                        'amount' => $entry->entries_amount,
+                                        'dateCompensation' => $entry->entries_date_transaction_compensation ?? null,
+                                    ];
+                                } else {
+                                    // Para entradas cash do mesmo culto, apenas adicionar o valor ao registro existente
+                                    foreach ($receiptsData as &$receiptData) {
+                                        if ($receiptData['link'] === $entry->entries_receipt_link && $receiptData['transactionType'] === self::CASH) {
+                                            $receiptData['amount'] += $entry->entries_amount;
+                                            break;
+                                        }
+                                    }
+                                    unset($receiptData);
                                 }
                             } else {
-                                $linkReceiptEntries[] = $entry->entries_receipt_link;
+                                $receiptsData[] = [
+                                    'link' => $entry->entries_receipt_link,
+                                    'transactionType' => self::PIX,
+                                    'entryType' => $entry->entries_entry_type,
+                                    'amount' => $entry->entries_amount,
+                                    'dateCompensation' => $entry->entries_date_transaction_compensation ?? null,
+                                ];
                             }
                         } elseif ($report->includeCashDeposit == 0) {
                             if ($entry->entries_transaction_type == self::PIX) {
-                                $linkReceiptEntries[] = $entry->entries_receipt_link;
+                                $receiptsData[] = [
+                                    'link' => $entry->entries_receipt_link,
+                                    'transactionType' => self::PIX,
+                                    'entryType' => $entry->entries_entry_type,
+                                    'amount' => $entry->entries_amount,
+                                    'dateCompensation' => $entry->entries_date_transaction_compensation ?? null,
+                                ];
                             }
                         }
                     }
-
-                    if (count($linkReceiptEntries) > 0) {
-                        $arrPathReceiptsLocal = array_merge(
-                            $arrPathReceiptsLocal,
-                            $this->downloadImage($linkReceiptEntries, $tenant));
-                    }
                 }
 
-                if (count($arrPathReceiptsLocal) > 0) {
-                    $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $arrPathReceiptsLocal, $filters, $dates, $group, $entryTypesAmount);
+                if (count($receiptsData) > 0) {
+                    // Baixar as imagens e adicionar o path local
+                    $receiptsData = $this->downloadImagesWithData($receiptsData, $tenant);
+
+                    $localPathEntriesMonthlyReceiptsReport = $this->generateSinglePDF($tenant, $receiptsData, $filters, $dates, $group, $entryTypesAmount);
                     $pathReportUploaded = $this->uploadFile->upload($localPathEntriesMonthlyReceiptsReport, self::S3_PATH_MONTHLY_RECEIPTS_REPORTS, $tenant);
                     $this->updateLinkReportRequestsAction->execute($report->id, $pathReportUploaded);
                     $this->updateAmountsReportRequestsAction->execute($report->id, $entryTypesAmount);
@@ -179,6 +202,34 @@ class GenerateMonthlyReceiptsReport
         }
 
         return $arrPaths;
+    }
+
+    /**
+     * Baixa as imagens dos comprovantes e adiciona o path local aos dados.
+     */
+    private function downloadImagesWithData(array $receiptsData, string $tenant): array
+    {
+        $counter = 0;
+
+        foreach ($receiptsData as &$receipt) {
+            if (! empty($receipt['link'])) {
+                $response = Http::get($receipt['link']);
+                $imageName = time().'_'.$counter.'_'.basename($receipt['link']);
+                $imagePath = self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_TEMP_DIR.'/'.$imageName;
+                $directoryName = dirname($imagePath);
+
+                if (! is_dir($directoryName)) {
+                    mkdir($directoryName, 0777, true);
+                }
+
+                file_put_contents($imagePath, $response->body());
+                $receipt['localPath'] = $imagePath;
+                $counter++;
+            }
+        }
+        unset($receipt);
+
+        return $receiptsData;
     }
 
     /**
