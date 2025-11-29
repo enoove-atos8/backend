@@ -53,7 +53,7 @@ class LoginFromAppAction
 
                 if ($user->activated)
                 {
-                    $token = $user->createToken('app', $userRoles)->plainTextToken;
+                    $token = $user->createToken('app', $userRoles, null)->plainTextToken;
                     $user->token = $token;
                     $tenantOfUser = $church->tenantId;
 
