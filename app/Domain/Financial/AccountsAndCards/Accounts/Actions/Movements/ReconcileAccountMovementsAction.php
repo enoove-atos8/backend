@@ -230,7 +230,13 @@ class ReconcileAccountMovementsAction
 
     /**
      * FASE 1: Conciliar cultos (Culto → Extrato)
-     * Para cada culto, busca os depósitos correspondentes no extrato
+     *
+     * Estratégia: Agrupa cultos e depósitos por data de compensação e compara os totais.
+     * Se a soma dos cultos de uma data bater com a soma dos depósitos em dinheiro
+     * da mesma data, todos são conciliados.
+     *
+     * Isso resolve o problema de divisões arbitrárias de depósitos, onde a pessoa
+     * pode depositar valores diferentes do esperado (ex: 1500+525 em vez de 2000+25).
      */
     private function reconcileCults(Collection $cults, Collection $movements, array $reconciliationMap): array
     {
@@ -239,37 +245,38 @@ class ReconcileAccountMovementsAction
         // Obter identificador de depósito em dinheiro do banco
         $cashDepositIdentifier = $this->getCashDepositIdentifier();
 
-        // Ordenar cultos por valor total (MAIOR para MENOR)
-        $cultsSorted = $cults->sortByDesc(function ($c) {
-            return ($c->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
-                + ($c->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
-                + ($c->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
-        });
+        // 1. Agrupar cultos por data de compensação
+        $cultsByDate = $this->groupCultsByCompensationDate($cults);
 
-        foreach ($cultsSorted as $cult) {
-            $cultId = $cult->{self::FIELD_CULTS_ID};
-            $cultDate = Carbon::parse($cult->{self::FIELD_CULTS_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
+        // 2. Agrupar depósitos em dinheiro por data
+        $depositsByDate = $this->groupCashDepositsByDate($movements, $reconciliationMap, $cashDepositIdentifier);
 
-            // Calcular valor total do culto
-            $totalCultAmount = ($cult->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
-                + ($cult->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
-                + ($cult->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
+        // 3. Para cada data, comparar totais e conciliar
+        foreach ($cultsByDate as $date => $cultsData) {
+            $totalCultsAmount = $cultsData['total'];
+            $cultsList = $cultsData['cults'];
 
-            // Calcular quais depósitos esse culto deve gerar
-            $expectedDeposits = $this->calculateCultDeposits($totalCultAmount);
-
-            // Buscar no extrato os depósitos correspondentes
-            $foundMovements = $this->findCultDepositsInExtract($movements, $cultDate, $expectedDeposits, $reconciliationMap, $cashDepositIdentifier);
-
-            // Marcar movimentos como conciliados
-            foreach ($foundMovements as $movementId) {
-                $reconciliationMap[$movementId] = self::STATUS_CONCILIATED;
+            // Verificar se existem depósitos para esta data
+            if (! isset($depositsByDate[$date])) {
+                continue;
             }
 
-            // Se conciliou algum movimento, adicionar entradas do culto para atualização
-            if (count($foundMovements) > 0) {
-                $cultEntryIds = collect($cult->{self::FIELD_ENTRIES} ?? [])->pluck('id')->filter()->values()->toArray();
-                $entriesToUpdate = array_merge($entriesToUpdate, $cultEntryIds);
+            $depositsData = $depositsByDate[$date];
+            $totalDepositsAmount = $depositsData['total'];
+            $depositMovements = $depositsData['movements'];
+
+            // Se os totais batem (dentro da tolerância), conciliar todos
+            if (abs($totalCultsAmount - $totalDepositsAmount) < self::AMOUNT_TOLERANCE) {
+                // Marcar todos os depósitos como conciliados
+                foreach ($depositMovements as $movement) {
+                    $reconciliationMap[$movement->{self::FIELD_ID}] = self::STATUS_CONCILIATED;
+                }
+
+                // Adicionar todas as entradas dos cultos para atualização
+                foreach ($cultsList as $cult) {
+                    $cultEntryIds = collect($cult->{self::FIELD_ENTRIES} ?? [])->pluck('id')->filter()->values()->toArray();
+                    $entriesToUpdate = array_merge($entriesToUpdate, $cultEntryIds);
+                }
             }
         }
 
@@ -280,83 +287,80 @@ class ReconcileAccountMovementsAction
     }
 
     /**
-     * Calcula quais depósitos um culto deve gerar
-     * Exemplo: R$ 8.920 → [2000, 2000, 2000, 2000, 920]
+     * Agrupa cultos por data de compensação e calcula o total de cada grupo
+     *
+     * @return array<string, array{total: float, cults: array}>
      */
-    private function calculateCultDeposits(float $totalAmount): array
+    private function groupCultsByCompensationDate(Collection $cults): array
     {
-        $deposits = [];
+        $grouped = [];
 
-        if ($totalAmount <= self::MAX_CASH_DEPOSIT) {
-            // Culto <= R$ 2.000 gera 1 depósito
-            $deposits[] = $totalAmount;
-        } else {
-            // Culto > R$ 2.000 gera múltiplos depósitos
-            $remaining = $totalAmount;
+        foreach ($cults as $cult) {
+            $date = Carbon::parse($cult->{self::FIELD_CULTS_DATE_TRANSACTION_COMPENSATION})->format('Y-m-d');
 
-            while ($remaining > self::MAX_CASH_DEPOSIT) {
-                $deposits[] = self::MAX_CASH_DEPOSIT;
-                $remaining -= self::MAX_CASH_DEPOSIT;
+            // Calcular valor total do culto
+            $cultAmount = ($cult->{self::FIELD_CULTS_TITHES_AMOUNT} ?? 0)
+                + ($cult->{self::FIELD_CULTS_DESIGNATED_AMOUNT} ?? 0)
+                + ($cult->{self::FIELD_CULTS_OFFER_AMOUNT} ?? 0);
+
+            if (! isset($grouped[$date])) {
+                $grouped[$date] = [
+                    'total' => 0,
+                    'cults' => [],
+                ];
             }
 
-            if ($remaining > 0) {
-                $deposits[] = $remaining;
-            }
+            $grouped[$date]['total'] += $cultAmount;
+            $grouped[$date]['cults'][] = $cult;
         }
 
-        return $deposits;
+        return $grouped;
     }
 
     /**
-     * Busca no extrato os depósitos de um culto
+     * Agrupa depósitos em dinheiro (DIN) por data e calcula o total de cada grupo
+     *
+     * @return array<string, array{total: float, movements: array}>
      */
-    private function findCultDepositsInExtract(
+    private function groupCashDepositsByDate(
         Collection $movements,
-        string $cultDate,
-        array $expectedDeposits,
         array $reconciliationMap,
         ?string $cashDepositIdentifier = null
     ): array {
-        $foundMovementIds = [];
+        $grouped = [];
 
-        // Para cada depósito esperado
-        foreach ($expectedDeposits as $expectedAmount) {
-            // Buscar movimento não conciliado com a data e valor
-            $movement = $movements->first(function ($m) use ($cultDate, $expectedAmount, $reconciliationMap, $cashDepositIdentifier) {
-                // Só considerar se ainda não foi conciliado
-                if ($reconciliationMap[$m->{self::FIELD_ID}] !== self::STATUS_MOVEMENT_NOT_FOUND) {
-                    return false;
-                }
-
-                // Verificar se é crédito e mesma data
-                if ($m->{self::FIELD_MOVEMENT_TYPE} !== self::MOVEMENT_TYPE_CREDIT) {
-                    return false;
-                }
-
-                if ($m->{self::FIELD_MOVEMENT_DATE} !== $cultDate) {
-                    return false;
-                }
-
-                // IMPORTANTE: Cultos são SEMPRE em dinheiro (cash)
-                // Verificar se o movimento é um depósito em dinheiro através do transactionType do MovementsData
-                if ($cashDepositIdentifier !== null) {
-                    if (stripos($m->transactionType, $cashDepositIdentifier) === false) {
-                        return false;
-                    }
-                }
-
-                // Verificar se o valor bate
-                return abs($m->{self::FIELD_AMOUNT} - $expectedAmount) < self::AMOUNT_TOLERANCE;
-            });
-
-            if ($movement) {
-                $foundMovementIds[] = $movement->{self::FIELD_ID};
-                // Marcar como conciliado temporariamente para não reusar
-                $reconciliationMap[$movement->{self::FIELD_ID}] = self::STATUS_CONCILIATED;
+        foreach ($movements as $movement) {
+            // Só considerar se ainda não foi conciliado
+            if ($reconciliationMap[$movement->{self::FIELD_ID}] !== self::STATUS_MOVEMENT_NOT_FOUND) {
+                continue;
             }
+
+            // Verificar se é crédito
+            if ($movement->{self::FIELD_MOVEMENT_TYPE} !== self::MOVEMENT_TYPE_CREDIT) {
+                continue;
+            }
+
+            // Verificar se é depósito em dinheiro
+            if ($cashDepositIdentifier !== null) {
+                if (stripos($movement->transactionType, $cashDepositIdentifier) === false) {
+                    continue;
+                }
+            }
+
+            $date = $movement->{self::FIELD_MOVEMENT_DATE};
+
+            if (! isset($grouped[$date])) {
+                $grouped[$date] = [
+                    'total' => 0,
+                    'movements' => [],
+                ];
+            }
+
+            $grouped[$date]['total'] += $movement->{self::FIELD_AMOUNT};
+            $grouped[$date]['movements'][] = $movement;
         }
 
-        return $foundMovementIds;
+        return $grouped;
     }
 
     /**
