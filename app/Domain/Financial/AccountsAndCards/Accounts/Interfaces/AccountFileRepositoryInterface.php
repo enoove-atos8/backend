@@ -54,4 +54,21 @@ interface AccountFileRepositoryInterface
      * Get file by account id and reference date
      */
     public function getFileByAccountAndReferenceDate(int $accountId, string $referenceDate): ?AccountFileData;
+
+    /**
+     * Get all processed files after a given reference date for an account
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     */
+    public function getProcessedFilesAfterDate(int $accountId, string $referenceDate): Collection;
+
+    /**
+     * Reset file status to 'to_process' for reprocessing
+     */
+    public function resetFileStatusToProcess(int $fileId): bool;
+
+    /**
+     * Get the earliest (oldest) processed file for an account
+     */
+    public function getEarliestProcessedFile(int $accountId): ?AccountFileData;
 }

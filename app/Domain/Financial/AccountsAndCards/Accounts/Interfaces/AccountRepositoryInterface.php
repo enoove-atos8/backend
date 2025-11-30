@@ -41,4 +41,11 @@ interface AccountRepositoryInterface
      * @return AccountData|null
      */
     public function getAccountsById(int $id): ?AccountData;
+
+    /**
+     * Update initial balance and date for an account
+     *
+     * @param  string  $initialBalanceDate  Format: Y-m
+     */
+    public function updateInitialBalance(int $accountId, float $initialBalance, string $initialBalanceDate): bool;
 }

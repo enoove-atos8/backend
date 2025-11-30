@@ -3,10 +3,12 @@
 namespace Domain\Financial\AccountsAndCards\Accounts\Services\BankStatements\Extractors;
 
 use App\Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountFileData;
+use Carbon\Carbon;
 use Domain\Financial\AccountsAndCards\Accounts\Services\BankStatements\DataTransferObjects\ExtractorFileData;
 use Domain\Financial\AccountsAndCards\Accounts\Services\BankStatements\Interfaces\BankStatementExtractorInterface;
 use Illuminate\Support\Str;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Spatie\PdfToText\Pdf;
 
 class CaixaStatementExtractor implements BankStatementExtractorInterface
 {
@@ -15,6 +17,25 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
      * Usado para conciliação de cultos (que são sempre em dinheiro)
      */
     public const TXT_CASH_DEPOSIT_IDENTIFIER = 'DIN';
+
+    /**
+     * Identificador de saldo diário no extrato PDF da Caixa (deve ser ignorado)
+     */
+    public const PDF_DAILY_BALANCE_IDENTIFIER = 'SALDO DIA';
+
+    /**
+     * Número do documento para linhas de saldo diário
+     */
+    public const PDF_DAILY_BALANCE_DOC_NUMBER = '000000';
+
+    /**
+     * Mensagens de erro para validação de PDF
+     */
+    private const ERROR_PERIOD_NOT_FOUND_PDF = 'Movement dates not found in PDF file';
+
+    private const ERROR_MONTH_VALIDATION_FAILED = "Month validation failed: Expected month '%s' not found in file movement date '%s'";
+
+    private const ERROR_PDF_TEXT_EXTRACTION = 'Unable to extract text from PDF file: %s';
 
     /**
      * Extract bank statement data from Caixa file
@@ -137,11 +158,32 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate PDF file month
+     *
+     * Valida o mês do extrato baseado nas datas das movimentações encontradas.
+     *
+     * @throws GeneralExceptions
      */
     private function validatePdfMonth(string $filePath, string $referenceMonth): void
     {
-        // TODO: Implement PDF month validation logic for Caixa
-        // Extract movement dates from PDF and validate
+        $text = $this->extractTextFromPdf($filePath);
+
+        // Busca a primeira data de movimentação no PDF
+        // Formato esperado: "DD/MM/YYYY" no início da linha
+        if (! preg_match('/^(\d{2}\/\d{2}\/\d{4})\s+\d{6}/m', $text, $matches)) {
+            throw new GeneralExceptions(self::ERROR_PERIOD_NOT_FOUND_PDF, 423);
+        }
+
+        // Extrai ano e mês da primeira movimentação (formato: DD/MM/YYYY)
+        $firstMovementDate = $matches[1];
+        $dateParts = explode('/', $firstMovementDate);
+        $yearMonthInFile = $dateParts[2] . $dateParts[1]; // YYYYMM
+
+        if ($yearMonthInFile !== $referenceMonth) {
+            throw new GeneralExceptions(
+                sprintf(self::ERROR_MONTH_VALIDATION_FAILED, $referenceMonth, $firstMovementDate),
+                423
+            );
+        }
     }
 
     /**
@@ -164,11 +206,13 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
 
     /**
      * Validate PDF file account
+     *
+     * O extrato PDF da Caixa não possui cabeçalho com número da conta.
+     * A validação é ignorada e confiamos que o usuário informou a conta correta.
      */
     private function validatePdfAccount(string $filePath, string $accountNumber): void
     {
-        // TODO: Implement PDF account validation logic for Caixa
-        // Extract account information from PDF and validate
+        // PDF não possui informação de conta no cabeçalho - validação não aplicável
     }
 
     /**
@@ -199,11 +243,116 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
         $this->validateAccountFile($filePath, $file, 'PDF');
         $this->validateMonthFile($filePath, $file, 'PDF');
 
-        // TODO: Implement PDF extraction logic for Caixa
+        $text = $this->extractTextFromPdf($filePath);
+        $lines = explode("\n", $text);
+
+        // Extrai o número da conta do cabeçalho para usar nos dados extraídos
+        preg_match('/Conta\s+(\d{4}\s*\/\s*[\d.\-]+)/i', $text, $accountMatch);
+        $accountFromFile = $accountMatch[1] ?? '';
 
         $extractedData = [];
 
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if (empty($line)) {
+                continue;
+            }
+
+            $parsedLine = $this->parsePdfMovementLine($line, $accountFromFile);
+
+            if ($parsedLine !== null) {
+                $extractedData[] = $parsedLine;
+            }
+        }
+
         return $extractedData;
+    }
+
+    /**
+     * Extract text content from PDF file using Spatie PDF to Text
+     *
+     * Utiliza a opção -layout para preservar o formato tabular do extrato
+     *
+     * @throws GeneralExceptions
+     */
+    private function extractTextFromPdf(string $filePath): string
+    {
+        try {
+            $text = Pdf::getText($filePath, null, ['layout']);
+
+            if (empty($text)) {
+                throw new GeneralExceptions(sprintf(self::ERROR_PDF_TEXT_EXTRACTION, $filePath), 500);
+            }
+
+            return $text;
+        } catch (\Exception $e) {
+            throw new GeneralExceptions(sprintf(self::ERROR_PDF_TEXT_EXTRACTION, $e->getMessage()), 500);
+        }
+    }
+
+    /**
+     * Parse a single movement line from PDF
+     *
+     * Formato esperado da linha (extraído com pdftotext -layout):
+     * "01/07/2025   010856      PAG BOLETO                5.351,32 D"
+     * "07/07/2025   091700      DP DIN ATM                1.404,00 C"
+     */
+    private function parsePdfMovementLine(string $line, string $account): ?ExtractorFileData
+    {
+        // Ignora linhas de SALDO DIA (documento 000000)
+        if (Str::contains($line, self::PDF_DAILY_BALANCE_IDENTIFIER)) {
+            return null;
+        }
+
+        // Ignora linhas que contêm apenas "Saldo" (linha de saldo após cada movimentação)
+        if (preg_match('/^\s*Saldo\s+[\d.,]+\s+[CD]\s*$/', $line)) {
+            return null;
+        }
+
+        // Regex para capturar linha de movimentação
+        // Formato: DATA       NR.DOC      HISTÓRICO              VALOR   TIPO
+        // Ex: "01/07/2025   010856      PAG BOLETO                5.351,32 D"
+        $pattern = '/^(\d{2}\/\d{2}\/\d{4})\s+(\d{6})\s+(.+?)\s+([\d.,]+)\s+([CD])\s*$/';
+
+        if (! preg_match($pattern, $line, $matches)) {
+            return null;
+        }
+
+        $date = $matches[1];
+        $documentNumber = $matches[2];
+        $description = trim($matches[3]);
+        $amount = $matches[4];
+        $type = $matches[5];
+
+        // Converte a data de DD/MM/YYYY para Y-m-d
+        $movementDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+
+        // Converte o valor de formato brasileiro (1.234,56) para float
+        $amountFloat = $this->parseAmountFromPdf($amount);
+
+        return new ExtractorFileData([
+            'movementDate' => $movementDate,
+            'description' => $description,
+            'amount' => $amountFloat,
+            'type' => $type,
+            'documentNumber' => $documentNumber,
+            'account' => $account,
+        ]);
+    }
+
+    /**
+     * Parse amount from PDF format to float
+     *
+     * Converte "1.604,35" para 1604.35
+     */
+    private function parseAmountFromPdf(string $amount): float
+    {
+        // Remove separador de milhar (.) e substitui vírgula decimal por ponto
+        $normalized = str_replace('.', '', $amount);
+        $normalized = str_replace(',', '.', $normalized);
+
+        return (float) $normalized;
     }
 
     /**

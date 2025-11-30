@@ -120,4 +120,19 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
 
         return $this->doQuery($query);
     }
+
+    /**
+     * Update initial balance and date for an account
+     *
+     * @param  string  $initialBalanceDate  Format: Y-m
+     */
+    public function updateInitialBalance(int $accountId, float $initialBalance, string $initialBalanceDate): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $accountId)
+            ->update([
+                'initial_balance' => $initialBalance,
+                'initial_balance_date' => $initialBalanceDate,
+            ]) > 0;
+    }
 }

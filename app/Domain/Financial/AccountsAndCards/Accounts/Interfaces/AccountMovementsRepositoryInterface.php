@@ -23,6 +23,13 @@ interface AccountMovementsRepositoryInterface
     public function deleteByAccountAndFile(int $accountId, int $fileId): bool;
 
     /**
+     * Delete movements by account and reference date (month)
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     */
+    public function deleteByAccountAndReferenceDate(int $accountId, string $referenceDate): bool;
+
+    /**
      * Get movements by account id and reference date
      */
     public function getMovements(int $accountId, string $referenceDate, bool $paginate = true): Collection|Paginator;

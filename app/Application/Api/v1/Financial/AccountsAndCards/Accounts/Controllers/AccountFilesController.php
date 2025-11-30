@@ -47,9 +47,45 @@ class AccountFilesController
         try {
             $fileId = $request->input('id');
             $type = $request->input('type');
+            $forceProcess = $request->boolean('forceProcess', false);
+            $initialBalance = $request->input('initialBalance');
+            $initialBalanceDate = $request->input('initialBalanceDate');
             $tenant = explode('.', $request->getHost())[0];
 
-            $handleFileProcessAction->execute($fileId, $type, $tenant);
+            $result = $handleFileProcessAction->execute(
+                $fileId,
+                $type,
+                $tenant,
+                $forceProcess,
+                $initialBalance !== null ? (float) $initialBalance : null,
+                $initialBalanceDate
+            );
+
+            // Se requer confirmação para meses futuros, retornar 409
+            if ($result !== null && isset($result['requiresConfirmation']) && $result['requiresConfirmation']) {
+                return response([
+                    'message' => sprintf(ReturnMessages::FUTURE_MONTHS_EXIST, $result['futureMonths'], $result['currentMonth']),
+                    'requiresConfirmation' => true,
+                    'futureMonths' => $result['futureMonths'],
+                ], 409);
+            }
+
+            // Se requer saldo inicial, retornar 422
+            if ($result !== null && isset($result['requiresInitialBalance']) && $result['requiresInitialBalance']) {
+                return response([
+                    'message' => sprintf(
+                        ReturnMessages::INITIAL_BALANCE_REQUIRED,
+                        $result['requiredBalanceMonthFormatted'],
+                        $result['currentMonth']
+                    ),
+                    'requiresInitialBalance' => true,
+                    'requiredBalanceMonth' => $result['requiredBalanceMonth'],
+                    'requiredBalanceMonthFormatted' => $result['requiredBalanceMonthFormatted'],
+                    'currentBalanceMonth' => $result['currentBalanceMonth'],
+                    'currentBalanceMonthFormatted' => $result['currentBalanceMonthFormatted'],
+                    'currentBalance' => $result['currentBalance'],
+                ], 422);
+            }
 
             return response([
                 'message' => ReturnMessages::FILE_PUT_TO_PROCESS,

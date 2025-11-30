@@ -145,7 +145,11 @@ class ProcessAccountFileJob implements ShouldQueue
         BankStatementExtractorFactory $extractorFactory
     ): ?array {
         if ($processingType == AccountFilesRepository::TYPE_PROCESSING_MOVEMENTS_EXTRACTION) {
-            if (Str::contains(basename($fileDownloaded), Str::lower(AccountFilesRepository::TXT_TYPE_EXTRACTION))) {
+            $fileBaseName = Str::lower(basename($fileDownloaded));
+            $isTxtFile = Str::contains($fileBaseName, Str::lower(AccountFilesRepository::TXT_TYPE_EXTRACTION));
+            $isPdfFile = Str::contains($fileBaseName, Str::lower(AccountFilesRepository::PDF_TYPE_EXTRACTION));
+
+            if ($isTxtFile || $isPdfFile) {
                 $bankName = Str::lower(Str::ascii($file->account->bankName));
                 $extractor = $extractorFactory->make($bankName);
 
