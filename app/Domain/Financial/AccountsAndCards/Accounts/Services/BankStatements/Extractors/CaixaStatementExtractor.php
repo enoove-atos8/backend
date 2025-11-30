@@ -29,6 +29,16 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
     public const PDF_DAILY_BALANCE_DOC_NUMBER = '000000';
 
     /**
+     * Formatos de PDF suportados pela Caixa
+     *
+     * FORMAT_1: Saldo em linha separada (formato antigo)
+     * FORMAT_2: Saldo na mesma linha da movimentação (formato novo)
+     */
+    private const PDF_FORMAT_1 = 'format_1';
+
+    private const PDF_FORMAT_2 = 'format_2';
+
+    /**
      * Mensagens de erro para validação de PDF
      */
     private const ERROR_PERIOD_NOT_FOUND_PDF = 'Movement dates not found in PDF file';
@@ -246,6 +256,9 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
         $text = $this->extractTextFromPdf($filePath);
         $lines = explode("\n", $text);
 
+        // Detecta o formato do PDF baseado no cabeçalho
+        $pdfFormat = $this->detectPdfFormat($text);
+
         // Extrai o número da conta do cabeçalho para usar nos dados extraídos
         preg_match('/Conta\s+(\d{4}\s*\/\s*[\d.\-]+)/i', $text, $accountMatch);
         $accountFromFile = $accountMatch[1] ?? '';
@@ -259,7 +272,11 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
                 continue;
             }
 
-            $parsedLine = $this->parsePdfMovementLine($line, $accountFromFile);
+            // Usa o método de parsing apropriado baseado no formato detectado
+            $parsedLine = match ($pdfFormat) {
+                self::PDF_FORMAT_2 => $this->parsePdfMovementLineFormat2($line, $accountFromFile),
+                default => $this->parsePdfMovementLine($line, $accountFromFile),
+            };
 
             if ($parsedLine !== null) {
                 $extractedData[] = $parsedLine;
@@ -314,6 +331,73 @@ class CaixaStatementExtractor implements BankStatementExtractorInterface
         // Formato: DATA       NR.DOC      HISTÓRICO              VALOR   TIPO
         // Ex: "01/07/2025   010856      PAG BOLETO                5.351,32 D"
         $pattern = '/^(\d{2}\/\d{2}\/\d{4})\s+(\d{6})\s+(.+?)\s+([\d.,]+)\s+([CD])\s*$/';
+
+        if (! preg_match($pattern, $line, $matches)) {
+            return null;
+        }
+
+        $date = $matches[1];
+        $documentNumber = $matches[2];
+        $description = trim($matches[3]);
+        $amount = $matches[4];
+        $type = $matches[5];
+
+        // Converte a data de DD/MM/YYYY para Y-m-d
+        $movementDate = Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+
+        // Converte o valor de formato brasileiro (1.234,56) para float
+        $amountFloat = $this->parseAmountFromPdf($amount);
+
+        return new ExtractorFileData([
+            'movementDate' => $movementDate,
+            'description' => $description,
+            'amount' => $amountFloat,
+            'type' => $type,
+            'documentNumber' => $documentNumber,
+            'account' => $account,
+        ]);
+    }
+
+    /**
+     * Detect PDF format based on header structure
+     *
+     * Formato 1: Cabeçalho sem coluna "Saldo" - saldo aparece em linha separada
+     * Formato 2: Cabeçalho com coluna "Saldo" - saldo na mesma linha da movimentação
+     */
+    private function detectPdfFormat(string $text): string
+    {
+        // Se o cabeçalho contém "Valor" seguido de "Saldo", é o Formato 2
+        if (preg_match('/Valor\s+Saldo/i', $text)) {
+            return self::PDF_FORMAT_2;
+        }
+
+        return self::PDF_FORMAT_1;
+    }
+
+    /**
+     * Parse a single movement line from PDF Format 2
+     *
+     * Formato esperado da linha (extraído com pdftotext -layout):
+     * "01/08/2025                 010708                          C PIX QRES           70,00 C    7.314,32 C"
+     *
+     * Neste formato, o saldo aparece na mesma linha após o tipo da movimentação
+     */
+    private function parsePdfMovementLineFormat2(string $line, string $account): ?ExtractorFileData
+    {
+        // Ignora linhas de SALDO DIA (documento 000000)
+        if (Str::contains($line, self::PDF_DAILY_BALANCE_IDENTIFIER)) {
+            return null;
+        }
+
+        // Ignora linha de SALDO ANTERIOR
+        if (Str::contains($line, 'SALDO ANTERIOR')) {
+            return null;
+        }
+
+        // Regex para capturar linha de movimentação do Formato 2
+        // Formato: DATA   NR.DOC   HISTÓRICO   VALOR   TIPO   SALDO   TIPO_SALDO
+        // Ex: "01/08/2025                 010708                          C PIX QRES           70,00 C    7.314,32 C"
+        $pattern = '/^(\d{2}\/\d{2}\/\d{4})\s+(\d{6})\s+(.+?)\s+([\d.,]+)\s+([CD])\s+[\d.,]+\s+[CD]\s*$/';
 
         if (! preg_match($pattern, $line, $matches)) {
             return null;
