@@ -74,4 +74,22 @@ class AccountsBalancesRepository extends BaseRepository implements AccountsBalan
 
         return $this->doQuery($query);
     }
+
+    /**
+     * Delete balance by account and reference date
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     *
+     * @throws BindingResolutionException
+     */
+    public function deleteByAccountAndReferenceDate(int $accountId, string $referenceDate): bool
+    {
+        $query = function () use ($accountId, $referenceDate) {
+            return $this->model::where(self::ACCOUNT_ID_COLUMN, $accountId)
+                ->where(self::REFERENCE_DATE_COLUMN, $referenceDate)
+                ->delete() > 0;
+        };
+
+        return $this->doQuery($query);
+    }
 }

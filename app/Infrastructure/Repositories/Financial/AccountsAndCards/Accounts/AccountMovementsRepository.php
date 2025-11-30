@@ -132,6 +132,19 @@ class AccountMovementsRepository extends BaseRepository implements AccountMoveme
     }
 
     /**
+     * Delete movements by account and reference date (month)
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     */
+    public function deleteByAccountAndReferenceDate(int $accountId, string $referenceDate): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ACCOUNT_ID_COLUMN, $accountId)
+            ->where(self::MOVEMENT_DATE_COLUMN, BaseRepository::OPERATORS['LIKE'], "{$referenceDate}%")
+            ->delete() > 0;
+    }
+
+    /**
      * Get movements by account id and reference date
      *
      * @throws BindingResolutionException

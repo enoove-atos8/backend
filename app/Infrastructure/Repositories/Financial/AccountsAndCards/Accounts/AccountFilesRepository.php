@@ -282,4 +282,90 @@ class AccountFilesRepository extends BaseRepository implements AccountFileReposi
 
         return $this->doQuery($query);
     }
+
+    /**
+     * Get all processed files after a given reference date for an account
+     *
+     * @param  string  $referenceDate  Format: Y-m
+     *
+     * @throws BindingResolutionException
+     */
+    public function getProcessedFilesAfterDate(int $accountId, string $referenceDate): Collection
+    {
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            AccountRepository::DISPLAY_SELECT_COLUMNS,
+        );
+
+        $query = function () use ($accountId, $referenceDate, $displayColumnsFromRelationship) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->select($displayColumnsFromRelationship)
+
+                ->leftJoin(AccountRepository::TABLE_NAME, self::ACCOUNT_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    AccountRepository::ID_COLUMN_JOINED)
+
+                ->where(self::ACCOUNT_ID_COLUMN_JOINED, BaseRepository::OPERATORS['EQUALS'], $accountId)
+                ->where(self::REFERENCE_DATE_COLUMN, BaseRepository::OPERATORS['MAJOR'], $referenceDate)
+                ->where(self::STATUS_COLUMN, BaseRepository::OPERATORS['EQUALS'], self::MOVEMENTS_DONE)
+                ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false)
+                ->orderBy(self::REFERENCE_DATE_COLUMN, 'asc');
+
+            $result = $q->get();
+
+            return collect($result)->map(fn ($item) => AccountFileData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+    /**
+     * Reset file status to 'to_process' for reprocessing
+     *
+     * @throws BindingResolutionException
+     */
+    public function resetFileStatusToProcess(int $fileId): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $fileId,
+        ];
+
+        return $this->update($conditions, [
+            'status' => self::TO_PROCESS,
+        ]);
+    }
+
+    /**
+     * Get the earliest (oldest) processed file for an account
+     *
+     * @throws BindingResolutionException
+     */
+    public function getEarliestProcessedFile(int $accountId): ?AccountFileData
+    {
+        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+            AccountRepository::DISPLAY_SELECT_COLUMNS,
+        );
+
+        $query = function () use ($accountId, $displayColumnsFromRelationship) {
+
+            $q = DB::table(self::TABLE_NAME)
+                ->select($displayColumnsFromRelationship)
+
+                ->leftJoin(AccountRepository::TABLE_NAME, self::ACCOUNT_ID_COLUMN_JOINED,
+                    BaseRepository::OPERATORS['EQUALS'],
+                    AccountRepository::ID_COLUMN_JOINED)
+
+                ->where(self::ACCOUNT_ID_COLUMN_JOINED, BaseRepository::OPERATORS['EQUALS'], $accountId)
+                ->where(self::STATUS_COLUMN, BaseRepository::OPERATORS['EQUALS'], self::MOVEMENTS_DONE)
+                ->orderBy(self::REFERENCE_DATE_COLUMN, 'asc');
+
+            $result = $q->first();
+
+            return $result ? AccountFileData::fromResponse((array) $result) : null;
+        };
+
+        return $this->doQuery($query);
+    }
 }
