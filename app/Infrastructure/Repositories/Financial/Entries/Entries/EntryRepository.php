@@ -909,6 +909,14 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
     public function getHistoryTitheByMemberId(int $memberId, int $months = 6): array
     {
         $query = function () use ($memberId, $months) {
+            // Verifica se este membro é dependente de outro (busca quem tem este membro como dependent_member_id)
+            $memberRepository = app()->make(MemberRepository::class);
+            $principalMemberId = $memberRepository->getPrincipalMemberId($memberId);
+
+            // Se for dependente, busca o histórico do membro principal (dizimista)
+            $isDependent = $principalMemberId !== null;
+            $searchMemberId = $isDependent ? $principalMemberId : $memberId;
+
             $history = [];
             $currentDate = now();
 
@@ -920,7 +928,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
             // Busca os dízimos do membro nos últimos N meses
             $tithes = DB::table(self::TABLE_NAME)
-                ->where(self::MEMBER_ID_COLUMN, $memberId)
+                ->where(self::MEMBER_ID_COLUMN, $searchMemberId)
                 ->where(self::ENTRY_TYPE_COLUMN, self::TITHE_VALUE)
                 ->where(self::DELETED_COLUMN, false)
                 ->whereNotNull(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN)
@@ -939,7 +947,10 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
                 }
             }
 
-            return $history;
+            return [
+                'isDependent' => $isDependent,
+                'history' => $history,
+            ];
         };
 
         return $this->doQuery($query);
