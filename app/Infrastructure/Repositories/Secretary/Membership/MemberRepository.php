@@ -91,7 +91,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         'members.blood_type as members_blood_type',
         'members.education as members_education',
         'members.group_ids as members_group_ids',
-        'members.dependent_member_id as members_dependent_member_id',
+        'members.dependents_members_ids as members_dependents_members_ids',
     ];
 
     /**
@@ -133,7 +133,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'blood_type' => $memberData->bloodType,
             'education' => $memberData->education,
             'group_ids' => $memberData->groupIds,
-            'dependent_member_id' => $memberData->dependentMemberId,
+            'dependents_members_ids' => $memberData->dependentsMembersIds ? json_encode($memberData->dependentsMembersIds) : null,
         ]);
     }
 
@@ -240,9 +240,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 $countRows = count($q->get());
                 $result = $q->simplePaginate(self::PAGINATE_NUMBER);
 
-                $result->setCollection(
-                    $result->getCollection()->map(fn ($item) => MemberData::fromResponse((array) $item))
-                );
+                $membersWithDependents = $this->populateDependentsMembersCollection($result->getCollection());
+                $result->setCollection(collect($membersWithDependents));
 
                 return [
                     'results' => $result,
@@ -252,10 +251,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             } else {
                 $countRows = count($q->get());
                 $result = $q->get();
-                $results = collect($result)->map(fn ($item) => MemberData::fromResponse((array) $item));
+                $results = $this->populateDependentsMembersCollection($result);
 
                 return [
-                    'results' => $results,
+                    'results' => collect($results),
                     'countRows' => $countRows,
                 ];
             }
@@ -303,8 +302,79 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         }
 
         $attributes = $group->getAttributes();
+        $memberData = MemberData::fromResponse($attributes);
 
-        return MemberData::fromResponse($attributes);
+        return $this->populateDependentsMembers($memberData);
+    }
+
+    /**
+     * Popula os dados completos dos membros dependentes para um único membro
+     */
+    private function populateDependentsMembers(MemberData $memberData): MemberData
+    {
+        if (! empty($memberData->dependentsMembersIds)) {
+            $dependentsMembers = DB::table(self::TABLE_NAME)
+                ->whereIn(self::ID_COLUMN, $memberData->dependentsMembersIds)
+                ->get([self::ID_COLUMN, self::FULL_NAME_COLUMN, 'avatar'])
+                ->map(fn ($item) => [
+                    'id' => $item->id,
+                    'fullName' => $item->full_name,
+                    'avatar' => $item->avatar,
+                ])
+                ->toArray();
+
+            $memberData->dependentsMembers = $dependentsMembers;
+        }
+
+        return $memberData;
+    }
+
+    /**
+     * Popula os dados completos dos membros dependentes para uma coleção de membros
+     * Otimizado para evitar N+1 queries
+     */
+    private function populateDependentsMembersCollection(iterable $members): array
+    {
+        $membersArray = collect($members)->map(fn ($item) => MemberData::fromResponse((array) $item))->toArray();
+
+        // Coletar todos os IDs de dependentes únicos
+        $allDependentIds = [];
+        foreach ($membersArray as $member) {
+            if (! empty($member->dependentsMembersIds)) {
+                $allDependentIds = array_merge($allDependentIds, $member->dependentsMembersIds);
+            }
+        }
+        $allDependentIds = array_unique($allDependentIds);
+
+        // Buscar todos os dependentes em uma única query
+        $dependentsData = [];
+        if (! empty($allDependentIds)) {
+            $dependentsData = DB::table(self::TABLE_NAME)
+                ->whereIn(self::ID_COLUMN, $allDependentIds)
+                ->get([self::ID_COLUMN, self::FULL_NAME_COLUMN, 'avatar'])
+                ->keyBy(self::ID_COLUMN)
+                ->toArray();
+        }
+
+        // Mapear os dependentes para cada membro
+        foreach ($membersArray as $member) {
+            if (! empty($member->dependentsMembersIds)) {
+                $dependentsMembers = [];
+                foreach ($member->dependentsMembersIds as $dependentId) {
+                    if (isset($dependentsData[$dependentId])) {
+                        $dependent = $dependentsData[$dependentId];
+                        $dependentsMembers[] = [
+                            'id' => $dependent->id,
+                            'fullName' => $dependent->full_name,
+                            'avatar' => $dependent->avatar,
+                        ];
+                    }
+                }
+                $member->dependentsMembers = $dependentsMembers;
+            }
+        }
+
+        return $membersArray;
     }
 
     /**
@@ -522,16 +592,16 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'blood_type' => $memberData->bloodType,
             'education' => $memberData->education,
             'group_ids' => $memberData->groupIds,
-            'dependent_member_id' => $memberData->dependentMemberId,
+            'dependents_members_ids' => $memberData->dependentsMembersIds ? json_encode($memberData->dependentsMembersIds) : null,
         ]);
     }
 
     /**
-     * Retorna o dependent_member_id do membro (quem é o dependente deste membro)
+     * Retorna os IDs dos dependentes do membro
      *
      * @throws BindingResolutionException
      */
-    public function getDependentMemberId(int $memberId): ?int
+    public function getDependentsMembersIds(int $memberId): ?array
     {
         $query = function () use ($memberId) {
             $result = DB::table(self::TABLE_NAME)
@@ -544,7 +614,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
             $memberData = MemberData::fromResponse((array) $result);
 
-            return $memberData->dependentMemberId;
+            return $memberData->dependentsMembersIds;
         };
 
         return $this->doQuery($query);
@@ -559,7 +629,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     {
         $query = function () use ($memberId) {
             $result = DB::table(self::TABLE_NAME)
-                ->where('dependent_member_id', $memberId)
+                ->whereRaw('JSON_CONTAINS(dependents_members_ids, ?, "$")', [json_encode($memberId)])
                 ->first();
 
             if (! $result) {

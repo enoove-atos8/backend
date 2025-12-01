@@ -76,7 +76,7 @@ class MemberResourceCollection extends ResourceCollection
                 'otherInformation' => [
                     'bloodType' => $item->bloodType,
                     'education' => $item->education,
-                    'dependentMemberId' => $item->dependentMemberId,
+                    'dependentsMembers' => $item->dependentsMembers ?? [],
                 ],
                 'titheAmount' => $item->titheAmount,
                 'titheHistory' => $item->titheHistory ?? [

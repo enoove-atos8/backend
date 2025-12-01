@@ -51,7 +51,8 @@ class MemberRequest extends FormRequest
             'ecclesiasticalInformation.groupIds' => '',
             'otherInformation.bloodType' => '',
             'otherInformation.education' => '',
-            'otherInformation.dependentMemberId' => ['nullable', 'integer', 'exists:members,id'],
+            'otherInformation.dependentsMembersIds' => ['nullable', 'array'],
+            'otherInformation.dependentsMembersIds.*' => ['integer', 'exists:members,id'],
         ];
     }
 
@@ -100,7 +101,7 @@ class MemberRequest extends FormRequest
             groupIds: $this->input('ecclesiasticalInformation.groupIds'),
             bloodType: $this->input('otherInformation.bloodType'),
             education: $this->input('otherInformation.education'),
-            dependentMemberId: $this->input('otherInformation.dependentMemberId'),
+            dependentsMembersIds: $this->input('otherInformation.dependentsMembersIds'),
         );
     }
 }
