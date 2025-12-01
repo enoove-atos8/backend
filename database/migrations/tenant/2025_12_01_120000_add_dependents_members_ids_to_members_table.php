@@ -13,10 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        if (Schema::hasTable('members') && !Schema::hasColumn('members', 'dependent_member_id')) {
+        if (Schema::hasTable('members') && !Schema::hasColumn('members', 'dependents_members_ids')) {
             Schema::table('members', function (Blueprint $table) {
-                $table->unsignedInteger('dependent_member_id')->nullable()->after('group_ids');
-                $table->foreign('dependent_member_id')->references('id')->on('members')->onDelete('SET NULL');
+                $table->json('dependents_members_ids')->nullable()->after('group_ids');
             });
         }
     }
@@ -28,10 +27,9 @@ return new class extends Migration
      */
     public function down()
     {
-        if (Schema::hasTable('members')) {
+        if (Schema::hasTable('members') && Schema::hasColumn('members', 'dependents_members_ids')) {
             Schema::table('members', function (Blueprint $table) {
-                $table->dropForeign(['dependent_member_id']);
-                $table->dropColumn('dependent_member_id');
+                $table->dropColumn('dependents_members_ids');
             });
         }
     }

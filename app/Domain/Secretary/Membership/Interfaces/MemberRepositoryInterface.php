@@ -36,7 +36,7 @@ interface MemberRepositoryInterface
 
     public function updateMember($id, MemberData $memberData): mixed;
 
-    public function getDependentMemberId(int $memberId): ?int;
+    public function getDependentsMembersIds(int $memberId): ?array;
 
     public function getPrincipalMemberId(int $memberId): ?int;
 }
