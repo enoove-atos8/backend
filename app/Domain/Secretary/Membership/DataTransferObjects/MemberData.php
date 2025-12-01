@@ -63,6 +63,8 @@ class MemberData extends DataTransferObject
 
     public const GROUP_IDS = 'groupIds';
 
+    public const DEPENDENT_MEMBER_ID = 'dependentMemberId';
+
     public int $id = 0;
 
     public ?bool $activated;
@@ -119,6 +121,8 @@ class MemberData extends DataTransferObject
 
     public array|string|null $groupIds;
 
+    public ?int $dependentMemberId;
+
     public ?float $titheAmount;
 
     /**
@@ -157,6 +161,7 @@ class MemberData extends DataTransferObject
             'bloodType' => $data['members_blood_type'] ?? null,
             'education' => $data['members_education'] ?? null,
             'groupIds' => isset($data['members_group_ids']) ? (is_string($data['members_group_ids']) ? json_decode($data['members_group_ids'], true) : $data['members_group_ids']) : null,
+            'dependentMemberId' => isset($data['members_dependent_member_id']) ? (int) $data['members_dependent_member_id'] : null,
             'titheAmount' => $data['tithe_amount'] ?? null,
         ];
     }
@@ -191,6 +196,7 @@ class MemberData extends DataTransferObject
             'bloodType' => $data['blood_type'] ?? null,
             'education' => $data['education'] ?? null,
             'groupIds' => isset($data['group_ids']) ? (is_string($data['group_ids']) ? json_decode($data['group_ids'], true) : $data['group_ids']) : null,
+            'dependentMemberId' => isset($data['dependent_member_id']) ? (int) $data['dependent_member_id'] : null,
         ];
     }
 

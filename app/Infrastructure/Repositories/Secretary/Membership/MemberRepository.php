@@ -90,6 +90,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         'members.baptism_date as members_baptism_date',
         'members.blood_type as members_blood_type',
         'members.education as members_education',
+        'members.group_ids as members_group_ids',
+        'members.dependent_member_id as members_dependent_member_id',
     ];
 
     /**
@@ -131,6 +133,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'blood_type' => $memberData->bloodType,
             'education' => $memberData->education,
             'group_ids' => $memberData->groupIds,
+            'dependent_member_id' => $memberData->dependentMemberId,
         ]);
     }
 
@@ -519,7 +522,56 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             'blood_type' => $memberData->bloodType,
             'education' => $memberData->education,
             'group_ids' => $memberData->groupIds,
+            'dependent_member_id' => $memberData->dependentMemberId,
         ]);
+    }
+
+    /**
+     * Retorna o dependent_member_id do membro (quem é o dependente deste membro)
+     *
+     * @throws BindingResolutionException
+     */
+    public function getDependentMemberId(int $memberId): ?int
+    {
+        $query = function () use ($memberId) {
+            $result = DB::table(self::TABLE_NAME)
+                ->where(self::ID_COLUMN, $memberId)
+                ->first();
+
+            if (! $result) {
+                return null;
+            }
+
+            $memberData = MemberData::fromResponse((array) $result);
+
+            return $memberData->dependentMemberId;
+        };
+
+        return $this->doQuery($query);
+    }
+
+    /**
+     * Retorna o ID do membro principal (dizimista) que tem este membro como dependente
+     *
+     * @throws BindingResolutionException
+     */
+    public function getPrincipalMemberId(int $memberId): ?int
+    {
+        $query = function () use ($memberId) {
+            $result = DB::table(self::TABLE_NAME)
+                ->where('dependent_member_id', $memberId)
+                ->first();
+
+            if (! $result) {
+                return null;
+            }
+
+            $memberData = MemberData::fromResponse((array) $result);
+
+            return $memberData->id;
+        };
+
+        return $this->doQuery($query);
     }
 
     /**

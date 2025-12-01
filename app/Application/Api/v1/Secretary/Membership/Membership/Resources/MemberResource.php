@@ -66,8 +66,12 @@ class MemberResource extends JsonResource
             'otherInformation' => [
                 'bloodType' => $member->bloodType,
                 'education' => $member->education,
+                'dependentMemberId' => $member->dependentMemberId,
             ],
-            'titheHistory' => $member->titheHistory ?? [],
+            'titheHistory' => $member->titheHistory ?? [
+                'isDependent' => false,
+                'history' => [],
+            ],
         ];
     }
 

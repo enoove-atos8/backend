@@ -35,4 +35,8 @@ interface MemberRepositoryInterface
     public function updateMiddleCpf(int $memberId, string $middleCpf): mixed;
 
     public function updateMember($id, MemberData $memberData): mixed;
+
+    public function getDependentMemberId(int $memberId): ?int;
+
+    public function getPrincipalMemberId(int $memberId): ?int;
 }

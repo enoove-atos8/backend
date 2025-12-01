@@ -76,9 +76,13 @@ class MemberResourceCollection extends ResourceCollection
                 'otherInformation' => [
                     'bloodType' => $item->bloodType,
                     'education' => $item->education,
+                    'dependentMemberId' => $item->dependentMemberId,
                 ],
                 'titheAmount' => $item->titheAmount,
-                'titheHistory' => $item->titheHistory ?? [],
+                'titheHistory' => $item->titheHistory ?? [
+                    'isDependent' => false,
+                    'history' => [],
+                ],
             ];
         });
     }
