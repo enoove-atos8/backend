@@ -144,7 +144,20 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     {
         $query = function () use ($filters, $term, $paginate) {
 
+            // Verifica se o filtro de inativos foi solicitado
+            $showInactive = false;
+            if (Arr::exists($filters, 'memberTypes')) {
+                $memberTypes = explode(',', $filters['memberTypes']);
+                $showInactive = in_array('inactive', $memberTypes);
+            }
+
             $q = DB::table(self::TABLE_NAME)
+                ->when(! $showInactive, function ($query) {
+                    return $query->where(self::ACTIVATED_COLUMN, true);
+                })
+                ->when($showInactive, function ($query) {
+                    return $query->where(self::ACTIVATED_COLUMN, false);
+                })
                 ->where(function ($q) use ($filters, $term) {
                     if ($term != null) {
                         $q->where(self::FULL_NAME_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$term}%");
@@ -155,9 +168,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                             $memberTypes = explode(',', $filters['memberTypes']);
 
                             foreach ($memberTypes as $memberType) {
-                                if ($memberType == 'inactive') {
-                                    $q->where(self::ACTIVATED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false);
-                                } else {
+                                // Ignora 'inactive' pois já foi tratado acima
+                                if ($memberType != 'inactive') {
                                     $q->where(self::MEMBER_TYPE_COLUMN, BaseRepository::OPERATORS['EQUALS'], $memberType);
                                 }
                             }
