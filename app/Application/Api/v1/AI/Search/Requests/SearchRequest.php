@@ -54,6 +54,7 @@ class SearchRequest extends FormRequest
             executionTimeMs: 0,
             success: false,
             errorMessage: null,
+            rateLimitExceeded: false,
             createdAt: null
         );
     }
