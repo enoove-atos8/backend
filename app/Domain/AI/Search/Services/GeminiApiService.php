@@ -7,11 +7,9 @@ use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class GroqApiService implements LlmServiceInterface
+class GeminiApiService implements LlmServiceInterface
 {
-    private const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-
-    private const MODEL = 'llama-3.3-70b-versatile';
+    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
     private const TEMPERATURE = 0.1;
 
@@ -33,11 +31,11 @@ class GroqApiService implements LlmServiceInterface
 
     private const DEFAULT_FOLLOWUP = '';
 
-    public const ERROR_API_KEY_NOT_CONFIGURED = 'API key do Groq não configurada';
+    public const ERROR_API_KEY_NOT_CONFIGURED = 'API key do Gemini não configurada';
 
-    public const ERROR_API_COMMUNICATION = 'Erro ao comunicar com a API de IA';
+    public const ERROR_API_COMMUNICATION = 'Erro ao comunicar com a API do Gemini';
 
-    public const ERROR_EMPTY_RESPONSE = 'Resposta vazia da API de IA';
+    public const ERROR_EMPTY_RESPONSE = 'Resposta vazia da API do Gemini';
 
     public const ERROR_PROMPT_NOT_FOUND = 'Arquivo de prompt não encontrado';
 
@@ -45,7 +43,7 @@ class GroqApiService implements LlmServiceInterface
 
     public function __construct()
     {
-        $this->apiKey = config('services.groq.api_key', '');
+        $this->apiKey = config('services.gemini.api_key', '');
     }
 
     public function generateSql(string $question, string $schema): string
@@ -98,33 +96,35 @@ class GroqApiService implements LlmServiceInterface
     private function callApi(string $systemPrompt, string $userMessage): string
     {
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.$this->apiKey,
             'Content-Type' => 'application/json',
-        ])->timeout(60)->post(self::API_URL, [
-            'model' => self::MODEL,
-            'messages' => [
-                ['role' => 'system', 'content' => $systemPrompt],
-                ['role' => 'user', 'content' => $userMessage],
+        ])->timeout(60)->post(self::API_URL.'?key='.$this->apiKey, [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $systemPrompt."\n\nPergunta do usuário: ".$userMessage],
+                    ],
+                ],
             ],
-            'temperature' => self::TEMPERATURE,
-            'max_tokens' => self::MAX_TOKENS,
+            'generationConfig' => [
+                'temperature' => self::TEMPERATURE,
+                'maxOutputTokens' => self::MAX_TOKENS,
+            ],
         ]);
 
         if (! $response->successful()) {
-            Log::error('Groq API error', [
+            Log::error('Gemini API error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
 
             if ($response->status() === 429) {
-                $retryAfter = $this->extractRetryTime($response->body());
-                throw new RateLimitExceededException($retryAfter);
+                throw new RateLimitExceededException('alguns minutos');
             }
 
             throw new \RuntimeException(self::ERROR_API_COMMUNICATION);
         }
 
-        $content = $response->json('choices.0.message.content');
+        $content = $response->json('candidates.0.content.parts.0.text');
 
         if (empty($content)) {
             throw new \RuntimeException(self::ERROR_EMPTY_RESPONSE);
@@ -167,33 +167,5 @@ class GroqApiService implements LlmServiceInterface
             'description' => $decoded['description'] ?? self::DEFAULT_DESCRIPTION,
             'suggested_followup' => $decoded['suggested_followup'] ?? self::DEFAULT_FOLLOWUP,
         ];
-    }
-
-    private function extractRetryTime(string $responseBody): string
-    {
-        $decoded = json_decode($responseBody, true);
-        $message = $decoded['error']['message'] ?? '';
-
-        if (preg_match('/try again in (\d+h)?(\d+m)?(\d+\.?\d*s)?/i', $message, $matches)) {
-            $hours = 0;
-            $minutes = 0;
-
-            if (! empty($matches[1])) {
-                $hours = (int) str_replace('h', '', $matches[1]);
-            }
-            if (! empty($matches[2])) {
-                $minutes = (int) str_replace('m', '', $matches[2]);
-            }
-
-            if ($hours > 0 && $minutes > 0) {
-                return "{$hours} hora(s) e {$minutes} minuto(s)";
-            } elseif ($hours > 0) {
-                return "{$hours} hora(s)";
-            } elseif ($minutes > 0) {
-                return "{$minutes} minuto(s)";
-            }
-        }
-
-        return 'alguns minutos';
     }
 }

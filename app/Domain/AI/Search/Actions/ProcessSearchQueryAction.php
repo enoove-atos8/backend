@@ -5,7 +5,7 @@ namespace App\Domain\AI\Search\Actions;
 use App\Domain\AI\Search\DataTransferObjects\AiSearchHistoryData;
 use App\Domain\AI\Search\Exceptions\RateLimitExceededException;
 use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
-use App\Domain\AI\Search\Services\GroqApiService;
+use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
 use App\Domain\AI\Search\Services\SchemaExtractorService;
 use App\Domain\AI\Search\Services\SqlValidatorService;
 use Illuminate\Support\Facades\Log;
@@ -18,7 +18,7 @@ class ProcessSearchQueryAction
 
     private SchemaExtractorService $schemaExtractor;
 
-    private GroqApiService $groqApi;
+    private LlmServiceInterface $llmService;
 
     private SqlValidatorService $sqlValidator;
 
@@ -26,12 +26,12 @@ class ProcessSearchQueryAction
 
     public function __construct(
         SchemaExtractorService $schemaExtractor,
-        GroqApiService $groqApi,
+        LlmServiceInterface $llmService,
         SqlValidatorService $sqlValidator,
         AiSearchHistoryRepositoryInterface $historyRepository
     ) {
         $this->schemaExtractor = $schemaExtractor;
-        $this->groqApi = $groqApi;
+        $this->llmService = $llmService;
         $this->sqlValidator = $sqlValidator;
         $this->historyRepository = $historyRepository;
     }
@@ -43,7 +43,7 @@ class ProcessSearchQueryAction
         try {
             $schema = $this->schemaExtractor->extract();
 
-            $sqlGenerated = $this->groqApi->generateSql($searchData->question, $schema);
+            $sqlGenerated = $this->llmService->generateSql($searchData->question, $schema);
 
             $validation = $this->sqlValidator->validate($sqlGenerated);
             if (! $validation['valid']) {
@@ -58,7 +58,7 @@ class ProcessSearchQueryAction
 
             $data = $this->historyRepository->executeQuery($sqlGenerated);
 
-            $formattedResponse = $this->groqApi->formatResponse($searchData->question, $data);
+            $formattedResponse = $this->llmService->formatResponse($searchData->question, $data);
 
             $searchData->sqlGenerated = $sqlGenerated;
             $searchData->resultData = $data;
