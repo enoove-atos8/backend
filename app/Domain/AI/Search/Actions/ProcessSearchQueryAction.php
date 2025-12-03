@@ -3,6 +3,7 @@
 namespace App\Domain\AI\Search\Actions;
 
 use App\Domain\AI\Search\DataTransferObjects\AiSearchHistoryData;
+use App\Domain\AI\Search\Exceptions\RateLimitExceededException;
 use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
 use App\Domain\AI\Search\Services\GroqApiService;
 use App\Domain\AI\Search\Services\SchemaExtractorService;
@@ -50,6 +51,7 @@ class ProcessSearchQueryAction
                 $searchData->executionTimeMs = $this->calculateExecutionTime($startTime);
                 $searchData->success = false;
                 $searchData->errorMessage = self::ERROR_VALIDATION_FAILED.': '.$validation['reason'];
+                $searchData->rateLimitExceeded = false;
 
                 return $this->historyRepository->save($searchData);
             }
@@ -65,6 +67,18 @@ class ProcessSearchQueryAction
             $searchData->suggestedFollowup = $formattedResponse['suggested_followup'];
             $searchData->executionTimeMs = $this->calculateExecutionTime($startTime);
             $searchData->success = true;
+            $searchData->rateLimitExceeded = false;
+
+            return $this->historyRepository->save($searchData);
+        } catch (RateLimitExceededException $e) {
+            Log::warning('AI Search rate limit exceeded', [
+                'question' => $searchData->question,
+            ]);
+
+            $searchData->executionTimeMs = $this->calculateExecutionTime($startTime);
+            $searchData->success = false;
+            $searchData->errorMessage = $e->getMessage();
+            $searchData->rateLimitExceeded = true;
 
             return $this->historyRepository->save($searchData);
         } catch (\Exception $e) {
@@ -77,6 +91,7 @@ class ProcessSearchQueryAction
             $searchData->executionTimeMs = $this->calculateExecutionTime($startTime);
             $searchData->success = false;
             $searchData->errorMessage = self::ERROR_PROCESSING.': '.$e->getMessage();
+            $searchData->rateLimitExceeded = false;
 
             return $this->historyRepository->save($searchData);
         }
