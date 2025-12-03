@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Api\v1\AI\Search\Controllers\SearchController;
 use App\Application\Api\v1\Auth\Controllers\AuthController;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers\GroupController;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountFilesController;
@@ -203,6 +204,16 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         Route::prefix('navigation')->group(function () {
             Route::get('/menu', [NavigationMenuController::class, 'getMenu']);
         });
+
+        /*
+        |--------------------------------------------------------------------------
+        | AI Search Routes
+        |--------------------------------------------------------------------------
+        */
+
+        Route::post('ai/search', [SearchController::class, 'search']);
+        Route::get('ai/search/recent', [SearchController::class, 'recent']);
+        Route::get('ai/search/suggestions', [SearchController::class, 'suggestions']);
 
         /*
         |--------------------------------------------------------------------------

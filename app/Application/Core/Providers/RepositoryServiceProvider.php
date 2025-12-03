@@ -4,6 +4,7 @@ namespace Application\Core\Providers;
 
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
+use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
 use App\Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountsBalancesRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
@@ -55,6 +56,7 @@ use Domain\Financial\ReceiptProcessing\Interfaces\ReceiptProcessingRepositoryInt
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Infrastructure\Interfaces\BaseRepositoryInterface;
+use Infrastructure\Repositories\AI\Search\AiSearchHistoryRepository;
 use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\CentralDomain\PaymentGateway\StripeRepository;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
@@ -123,6 +125,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MonthlyBalancesReportsRepositoryInterface::class, MonthlyBalancesReportsRepository::class);
         $this->app->bind(AccountsBalancesRepositoryInterface::class, AccountsBalancesRepository::class);
         $this->app->bind(MonthlyPurchasesReportsRepositoryInterface::class, MonthlyPurchasesReportsRepository::class);
+        $this->app->bind(AiSearchHistoryRepositoryInterface::class, AiSearchHistoryRepository::class);
 
     }
 
