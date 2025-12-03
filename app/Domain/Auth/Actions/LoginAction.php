@@ -2,6 +2,7 @@
 
 namespace Domain\Auth\Actions;
 
+use Carbon\Carbon;
 use Domain\Auth\DataTransferObjects\AuthData;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
 use Illuminate\Contracts\Auth\Authenticatable;
@@ -9,13 +10,11 @@ use Illuminate\Support\Facades\Auth;
 use Infrastructure\Traits\Roles\HasAuthorization;
 use Throwable;
 
-
 class LoginAction
 {
     use HasAuthorization;
 
     private GetChurchAction $getChurchAction;
-
 
     public function __construct(GetChurchAction $getChurchAction)
     {
@@ -27,33 +26,33 @@ class LoginAction
      */
     public function execute(AuthData $authData, string $tenantId): array|Authenticatable|null
     {
-        if(Auth::attempt($authData->toArray()))
-        {
+        if (Auth::attempt($authData->toArray())) {
             $user = auth()->user();
             $userDetail = $user->detail()->first();
             $userRoles = [];
 
-            foreach ($user->roles()->get() as $role)
-                $userRoles [] = $role->name;
+            foreach ($user->roles()->get() as $role) {
+                $userRoles[] = $role->name;
+            }
 
             $church = $this->getChurchAction->execute($tenantId);
 
-            if ($user->activated)
-            {
-                $token = $user->createToken('web', $userRoles)->plainTextToken;
+            if ($user->activated) {
+                $expiresAt = Carbon::now()->addHours(24);
+                $token = $user->createToken('web', $userRoles, $expiresAt)->plainTextToken;
                 $user->token = $token;
 
                 return [
-                    'user'          => $user,
-                    'userDetail'    => $userDetail,
-                    'church'        => $church
+                    'user' => $user,
+                    'userDetail' => $userDetail,
+                    'church' => $church,
                 ];
+            } else {
+                return ['error' => false, 'status' => 401];
             }
-            else
-                return ["error"  =>  false,"status"  =>  401];
+        } else {
+            return ['error' => false, 'status' => 404];
         }
-        else
-            return ["error"  =>  false,"status"  =>  404];
     }
 
     public function getAbilities($user): array
@@ -61,12 +60,13 @@ class LoginAction
         $abilities = [];
         $userRole = $user->roles()->first();
 
-        if($userRole != null){
+        if ($userRole != null) {
 
             $userAbilities = $userRole->abilities()->get();
 
-            foreach ($userAbilities as $ability)
-                $abilities[] = $userRole->name . ":" . $ability["name"];
+            foreach ($userAbilities as $ability) {
+                $abilities[] = $userRole->name.':'.$ability['name'];
+            }
         }
 
         return $abilities;

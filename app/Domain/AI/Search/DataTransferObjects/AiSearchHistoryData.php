@@ -29,6 +29,8 @@ class AiSearchHistoryData extends DataTransferObject
 
     public ?string $errorMessage;
 
+    public bool $rateLimitExceeded;
+
     public ?string $createdAt;
 
     /**
@@ -48,6 +50,7 @@ class AiSearchHistoryData extends DataTransferObject
             executionTimeMs: $data['execution_time_ms'] ?? 0,
             success: (bool) ($data['success'] ?? true),
             errorMessage: $data['error_message'] ?? null,
+            rateLimitExceeded: (bool) ($data['rate_limit_exceeded'] ?? false),
             createdAt: $data['created_at'] ?? null,
         );
     }

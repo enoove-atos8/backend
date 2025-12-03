@@ -76,6 +76,19 @@ VALORES DOS CAMPOS (use exatamente estes valores):
 === PAYMENT_CATEGORY (categorias de pagamento) ===
 - slug: 'employees' (funcionários), 'employment_taxes' (encargos trabalhistas), 'fixed_expenses_services' (despesas fixas/serviços), 'institutional_taxes' (taxas institucionais), 'pastoral_ministry' (ministério pastoral)
 
+=== CONSOLIDATION_ENTRIES (consolidação de entradas - previsão/meta de arrecadação) ===
+- date: data da consolidação (formato YYYY-MM, ex: '2025-01')
+- consolidated: se foi consolidado
+- designated_amount: valor de designados
+- offers_amount: valor de ofertas (ATENÇÃO: é offers_amount com 's', não offer_amount)
+- tithe_amount: valor de dízimos
+- total_amount: valor total
+- monthly_target: meta mensal de arrecadação
+IMPORTANTE sobre previsões:
+- Para "previsão", "média mensal", "quanto deve arrecadar", "estimativa": use AVG (média) dos meses com dados > 0
+- Para "total arrecadado": use SUM
+- Meses futuros ou não consolidados têm valores zerados, então filtre com (tithe_amount + designated_amount + offers_amount) > 0
+
 SCHEMA DO BANCO:
 {{SCHEMA}}
 
@@ -104,5 +117,28 @@ SQL: SELECT a.bank_name as banco, ROUND(ab.current_month_balance, 2) as saldo FR
 
 Pergunta: "Quantos homens casados temos?"
 SQL: SELECT COUNT(*) as total FROM members WHERE gender = 'male' AND marital_status = 'married' AND activated = 1
+
+Pergunta: "Qual a previsão de arrecadação para o mês?" ou "Qual a média mensal de arrecadação?"
+SQL: SELECT ROUND(AVG(tithe_amount + designated_amount + offers_amount), 2) as previsao FROM consolidation_entries WHERE date LIKE '2025%' AND (tithe_amount + designated_amount + offers_amount) > 0
+
+Pergunta: "Qual a média de dízimos por mês?" ou "Quanto deve ser os dízimos desse mês?"
+SQL: SELECT ROUND(AVG(tithe_amount), 2) as previsao_dizimos FROM consolidation_entries WHERE date LIKE '2025%' AND tithe_amount > 0
+
+Pergunta: "Qual a média de ofertas por mês?"
+SQL: SELECT ROUND(AVG(offers_amount), 2) as previsao_ofertas FROM consolidation_entries WHERE date LIKE '2025%' AND offers_amount > 0
+
+Pergunta: "Qual a média de designadas por mês?"
+SQL: SELECT ROUND(AVG(designated_amount), 2) as previsao_designadas FROM consolidation_entries WHERE date LIKE '2025%' AND designated_amount > 0
+
+Pergunta: "Qual a média de dízimos e ofertas por mês?"
+SQL: SELECT ROUND(AVG(tithe_amount + offers_amount), 2) as previsao FROM consolidation_entries WHERE date LIKE '2025%' AND (tithe_amount + offers_amount) > 0
+
+IMPORTANTE: Para previsão/média/estimativa, use AVG apenas dos campos solicitados e filtre onde o valor > 0
+
+Pergunta: "Qual o total arrecadado no ano?"
+SQL: SELECT ROUND(SUM(tithe_amount + designated_amount + offers_amount), 2) as total FROM consolidation_entries WHERE date LIKE '2025%'
+
+Pergunta: "Qual a meta de arrecadação do ano?"
+SQL: SELECT ROUND(SUM(monthly_target), 2) as meta_anual FROM consolidation_entries WHERE date LIKE '2025%'
 
 Responda APENAS com o SQL, nada mais.

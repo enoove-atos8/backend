@@ -2,6 +2,7 @@
 
 namespace App\Domain\AI\Search\Services;
 
+use App\Domain\AI\Search\Exceptions\RateLimitExceededException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -113,6 +114,11 @@ class GroqApiService
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
+
+            if ($response->status() === 429) {
+                throw new RateLimitExceededException;
+            }
+
             throw new \RuntimeException(self::ERROR_API_COMMUNICATION);
         }
 
