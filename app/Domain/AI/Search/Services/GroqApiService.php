@@ -116,7 +116,8 @@ class GroqApiService
             ]);
 
             if ($response->status() === 429) {
-                throw new RateLimitExceededException;
+                $retryAfter = $this->extractRetryTime($response->body());
+                throw new RateLimitExceededException($retryAfter);
             }
 
             throw new \RuntimeException(self::ERROR_API_COMMUNICATION);
@@ -165,5 +166,33 @@ class GroqApiService
             'description' => $decoded['description'] ?? self::DEFAULT_DESCRIPTION,
             'suggested_followup' => $decoded['suggested_followup'] ?? self::DEFAULT_FOLLOWUP,
         ];
+    }
+
+    private function extractRetryTime(string $responseBody): string
+    {
+        $decoded = json_decode($responseBody, true);
+        $message = $decoded['error']['message'] ?? '';
+
+        if (preg_match('/try again in (\d+h)?(\d+m)?(\d+\.?\d*s)?/i', $message, $matches)) {
+            $hours = 0;
+            $minutes = 0;
+
+            if (! empty($matches[1])) {
+                $hours = (int) str_replace('h', '', $matches[1]);
+            }
+            if (! empty($matches[2])) {
+                $minutes = (int) str_replace('m', '', $matches[2]);
+            }
+
+            if ($hours > 0 && $minutes > 0) {
+                return "{$hours} hora(s) e {$minutes} minuto(s)";
+            } elseif ($hours > 0) {
+                return "{$hours} hora(s)";
+            } elseif ($minutes > 0) {
+                return "{$minutes} minuto(s)";
+            }
+        }
+
+        return 'alguns minutos';
     }
 }
