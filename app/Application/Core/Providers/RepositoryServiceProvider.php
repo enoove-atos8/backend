@@ -5,6 +5,8 @@ namespace Application\Core\Providers;
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
+use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
+use App\Domain\AI\Search\Services\LlmServiceWithFallback;
 use App\Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountsBalancesRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
@@ -126,7 +128,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(AccountsBalancesRepositoryInterface::class, AccountsBalancesRepository::class);
         $this->app->bind(MonthlyPurchasesReportsRepositoryInterface::class, MonthlyPurchasesReportsRepository::class);
         $this->app->bind(AiSearchHistoryRepositoryInterface::class, AiSearchHistoryRepository::class);
-
+        $this->app->bind(LlmServiceInterface::class, LlmServiceWithFallback::class);
     }
 
     /**

@@ -57,7 +57,10 @@ class AiSearchHistoryRepository extends BaseRepository implements AiSearchHistor
             'error_message' => $data->errorMessage,
         ]);
 
-        return AiSearchHistoryData::fromResponse($created->toArray());
+        $responseData = $created->toArray();
+        $responseData['rate_limit_exceeded'] = $data->rateLimitExceeded;
+
+        return AiSearchHistoryData::fromResponse($responseData);
     }
 
     /**
