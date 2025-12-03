@@ -6,11 +6,28 @@ REGRAS OBRIGATÓRIAS:
 3. Para outras tabelas (exceto members), filtre registros deletados: WHERE deleted = 0 ou AND deleted = 0
 4. Para membros ativos: WHERE activated = 1 (não use deleted para members)
 5. Datas estão no formato 'YYYY-MM-DD' como VARCHAR
-6. Para filtrar por mês use LIKE: date_field LIKE '2024-10%'
-7. Para filtrar por ano use LIKE: date_field LIKE '2024%'
-8. Use aliases em português para os resultados (ex: AS total, AS nome, AS valor)
-9. Limite resultados a 100 linhas quando não especificado
-10. Para valores monetários, arredonde para 2 casas decimais
+6. Para filtrar por mês use LIKE: date_field LIKE '2025-10%'
+7. Para filtrar por ano use LIKE: date_field LIKE '2025%'
+8. Para filtrar por dia específico use LIKE: date_field LIKE '2025-11-28%' (SEMPRE use LIKE, nunca =)
+9. SEMPRE priorize o ano atual (2025) quando o ano não for especificado na pergunta
+10. Use aliases em português para os resultados (servem como header das colunas no frontend)
+11. Limite resultados a 100 linhas quando não especificado
+12. Para valores monetários, arredonde para 2 casas decimais
+13. Para ENTRIES e EXITS, use o campo date_transaction_compensation para filtrar por data (NÃO use date_entry_register ou date_exit_register)
+14. NÃO filtre por transaction_type a menos que o usuário especifique explicitamente (ex: "pix", "dinheiro", "boleto")
+
+CAMPOS DE RETORNO PARA LISTAGENS:
+
+=== Listagem de ENTRIES (entradas) ===
+Retorne: entry_type AS tipo, date_transaction_compensation AS data, ROUND(amount, 2) AS valor, transaction_type AS forma_pagamento
+NÃO faça JOIN com members para listagens simples de entradas
+
+=== Listagem de EXITS (saídas) ===
+Retorne: exit_type AS tipo, date_transaction_compensation AS data, ROUND(amount, 2) AS valor, transaction_type AS forma_pagamento
+NÃO faça JOIN com members para listagens simples de saídas
+
+=== Listagem de MEMBERS (membros) ===
+Retorne: full_name AS nome, avatar AS foto, gender AS genero, marital_status AS estado_civil, activated AS ativo
 
 VALORES DOS CAMPOS (use exatamente estes valores):
 
@@ -68,13 +85,19 @@ Pergunta: "Quantos membros ativos temos?"
 SQL: SELECT COUNT(*) as total FROM members WHERE activated = 1
 
 Pergunta: "Total de dízimos em outubro de 2024"
-SQL: SELECT ROUND(SUM(amount), 2) as total FROM entries WHERE entry_type = 'tithe' AND deleted = 0 AND date_entry_register LIKE '2024-10%'
+SQL: SELECT ROUND(SUM(amount), 2) as total FROM entries WHERE entry_type = 'tithe' AND deleted = 0 AND date_transaction_compensation LIKE '2024-10%'
 
 Pergunta: "Liste os 10 maiores dizimistas do ano"
-SQL: SELECT m.full_name as nome, ROUND(SUM(e.amount), 2) as total FROM entries e JOIN members m ON e.member_id = m.id WHERE e.entry_type = 'tithe' AND e.deleted = 0 AND e.date_entry_register LIKE '2024%' AND m.activated = 1 GROUP BY m.id, m.full_name ORDER BY total DESC LIMIT 10
+SQL: SELECT m.full_name as nome, ROUND(SUM(e.amount), 2) as total FROM entries e JOIN members m ON e.member_id = m.id WHERE e.entry_type = 'tithe' AND e.deleted = 0 AND e.date_transaction_compensation LIKE '2025%' AND m.activated = 1 GROUP BY m.id, m.full_name ORDER BY total DESC LIMIT 10
+
+Pergunta: "Quais foram as entradas designadas do dia 28/11?"
+SQL: SELECT entry_type as tipo, date_transaction_compensation as data, ROUND(amount, 2) as valor, transaction_type as forma_pagamento FROM entries WHERE entry_type = 'designated' AND deleted = 0 AND date_transaction_compensation LIKE '2025-11-28%' LIMIT 100
+
+Pergunta: "Quais foram as saídas de pagamento em novembro?"
+SQL: SELECT exit_type as tipo, date_transaction_compensation as data, ROUND(amount, 2) as valor, transaction_type as forma_pagamento FROM exits WHERE exit_type = 'payments' AND deleted = 0 AND date_transaction_compensation LIKE '2025-11%' LIMIT 100
 
 Pergunta: "Quantos cultos tivemos em outubro?"
-SQL: SELECT COUNT(*) as total FROM cults WHERE deleted = 0 AND cult_date LIKE '2024-10%'
+SQL: SELECT COUNT(*) as total FROM cults WHERE deleted = 0 AND cult_date LIKE '2025-10%'
 
 Pergunta: "Qual o saldo das contas?"
 SQL: SELECT a.bank_name as banco, ROUND(ab.current_month_balance, 2) as saldo FROM accounts a JOIN accounts_balances ab ON a.id = ab.account_id WHERE a.activated = 1 ORDER BY ab.reference_date DESC LIMIT 10
