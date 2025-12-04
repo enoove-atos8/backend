@@ -41,11 +41,18 @@ class GroqApiService implements LlmServiceInterface
 
     public const ERROR_PROMPT_NOT_FOUND = 'Arquivo de prompt não encontrado';
 
+    private const PROVIDER_NAME = 'Groq';
+
     private string $apiKey;
 
     public function __construct()
     {
         $this->apiKey = config('services.groq.api_key', '');
+    }
+
+    public function getProviderName(): string
+    {
+        return self::PROVIDER_NAME;
     }
 
     public function generateSql(string $question, string $schema): string

@@ -31,6 +31,8 @@ class AiSearchHistoryData extends DataTransferObject
 
     public bool $rateLimitExceeded;
 
+    public ?string $llmProvider;
+
     public ?string $createdAt;
 
     /**
@@ -51,6 +53,7 @@ class AiSearchHistoryData extends DataTransferObject
             success: (bool) ($data['success'] ?? true),
             errorMessage: $data['error_message'] ?? null,
             rateLimitExceeded: (bool) ($data['rate_limit_exceeded'] ?? false),
+            llmProvider: $data['llm_provider'] ?? null,
             createdAt: $data['created_at'] ?? null,
         );
     }

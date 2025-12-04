@@ -59,6 +59,7 @@ class AiSearchHistoryRepository extends BaseRepository implements AiSearchHistor
 
         $responseData = $created->toArray();
         $responseData['rate_limit_exceeded'] = $data->rateLimitExceeded;
+        $responseData['llm_provider'] = $data->llmProvider;
 
         return AiSearchHistoryData::fromResponse($responseData);
     }
