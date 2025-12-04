@@ -12,6 +12,8 @@ class LlmServiceWithFallback implements LlmServiceInterface
 
     private GeminiApiService $fallbackService;
 
+    private ?string $lastUsedProvider = null;
+
     public function __construct(
         GroqApiService $primaryService,
         GeminiApiService $fallbackService
@@ -20,16 +22,27 @@ class LlmServiceWithFallback implements LlmServiceInterface
         $this->fallbackService = $fallbackService;
     }
 
+    public function getProviderName(): string
+    {
+        return $this->lastUsedProvider ?? $this->primaryService->getProviderName();
+    }
+
     public function generateSql(string $question, string $schema): string
     {
         try {
-            return $this->primaryService->generateSql($question, $schema);
+            $result = $this->primaryService->generateSql($question, $schema);
+            $this->lastUsedProvider = $this->primaryService->getProviderName();
+
+            return $result;
         } catch (RateLimitExceededException $e) {
             Log::info('LLM Fallback: Groq rate limit exceeded, switching to Gemini', [
                 'question' => $question,
             ]);
 
-            return $this->fallbackService->generateSql($question, $schema);
+            $result = $this->fallbackService->generateSql($question, $schema);
+            $this->lastUsedProvider = $this->fallbackService->getProviderName();
+
+            return $result;
         }
     }
 
@@ -40,13 +53,19 @@ class LlmServiceWithFallback implements LlmServiceInterface
     public function formatResponse(string $question, array $data): array
     {
         try {
-            return $this->primaryService->formatResponse($question, $data);
+            $result = $this->primaryService->formatResponse($question, $data);
+            $this->lastUsedProvider = $this->primaryService->getProviderName();
+
+            return $result;
         } catch (RateLimitExceededException $e) {
             Log::info('LLM Fallback: Groq rate limit exceeded, switching to Gemini for format', [
                 'question' => $question,
             ]);
 
-            return $this->fallbackService->formatResponse($question, $data);
+            $result = $this->fallbackService->formatResponse($question, $data);
+            $this->lastUsedProvider = $this->fallbackService->getProviderName();
+
+            return $result;
         }
     }
 }

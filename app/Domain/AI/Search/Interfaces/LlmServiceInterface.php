@@ -5,6 +5,11 @@ namespace App\Domain\AI\Search\Interfaces;
 interface LlmServiceInterface
 {
     /**
+     * Retorna o nome do provedor de LLM
+     */
+    public function getProviderName(): string;
+
+    /**
      * Gera SQL a partir de uma pergunta em linguagem natural
      */
     public function generateSql(string $question, string $schema): string;

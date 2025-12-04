@@ -52,6 +52,7 @@ class ProcessSearchQueryAction
                 $searchData->success = false;
                 $searchData->errorMessage = self::ERROR_VALIDATION_FAILED.': '.$validation['reason'];
                 $searchData->rateLimitExceeded = false;
+                $searchData->llmProvider = $this->llmService->getProviderName();
 
                 return $this->historyRepository->save($searchData);
             }
@@ -68,6 +69,7 @@ class ProcessSearchQueryAction
             $searchData->executionTimeMs = $this->calculateExecutionTime($startTime);
             $searchData->success = true;
             $searchData->rateLimitExceeded = false;
+            $searchData->llmProvider = $this->llmService->getProviderName();
 
             return $this->historyRepository->save($searchData);
         } catch (RateLimitExceededException $e) {

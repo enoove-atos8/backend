@@ -39,11 +39,18 @@ class GeminiApiService implements LlmServiceInterface
 
     public const ERROR_PROMPT_NOT_FOUND = 'Arquivo de prompt não encontrado';
 
+    private const PROVIDER_NAME = 'Gemini';
+
     private string $apiKey;
 
     public function __construct()
     {
         $this->apiKey = config('services.gemini.api_key', '');
+    }
+
+    public function getProviderName(): string
+    {
+        return self::PROVIDER_NAME;
     }
 
     public function generateSql(string $question, string $schema): string
