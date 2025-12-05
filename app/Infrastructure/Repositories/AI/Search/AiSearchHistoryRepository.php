@@ -130,4 +130,29 @@ class AiSearchHistoryRepository extends BaseRepository implements AiSearchHistor
 
         return array_map(fn ($item) => (array) $item, $result);
     }
+
+    /**
+     * {@inheritDoc}
+     *
+     * @throws BindingResolutionException
+     */
+    public function getLastSuccessfulByUserId(int $userId): ?AiSearchHistoryData
+    {
+        $query = function () use ($userId) {
+            $result = DB::table(self::TABLE_NAME)
+                ->select(self::DISPLAY_SELECT_COLUMNS)
+                ->where(self::USER_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $userId)
+                ->where(self::SUCCESS_COLUMN, BaseRepository::OPERATORS['EQUALS'], true)
+                ->orderByDesc(self::TABLE_NAME.'.'.self::ID_COLUMN)
+                ->first();
+
+            if (! $result) {
+                return null;
+            }
+
+            return AiSearchHistoryData::fromResponse((array) $result);
+        };
+
+        return $this->doQuery($query);
+    }
 }
