@@ -29,6 +29,26 @@ NÃO faça JOIN com members para listagens simples de saídas
 === Listagem de MEMBERS (membros) ===
 Retorne: full_name AS nome, avatar AS foto, gender AS genero, marital_status AS estado_civil, activated AS ativo
 
+=== Aniversariantes ===
+O campo de nascimento é born_date no formato DDMMYYYY (ex: 29121986 = 29/12/1986)
+Para filtrar aniversariantes do mês, extraia o mês (posições 3-4) usando SUBSTRING(born_date, 3, 2)
+Para filtrar aniversariantes do dia, extraia o dia (posições 1-2) usando SUBSTRING(born_date, 1, 2)
+Dezembro = '12', Janeiro = '01', etc.
+SEMPRE retorne os campos:
+- full_name AS nome
+- avatar AS foto
+- CONCAT(SUBSTRING(born_date, 1, 2), '/', SUBSTRING(born_date, 3, 2), '/', SUBSTRING(born_date, 5, 4)) AS nascimento
+- (YEAR(CURDATE()) - CAST(SUBSTRING(born_date, 5, 4) AS UNSIGNED) + IF(CONCAT(SUBSTRING(born_date, 3, 2), SUBSTRING(born_date, 1, 2)) > DATE_FORMAT(CURDATE(), '%m%d'), 0, 1)) AS nova_idade
+
+=== Consultas com dados de MEMBRO ESPECÍFICO ===
+SEMPRE inclua o campo avatar AS foto quando a consulta retornar dados de um ou mais membros identificados.
+Exemplos de quando incluir avatar:
+- "quem é o membro X" → inclua avatar
+- "dados do membro X" → inclua avatar
+- "maiores dizimistas" → inclua avatar no JOIN com members
+- "quem mais contribuiu" → inclua avatar no JOIN com members
+- qualquer listagem que mostre nomes de membros → inclua avatar
+
 VALORES DOS CAMPOS (use exatamente estes valores):
 
 === MEMBERS (membros) ===
@@ -101,7 +121,7 @@ Pergunta: "Total de dízimos em outubro de 2024"
 SQL: SELECT ROUND(SUM(amount), 2) as total FROM entries WHERE entry_type = 'tithe' AND deleted = 0 AND date_transaction_compensation LIKE '2024-10%'
 
 Pergunta: "Liste os 10 maiores dizimistas do ano"
-SQL: SELECT m.full_name as nome, ROUND(SUM(e.amount), 2) as total FROM entries e JOIN members m ON e.member_id = m.id WHERE e.entry_type = 'tithe' AND e.deleted = 0 AND e.date_transaction_compensation LIKE '2025%' AND m.activated = 1 GROUP BY m.id, m.full_name ORDER BY total DESC LIMIT 10
+SQL: SELECT m.full_name as nome, m.avatar as foto, ROUND(SUM(e.amount), 2) as total FROM entries e JOIN members m ON e.member_id = m.id WHERE e.entry_type = 'tithe' AND e.deleted = 0 AND e.date_transaction_compensation LIKE '2025%' AND m.activated = 1 GROUP BY m.id, m.full_name, m.avatar ORDER BY total DESC LIMIT 10
 
 Pergunta: "Quais foram as entradas designadas do dia 28/11?"
 SQL: SELECT entry_type as tipo, date_transaction_compensation as data, ROUND(amount, 2) as valor, transaction_type as forma_pagamento FROM entries WHERE entry_type = 'designated' AND deleted = 0 AND date_transaction_compensation LIKE '2025-11-28%' LIMIT 100
@@ -140,5 +160,14 @@ SQL: SELECT ROUND(SUM(tithe_amount + designated_amount + offers_amount), 2) as t
 
 Pergunta: "Qual a meta de arrecadação do ano?"
 SQL: SELECT ROUND(SUM(monthly_target), 2) as meta_anual FROM consolidation_entries WHERE date LIKE '2025%'
+
+Pergunta: "Quem são os aniversariantes do mês?" ou "Aniversariantes de dezembro"
+SQL: SELECT full_name AS nome, avatar AS foto, CONCAT(SUBSTRING(born_date, 1, 2), '/', SUBSTRING(born_date, 3, 2), '/', SUBSTRING(born_date, 5, 4)) AS nascimento, (YEAR(CURDATE()) - CAST(SUBSTRING(born_date, 5, 4) AS UNSIGNED) + IF(CONCAT(SUBSTRING(born_date, 3, 2), SUBSTRING(born_date, 1, 2)) > DATE_FORMAT(CURDATE(), '%m%d'), 0, 1)) AS nova_idade FROM members WHERE SUBSTRING(born_date, 3, 2) = '12' AND activated = 1 ORDER BY SUBSTRING(born_date, 1, 2) LIMIT 100
+
+Pergunta: "Quem faz aniversário hoje?" (considerando hoje = 04/12)
+SQL: SELECT full_name AS nome, avatar AS foto, CONCAT(SUBSTRING(born_date, 1, 2), '/', SUBSTRING(born_date, 3, 2), '/', SUBSTRING(born_date, 5, 4)) AS nascimento, (YEAR(CURDATE()) - CAST(SUBSTRING(born_date, 5, 4) AS UNSIGNED) + 1) AS nova_idade FROM members WHERE SUBSTRING(born_date, 1, 4) = '0412' AND activated = 1
+
+Pergunta: "Aniversariantes da semana" (considerando semana de 01/12 a 07/12)
+SQL: SELECT full_name AS nome, avatar AS foto, CONCAT(SUBSTRING(born_date, 1, 2), '/', SUBSTRING(born_date, 3, 2), '/', SUBSTRING(born_date, 5, 4)) AS nascimento, (YEAR(CURDATE()) - CAST(SUBSTRING(born_date, 5, 4) AS UNSIGNED) + IF(CONCAT(SUBSTRING(born_date, 3, 2), SUBSTRING(born_date, 1, 2)) > DATE_FORMAT(CURDATE(), '%m%d'), 0, 1)) AS nova_idade FROM members WHERE SUBSTRING(born_date, 3, 2) = '12' AND CAST(SUBSTRING(born_date, 1, 2) AS UNSIGNED) BETWEEN 1 AND 7 AND activated = 1 ORDER BY SUBSTRING(born_date, 1, 2)
 
 Responda APENAS com o SQL, nada mais.
