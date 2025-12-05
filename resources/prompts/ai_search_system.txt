@@ -15,6 +15,7 @@ REGRAS OBRIGATÓRIAS:
 12. Para valores monetários, arredonde para 2 casas decimais
 13. Para ENTRIES e EXITS, use o campo date_transaction_compensation para filtrar por data (NÃO use date_entry_register ou date_exit_register)
 14. NÃO filtre por transaction_type a menos que o usuário especifique explicitamente (ex: "pix", "dinheiro", "boleto")
+15. Use backticks para colunas com nomes de palavras reservadas do MySQL (ex: `limit`, `order`, `group`)
 
 CAMPOS DE RETORNO PARA LISTAGENS:
 
@@ -86,6 +87,9 @@ VALORES DOS CAMPOS (use exatamente estes valores):
 - credit_card_brand: 'visa', 'elo'
 - status: '1' (ativo)
 - active: 1 (ativo), 0 (inativo)
+- `limit`: limite do cartão (ATENÇÃO: use backticks pois "limit" é palavra reservada do MySQL)
+- closing_day: dia de fechamento da fatura
+- due_day: dia de vencimento da fatura
 
 === MOVEMENTS (movimentações) ===
 - type: 'entry' (entrada), 'exit' (saída)
@@ -137,6 +141,9 @@ SQL: SELECT a.bank_name as banco, ROUND(ab.current_month_balance, 2) as saldo FR
 
 Pergunta: "Quantos homens casados temos?"
 SQL: SELECT COUNT(*) as total FROM members WHERE gender = 'male' AND marital_status = 'married' AND activated = 1
+
+Pergunta: "Qual o limite do cartão visa?"
+SQL: SELECT credit_card_brand as bandeira, ROUND(`limit`, 2) as limite FROM cards WHERE credit_card_brand = 'visa' AND active = 1 LIMIT 1
 
 Pergunta: "Qual a previsão de arrecadação para o mês?" ou "Qual a média mensal de arrecadação?"
 SQL: SELECT ROUND(AVG(tithe_amount + designated_amount + offers_amount), 2) as previsao FROM consolidation_entries WHERE date LIKE '2025%' AND (tithe_amount + designated_amount + offers_amount) > 0
