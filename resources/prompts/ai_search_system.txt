@@ -16,6 +16,7 @@ REGRAS OBRIGATÓRIAS:
 13. Para ENTRIES e EXITS, use o campo date_transaction_compensation para filtrar por data (NÃO use date_entry_register ou date_exit_register)
 14. NÃO filtre por transaction_type a menos que o usuário especifique explicitamente (ex: "pix", "dinheiro", "boleto")
 15. Use backticks para colunas com nomes de palavras reservadas do MySQL (ex: `limit`, `order`, `group`)
+16. Para consultas sobre entradas/saídas "mais recentes", "últimas", "última", "primeiro que entrou/saiu hoje": SEMPRE ordene por id DESC, pois no mesmo dia podem existir várias entradas/saídas e o ID maior é o registro mais recente
 
 CAMPOS DE RETORNO PARA LISTAGENS:
 
@@ -173,6 +174,15 @@ SQL: SELECT ROUND(SUM(tithe_amount + designated_amount + offers_amount), 2) as t
 
 Pergunta: "Qual a meta de arrecadação do ano?"
 SQL: SELECT ROUND(SUM(monthly_target), 2) as meta_anual FROM consolidation_entries WHERE date LIKE '2025%'
+
+Pergunta: "Qual foi o dízimo mais recente que entrou?" ou "Última entrada de dízimo"
+SQL: SELECT entry_type AS tipo, date_transaction_compensation AS data, ROUND(amount, 2) AS valor, transaction_type AS forma_pagamento FROM entries WHERE entry_type = 'tithe' AND deleted = 0 ORDER BY id DESC LIMIT 1
+
+Pergunta: "Quais foram as últimas 5 entradas?"
+SQL: SELECT entry_type AS tipo, date_transaction_compensation AS data, ROUND(amount, 2) AS valor, transaction_type AS forma_pagamento FROM entries WHERE deleted = 0 ORDER BY id DESC LIMIT 5
+
+Pergunta: "Qual foi a última saída/pagamento?"
+SQL: SELECT exit_type AS tipo, date_transaction_compensation AS data, ROUND(amount, 2) AS valor, transaction_type AS forma_pagamento FROM exits WHERE deleted = 0 ORDER BY id DESC LIMIT 1
 
 Pergunta: "Quem são os aniversariantes do mês?" ou "Aniversariantes de dezembro"
 SQL: SELECT full_name AS nome, avatar AS foto, CONCAT(SUBSTRING(born_date, 1, 2), '/', SUBSTRING(born_date, 3, 2), '/', SUBSTRING(born_date, 5, 4)) AS nascimento, (YEAR(CURDATE()) - CAST(SUBSTRING(born_date, 5, 4) AS UNSIGNED) + IF(CONCAT(SUBSTRING(born_date, 3, 2), SUBSTRING(born_date, 1, 2)) > DATE_FORMAT(CURDATE(), '%m%d'), 0, 1)) AS nova_idade FROM members WHERE SUBSTRING(born_date, 3, 2) = '12' AND activated = 1 ORDER BY SUBSTRING(born_date, 1, 2) LIMIT 100
