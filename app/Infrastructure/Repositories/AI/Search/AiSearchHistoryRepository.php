@@ -72,10 +72,17 @@ class AiSearchHistoryRepository extends BaseRepository implements AiSearchHistor
     public function getRecentByUserId(int $userId, int $limit = 10): Collection
     {
         $query = function () use ($userId, $limit) {
+            $subQuery = DB::table(self::TABLE_NAME)
+                ->select(DB::raw('LOWER(TRIM(REPLACE(question, " ?", "?"))) as normalized_question'), DB::raw('MAX(id) as max_id'))
+                ->where(self::USER_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $userId)
+                ->groupBy(DB::raw('LOWER(TRIM(REPLACE(question, " ?", "?")))'));
+
             $result = DB::table(self::TABLE_NAME)
                 ->select(self::DISPLAY_SELECT_COLUMNS)
-                ->where(self::USER_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $userId)
-                ->orderByDesc(self::CREATED_AT_COLUMN)
+                ->joinSub($subQuery, 'recent', function ($join) {
+                    $join->on(self::TABLE_NAME.'.id', '=', 'recent.max_id');
+                })
+                ->orderByDesc(self::TABLE_NAME.'.'.self::CREATED_AT_COLUMN)
                 ->limit($limit)
                 ->get();
 
@@ -93,11 +100,18 @@ class AiSearchHistoryRepository extends BaseRepository implements AiSearchHistor
     public function getSuccessfulByUserId(int $userId, int $limit = 50): Collection
     {
         $query = function () use ($userId, $limit) {
-            $result = DB::table(self::TABLE_NAME)
-                ->select(self::DISPLAY_SELECT_COLUMNS)
+            $subQuery = DB::table(self::TABLE_NAME)
+                ->select(DB::raw('LOWER(TRIM(REPLACE(question, " ?", "?"))) as normalized_question'), DB::raw('MAX(id) as max_id'))
                 ->where(self::USER_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $userId)
                 ->where(self::SUCCESS_COLUMN, BaseRepository::OPERATORS['EQUALS'], true)
-                ->orderByDesc(self::CREATED_AT_COLUMN)
+                ->groupBy(DB::raw('LOWER(TRIM(REPLACE(question, " ?", "?")))'));
+
+            $result = DB::table(self::TABLE_NAME)
+                ->select(self::DISPLAY_SELECT_COLUMNS)
+                ->joinSub($subQuery, 'successful', function ($join) {
+                    $join->on(self::TABLE_NAME.'.id', '=', 'successful.max_id');
+                })
+                ->orderByDesc(self::TABLE_NAME.'.'.self::CREATED_AT_COLUMN)
                 ->limit($limit)
                 ->get();
 
