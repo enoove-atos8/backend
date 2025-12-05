@@ -16,6 +16,18 @@ class ProcessSearchQueryAction
 
     public const ERROR_PROCESSING = 'Erro ao processar a consulta';
 
+    private const FOLLOWUP_PATTERNS_PATH = 'prompts/ai_search_followup_patterns.txt';
+
+    private const FOLLOWUP_CONTEXT_PATH = 'prompts/ai_search_followup_context.txt';
+
+    private const PLACEHOLDER_PREVIOUS_QUESTION = '{{PREVIOUS_QUESTION}}';
+
+    private const PLACEHOLDER_PREVIOUS_SQL = '{{PREVIOUS_SQL}}';
+
+    private const PLACEHOLDER_PREVIOUS_DATA = '{{PREVIOUS_DATA}}';
+
+    private const PLACEHOLDER_CURRENT_QUESTION = '{{CURRENT_QUESTION}}';
+
     private SchemaExtractorService $schemaExtractor;
 
     private LlmServiceInterface $llmService;
@@ -43,7 +55,9 @@ class ProcessSearchQueryAction
         try {
             $schema = $this->schemaExtractor->extract();
 
-            $sqlGenerated = $this->llmService->generateSql($searchData->question, $schema);
+            $questionWithContext = $this->addContextIfFollowup($searchData);
+
+            $sqlGenerated = $this->llmService->generateSql($questionWithContext, $schema);
 
             $validation = $this->sqlValidator->validate($sqlGenerated);
             if (! $validation['valid']) {
@@ -102,5 +116,80 @@ class ProcessSearchQueryAction
     private function calculateExecutionTime(float $startTime): int
     {
         return (int) round((microtime(true) - $startTime) * 1000);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function loadFollowupPatterns(): array
+    {
+        $path = resource_path(self::FOLLOWUP_PATTERNS_PATH);
+
+        if (! file_exists($path)) {
+            return [];
+        }
+
+        $content = file_get_contents($path);
+        $lines = explode("\n", $content);
+
+        return array_filter(array_map('trim', $lines), fn ($line) => ! empty($line) && ! str_starts_with($line, '#'));
+    }
+
+    private function loadFollowupContextTemplate(): string
+    {
+        $path = resource_path(self::FOLLOWUP_CONTEXT_PATH);
+
+        if (! file_exists($path)) {
+            return '{{CURRENT_QUESTION}}';
+        }
+
+        return file_get_contents($path);
+    }
+
+    private function isFollowupQuestion(string $question): bool
+    {
+        $patterns = $this->loadFollowupPatterns();
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, $question)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function addContextIfFollowup(AiSearchHistoryData $searchData): string
+    {
+        if (! $this->isFollowupQuestion($searchData->question)) {
+            return $searchData->question;
+        }
+
+        $lastSearch = $this->historyRepository->getLastSuccessfulByUserId($searchData->userId);
+
+        if (! $lastSearch || empty($lastSearch->resultData)) {
+            return $searchData->question;
+        }
+
+        $contextData = is_array($lastSearch->resultData)
+            ? $lastSearch->resultData
+            : json_decode($lastSearch->resultData, true);
+
+        if (empty($contextData)) {
+            return $searchData->question;
+        }
+
+        $template = $this->loadFollowupContextTemplate();
+        $context = str_replace(self::PLACEHOLDER_PREVIOUS_QUESTION, $lastSearch->question, $template);
+        $context = str_replace(self::PLACEHOLDER_PREVIOUS_SQL, $lastSearch->sqlGenerated ?? '', $context);
+        $context = str_replace(self::PLACEHOLDER_PREVIOUS_DATA, json_encode($contextData), $context);
+        $context = str_replace(self::PLACEHOLDER_CURRENT_QUESTION, $searchData->question, $context);
+
+        Log::info('AI Search followup detected', [
+            'original_question' => $searchData->question,
+            'previous_question' => $lastSearch->question,
+        ]);
+
+        return $context;
     }
 }

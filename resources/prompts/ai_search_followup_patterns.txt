@@ -1,0 +1,18 @@
+# Padrões regex para detectar perguntas de follow-up
+# Cada linha é um padrão regex PHP
+# Linhas começando com # são ignoradas
+
+# Pronomes demonstrativos
+/\b(esse|essa|este|esta|desse|dessa|deste|desta)\b/i
+
+# Pronomes pessoais referentes
+/\b(ele|ela|dele|dela)\b/i
+
+# Termos de referência
+/\b(mesmo|mesma|próprio|própria)\b/i
+
+# Perguntas sobre quem fez algo (follow-up de entradas/saídas)
+/\b(qual foi o membro|quem foi|quem é|quem contribuiu|quem pagou|quem fez)\b/i
+
+# Referências genéricas
+/\b(sobre isso|a respeito|referente)\b/i

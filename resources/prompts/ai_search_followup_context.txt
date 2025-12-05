@@ -1,0 +1,17 @@
+[CONTEXTO DA PERGUNTA ANTERIOR]
+Pergunta anterior: {{PREVIOUS_QUESTION}}
+SQL anterior: {{PREVIOUS_SQL}}
+Dados retornados: {{PREVIOUS_DATA}}
+
+[PERGUNTA ATUAL]
+A pergunta atual faz referência aos dados da pergunta anterior.
+Use o contexto acima para resolver referências como "esse", "essa", "ele", "ela", "quem fez", "quem contribuiu", etc.
+Se a pergunta pede informações sobre o membro que fez uma entrada/saída, use o member_id dos dados retornados para buscar na tabela members.
+Retorne os dados do membro incluindo: full_name AS nome, avatar AS foto
+
+IMPORTANTE: Para filtrar por date_transaction_compensation, SEMPRE use LIKE com % no final:
+- Para dia: date_transaction_compensation LIKE '2025-12-01%' (NUNCA use =)
+- Para mês: date_transaction_compensation LIKE '2025-12%'
+- Para ano: date_transaction_compensation LIKE '2025%'
+
+{{CURRENT_QUESTION}}

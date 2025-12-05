@@ -28,4 +28,9 @@ interface AiSearchHistoryRepositoryInterface
      * @return array<int, array<string, mixed>>
      */
     public function executeQuery(string $sql): array;
+
+    /**
+     * Get the last successful search by user id
+     */
+    public function getLastSuccessfulByUserId(int $userId): ?AiSearchHistoryData;
 }
