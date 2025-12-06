@@ -105,10 +105,12 @@ class EntryData extends DataTransferObject
             $nextBusinessDay . 'T03:00:00.000Z' :
             (new DateTime($extractedDate))->format('Y-m-d') . 'T03:00:00.000Z';
 
+        $extractionMethod = $extractedData['data']['extraction_method'] ?? 'LLM';
+
         $instance = new self([
             'id' => null,
             'amount' => floatval($extractedData['data']['amount']) / 100,
-            'comments' => 'Entrada registrada automaticamente!',
+            'comments' => "Entrada registrada automaticamente! (via {$extractionMethod})",
             'dateEntryRegister' => $currentDate,
             'dateTransactionCompensation' => $dateTransactionCompensation,
             'deleted' => 0,
