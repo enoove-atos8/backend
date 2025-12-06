@@ -7,6 +7,10 @@ use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
 use App\Domain\AI\Search\Services\LlmServiceWithFallback;
+use App\Infrastructure\Services\External\LLM\Contracts\LlmVisionServiceInterface;
+use App\Infrastructure\Services\External\LLM\Gemini\GeminiVisionService;
+use App\Infrastructure\Services\Financial\Interfaces\ReceiptDataExtractorInterface;
+use App\Infrastructure\Services\Financial\ReceiptDataExtractor\ReceiptDataExtractorWithFallback;
 use App\Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountsBalancesRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
@@ -129,6 +133,8 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(MonthlyPurchasesReportsRepositoryInterface::class, MonthlyPurchasesReportsRepository::class);
         $this->app->bind(AiSearchHistoryRepositoryInterface::class, AiSearchHistoryRepository::class);
         $this->app->bind(LlmServiceInterface::class, LlmServiceWithFallback::class);
+        $this->app->bind(LlmVisionServiceInterface::class, GeminiVisionService::class);
+        $this->app->bind(ReceiptDataExtractorInterface::class, ReceiptDataExtractorWithFallback::class);
     }
 
     /**

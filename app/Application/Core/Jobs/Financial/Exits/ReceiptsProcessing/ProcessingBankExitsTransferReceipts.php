@@ -10,7 +10,7 @@ use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use App\Infrastructure\Services\Atos8\Financial\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
+use App\Infrastructure\Services\Financial\Interfaces\ReceiptDataExtractorInterface;
 use DateTime;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
 use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
@@ -55,7 +55,7 @@ class ProcessingBankExitsTransferReceipts
 
     private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
 
-    private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
+    private ReceiptDataExtractorInterface $receiptDataExtractor;
 
     private GetExitByTimestampAction $getExitByTimestampAction;
 
@@ -114,7 +114,7 @@ class ProcessingBankExitsTransferReceipts
         GetSyncStorageDataAction $getSyncStorageDataAction,
         MinioStorageService $minioStorageService,
         GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
-        OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
+        ReceiptDataExtractorInterface $receiptDataExtractor,
         GetExitByTimestampAction $getExitByTimestampAction,
         UpdateStatusAction $updateStatusAction,
         CreateExitAction $createExitAction,
@@ -140,7 +140,7 @@ class ProcessingBankExitsTransferReceipts
         $this->getSyncStorageDataAction = $getSyncStorageDataAction;
         $this->minioStorageService = $minioStorageService;
         $this->getChurchesByPlanIdAction = $getChurchesByPlanIdAction;
-        $this->OCRExtractDataBankReceiptService = $OCRExtractDataBankReceiptService;
+        $this->receiptDataExtractor = $receiptDataExtractor;
         $this->getExitByTimestampAction = $getExitByTimestampAction;
         $this->updateStatusAction = $updateStatusAction;
         $this->createExitAction = $createExitAction;
@@ -221,7 +221,7 @@ class ProcessingBankExitsTransferReceipts
      */
     private function processFile(array $downloadedFile, SyncStorageData $syncStorageData, string $tenant): void
     {
-        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
+        $extractedData = $this->receiptDataExtractor->extractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
 
         if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS') {
             $timestamp = $extractedData['data']['timestamp_value_cpf'];

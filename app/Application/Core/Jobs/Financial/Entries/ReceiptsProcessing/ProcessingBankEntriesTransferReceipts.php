@@ -13,7 +13,7 @@ use App\Domain\Financial\Entries\Entries\Actions\UpdateTimestampValueCPFEntryAct
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use App\Infrastructure\Services\Atos8\Financial\OCRExtractDataBankReceipt\OCRExtractDataBankReceiptService;
+use App\Infrastructure\Services\Financial\Interfaces\ReceiptDataExtractorInterface;
 use DateTime;
 use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
@@ -50,7 +50,7 @@ class ProcessingBankEntriesTransferReceipts
 
     private UpdateMiddleCpfMemberAction $updateMiddleCpfMemberAction;
 
-    private OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService;
+    private ReceiptDataExtractorInterface $receiptDataExtractor;
 
     private UpdateIdentificationPendingEntryAction $updateIdentificationPendingEntryAction;
 
@@ -146,7 +146,7 @@ class ProcessingBankEntriesTransferReceipts
         UpdateTimestampValueCPFEntryAction $updateTimestampValueCPFEntryAction,
         EntryData $entryData,
         MemberData $memberData,
-        OCRExtractDataBankReceiptService $OCRExtractDataBankReceiptService,
+        ReceiptDataExtractorInterface $receiptDataExtractor,
         ConsolidationEntriesData $consolidationEntriesData,
         GetReviewerAction $getReviewerAction,
         GetFinancialGroupAction $getFinancialGroupAction,
@@ -171,7 +171,7 @@ class ProcessingBankEntriesTransferReceipts
         $this->entryData = $entryData;
         $this->memberData = $memberData;
         $this->consolidationEntriesData = $consolidationEntriesData;
-        $this->OCRExtractDataBankReceiptService = $OCRExtractDataBankReceiptService;
+        $this->receiptDataExtractor = $receiptDataExtractor;
         $this->getReviewerAction = $getReviewerAction;
         $this->getFinancialGroupAction = $getFinancialGroupAction;
         $this->minioStorageService = $minioStorageService;
@@ -234,7 +234,7 @@ class ProcessingBankEntriesTransferReceipts
      */
     private function processFile(array $downloadedFile, SyncStorageData $syncStorageData, string $tenant): void
     {
-        $extractedData = $this->OCRExtractDataBankReceiptService->ocrExtractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
+        $extractedData = $this->receiptDataExtractor->extractData($downloadedFile, $syncStorageData->docType, $syncStorageData->docSubType);
 
         if (count($extractedData) > 0 && $extractedData['status'] == 'SUCCESS') {
             $timestampValueCpf = $extractedData['data']['timestamp_value_cpf'];

@@ -458,6 +458,7 @@ class ReceiptModelByInstitution
                 'cnpj' => '',
                 'institution' => 'NOT_MAPPED',
                 'timestamp_value_cpf' => '',
+                'extraction_method' => 'OCR',
             ]
         ];
     }
@@ -501,6 +502,7 @@ class ReceiptModelByInstitution
                 'cnpj' => '',
                 'institution' => '',
                 'timestamp_value_cpf' => '',
+                'extraction_method' => 'OCR',
             ]
         ];
     }
