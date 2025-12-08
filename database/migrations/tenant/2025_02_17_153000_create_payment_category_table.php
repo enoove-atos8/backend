@@ -18,12 +18,15 @@ return new class extends Migration
         {
             Schema::create('payment_category', function (Blueprint $table) {
 
-                $table->integer('id', true);
-                $table->string('slug')->unique();
-                $table->string('name');
+                $table->integer('id', true)->comment('ID da categoria');
+                $table->string('slug')->unique()->comment('Slug para identificação');
+                $table->string('name')->comment('Nome da categoria');
                 $table->timestamps();
 
             });
+
+            // Adiciona comentário na tabela
+            DB::statement("ALTER TABLE payment_category COMMENT 'Categorias de pagamento para despesas'");
         }
     }
 

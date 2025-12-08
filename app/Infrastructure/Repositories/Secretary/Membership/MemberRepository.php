@@ -685,4 +685,59 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             return false;
         }
     }
+
+    /**
+     * Create multiple members in bulk (single INSERT)
+     *
+     * @param  MemberData[]  $membersData
+     */
+    public function batchCreateMembers(array $membersData): bool
+    {
+        $data = array_map(function ($memberData) {
+            // Trata group_ids - pode vir como array ou string
+            $groupIds = $memberData->groupIds;
+            if (is_array($groupIds)) {
+                $groupIds = ! empty($groupIds) ? json_encode($groupIds) : null;
+            }
+
+            // Trata dependents_members_ids - pode vir como array ou string
+            $dependentsMembersIds = $memberData->dependentsMembersIds;
+            if (is_array($dependentsMembersIds)) {
+                $dependentsMembersIds = ! empty($dependentsMembersIds) ? json_encode($dependentsMembersIds) : null;
+            }
+
+            return [
+                'activated' => $memberData->activated,
+                'deleted' => $memberData->deleted,
+                'avatar' => $memberData->avatar,
+                'full_name' => $memberData->fullName,
+                'gender' => $memberData->gender,
+                'cpf' => $memberData->cpf ?: null,
+                'rg' => $memberData->rg ?: null,
+                'work' => $memberData->work,
+                'born_date' => $memberData->bornDate,
+                'email' => $memberData->email ? strtolower($memberData->email) : null,
+                'phone' => $memberData->phone,
+                'cell_phone' => $memberData->cellPhone,
+                'address' => $memberData->address,
+                'district' => $memberData->district,
+                'city' => $memberData->city,
+                'uf' => $memberData->uf,
+                'marital_status' => $memberData->maritalStatus,
+                'spouse' => $memberData->spouse,
+                'father' => $memberData->father,
+                'mother' => $memberData->mother,
+                'member_type' => $memberData->memberType,
+                'baptism_date' => $memberData->baptismDate ?: null,
+                'blood_type' => $memberData->bloodType,
+                'education' => $memberData->education,
+                'group_ids' => $groupIds,
+                'dependents_members_ids' => $dependentsMembersIds,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }, $membersData);
+
+        return DB::table(self::TABLE_NAME)->insert($data);
+    }
 }

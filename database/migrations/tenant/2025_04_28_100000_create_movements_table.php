@@ -17,16 +17,16 @@ return new class extends Migration
         {
             Schema::create('movements', function (Blueprint $table) {
 
-                $table->id();
-                $table->integer('group_id');
-                $table->integer('entry_id')->nullable();
-                $table->integer('exit_id')->nullable();
-                $table->enum('type', ['entry', 'exit'])->nullable();
-                $table->string('sub_type')->nullable();
-                $table->decimal('amount', 10);
-                $table->decimal('balance', 10)->nullable();
+                $table->id()->comment('ID da movimentação');
+                $table->integer('group_id')->comment('FK ecclesiastical_divisions_groups.id');
+                $table->integer('entry_id')->nullable()->comment('FK entries.id - entrada relacionada');
+                $table->integer('exit_id')->nullable()->comment('FK exits.id - saída relacionada');
+                $table->enum('type', ['entry', 'exit'])->nullable()->comment('Tipo: entry=entrada, exit=saída');
+                $table->string('sub_type')->nullable()->comment('Subtipo da movimentação');
+                $table->decimal('amount', 10)->comment('Valor da movimentação em reais');
+                $table->decimal('balance', 10)->nullable()->comment('Saldo do grupo após a movimentação');
                 $table->string('description')->nullable();
-                $table->string('movement_date')->nullable(false);
+                $table->string('movement_date')->nullable(false)->comment('Data da movimentação formato YYYY-MM-DD');
                 $table->boolean('is_initial_balance')->default(false);
                 $table->timestamps();
 
@@ -46,6 +46,9 @@ return new class extends Migration
 
 
             });
+
+            // Adiciona comentário na tabela
+            \DB::statement("ALTER TABLE movements COMMENT 'Movimentações financeiras dos grupos'");
         }
     }
 

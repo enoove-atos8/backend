@@ -17,15 +17,15 @@ return new class extends Migration
         {
             Schema::create('cards_invoices', function (Blueprint $table) {
 
-                $table->id();
-                $table->unsignedBigInteger('card_id');
-                $table->string('status')->nullable(false); // Ex: 'open', 'closed', 'paid', 'overdue'
-                $table->decimal('amount', 10)->nullable();
-                $table->string('reference_date')->nullable(false);
-                $table->string('payment_date')->nullable();
+                $table->id()->comment('ID da fatura');
+                $table->unsignedBigInteger('card_id')->comment('FK cards.id');
+                $table->string('status')->nullable(false)->comment('Status: open=aberta, closed=fechada, paid=paga');
+                $table->decimal('amount', 10)->nullable()->comment('Valor total da fatura em reais');
+                $table->string('reference_date')->nullable(false)->comment('Mês de referência formato YYYY-MM');
+                $table->string('payment_date')->nullable()->comment('Data do pagamento formato YYYY-MM-DD');
                 $table->string('payment_method')->nullable();
-                $table->boolean('is_closed')->default(false);
-                $table->boolean('deleted')->default(false);
+                $table->boolean('is_closed')->default(false)->comment('1=fatura fechada');
+                $table->boolean('deleted')->default(false)->comment('1=registro deletado (soft delete)');
 
 
                 $table->timestamps();
@@ -35,6 +35,9 @@ return new class extends Migration
                     ->references('id')
                     ->on('cards');
             });
+
+            // Adiciona comentário na tabela
+            \DB::statement("ALTER TABLE cards_invoices COMMENT 'Faturas dos cartões de crédito'");
 
         };
     }

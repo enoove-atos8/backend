@@ -39,4 +39,11 @@ interface MemberRepositoryInterface
     public function getDependentsMembersIds(int $memberId): ?array;
 
     public function getPrincipalMemberId(int $memberId): ?int;
+
+    /**
+     * Create multiple members in bulk (single INSERT)
+     *
+     * @param  MemberData[]  $membersData
+     */
+    public function batchCreateMembers(array $membersData): bool;
 }

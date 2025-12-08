@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('cults', function (Blueprint $table)
             {
-                $table->boolean('worship_without_entries')->default(0)->after('reviewer_id');
+                $table->boolean('worship_without_entries')->default(0)->after('reviewer_id')->comment('1=culto sem entradas registradas');
             });
         }
     }

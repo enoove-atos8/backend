@@ -17,22 +17,25 @@ return new class extends Migration
         {
             Schema::create('financial_reviewers', function (Blueprint $table) {
 
-                $table->integer('id', true)->autoIncrement();
-                $table->string('full_name')->nullable(false);
-                $table->string('reviewer_type')->nullable(false);
+                $table->integer('id', true)->autoIncrement()->comment('ID do revisor');
+                $table->string('full_name')->nullable(false)->comment('Nome completo');
+                $table->string('reviewer_type')->nullable(false)->comment('Tipo de revisor');
                 $table->string('avatar')->nullable();
-                $table->string('gender')->nullable(false);
-                $table->string('cpf')->nullable()->unique();
+                $table->string('gender')->nullable(false)->comment('Gênero: masculino ou feminino');
+                $table->string('cpf')->nullable()->unique()->comment('CPF');
                 $table->string('rg')->nullable()->unique();
-                $table->string('email')->unique()->nullable();
-                $table->string('cell_phone')->nullable(false);
-                $table->integer('activated')->default('0');
-                $table->integer('deleted')->default('0');
+                $table->string('email')->unique()->nullable()->comment('E-mail');
+                $table->string('cell_phone')->nullable(false)->comment('Celular');
+                $table->integer('activated')->default('0')->comment('1=ativo, 0=inativo');
+                $table->integer('deleted')->default('0')->comment('1=registro deletado (soft delete)');
 
 
                 $table->rememberToken();
                 $table->timestamps();
             });
+
+            // Adiciona comentário na tabela
+            \DB::statement("ALTER TABLE financial_reviewers COMMENT 'Revisores financeiros (tesoureiros)'");
         }
     }
 
@@ -43,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('members');
+        Schema::dropIfExists('financial_reviewers');
     }
 };

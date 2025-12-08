@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Application\Api\v1\AI\Search\Controllers\SearchController;
 use App\Application\Api\v1\Auth\Controllers\AuthController;
+use App\Application\Api\v1\Onboarding\Controllers\OnboardingController;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers\GroupController;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountFilesController;
 use App\Application\Api\v1\Financial\AccountsAndCards\Accounts\Controllers\AccountMovementsController;
@@ -73,6 +74,19 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
     Route::post('login', [AuthController::class, 'login'])->name('login');
 
     Route::post('loginFromApp', [AuthController::class, 'loginFromApp'])->name('loginFromApp');
+
+    /*
+    |------------------------------------------------------------------------------------------
+    | Resource: Onboarding
+    | EndPoints:
+    |
+    |   1 - GET - /onboarding/status - Get onboarding status
+    |------------------------------------------------------------------------------------------
+    */
+
+    Route::middleware('auth:sanctum')->prefix('onboarding')->group(function () {
+        Route::get('/status', [OnboardingController::class, 'getStatus']);
+    });
 
     /*
     |==================================================================================================================
@@ -1184,6 +1198,14 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::post('/', [MemberController::class, 'createMember']);
+
+                    /*
+                     * Action: POST
+                     * EndPoint: /batch
+                     * Description: Create multiple members in batch
+                     */
+
+                    Route::post('/batch', [MemberController::class, 'batchCreateMembers']);
 
                     /*
                      * Action: PUT

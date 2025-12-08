@@ -5,8 +5,10 @@ namespace Application\Api\v1\Secretary\Membership\Membership\Controllers;
 use App\Domain\Secretary\Membership\Actions\ExportTithersAction;
 use App\Domain\Secretary\Membership\Actions\GetMembersByGroupIdAction;
 use App\Domain\SyncStorage\Constants\ReturnMessages;
+use Application\Api\v1\Secretary\Membership\Membership\Requests\BatchMemberRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberAvatarRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberRequest;
+use Domain\Secretary\Membership\Actions\BatchCreateMembersAction;
 use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResource;
 use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResourceCollection;
 use Application\Core\Http\Controllers\Controller;
@@ -251,6 +253,37 @@ class MemberController extends Controller
             $response = $getMembersByGroupIdAction->execute((int) $groupId);
 
             return new MemberResourceCollection($response);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function batchCreateMembers(BatchMemberRequest $batchMemberRequest, BatchCreateMembersAction $batchCreateMembersAction): Response
+    {
+        try {
+            $membersData = $batchMemberRequest->membersData();
+            $result = $batchCreateMembersAction->execute($membersData);
+
+            if ($result) {
+                return response([
+                    'success' => true,
+                    'data' => [
+                        'total' => count($membersData),
+                        'imported' => count($membersData),
+                        'failed' => 0,
+                        'errors' => [],
+                    ],
+                ], 201);
+            }
+
+            return response([
+                'success' => false,
+                'message' => 'Erro ao importar membros',
+            ], 500);
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }

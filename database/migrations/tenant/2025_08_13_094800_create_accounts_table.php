@@ -17,15 +17,18 @@ return new class extends Migration
         {
             Schema::create('accounts', function (Blueprint $table) {
 
-                $table->id();
-                $table->string('account_type')->nullable(false);
-                $table->string('bank_name')->nullable(false);
-                $table->string('agency_number')->nullable(false);
-                $table->string('account_number')->nullable(false);
-                $table->boolean('activated')->default(true);
+                $table->id()->comment('ID da conta');
+                $table->string('account_type')->nullable(false)->comment('Tipo: checking=corrente, savings=poupança');
+                $table->string('bank_name')->nullable(false)->comment('Nome do banco');
+                $table->string('agency_number')->nullable(false)->comment('Número da agência');
+                $table->string('account_number')->nullable(false)->comment('Número da conta');
+                $table->boolean('activated')->default(true)->comment('1=conta ativa, 0=conta inativa');
 
                 $table->timestamps();
             });
+
+            // Adiciona comentário na tabela
+            \DB::statement("ALTER TABLE accounts COMMENT 'Contas bancárias da igreja'");
 
         };
     }

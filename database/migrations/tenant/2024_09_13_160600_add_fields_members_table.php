@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('members', function (Blueprint $table)
             {
-                $table->string('middle_cpf')->nullable()->after('cpf');
+                $table->string('middle_cpf')->nullable()->after('cpf')->comment('CPF parcial (meio) para busca');
             });
         }
     }
