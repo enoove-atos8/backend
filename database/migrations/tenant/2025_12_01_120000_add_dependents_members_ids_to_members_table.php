@@ -15,7 +15,7 @@ return new class extends Migration
     {
         if (Schema::hasTable('members') && !Schema::hasColumn('members', 'dependents_members_ids')) {
             Schema::table('members', function (Blueprint $table) {
-                $table->json('dependents_members_ids')->nullable()->after('group_ids');
+                $table->json('dependents_members_ids')->nullable()->after('group_ids')->comment('Array de IDs dos membros dependentes');
             });
         }
     }

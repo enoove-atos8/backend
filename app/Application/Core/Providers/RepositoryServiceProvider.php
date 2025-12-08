@@ -5,6 +5,8 @@ namespace Application\Core\Providers;
 use App\Domain\Accounts\Users\Interfaces\UserDetailRepositoryInterface;
 use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
+use App\Domain\Onboarding\Interfaces\OnboardingRepositoryInterface;
+use App\Infrastructure\Repositories\Onboarding\OnboardingRepository;
 use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
 use App\Domain\AI\Search\Services\LlmServiceWithFallback;
 use App\Infrastructure\Services\External\LLM\Contracts\LlmVisionServiceInterface;
@@ -135,6 +137,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(LlmServiceInterface::class, LlmServiceWithFallback::class);
         $this->app->bind(LlmVisionServiceInterface::class, GeminiVisionService::class);
         $this->app->bind(ReceiptDataExtractorInterface::class, ReceiptDataExtractorWithFallback::class);
+        $this->app->bind(OnboardingRepositoryInterface::class, OnboardingRepository::class);
     }
 
     /**

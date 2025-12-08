@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('exits', function (Blueprint $table)
             {
-                $table->unsignedBigInteger('account_id')->nullable()->after('id');
+                $table->unsignedBigInteger('account_id')->nullable()->after('id')->comment('FK accounts.id - conta de origem');
 
                 $table->foreign('account_id')
                     ->references('id')

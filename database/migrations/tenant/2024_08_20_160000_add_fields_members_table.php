@@ -32,7 +32,7 @@ return new class extends Migration
         {
             Schema::table('members', function (Blueprint $table)
             {
-                $table->boolean('leader')->nullable()->default(0)->after('ecclesiastical_divisions_group_id');
+                $table->boolean('leader')->nullable()->default(0)->after('ecclesiastical_divisions_group_id')->comment('1=é líder de algum grupo');
             });
         }
     }

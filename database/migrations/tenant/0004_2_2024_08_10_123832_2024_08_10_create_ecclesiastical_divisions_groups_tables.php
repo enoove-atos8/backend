@@ -14,14 +14,14 @@ return new class extends Migration
         if (!Schema::hasTable('ecclesiastical_divisions_groups'))
         {
             Schema::create('ecclesiastical_divisions_groups', function (Blueprint $table) {
-                $table->integer('id', true)->autoIncrement();
-                $table->integer('ecclesiastical_division_id')->nullable();
-                $table->integer('parent_group_id')->nullable();
-                $table->integer('leader_id')->nullable();
-                $table->string('name')->nullable(false);
-                $table->string('description')->nullable();
+                $table->integer('id', true)->autoIncrement()->comment('ID do grupo');
+                $table->integer('ecclesiastical_division_id')->nullable()->comment('FK ecclesiastical_divisions.id');
+                $table->integer('parent_group_id')->nullable()->comment('FK para grupo pai (hierarquia)');
+                $table->integer('leader_id')->nullable()->comment('FK members.id - líder do grupo');
+                $table->string('name')->nullable(false)->comment('Nome do grupo ou ministério');
+                $table->string('description')->nullable()->comment('Descrição do grupo');
                 $table->boolean('financial_transactions_exists')->nullable(false)->default(0);
-                $table->boolean('enabled')->nullable(false)->default(1);
+                $table->boolean('enabled')->nullable(false)->default(1)->comment('1=grupo ativo, 0=grupo inativo');
                 $table->boolean('temporary_event')->nullable();
                 $table->boolean('return_values')->nullable()->default(0);
                 $table->boolean('return_receiving')->default(0);
@@ -39,6 +39,9 @@ return new class extends Migration
 
                 $table->timestamps();
             });
+
+            // Adiciona comentário na tabela
+            \DB::statement("ALTER TABLE ecclesiastical_divisions_groups COMMENT 'Grupos e ministérios da igreja'");
         }
     }
 

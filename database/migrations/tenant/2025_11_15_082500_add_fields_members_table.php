@@ -15,7 +15,7 @@ return new class extends Migration
     {
         if (Schema::hasTable('members')) {
             Schema::table('members', function (Blueprint $table) {
-                $table->json('group_ids')->nullable()->after('member_number');
+                $table->json('group_ids')->nullable()->after('member_number')->comment('Array de IDs dos grupos que o membro participa');
             });
         }
     }

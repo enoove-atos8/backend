@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('entries', function (Blueprint $table)
             {
-                $table->integer('group_received_id')->nullable()->after('cult_financial_data_id');
+                $table->integer('group_received_id')->nullable()->after('cult_financial_data_id')->comment('FK ecclesiastical_divisions_groups.id - grupo que recebeu');
 
                 $table->foreign('group_received_id')
                     ->references('id')
@@ -30,7 +30,7 @@ return new class extends Migration
         {
             Schema::table('entries', function (Blueprint $table)
             {
-                $table->integer('group_returned_id')->nullable()->after('cult_financial_data_id');
+                $table->integer('group_returned_id')->nullable()->after('cult_financial_data_id')->comment('FK ecclesiastical_divisions_groups.id - grupo que devolveu');
 
                 $table->foreign('group_returned_id')
                     ->references('id')

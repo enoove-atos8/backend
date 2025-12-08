@@ -15,8 +15,8 @@ return new class extends Migration
     {
         if (Schema::hasTable('accounts')) {
             Schema::table('accounts', function (Blueprint $table) {
-                $table->decimal('initial_balance', 10, 2)->nullable()->after('account_number');
-                $table->string('initial_balance_date')->nullable()->after('initial_balance');
+                $table->decimal('initial_balance', 10, 2)->nullable()->after('account_number')->comment('Saldo inicial em reais');
+                $table->string('initial_balance_date')->nullable()->after('initial_balance')->comment('Data do saldo inicial formato YYYY-MM-DD');
             });
         }
     }

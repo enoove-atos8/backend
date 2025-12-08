@@ -18,10 +18,10 @@ return new class extends Migration
         {
             Schema::create('payment_item', function (Blueprint $table) {
 
-                $table->integer('id', true);
-                $table->integer('payment_category_id');
-                $table->string('slug');
-                $table->string('name');
+                $table->integer('id', true)->comment('ID do item');
+                $table->integer('payment_category_id')->comment('FK payment_category.id');
+                $table->string('slug')->comment('Slug para identificação');
+                $table->string('name')->comment('Nome do item');
                 $table->timestamps();
 
                 $table->foreign('payment_category_id')
@@ -29,6 +29,9 @@ return new class extends Migration
                     ->on('payment_category');
 
             });
+
+            // Adiciona comentário na tabela
+            DB::statement("ALTER TABLE payment_item COMMENT 'Itens de pagamento dentro de cada categoria'");
         }
     }
 

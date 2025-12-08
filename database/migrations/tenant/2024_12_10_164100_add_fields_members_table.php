@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('members', function (Blueprint $table)
             {
-                $table->integer('member_number')->nullable()->after('id');
+                $table->integer('member_number')->nullable()->after('id')->comment('Número do membro no rol');
             });
         }
 
@@ -26,7 +26,7 @@ return new class extends Migration
         {
             Schema::table('members', function (Blueprint $table)
             {
-                $table->boolean('tithers_list')->nullable()->after('member_number');
+                $table->boolean('tithers_list')->nullable()->after('member_number')->comment('1=está na lista de dizimistas regulares');
             });
         }
     }

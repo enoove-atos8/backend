@@ -18,7 +18,7 @@ return new class extends Migration
         {
             Schema::table('cults', function (Blueprint $table)
             {
-                $table->unsignedBigInteger('account_id')->nullable()->after('date_transaction_compensation');
+                $table->unsignedBigInteger('account_id')->nullable()->after('date_transaction_compensation')->comment('FK accounts.id - conta relacionada');
 
                 $table->foreign('account_id')
                     ->references('id')

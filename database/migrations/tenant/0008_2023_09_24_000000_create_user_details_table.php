@@ -16,17 +16,17 @@ return new class extends Migration
         if (!Schema::hasTable('user_details'))
         {
             Schema::create('user_details', function (Blueprint $table) {
-                $table->integer('id', true);
-                $table->integer('user_id')->nullable(false);
-                $table->string('full_name')->nullable(false);
+                $table->integer('id', true)->comment('ID do detalhe');
+                $table->integer('user_id')->nullable(false)->comment('FK users.id');
+                $table->string('full_name')->nullable(false)->comment('Nome completo');
                 $table->string('avatar')->nullable();
                 $table->string('type')->nullable();
                 $table->string('title')->nullable();
-                $table->string('gender')->nullable();
-                $table->string('phone')->nullable();
+                $table->string('gender')->nullable()->comment('Gênero: masculino ou feminino');
+                $table->string('phone')->nullable()->comment('Telefone');
                 $table->string('address')->nullable();
                 $table->string('district')->nullable();
-                $table->string('city')->nullable();
+                $table->string('city')->nullable()->comment('Cidade');
                 $table->string('country')->nullable();
                 $table->string('birthday')->nullable();
 
@@ -39,6 +39,9 @@ return new class extends Migration
 
                 $table->timestamps();
             });
+
+            // Adiciona comentário na tabela
+            \DB::statement("ALTER TABLE user_details COMMENT 'Detalhes dos usuários do sistema'");
         }
     }
 
