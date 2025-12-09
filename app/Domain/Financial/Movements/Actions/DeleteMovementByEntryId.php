@@ -40,18 +40,29 @@ class DeleteMovementByEntryId
      */
     public function execute(int $entryId): mixed
     {
+        // Busca o groupId ANTES de deletar o movimento
+        $movement = $this->getMovementByEntryIdAction->execute($entryId);
+        $groupId = $movement?->groupId;
+
         $result = $this->movementRepository->deleteMovementByEntryOrExitId($entryId);
 
-        if($result)
+        if ($result)
         {
-            $groupId = $this->getMovementByEntryIdAction->execute($entryId)->groupId;
-            $this->recalculateBalanceAction->execute($groupId);
+            // Recalcula o saldo do grupo se o movimento tinha um grupo associado
+            if ($groupId)
+            {
+                $this->recalculateBalanceAction->execute($groupId);
+            }
 
             return $result;
         }
-        else
+
+        // Se não conseguiu deletar, mas o movimento também não existia, considera sucesso
+        if (!$movement)
         {
-            throw new GeneralExceptions(ReturnMessages::MOVEMENTS_DELETE_ERROR, 500);
+            return true;
         }
+
+        throw new GeneralExceptions(ReturnMessages::MOVEMENTS_DELETE_ERROR, 500);
     }
 }
