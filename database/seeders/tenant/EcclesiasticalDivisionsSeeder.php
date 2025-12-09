@@ -14,39 +14,45 @@ class EcclesiasticalDivisionsSeeder extends Seeder
     {
         DB::table('ecclesiastical_divisions')->insert([
             [
-                'slug' => 'ministries',
+                'route_resource' => 'ministries',
                 'name' => 'Ministérios',
                 'description' => 'Ministérios da igreja',
                 'enabled' => 1,
             ],
             [
-                'slug' => 'departures',
+                'route_resource' => 'departures',
                 'name' => 'Departamentos',
                 'description' => 'Departamentos da igreja',
                 'enabled' => 1,
             ],
             [
-                'slug' => 'organizations',
+                'route_resource' => 'organizations',
                 'name' => 'Organizações',
                 'description' => 'Organizações associadas',
                 'enabled' => 1,
             ],
             [
-                'slug' => 'events',
+                'route_resource' => 'events',
                 'name' => 'Eventos',
                 'description' => 'Eventos da igreja',
                 'enabled' => 1,
             ],
             [
-                'slug' => 'projects',
+                'route_resource' => 'projects',
                 'name' => 'Projetos',
                 'description' => 'Projetos sociais ou internos da igreja',
                 'enabled' => 1,
             ],
             [
-                'slug' => 'campaigns',
+                'route_resource' => 'campaigns',
                 'name' => 'Campanhas',
                 'description' => 'Campanhas de arrecadação para investimentos, aquisição de bens ou afins',
+                'enabled' => 1,
+            ],
+            [
+                'route_resource' => 'education',
+                'name' => 'Educação',
+                'description' => 'Educação cristã e formação',
                 'enabled' => 1,
             ],
         ]);
