@@ -16,11 +16,11 @@ return new class extends Migration
             Schema::create('ecclesiastical_divisions', function (Blueprint $table) {
 
                 $table->integer('id', true)->autoIncrement()->comment('ID da divisão');
-                $table->string('slug')->nullable(false);
+                $table->string('route_resource')->nullable(false)->comment('Slug/identificador da rota');
                 $table->string('name')->nullable(false)->comment('Nome da divisão');
                 $table->string('description')->nullable()->comment('Descrição da divisão');
                 $table->boolean('enabled')->nullable(false)->default(1)->comment('1=divisão ativa, 0=divisão inativa');
-
+                $table->boolean('require_leader')->default(false)->comment('1=exige líder, 0=não exige líder');
 
                 $table->timestamps();
             });
