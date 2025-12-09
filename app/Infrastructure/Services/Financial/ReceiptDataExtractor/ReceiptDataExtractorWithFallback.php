@@ -51,6 +51,7 @@ class ReceiptDataExtractorWithFallback implements ReceiptDataExtractorInterface
         if ($llmResult['success']) {
             Log::info('ReceiptDataExtractor: Extração via LLM bem-sucedida', [
                 'file' => $arrFilePath['fileUploaded'] ?? 'unknown',
+                'extracted_data' => $llmResult['data']['data'] ?? $llmResult['data'],
             ]);
 
             return $llmResult['data'];
