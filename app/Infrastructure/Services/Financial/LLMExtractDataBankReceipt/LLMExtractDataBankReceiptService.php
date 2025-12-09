@@ -54,7 +54,11 @@ class LLMExtractDataBankReceiptService
 
     private const KEY_EXTRACTION_METHOD = 'extraction_method';
 
+    private const KEY_TRANSACTION_ID = 'transaction_id';
+
     private const EXTRACTION_METHOD_LLM = 'LLM';
+
+    private const DEFAULT_TIME = '00:00:00';
 
     private const DEFAULT_INSTITUTION = 'GENERIC';
 
@@ -124,12 +128,13 @@ class LLMExtractDataBankReceiptService
     {
         $amount = (int) ($extractedData[self::KEY_AMOUNT] ?? 0);
         $date = $extractedData[self::KEY_DATE] ?? '';
-        $time = $extractedData['time'] ?? '00:00:00';
+        $time = $extractedData['time'] ?? self::DEFAULT_TIME;
         $cpf = $extractedData[self::KEY_CPF] ?? '';
         $institution = strtoupper($extractedData[self::KEY_INSTITUTION] ?? self::DEFAULT_INSTITUTION);
+        $transactionId = $extractedData[self::KEY_TRANSACTION_ID] ?? '';
 
         // Monta o timestamp_value_cpf
-        $timestampValueCpf = $this->buildTimestampValueCpf($date, $time, $amount, $cpf, $docType, $docSubType);
+        $timestampValueCpf = $this->buildTimestampValueCpf($date, $time, $amount, $cpf, $transactionId, $docType, $docSubType);
 
         // Valida se os dados mínimos foram extraídos
         $status = $this->validateExtractedData($amount, $date, $timestampValueCpf, $cpf, $docType, $docSubType);
@@ -158,6 +163,7 @@ class LLMExtractDataBankReceiptService
         string $time,
         int $amount,
         string $cpf,
+        string $transactionId,
         string $docType,
         string $docSubType
     ): string {
@@ -174,6 +180,14 @@ class LLMExtractDataBankReceiptService
         // Adiciona CPF apenas para dízimos
         if ($docType === self::ENTRIES_RECEIPT && $docSubType === self::TITHE_ENTRY_TYPE && ! empty($cpf)) {
             $timestamp .= '_'.$cpf;
+        }
+
+        // Se não houver horário real (00:00:00) e houver transaction_id, adiciona para diferenciar comprovantes
+        // Isso é importante para comprovantes do mesmo valor e data mas sem horário específico
+        if ($time === self::DEFAULT_TIME && ! empty($transactionId)) {
+            // Remove caracteres especiais do transaction_id para manter apenas alfanuméricos
+            $cleanTransactionId = preg_replace('/[^a-zA-Z0-9]/', '', $transactionId);
+            $timestamp .= '_'.$cleanTransactionId;
         }
 
         return $timestamp;

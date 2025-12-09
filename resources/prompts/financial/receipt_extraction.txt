@@ -7,15 +7,26 @@ Analise a imagem do comprovante bancário e extraia as seguintes informações:
 3. **CPF do pagador** (cpf): O CPF de quem fez o pagamento (pode estar parcialmente mascarado)
 4. **Horário da transação** (time): O horário da transação (se disponível)
 5. **Instituição bancária** (institution): O banco de origem do comprovante
+6. **Identificador único da transação** (transaction_id): Código único que identifica a transação
 
 REGRAS IMPORTANTES:
 - O valor deve ser extraído em centavos (inteiro). Exemplo: R$ 150,00 = 15000
 - A data deve estar no formato dd/mm/yyyy
 - Para o CPF, extraia apenas os 6 dígitos do meio (exemplo: ***.123.456-** → retorne "123456")
 - Se o CPF não estiver visível ou não existir, retorne string vazia ""
-- O horário deve estar no formato HH:MM:SS (se não tiver segundos, use 00)
+- O horário deve estar no formato HH:MM:SS (se não tiver segundos, use 00). Se não houver horário, retorne "00:00:00"
 - Para a instituição, identifique o banco e retorne em UPPERCASE (NUBANK, BRADESCO, ITAU, CAIXA, BB, SANTANDER, INTER, C6, PICPAY, SICREDI, NEXT, EFI, NEON, DIGIO)
 - Se não conseguir identificar o banco, retorne "GENERIC"
+- Para o transaction_id, procure por qualquer código único da transação. Pode ser:
+  - "ID da transação" ou "ID de transação"
+  - "Código da operação" ou "Código de operação"
+  - "Chave de segurança"
+  - "Número de autenticação" ou "Autenticação"
+  - "NSU" (Número Sequencial Único)
+  - "Código de referência"
+  - Código alfanumérico único do comprovante (geralmente no final)
+  - Se houver múltiplos códigos, priorize: ID da transação > Código da operação > Chave de segurança > NSU > outros
+- O transaction_id é MUITO IMPORTANTE para diferenciar comprovantes do mesmo valor e data. Retorne string vazia "" apenas se realmente não existir nenhum identificador.
 
 Retorne APENAS um JSON válido no seguinte formato, sem explicações adicionais:
 
@@ -24,7 +35,8 @@ Retorne APENAS um JSON válido no seguinte formato, sem explicações adicionais
     "date": "15/12/2024",
     "time": "14:30:45",
     "cpf": "123456",
-    "institution": "NUBANK"
+    "institution": "NUBANK",
+    "transaction_id": "E18236120202512091304d0287319302"
 }
 
 Se não conseguir extrair algum campo obrigatório (amount ou date), retorne:
