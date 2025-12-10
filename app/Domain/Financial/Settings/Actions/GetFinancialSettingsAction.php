@@ -24,17 +24,14 @@ class GetFinancialSettingsAction
     /**
      * @throws Throwable
      */
-    public function execute(): Model
+    public function execute(string $budgetType = FinancialSettingsRepository::BUDGET_TYPE_TITHES): ?Model
     {
-        $settingData = $this->financialSettingsRepository->getCurrentFinancialSettingsData();
+        $settingData = $this->financialSettingsRepository->getSettingsByType($budgetType);
 
-        if($settingData != null)
-        {
+        if ($settingData != null) {
             return $settingData;
         }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::SETTINGS_INFO_NOT_FOUND, 404);
-        }
+
+        return null;
     }
 }

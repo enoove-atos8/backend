@@ -30,7 +30,7 @@ class GetTithesBalanceActions
     public function execute(): array
     {
         $financialSettings = $this->getFinancialSettingsAction->execute();
-        $monthlyTarget = $financialSettings->monthly_budget_tithes;
+        $monthlyTarget = $financialSettings?->budget_value ?? 0;
         $entriesConsolidated = $this->getConsolidatedEntriesByStatusAction->execute(1, false, 1, true);
 
         if($entriesConsolidated->count() > 0)

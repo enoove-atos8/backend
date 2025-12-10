@@ -6,6 +6,7 @@ use App\Domain\Onboarding\DataTransferObjects\OnboardingStatusData;
 use App\Domain\Onboarding\DataTransferObjects\OnboardingStepData;
 use App\Domain\Onboarding\Interfaces\OnboardingRepositoryInterface;
 use Illuminate\Support\Facades\DB;
+use Infrastructure\Repositories\Financial\Settings\FinancialSettingsRepository;
 
 class OnboardingRepository implements OnboardingRepositoryInterface
 {
@@ -125,22 +126,34 @@ class OnboardingRepository implements OnboardingRepositoryInterface
                 self::ROLES_TABLE.'.id'
             )
             ->where(self::ROLES_TABLE.'.name', $role)
-            ->where(self::USERS_TABLE.'.activated', 1)
             ->count();
     }
 
     public function hasFinancialSettings(): bool
     {
-        $settings = DB::table(self::FINANCIAL_SETTINGS_TABLE)->first();
+        $settings = DB::table(self::FINANCIAL_SETTINGS_TABLE)
+            ->where(FinancialSettingsRepository::BUDGET_TYPE_COLUMN, FinancialSettingsRepository::BUDGET_TYPE_TITHES)
+            ->first();
 
-        return $settings !== null && $settings->monthly_budget_tithes > 0;
+        return $settings !== null && $settings->budget_value > 0;
     }
 
     public function getFinancialSettingsValue(): float
     {
-        $settings = DB::table(self::FINANCIAL_SETTINGS_TABLE)->first();
+        $settings = DB::table(self::FINANCIAL_SETTINGS_TABLE)
+            ->where(FinancialSettingsRepository::BUDGET_TYPE_COLUMN, FinancialSettingsRepository::BUDGET_TYPE_TITHES)
+            ->first();
 
-        return $settings?->monthly_budget_tithes ?? 0;
+        return $settings?->budget_value ?? 0;
+    }
+
+    public function getFinancialSettingsExitsValue(): float
+    {
+        $settings = DB::table(self::FINANCIAL_SETTINGS_TABLE)
+            ->where(FinancialSettingsRepository::BUDGET_TYPE_COLUMN, FinancialSettingsRepository::BUDGET_TYPE_EXITS)
+            ->first();
+
+        return $settings?->budget_value ?? 0;
     }
 
     public function countActiveAccounts(): int
@@ -244,7 +257,7 @@ class OnboardingRepository implements OnboardingRepositoryInterface
         return OnboardingStepData::fromResponse([
             'step' => self::STEP_USER_ROLES,
             'name' => 'user_roles',
-            'title' => 'Vínculo de Perfis',
+            'title' => 'Usuários e Perfis',
             'description' => 'Defina os responsáveis: Tesoureiro, Pastor, Secretaria e Patrimônio',
             'completed' => $hasMinimumRoles,
             'required' => true,
@@ -263,6 +276,7 @@ class OnboardingRepository implements OnboardingRepositoryInterface
     {
         $hasSettings = $this->hasFinancialSettings();
         $currentValue = $this->getFinancialSettingsValue();
+        $currentExitsValue = $this->getFinancialSettingsExitsValue();
 
         return OnboardingStepData::fromResponse([
             'step' => self::STEP_BUDGET,
@@ -274,6 +288,7 @@ class OnboardingRepository implements OnboardingRepositoryInterface
             'count' => $hasSettings ? 1 : 0,
             'details' => [
                 'current_value' => $currentValue,
+                'current_exits_value' => $currentExitsValue,
             ],
         ]);
     }

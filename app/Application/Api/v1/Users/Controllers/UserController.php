@@ -3,6 +3,7 @@
 namespace Application\Api\v1\Users\Controllers;
 
 use App\Domain\Accounts\Users\Actions\CreateUserAction;
+use App\Domain\Accounts\Users\Actions\DeleteUserAction;
 use App\Domain\Accounts\Users\Actions\GetUsersAction;
 use App\Domain\Accounts\Users\Actions\GetUserByIdAction;
 use App\Domain\Accounts\Users\Actions\UpdateUserAction;
@@ -205,6 +206,29 @@ class UserController extends Controller
         }
         catch (GeneralExceptions $e)
         {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function deleteUser(int $id, DeleteUserAction $deleteUserAction): Response
+    {
+        try {
+            $result = $deleteUserAction->execute($id);
+
+            if ($result) {
+                return response([
+                    'message' => ReturnMessages::SUCCESS_USER_DELETED,
+                ], 200);
+            }
+
+            return response([
+                'message' => ReturnMessages::INFO_NO_USER_FOUNDED,
+            ], 404);
+        } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }

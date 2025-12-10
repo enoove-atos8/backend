@@ -8,5 +8,13 @@ use Illuminate\Support\Collection;
 interface FinancialReviewerRepositoryInterface
 {
     public function getFinancialReviewers(): Collection;
-    public function getReviewer(): Model | null;
+
+    public function getReviewer(): ?Model;
+
+    /**
+     * @param  FinancialReviewerData[]  $reviewersData
+     */
+    public function batchCreateReviewers(array $reviewersData): bool;
+
+    public function deleteReviewer(int $id): bool;
 }

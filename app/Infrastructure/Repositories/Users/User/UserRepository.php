@@ -127,4 +127,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
         return $updated > 0;
     }
+
+    public function deleteUser(int $id): bool
+    {
+        return $this->delete($id);
+    }
 }

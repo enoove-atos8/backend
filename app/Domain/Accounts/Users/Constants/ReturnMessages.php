@@ -10,9 +10,11 @@ class ReturnMessages
     public const SUCCESS_UPDATE_STATUS_USER = "Status do usuário atualizado!";
     public const SUCCESS_UPDATE_IMAGE_USER = "Imagem processada com sucesso!";
     public const SUCCESS_CHANGE_PASSWORD = "Senha alterada com sucesso!";
+    public const SUCCESS_USER_DELETED = "Usuário excluído com sucesso!";
     public const ERROR_UPLOAD_IMAGE_S3 = "Ocorreu um erro ao processar a imagem, tente mais tarde!";
 
     // Error messages
+    public const ERROR_DELETE_USER = "Erro ao excluir o usuário, tente novamente mais tarde!";
     public const ERROR_UPDATE_USER = "Encontramos um problema ao atualizar este usuário, tente mais tarde!";
     public const ERROR_UPDATE_STATUS_USER = "Encontramos um problema ao atualizar o status deste usuário, tente mais tarde!";
     public const ERROR_UNAUTHORIZED = "Usuário não autenticado";

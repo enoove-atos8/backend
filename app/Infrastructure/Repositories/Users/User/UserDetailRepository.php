@@ -74,4 +74,9 @@ class UserDetailRepository extends BaseRepository implements UserDetailRepositor
             'birthday' => $userDetailData->birthday,
         ]);
     }
+
+    public function deleteUserDetail(int $userId): bool
+    {
+        return $this->deleteByColumn(self::USER_ID_COLUMN, (string) $userId);
+    }
 }

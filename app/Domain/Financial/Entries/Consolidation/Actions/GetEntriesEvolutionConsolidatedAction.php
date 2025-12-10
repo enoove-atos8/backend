@@ -45,7 +45,7 @@ class GetEntriesEvolutionConsolidatedAction
         if ($entriesConsolidation->count() > 1)
         {
             $financialSettings = $this->getFinancialSettingsAction->execute();
-            $monthlyTarget = $financialSettings->monthly_budget_tithes;
+            $monthlyTarget = $financialSettings?->budget_value ?? 0;
             $maxTitheAmount = $entriesConsolidation->max(ConsolidationRepository::AMOUNT_TITHE_COLUMN);
 
             return [
