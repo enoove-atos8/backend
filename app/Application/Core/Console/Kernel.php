@@ -4,7 +4,6 @@ namespace Application\Core\Console;
 
 use App\Application\Core\Jobs\Financial\Entries\ReceiptsProcessing\ProcessingBankEntriesTransferReceipts;
 use App\Application\Core\Jobs\Financial\Exits\ReceiptsProcessing\ProcessingBankExitsTransferReceipts;
-use Application\Core\Jobs\Financial\Entries\Reports\HandlerEntriesReports;
 use Application\Core\Jobs\Financial\Purchases\ProcessingInvoicesStatus;
 use Application\Core\Jobs\Financial\Purchases\ProcessingPurchaseCards;
 use Illuminate\Console\Scheduling\Schedule;
@@ -15,9 +14,6 @@ class Kernel extends ConsoleKernel
 {
     /**
      * Define the application's command schedule.
-     *
-     * @param Schedule $schedule
-     * @return void
      */
     protected function schedule(Schedule $schedule): void
     {
@@ -27,48 +23,43 @@ class Kernel extends ConsoleKernel
 
         // Entries
         $schedule->call(function () {
-            try{
+            try {
                 resolve(ProcessingBankEntriesTransferReceipts::class)->handle();
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankEntriesTransferReceipts', 500, $e);
             }
-        })->everyFifteenMinutes();
+        })->at('17:06');
 
         // Exits
         $schedule->call(function () {
-            try{
+            try {
                 resolve(ProcessingBankExitsTransferReceipts::class)->handle();
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankExitsTransferReceipts', 500, $e);
             }
-        })->everyFifteenMinutes();
-
+        })->at('17:08');
 
         // Purchases
-        $schedule->call(function () {
-            try{
+        /*$schedule->call(function () {
+            try {
                 resolve(ProcessingPurchaseCards::class)->handle();
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingPurchaseCards', 500, $e);
             }
-        })->everyFifteenMinutes();
+        })->everyFifteenMinutes();*/
 
         // Update invoice status
-        $schedule->call(function () {
-            try{
+        /*$schedule->call(function () {
+            try {
                 resolve(ProcessingInvoicesStatus::class)->handle();
-            }catch (\Throwable $e){
+            } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingInvoicesStatus', 500, $e);
             }
-        })->hourly();
+        })->hourly();*/
     }
-
-
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
     protected function commands(): void
     {

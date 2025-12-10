@@ -706,7 +706,7 @@
                                                                                         text-align: left;
                                                                                     "
                                                                                 >
-                                                                                    Olá {{ explode(' ', ucwords(strtolower($userDetailData->full_name)))[0] }},
+                                                                                    Olá {{ explode(' ', ucwords(strtolower($userDetailData->name)))[0] }},
                                                                                 </td>
                                                                             </tr>
                                                                         </table>

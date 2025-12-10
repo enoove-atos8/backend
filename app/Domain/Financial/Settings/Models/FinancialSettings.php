@@ -13,7 +13,8 @@ class FinancialSettings extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'monthly_budget_tithes',
+        'budget_value',
+        'budget_type',
         'budget_activated',
     ];
 }

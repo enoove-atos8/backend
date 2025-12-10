@@ -74,18 +74,14 @@ class GroupResourceCollection extends ResourceCollection
     }
 
     /**
-     * Obtém os dados do líder do grupo se disponível e necessário
+     * Obtém os dados do líder do grupo se disponível
      *
      * @param mixed $item
      * @return array|null
      */
     private function getLeaderData($item): ?array
     {
-        if (! $this->shouldIncludeLeader()) {
-            return null;
-        }
-
-        if (isset($item->leader)) {
+        if (isset($item->leader) && $item->leader->id) {
             return [
                 'id' => $item->leader->id,
                 'fullName' => $item->leader->fullName,
@@ -97,15 +93,5 @@ class GroupResourceCollection extends ResourceCollection
         }
 
         return null;
-    }
-
-    /**
-     * Verifica se deve incluir informações do líder
-     *
-     * @return bool
-     */
-    private function shouldIncludeLeader(): bool
-    {
-        return $this->division && $this->division->requireLeader == 1;
     }
 }

@@ -9,6 +9,7 @@ class ReturnMessages
 
     // Error messages
     public const ERROR_REVIEWERS_NOT_FOUND = "Não foi localizado nenhum revisor financeiro, verifique!";
+    public const ERROR_REVIEWER_NOT_FOUND = "Revisor não encontrado";
 
     // Info messages
 

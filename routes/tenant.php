@@ -13,6 +13,7 @@ use App\Application\Api\v1\Financial\Reports\Entries\Controllers\MonthlyReportsC
 use App\Application\Api\v1\Financial\Reports\Exits\Controllers\MonthlyExitsReportsController;
 use App\Application\Api\v1\Financial\Reports\Purchases\Controllers\MonthlyPurchasesReportsController;
 use App\Application\Api\v1\Financial\Reviewer\Controllers\FinancialReviewerController;
+use App\Application\Api\v1\Financial\Settings\Controllers\FinancialSettingsController;
 use App\Application\Api\v1\Notifications\Controllers\User\UserNotificationController;
 use Application\Api\v1\Billing\Controllers\BillingController;
 use Application\Api\v1\Billing\Controllers\InvoiceController as BillingInvoiceController;
@@ -897,6 +898,53 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                 Route::get('/', [FinancialReviewerController::class, 'getFinancialReviewers']);
 
+                /*
+                 * Action: POST
+                 * EndPoint: /batch
+                 * Description: Create financial reviewers in batch
+                 */
+
+                Route::post('/batch', [FinancialReviewerController::class, 'batchCreateReviewers']);
+
+                /*
+                 * Action: DELETE
+                 * EndPoint: /{id}
+                 * Description: Delete a financial reviewer by ID
+                 */
+
+                Route::delete('/{id}', [FinancialReviewerController::class, 'deleteReviewer']);
+
+            });
+
+            /*
+            |------------------------------------------------------------------------------------------
+            | Resource Group: financial
+            | Resource: Settings
+            | EndPoints: /v1/financial/settings
+            |
+            |   1 - GET - /settings - Get financial settings
+            |   2 - POST - /settings - Save financial settings
+            |------------------------------------------------------------------------------------------
+            */
+
+            Route::prefix('settings')->group(function () {
+
+                /*
+                 * Action: GET
+                 * EndPoint: /
+                 * Description: Get financial settings
+                 */
+
+                Route::get('/', [FinancialSettingsController::class, 'getSettings']);
+
+                /*
+                 * Action: POST
+                 * EndPoint: /
+                 * Description: Save financial settings
+                 */
+
+                Route::post('/', [FinancialSettingsController::class, 'saveSettings']);
+
             });
 
             /*
@@ -1152,6 +1200,14 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
              */
 
             Route::put('/{id}', [UserController::class, 'updateUser']);
+
+            /*
+             * Action: DELETE
+             * EndPoint: /{id}
+             * Description: Delete a user by ID
+             */
+
+            Route::delete('/{id}', [UserController::class, 'deleteUser']);
         });
 
         /*

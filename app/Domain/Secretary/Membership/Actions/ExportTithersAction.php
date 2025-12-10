@@ -54,7 +54,7 @@ class ExportTithersAction
             $exportData = new TithersExportData(
                 $month,
                 $type,
-                $monthlyTarget->monthly_budget_tithes,
+                $monthlyTarget?->budget_value ?? 0,
                 $totalAmount['tithes']['total']
             );
 

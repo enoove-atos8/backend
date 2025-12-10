@@ -90,7 +90,7 @@ class UserRequest extends FormRequest
     public function userDetailData(): UserDetailData
     {
         return new UserDetailData(
-            full_name:   $this->input('details.fullName'),
+            name:        $this->input('details.fullName'),
             avatar:      $this->input('details.avatar'),
             type:        $this->input('details.type'),
             title:       $this->input('details.title'),

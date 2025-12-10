@@ -39,27 +39,23 @@ class GetGroupsByDivisionAction
     {
         $division = $this->getDivisionByNameAction->execute($division);
 
-        if (! is_null($division)) {
-            $groups = $this->groupsRepository->getGroupsByDivision($division);
-
-            if ($groups->count() > 0) {
-                // Adiciona histórico de dízimos ao líder de cada grupo
-                if ($division->requireLeader == 1) {
-                    $groups = $groups->map(function ($group) {
-                        if (isset($group->leader) && $group->leader->id) {
-                            $group->leader->titheHistory = $this->getHistoryTitheByMemberIdAction->execute($group->leader->id);
-                        }
-
-                        return $group;
-                    });
-                }
-
-                return $groups;
-            } else {
-                return [];
-            }
-        } else {
+        if (is_null($division)) {
             return [];
         }
+
+        $groups = $this->groupsRepository->getGroupsByDivision($division);
+
+        if ($groups->count() === 0) {
+            return [];
+        }
+
+        // Adiciona histórico de dízimos ao líder de cada grupo (quando existir)
+        return $groups->map(function ($group) {
+            if (isset($group->leader) && $group->leader->id) {
+                $group->leader->titheHistory = $this->getHistoryTitheByMemberIdAction->execute($group->leader->id);
+            }
+
+            return $group;
+        });
     }
 }

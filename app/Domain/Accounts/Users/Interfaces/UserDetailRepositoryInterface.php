@@ -12,4 +12,6 @@ interface UserDetailRepositoryInterface
     public function createUserDetail($userId, UserDetailData $userDetailData): UserDetail;
 
     public function updateUserDetail($id, UserDetailData $userDetailData): int;
+
+    public function deleteUserDetail(int $userId): bool;
 }

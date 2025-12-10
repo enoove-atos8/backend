@@ -137,25 +137,20 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     public function getGroups(?DivisionData $divisionData = null): Collection
     {
-        $displayColumnsFromRelationship = array_merge(self::DISPLAY_SELECT_COLUMNS,
+        $displayColumnsFromRelationship = array_merge(
+            self::DISPLAY_SELECT_COLUMNS,
             MemberRepository::DISPLAY_SELECT_COLUMNS
         );
 
-        if ($divisionData != null) {
-            if ($divisionData->requireLeader == 1) {
-                $q = DB::table(self::TABLE_NAME)
-                    ->join(self::MEMBER_TABLE_NAME, self::LEADER_ID_COLUMN,
-                        BaseRepository::OPERATORS['EQUALS'],
-                        self::MEMBER_ID_COLUMN)
-                    ->select($displayColumnsFromRelationship);
-            } else {
-                $q = DB::table(self::TABLE_NAME)
-                    ->select(self::DISPLAY_SELECT_COLUMNS);
-            }
-        } else {
-            $q = DB::table(self::TABLE_NAME)
-                ->select(self::DISPLAY_SELECT_COLUMNS);
-        }
+        // Sempre faz LEFT JOIN com members para trazer dados do líder quando existir
+        $q = DB::table(self::TABLE_NAME)
+            ->leftJoin(
+                self::MEMBER_TABLE_NAME,
+                self::LEADER_ID_COLUMN,
+                BaseRepository::OPERATORS['EQUALS'],
+                self::MEMBER_ID_COLUMN
+            )
+            ->select($displayColumnsFromRelationship);
 
         if ($divisionData != null) {
             $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionData->id);
