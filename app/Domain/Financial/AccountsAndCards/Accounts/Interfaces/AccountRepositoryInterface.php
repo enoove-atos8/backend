@@ -48,4 +48,9 @@ interface AccountRepositoryInterface
      * @param  string  $initialBalanceDate  Format: Y-m
      */
     public function updateInitialBalance(int $accountId, float $initialBalance, string $initialBalanceDate): bool;
+
+    /**
+     * Permanently delete an account by ID.
+     */
+    public function deleteAccount(int $accountId): bool;
 }

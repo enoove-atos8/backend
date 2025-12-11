@@ -1060,6 +1060,14 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
 
                     Route::post('saveCard', [CardController::class, 'saveCard']);
 
+                    /*
+                     * Action: DELETE
+                     * EndPoint: /{id}
+                     * Description: Permanently delete card by id
+                     */
+
+                    Route::delete('{id}', [CardController::class, 'deleteCard']);
+
                 });
 
                 Route::prefix('accounts')->group(function () {
@@ -1084,6 +1092,14 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
                      */
 
                     Route::delete('deactivateAccount/{id}', [AccountController::class, 'deactivateAccount']);
+
+                    /*
+                     * Action: DELETE
+                     * EndPoint: /{id}
+                     * Description: Permanently delete account by id
+                     */
+
+                    Route::delete('{id}', [AccountController::class, 'deleteAccount']);
 
                     Route::prefix('files')->group(function () {
 
