@@ -146,4 +146,17 @@ class CardRepository extends BaseRepository implements CardRepositoryInterface
             'active' =>   0,
         ]);
     }
+
+    /**
+     * Permanently delete a card by ID.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteCard(int $id): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $id)
+            ->delete() > 0;
+    }
 }

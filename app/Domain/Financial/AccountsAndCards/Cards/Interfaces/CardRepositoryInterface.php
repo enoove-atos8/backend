@@ -38,4 +38,12 @@ interface CardRepositoryInterface
      * @return CardData
      */
     public function saveCard(CardData $cardData): CardData;
+
+    /**
+     * Permanently delete a card by ID.
+     *
+     * @param int $id
+     * @return bool
+     */
+    public function deleteCard(int $id): bool;
 }

@@ -135,4 +135,14 @@ class AccountRepository extends BaseRepository implements AccountRepositoryInter
                 'initial_balance_date' => $initialBalanceDate,
             ]) > 0;
     }
+
+    /**
+     * Permanently delete an account by ID.
+     */
+    public function deleteAccount(int $accountId): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $accountId)
+            ->delete() > 0;
+    }
 }
