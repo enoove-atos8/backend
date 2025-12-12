@@ -40,7 +40,14 @@ class UpdateAmountConsolidatedEntriesAction
         $allEntriesByDate = $this->entryRepository
                             ->getAllEntriesByDateAndType($date, 'transaction');
 
-        $totalAmount = $allEntriesByDate->sum(EntryRepository::AMOUNT_COLUMN);
+        // Exclui transferências entre contas do cálculo da consolidação
+        $entriesWithoutTransfers = $allEntriesByDate->where(
+            EntryRepository::ENTRY_TYPE_COLUMN,
+            '!=',
+            EntryRepository::ACCOUNTS_TRANSFER_VALUE
+        );
+
+        $totalAmount = $entriesWithoutTransfers->sum(EntryRepository::AMOUNT_COLUMN);
 
         $amountTithe = $allEntriesByDate
                         ->where(EntryRepository::ENTRY_TYPE_COLUMN,
