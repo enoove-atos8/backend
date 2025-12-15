@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Cache config após .env estar montado
+php artisan config:cache
+
 # Start cron in background
 cron &
 
