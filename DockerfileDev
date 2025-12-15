@@ -71,7 +71,7 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Copy existing application directory contents
 COPY . .
-COPY ./.env.dev ./.env
+RUN rm -f .env .env.*
 
 # Copy existing application directory permissions
 
