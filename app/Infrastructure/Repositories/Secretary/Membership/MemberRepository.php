@@ -92,6 +92,7 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         'members.education as members_education',
         'members.group_ids as members_group_ids',
         'members.dependents_members_ids as members_dependents_members_ids',
+        'members.group_leader as members_group_leader',
     ];
 
     /**
