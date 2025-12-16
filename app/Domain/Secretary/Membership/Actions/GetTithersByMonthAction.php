@@ -2,6 +2,7 @@
 
 namespace Domain\Secretary\Membership\Actions;
 
+use App\Domain\Financial\Entries\Entries\Actions\GetHistoryTitheByMemberIdAction;
 use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Illuminate\Pagination\Paginator;
@@ -12,28 +13,42 @@ class GetTithersByMonthAction
 {
     private MemberRepositoryInterface $memberRepository;
 
-    public function __construct(MemberRepositoryInterface $memberRepositoryInterface)
-    {
+    private GetHistoryTitheByMemberIdAction $getHistoryTitheByMemberIdAction;
+
+    public function __construct(
+        MemberRepositoryInterface $memberRepositoryInterface,
+        GetHistoryTitheByMemberIdAction $getHistoryTitheByMemberIdAction
+    ) {
         $this->memberRepository = $memberRepositoryInterface;
+        $this->getHistoryTitheByMemberIdAction = $getHistoryTitheByMemberIdAction;
     }
 
-
     /**
-     * @param string $month
-     * @param bool $paginate
-     * @return Collection|Paginator
      * @throws GeneralExceptions
      */
-    public function execute(string $month, bool $paginate = false): Collection | Paginator
+    public function execute(string $month, bool $paginate = false): Collection|Paginator
     {
         $tithers = $this->memberRepository->getTithersByMonth($month, $paginate);
 
-        if(count($tithers) > 0)
-        {
+        if (count($tithers) > 0) {
+            if ($paginate) {
+                $tithers->setCollection(
+                    $tithers->getCollection()->map(function ($member) {
+                        $member->titheHistory = $this->getHistoryTitheByMemberIdAction->execute($member->id);
+
+                        return $member;
+                    })
+                );
+            } else {
+                $tithers = $tithers->map(function ($member) {
+                    $member->titheHistory = $this->getHistoryTitheByMemberIdAction->execute($member->id);
+
+                    return $member;
+                });
+            }
+
             return $tithers;
-        }
-        else
-        {
+        } else {
             throw new GeneralExceptions(ReturnMessages::INFO_NO_MEMBER_FOUNDED, 404);
         }
     }

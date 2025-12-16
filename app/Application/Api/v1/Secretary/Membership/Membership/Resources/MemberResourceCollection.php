@@ -72,6 +72,7 @@ class MemberResourceCollection extends ResourceCollection
                     'memberType' => $item->memberType,
                     'baptismDate' => $item->baptismDate,
                     'groupIds' => $item->groupIds,
+                    'isLeader' => $item->groupLeader ?? false,
                 ],
                 'otherInformation' => [
                     'bloodType' => $item->bloodType,

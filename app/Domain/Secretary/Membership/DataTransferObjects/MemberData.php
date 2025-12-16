@@ -65,6 +65,8 @@ class MemberData extends DataTransferObject
 
     public const DEPENDENTS_MEMBERS_IDS = 'dependentsMembersIds';
 
+    public const GROUP_LEADER = 'groupLeader';
+
     public int $id = 0;
 
     public ?bool $activated;
@@ -127,6 +129,10 @@ class MemberData extends DataTransferObject
 
     public ?float $titheAmount;
 
+    public ?bool $groupLeader;
+
+    public ?array $titheHistory;
+
     /**
      * Create a MemberData instance from response data
      *
@@ -165,6 +171,7 @@ class MemberData extends DataTransferObject
             'groupIds' => isset($data['members_group_ids']) ? (is_string($data['members_group_ids']) ? json_decode($data['members_group_ids'], true) : $data['members_group_ids']) : null,
             'dependentsMembersIds' => isset($data['members_dependents_members_ids']) ? (is_string($data['members_dependents_members_ids']) ? json_decode($data['members_dependents_members_ids'], true) : $data['members_dependents_members_ids']) : null,
             'titheAmount' => $data['tithe_amount'] ?? null,
+            'groupLeader' => isset($data['members_group_leader']) ? (bool) $data['members_group_leader'] : null,
         ];
     }
 
@@ -199,6 +206,7 @@ class MemberData extends DataTransferObject
             'education' => $data['education'] ?? null,
             'groupIds' => isset($data['group_ids']) ? (is_string($data['group_ids']) ? json_decode($data['group_ids'], true) : $data['group_ids']) : null,
             'dependentsMembersIds' => isset($data['dependents_members_ids']) ? (is_string($data['dependents_members_ids']) ? json_decode($data['dependents_members_ids'], true) : $data['dependents_members_ids']) : null,
+            'groupLeader' => isset($data['group_leader']) ? (bool) $data['group_leader'] : null,
         ];
     }
 
