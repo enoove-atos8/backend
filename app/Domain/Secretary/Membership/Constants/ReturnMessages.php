@@ -28,4 +28,9 @@ class ReturnMessages
     public const INFO_NO_MEMBER_FOUNDED = 'Membro não encontrado...';
 
     public const INFO_NO_MEMBERS_FOUNDED = 'Nenhum membro encontrado...';
+
+    // Plan limit messages
+    public const ERROR_PLAN_MEMBERS_LIMIT_REACHED = 'Limite de membros do plano atingido. Faça upgrade para adicionar mais membros.';
+
+    public const ERROR_PLAN_MEMBERS_LIMIT_BATCH = 'Limite de membros do plano atingido. Você pode adicionar no máximo %d membro(s).';
 }

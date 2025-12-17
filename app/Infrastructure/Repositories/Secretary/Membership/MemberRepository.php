@@ -741,4 +741,15 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
         return DB::table(self::TABLE_NAME)->insert($data);
     }
+
+    /**
+     * Count active members (activated = true and deleted = false)
+     */
+    public function countActiveMembers(): int
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ACTIVATED_COLUMN, true)
+            ->where(self::DELETED_COLUMN, false)
+            ->count();
+    }
 }
