@@ -46,4 +46,9 @@ interface MemberRepositoryInterface
      * @param  MemberData[]  $membersData
      */
     public function batchCreateMembers(array $membersData): bool;
+
+    /**
+     * Count active members (activated = true and deleted = false)
+     */
+    public function countActiveMembers(): int;
 }

@@ -8,30 +8,24 @@ use Infrastructure\Exceptions\GeneralExceptions;
 
 class UpdateStatusMemberAction
 {
-    private MemberRepositoryInterface $memberRepository;
-
-    public function __construct(MemberRepositoryInterface $memberRepositoryInterface)
-    {
-        $this->memberRepository = $memberRepositoryInterface;
-    }
+    public function __construct(
+        private MemberRepositoryInterface $memberRepository,
+        private SyncMemberCountAction $syncMemberCountAction
+    ) {}
 
     /**
-     * @param $memberId
-     * @param $activated
-     * @return true
      * @throws GeneralExceptions
      */
     public function execute($memberId, $activated): bool
     {
-        $activated = $this->memberRepository->updateStatus($memberId, $activated);
+        $updated = $this->memberRepository->updateStatus($memberId, $activated);
 
-        if($activated)
-        {
+        if ($updated) {
+            $this->syncMemberCountAction->execute();
+
             return true;
         }
-        else
-        {
-            throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_STATUS_MEMBER, 500);
-        }
+
+        throw new GeneralExceptions(ReturnMessages::ERROR_UPDATE_STATUS_MEMBER, 500);
     }
 }

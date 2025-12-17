@@ -8,10 +8,11 @@ use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\BatchMemberRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberAvatarRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberRequest;
-use Domain\Secretary\Membership\Actions\BatchCreateMembersAction;
 use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResource;
 use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResourceCollection;
 use Application\Core\Http\Controllers\Controller;
+use Application\Core\Services\PlanService;
+use Domain\Secretary\Membership\Actions\BatchCreateMembersAction;
 use Domain\Secretary\Membership\Actions\CreateMemberAction;
 use Domain\Secretary\Membership\Actions\ExportBirthdaysAction;
 use Domain\Secretary\Membership\Actions\GetMemberByIdAction;
@@ -21,6 +22,7 @@ use Domain\Secretary\Membership\Actions\GetMembersCountersAction;
 use Domain\Secretary\Membership\Actions\GetTithersByMonthAction;
 use Domain\Secretary\Membership\Actions\UpdateMemberAction;
 use Domain\Secretary\Membership\Actions\UpdateStatusMemberAction;
+use Domain\Secretary\Membership\Constants\ReturnMessages as MembershipMessages;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -40,9 +42,20 @@ class MemberController extends Controller
      * @throws Throwable
      * @throws UnknownProperties
      */
-    public function createMember(MemberRequest $memberRequest, CreateMemberAction $createMemberAction): Response
-    {
+    public function createMember(
+        MemberRequest $memberRequest,
+        CreateMemberAction $createMemberAction,
+        PlanService $planService
+    ): Response {
         try {
+            if (! $planService->canAddMembers()) {
+                return response([
+                    'message' => MembershipMessages::ERROR_PLAN_MEMBERS_LIMIT_REACHED,
+                    'error_code' => 'PLAN_MEMBERS_LIMIT_REACHED',
+                    'remaining_slots' => $planService->getRemainingMembersSlots(),
+                ], 403);
+            }
+
             $createMemberAction->execute($memberRequest->memberData());
 
             return response([
@@ -262,18 +275,34 @@ class MemberController extends Controller
      * @throws GeneralExceptions
      * @throws Throwable
      */
-    public function batchCreateMembers(BatchMemberRequest $batchMemberRequest, BatchCreateMembersAction $batchCreateMembersAction): Response
-    {
+    public function batchCreateMembers(
+        BatchMemberRequest $batchMemberRequest,
+        BatchCreateMembersAction $batchCreateMembersAction,
+        PlanService $planService
+    ): Response {
         try {
             $membersData = $batchMemberRequest->membersData();
+            $quantity = count($membersData);
+
+            if (! $planService->canAddMembers($quantity)) {
+                $remainingSlots = $planService->getRemainingMembersSlots();
+
+                return response([
+                    'message' => sprintf(MembershipMessages::ERROR_PLAN_MEMBERS_LIMIT_BATCH, $remainingSlots),
+                    'error_code' => 'PLAN_MEMBERS_LIMIT_REACHED',
+                    'remaining_slots' => $remainingSlots,
+                    'requested_quantity' => $quantity,
+                ], 403);
+            }
+
             $result = $batchCreateMembersAction->execute($membersData);
 
             if ($result) {
                 return response([
                     'success' => true,
                     'data' => [
-                        'total' => count($membersData),
-                        'imported' => count($membersData),
+                        'total' => $quantity,
+                        'imported' => $quantity,
                         'failed' => 0,
                         'errors' => [],
                     ],
