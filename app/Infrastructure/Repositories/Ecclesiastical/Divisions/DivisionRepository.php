@@ -65,14 +65,17 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
 
 
     /**
-     * @param int $enabled
+     * @param int|null $enabled
      * @return Collection
      * @throws BindingResolutionException
      */
-    public function getDivisions(int $enabled): Collection
+    public function getDivisions(?int $enabled = null): Collection
     {
         $this->queryConditions = [];
-        $this->queryConditions [] = $this->whereEqual(self::ENABLED_COLUMN, $enabled, 'and');
+
+        if (!is_null($enabled)) {
+            $this->queryConditions[] = $this->whereEqual(self::ENABLED_COLUMN, $enabled, 'and');
+        }
 
         return $this->getItemsWithRelationshipsAndWheres(
             $this->queryConditions,
@@ -131,5 +134,29 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
             'enabled'           =>   $divisionData->enabled,
             'require_leader'    =>   $divisionData->requireLeader,
         ]);
+    }
+
+    /**
+     * @param int $id
+     * @param bool $enabled
+     * @return bool
+     */
+    public function updateStatus(int $id, bool $enabled): bool
+    {
+        return $this->model
+            ->where('id', $id)
+            ->update(['enabled' => $enabled]) > 0;
+    }
+
+    /**
+     * @param int $id
+     * @param bool $requireLeader
+     * @return bool
+     */
+    public function updateRequireLeader(int $id, bool $requireLeader): bool
+    {
+        return $this->model
+            ->where('id', $id)
+            ->update(['require_leader' => $requireLeader]) > 0;
     }
 }

@@ -25,7 +25,7 @@ class GetDivisionsAction
     /**
      * @throws Throwable
      */
-    public function execute(int $enabled = 1): Collection
+    public function execute(?int $enabled = null): Collection
     {
         $divisions = $this->divisionRepository->getDivisions($enabled);
 

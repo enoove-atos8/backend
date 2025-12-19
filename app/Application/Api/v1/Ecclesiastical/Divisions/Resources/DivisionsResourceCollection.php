@@ -34,7 +34,8 @@ class DivisionsResourceCollection extends ResourceCollection
                 'slug'              =>  $item->route_resource,
                 'name'              =>  $item->name,
                 'desc'              =>  $item->description,
-                'requireLeader'     =>  $item->require_leader,
+                'requireLeader'     =>  (bool) $item->require_leader,
+                'enabled'           =>  (bool) $item->enabled,
                 'createdAt'         =>  $item->created_at,
             ];
         }
