@@ -51,6 +51,8 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     const FULL_NAME_COLUMN = 'full_name';
 
+    const DEACTIVATION_REASON_COLUMN = 'deactivation_reason';
+
     const BORN_DATE_COLUMN = 'born_date';
 
     const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
@@ -751,5 +753,21 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             ->where(self::ACTIVATED_COLUMN, true)
             ->where(self::DELETED_COLUMN, false)
             ->count();
+    }
+
+    /**
+     * Update deactivation reason for a member
+     *
+     * @throws BindingResolutionException
+     */
+    public function updateDeactivationReason(int $id, ?string $reason): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $id,
+        ];
+
+        return (bool) $this->update($conditions, [self::DEACTIVATION_REASON_COLUMN => $reason]);
     }
 }

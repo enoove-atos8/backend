@@ -8,6 +8,7 @@ use App\Domain\SyncStorage\Constants\ReturnMessages;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\BatchMemberRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberAvatarRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\MemberRequest;
+use Application\Api\v1\Secretary\Membership\Membership\Requests\UpdateDeactivationReasonRequest;
 use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResource;
 use Application\Api\v1\Secretary\Membership\Membership\Resources\MemberResourceCollection;
 use Application\Core\Http\Controllers\Controller;
@@ -20,6 +21,7 @@ use Domain\Secretary\Membership\Actions\GetMembersAction;
 use Domain\Secretary\Membership\Actions\GetMembersByBornMonthAction;
 use Domain\Secretary\Membership\Actions\GetMembersCountersAction;
 use Domain\Secretary\Membership\Actions\GetTithersByMonthAction;
+use Domain\Secretary\Membership\Actions\UpdateDeactivationReasonAction;
 use Domain\Secretary\Membership\Actions\UpdateMemberAction;
 use Domain\Secretary\Membership\Actions\UpdateStatusMemberAction;
 use Domain\Secretary\Membership\Constants\ReturnMessages as MembershipMessages;
@@ -189,7 +191,9 @@ class MemberController extends Controller
     {
         try {
             $month = $request->input('month');
-            $response = $getTithersByMonthAction->execute($month, true);
+            $page = $request->input('page');
+            $paginate = $page !== null && $page !== 'null';
+            $response = $getTithersByMonthAction->execute($month, $paginate);
 
             return new MemberResourceCollection($response);
 
@@ -209,6 +213,28 @@ class MemberController extends Controller
             if ($response) {
                 return response([
                     'message' => ReturnMessages::SUCCESS_UPDATE_STATUS_MEMBER,
+                ], 200);
+            }
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions
+     */
+    public function updateDeactivationReason(
+        UpdateDeactivationReasonRequest $request,
+        int $id,
+        UpdateDeactivationReasonAction $updateDeactivationReasonAction
+    ): Response {
+        try {
+            $reason = $request->input('deactivation_reason');
+            $response = $updateDeactivationReasonAction->execute($id, $reason);
+
+            if ($response) {
+                return response([
+                    'message' => MembershipMessages::SUCCESS_UPDATE_DEACTIVATION_REASON,
                 ], 200);
             }
         } catch (GeneralExceptions $e) {

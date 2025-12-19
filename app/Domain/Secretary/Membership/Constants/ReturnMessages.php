@@ -17,12 +17,16 @@ class ReturnMessages
 
     public const SUCCESS_MEMBERS_ADDED_TO_GROUP = 'Membros adicionados ao grupo com sucesso!';
 
+    public const SUCCESS_UPDATE_DEACTIVATION_REASON = 'Motivo de desativação atualizado com sucesso!';
+
     // Error messages
     public const ERROR_UPDATE_MEMBER = 'Encontramos um problema ao atualizar este membro, tente mais tarde!';
 
     public const ERROR_UPDATE_STATUS_MEMBER = 'Encontramos um problema ao atualizar o status deste membro, tente mais tarde!';
 
     public const ERROR_ADD_MEMBERS_TO_GROUP = 'Erro ao adicionar membros ao grupo, tente mais tarde!';
+
+    public const ERROR_UPDATE_DEACTIVATION_REASON = 'Encontramos um problema ao atualizar o motivo de desativação, tente mais tarde!';
 
     // Info messages
     public const INFO_NO_MEMBER_FOUNDED = 'Membro não encontrado...';
