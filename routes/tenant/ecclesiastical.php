@@ -31,6 +31,8 @@ Route::prefix('ecclesiastical')->group(function () {
         Route::get('getDivisionIdByName', [DivisionsController::class, 'getDivisionIdByName']);
         Route::get('getDivisionByName', [DivisionsController::class, 'getDivisionByName']);
         Route::post('/', [DivisionsController::class, 'createDivision']);
+        Route::put('/{id}/status', [DivisionsController::class, 'updateStatus']);
+        Route::put('/{id}/require-leader', [DivisionsController::class, 'updateRequireLeader']);
     });
 
     /*

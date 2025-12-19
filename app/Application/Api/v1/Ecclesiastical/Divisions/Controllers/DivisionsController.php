@@ -3,11 +3,15 @@
 namespace Application\Api\v1\Ecclesiastical\Divisions\Controllers;
 
 use Application\Api\v1\Ecclesiastical\Divisions\Requests\DivisionRequest;
+use Application\Api\v1\Ecclesiastical\Divisions\Requests\UpdateDivisionRequireLeaderRequest;
+use Application\Api\v1\Ecclesiastical\Divisions\Requests\UpdateDivisionStatusRequest;
 use Application\Api\v1\Ecclesiastical\Divisions\Resources\DivisionsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\CreateNewDivisionAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsAction;
+use Domain\Ecclesiastical\Divisions\Actions\UpdateDivisionRequireLeaderAction;
+use Domain\Ecclesiastical\Divisions\Actions\UpdateDivisionStatusAction;
 use Domain\Ecclesiastical\Divisions\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -56,8 +60,8 @@ class DivisionsController extends Controller
     {
         try
         {
-            $enabled = $request->input('enabled');
-            $response = $getDivisionsAction->execute((int) $enabled);
+            $enabled = $request->has('enabled') ? (int) $request->input('enabled') : null;
+            $response = $getDivisionsAction->execute($enabled);
 
             return new DivisionsResourceCollection($response);
 
@@ -129,6 +133,58 @@ class DivisionsController extends Controller
         }
         catch (GeneralExceptions $e)
         {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param int $id
+     * @param UpdateDivisionStatusRequest $request
+     * @param UpdateDivisionStatusAction $updateDivisionStatusAction
+     * @return ResponseFactory|Application|Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function updateStatus(
+        int $id,
+        UpdateDivisionStatusRequest $request,
+        UpdateDivisionStatusAction $updateDivisionStatusAction
+    ): ResponseFactory|Application|Response {
+        try {
+            $enabled = (bool) $request->input('enabled');
+            $updateDivisionStatusAction->execute($id, $enabled);
+
+            return response([
+                'message' => ReturnMessages::DIVISION_STATUS_UPDATED,
+            ], 200);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+
+    /**
+     * @param int $id
+     * @param UpdateDivisionRequireLeaderRequest $request
+     * @param UpdateDivisionRequireLeaderAction $updateDivisionRequireLeaderAction
+     * @return ResponseFactory|Application|Response
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
+    public function updateRequireLeader(
+        int $id,
+        UpdateDivisionRequireLeaderRequest $request,
+        UpdateDivisionRequireLeaderAction $updateDivisionRequireLeaderAction
+    ): ResponseFactory|Application|Response {
+        try {
+            $requireLeader = (bool) $request->input('requireLeader');
+            $updateDivisionRequireLeaderAction->execute($id, $requireLeader);
+
+            return response([
+                'message' => ReturnMessages::DIVISION_REQUIRE_LEADER_UPDATED,
+            ], 200);
+        } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
     }
