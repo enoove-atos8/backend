@@ -51,4 +51,9 @@ interface MemberRepositoryInterface
      * Count active members (activated = true and deleted = false)
      */
     public function countActiveMembers(): int;
+
+    /**
+     * Update deactivation reason for a member
+     */
+    public function updateDeactivationReason(int $id, ?string $reason): bool;
 }

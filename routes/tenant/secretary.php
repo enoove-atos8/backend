@@ -27,6 +27,7 @@ Route::prefix('secretary')->group(function () {
             Route::post('/', [MemberController::class, 'createMember']);
             Route::post('/batch', [MemberController::class, 'batchCreateMembers']);
             Route::put('/{id}/status', [MemberController::class, 'updateStatus']);
+            Route::put('/{id}/deactivation-reason', [MemberController::class, 'updateDeactivationReason']);
             Route::put('/{id}', [MemberController::class, 'updateMember']);
             Route::post('/files/assets/avatar', [MemberController::class, 'uploadMemberAvatar']);
         });
