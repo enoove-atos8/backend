@@ -2,6 +2,7 @@
 
 namespace Application\Api\v1\Secretary\Membership\Membership\Resources;
 
+use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -83,6 +84,12 @@ class MemberResourceCollection extends ResourceCollection
                 'titheHistory' => $item->titheHistory ?? [
                     'isDependent' => false,
                     'history' => [],
+                ],
+                'deactivationInfo' => [
+                    'reason' => $item->deactivationReason,
+                    'label' => $item->deactivationReason
+                        ? (MemberData::DEACTIVATION_REASONS_LABELS[$item->deactivationReason] ?? null)
+                        : null,
                 ],
             ];
         });

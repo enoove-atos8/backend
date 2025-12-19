@@ -67,6 +67,19 @@ class MemberData extends DataTransferObject
 
     public const GROUP_LEADER = 'groupLeader';
 
+    public const DEACTIVATION_REASON = 'deactivationReason';
+
+    public const DEACTIVATION_REASONS_LABELS = [
+        'death' => 'Falecimento',
+        'church_transfer' => 'Transferência para outra igreja',
+        'voluntary_withdrawal' => 'Afastamento voluntário',
+        'exclusion' => 'Exclusão/disciplina eclesiástica',
+        'lost_contact' => 'Perda de contato',
+        'prolonged_inactivity' => 'Inatividade prolongada',
+        'denomination_change' => 'Mudança de denominação',
+        'relocation' => 'Mudança de cidade sem transferência',
+    ];
+
     public int $id = 0;
 
     public ?bool $activated;
@@ -131,6 +144,8 @@ class MemberData extends DataTransferObject
 
     public ?bool $groupLeader;
 
+    public ?string $deactivationReason;
+
     public ?array $titheHistory;
 
     /**
@@ -172,6 +187,7 @@ class MemberData extends DataTransferObject
             'dependentsMembersIds' => isset($data['members_dependents_members_ids']) ? (is_string($data['members_dependents_members_ids']) ? json_decode($data['members_dependents_members_ids'], true) : $data['members_dependents_members_ids']) : null,
             'titheAmount' => $data['tithe_amount'] ?? null,
             'groupLeader' => isset($data['members_group_leader']) ? (bool) $data['members_group_leader'] : null,
+            'deactivationReason' => $data['members_deactivation_reason'] ?? null,
         ];
     }
 
@@ -207,6 +223,7 @@ class MemberData extends DataTransferObject
             'groupIds' => isset($data['group_ids']) ? (is_string($data['group_ids']) ? json_decode($data['group_ids'], true) : $data['group_ids']) : null,
             'dependentsMembersIds' => isset($data['dependents_members_ids']) ? (is_string($data['dependents_members_ids']) ? json_decode($data['dependents_members_ids'], true) : $data['dependents_members_ids']) : null,
             'groupLeader' => isset($data['group_leader']) ? (bool) $data['group_leader'] : null,
+            'deactivationReason' => $data['deactivation_reason'] ?? null,
         ];
     }
 
