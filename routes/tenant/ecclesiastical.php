@@ -48,6 +48,7 @@ Route::prefix('ecclesiastical')->group(function () {
         Route::get('getAllGroups', [GroupController::class, 'getAllGroups']);
         Route::get('getAllGroupsWithDivisions', [GroupController::class, 'getAllGroupsWithDivisions']);
         Route::post('/', [GroupController::class, 'createGroup']);
+        Route::put('/{id}/leader', [GroupController::class, 'updateLeader']);
 
         Route::prefix('details')->group(function () {
 

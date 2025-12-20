@@ -40,9 +40,11 @@ Route::prefix('navigation')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::post('ai/search', [SearchController::class, 'search']);
-Route::get('ai/search/recent', [SearchController::class, 'recent']);
-Route::get('ai/search/suggestions', [SearchController::class, 'suggestions']);
+Route::middleware('auth:sanctum')->prefix('ai/search')->group(function () {
+    Route::post('/', [SearchController::class, 'search']);
+    Route::get('/recent', [SearchController::class, 'recent']);
+    Route::get('/suggestions', [SearchController::class, 'suggestions']);
+});
 
 /*
 |--------------------------------------------------------------------------
