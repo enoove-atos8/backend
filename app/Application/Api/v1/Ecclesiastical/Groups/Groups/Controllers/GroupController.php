@@ -3,6 +3,7 @@
 namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers;
 
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\UpdateGroupLeaderRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResource;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResourceCollection;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobileAppResourceCollection;
@@ -17,6 +18,7 @@ use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupByIdAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
+use Domain\Ecclesiastical\Groups\Actions\UpdateGroupLeaderAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Domain\Secretary\Membership\Constants\ReturnMessages as MembershipReturnMessages;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -178,6 +180,27 @@ class GroupController extends Controller
             return response([
                 'message' => MembershipReturnMessages::ERROR_ADD_MEMBERS_TO_GROUP,
             ], 500);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function updateLeader(
+        int $id,
+        UpdateGroupLeaderRequest $request,
+        UpdateGroupLeaderAction $action
+    ): Response {
+        try {
+            $leaderId = $request->input('leader_id');
+
+            $action->execute($id, $leaderId);
+
+            return response([
+                'message' => ReturnMessages::GROUP_LEADER_UPDATED,
+            ], 200);
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }

@@ -268,4 +268,11 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             BaseRepository::ORDERS['ASC']
         );
     }
+
+    public function updateLeader(int $groupId, ?int $leaderId): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $groupId)
+            ->update(['leader_id' => $leaderId]) > 0;
+    }
 }
