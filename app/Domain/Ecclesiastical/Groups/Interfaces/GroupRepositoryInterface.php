@@ -27,4 +27,8 @@ interface GroupRepositoryInterface
     public function save(GroupData $groupData): Group;
 
     public function updateLeader(int $groupId, ?int $leaderId): bool;
+
+    public function updateStatus(int $groupId, bool $enabled): bool;
+
+    public function delete($id): bool;
 }

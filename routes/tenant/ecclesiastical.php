@@ -47,8 +47,11 @@ Route::prefix('ecclesiastical')->group(function () {
         Route::get('getGroupById', [GroupController::class, 'getGroupById']);
         Route::get('getAllGroups', [GroupController::class, 'getAllGroups']);
         Route::get('getAllGroupsWithDivisions', [GroupController::class, 'getAllGroupsWithDivisions']);
+        Route::get('getAllGroupsByAllDivisions', [GroupController::class, 'getAllGroupsByAllDivisions']);
         Route::post('/', [GroupController::class, 'createGroup']);
         Route::put('/{id}/leader', [GroupController::class, 'updateLeader']);
+        Route::put('/{id}/status', [GroupController::class, 'updateStatus']);
+        Route::delete('/{id}', [GroupController::class, 'destroy']);
 
         Route::prefix('details')->group(function () {
 

@@ -59,6 +59,10 @@ class DivisionRepository extends BaseRepository implements DivisionRepositoryInt
             )
             ->first();
 
+        if ($result === null) {
+            return null;
+        }
+
         $attributes = $result->getAttributes();
         return DivisionData::fromResponse($attributes);
     }

@@ -9,8 +9,16 @@ class ReturnMessages
 
     public const GROUP_LEADER_UPDATED = 'Líder do grupo atualizado com sucesso!';
 
+    public const GROUP_STATUS_UPDATED = 'Status do grupo atualizado com sucesso!';
+
+    public const GROUP_DELETED = 'Grupo excluído com sucesso!';
+
     // ERROR MESSAGES
     public const ERROR_UPDATE_GROUP_LEADER = 'Erro ao atualizar o líder do grupo!';
+
+    public const ERROR_UPDATE_GROUP_STATUS = 'Erro ao atualizar o status do grupo!';
+
+    public const ERROR_DELETE_GROUP = 'Erro ao excluir o grupo!';
 
     public const ERROR_CREATE_GROUP = 'Houve um erro ao criar este grupo, tente novamente mais tarde!';
 
