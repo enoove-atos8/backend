@@ -20,6 +20,8 @@ class ReturnMessages
 
     public const ERROR_DELETE_GROUP = 'Erro ao excluir o grupo!';
 
+    public const ERROR_DELETE_GROUP_HAS_BALANCE = 'Não é possível excluir o grupo, pois existe saldo disponível!';
+
     public const ERROR_CREATE_GROUP = 'Houve um erro ao criar este grupo, tente novamente mais tarde!';
 
     public const GROUP_NOT_FOUNDED = 'Este grupo eclesiástico não foi localidado!';

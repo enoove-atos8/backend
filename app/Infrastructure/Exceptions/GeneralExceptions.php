@@ -13,15 +13,22 @@ class GeneralExceptions extends Exception
     protected $message;
     protected $code;
     protected ?Exception $e;
+    protected array $data;
 
 
-    public function __construct($message, $code = 0, Exception|Throwable $e = null)
+    public function __construct($message, $code = 0, Exception|Throwable $e = null, array $data = [])
     {
         $this->message = $message;
         $this->code = $code;
         $this->e = $e;
+        $this->data = $data;
 
         parent::__construct($message, $code, $e);
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
     }
 
 
@@ -74,7 +81,7 @@ class GeneralExceptions extends Exception
         }
         else
         {
-            $response = array_merge($finalResponse, $defaultResponse);
+            $response = array_merge($finalResponse, $defaultResponse, $this->data);
             return new JsonResponse($response, $this->code);
         }
     }

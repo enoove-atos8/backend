@@ -258,10 +258,17 @@ class GroupController extends Controller
         DeleteGroupAction $action
     ): Response {
         try {
-            $action->execute($id);
+            $result = $action->execute($id);
+
+            if (! $result['success']) {
+                return response([
+                    'message' => $result['message'],
+                    'balance' => $result['balance'] ?? null,
+                ], 400);
+            }
 
             return response([
-                'message' => ReturnMessages::GROUP_DELETED,
+                'message' => $result['message'],
             ], 200);
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);

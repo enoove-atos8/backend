@@ -18,14 +18,26 @@ class DeleteGroupAction
     }
 
     /**
+     * @return array{success: bool, message: string, balance?: float}
+     *
      * @throws GeneralExceptions
      */
-    public function execute(int $groupId): bool
+    public function execute(int $groupId): array
     {
         $group = $this->groupsRepository->getGroupsById($groupId);
 
         if (! $group) {
             throw new GeneralExceptions(ReturnMessages::GROUP_NOT_FOUND, 404);
+        }
+
+        $lastMovement = $this->groupsRepository->getGroupBalance($groupId);
+
+        if ($lastMovement !== null && $lastMovement->balance > 0) {
+            return [
+                'success' => false,
+                'message' => ReturnMessages::ERROR_DELETE_GROUP_HAS_BALANCE,
+                'balance' => $lastMovement->balance,
+            ];
         }
 
         $deleted = $this->groupsRepository->delete($groupId);
@@ -34,6 +46,9 @@ class DeleteGroupAction
             throw new GeneralExceptions(ReturnMessages::ERROR_DELETE_GROUP, 500);
         }
 
-        return true;
+        return [
+            'success' => true,
+            'message' => ReturnMessages::GROUP_DELETED,
+        ];
     }
 }

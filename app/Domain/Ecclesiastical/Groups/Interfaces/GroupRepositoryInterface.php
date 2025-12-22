@@ -5,6 +5,7 @@ namespace Domain\Ecclesiastical\Groups\Interfaces;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Models\Group;
+use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
@@ -31,4 +32,6 @@ interface GroupRepositoryInterface
     public function updateStatus(int $groupId, bool $enabled): bool;
 
     public function delete($id): bool;
+
+    public function getGroupBalance(int $groupId): ?MovementsData;
 }
