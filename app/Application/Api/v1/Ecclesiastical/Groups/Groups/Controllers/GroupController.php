@@ -4,6 +4,8 @@ namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers;
 
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\UpdateGroupLeaderRequest;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\UpdateGroupStatusRequest;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\AllGroupsByDivisionResourceCollection;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResource;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResourceCollection;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobileAppResourceCollection;
@@ -13,12 +15,15 @@ use Application\Api\v1\Secretary\Membership\Membership\Requests\AddMembersToGrou
 use Application\Core\Http\Controllers\Controller;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
 use Domain\Ecclesiastical\Groups\Actions\CreateNewGroupAction;
+use Domain\Ecclesiastical\Groups\Actions\DeleteGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\ExportMovementsGroupAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
+use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsByAllDivisionsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsWithDivisionsAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupByIdAction;
 use Domain\Ecclesiastical\Groups\Actions\GetGroupsByDivisionAction;
 use Domain\Ecclesiastical\Groups\Actions\UpdateGroupLeaderAction;
+use Domain\Ecclesiastical\Groups\Actions\UpdateGroupStatusAction;
 use Domain\Ecclesiastical\Groups\Constants\ReturnMessages;
 use Domain\Secretary\Membership\Constants\ReturnMessages as MembershipReturnMessages;
 use Illuminate\Contracts\Routing\ResponseFactory;
@@ -121,6 +126,24 @@ class GroupController extends Controller
      * @throws GeneralExceptions
      * @throws Throwable
      */
+    public function getAllGroupsByAllDivisions(
+        Request $request,
+        GetAllGroupsByAllDivisionsAction $getAllGroupsByAllDivisionsAction
+    ): AllGroupsByDivisionResourceCollection {
+        try {
+            $response = $getAllGroupsByAllDivisionsAction->execute();
+
+            return new AllGroupsByDivisionResourceCollection($response);
+
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions
+     * @throws Throwable
+     */
     public function getGroupsToMobileApp(Request $request, GetGroupsByDivisionAction $getGroupsByDivisionAction): ResponseFactory|Application|Response|GroupsToMobileAppResourceCollection
     {
         try {
@@ -200,6 +223,45 @@ class GroupController extends Controller
 
             return response([
                 'message' => ReturnMessages::GROUP_LEADER_UPDATED,
+            ], 200);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function updateStatus(
+        int $id,
+        UpdateGroupStatusRequest $request,
+        UpdateGroupStatusAction $action
+    ): Response {
+        try {
+            $enabled = (bool) $request->input('enabled');
+
+            $action->execute($id, $enabled);
+
+            return response([
+                'message' => ReturnMessages::GROUP_STATUS_UPDATED,
+            ], 200);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function destroy(
+        int $id,
+        DeleteGroupAction $action
+    ): Response {
+        try {
+            $action->execute($id);
+
+            return response([
+                'message' => ReturnMessages::GROUP_DELETED,
             ], 200);
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);

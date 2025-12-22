@@ -156,8 +156,6 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionData->id);
         }
 
-        $q->where(self::ENABLED_TABLE_COLUMN, 1);
-
         return $q->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
             ->get();
     }
@@ -274,5 +272,12 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         return DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
             ->update(['leader_id' => $leaderId]) > 0;
+    }
+
+    public function updateStatus(int $groupId, bool $enabled): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $groupId)
+            ->update(['enabled' => $enabled]) > 0;
     }
 }
