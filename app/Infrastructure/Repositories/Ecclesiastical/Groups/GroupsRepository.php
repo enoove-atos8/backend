@@ -306,9 +306,12 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     public function softDelete(int $groupId): bool
     {
-        return DB::table(self::TABLE_NAME)
+        $affectedRows = DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
-            ->update(['deleted' => true]) > 0;
+            ->where('deleted', false)
+            ->update(['deleted' => true]);
+
+        return $affectedRows >= 0;
     }
 
     /**
