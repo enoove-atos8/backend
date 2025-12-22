@@ -7,6 +7,7 @@ use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Models\Group;
+use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
@@ -53,6 +54,16 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     const NAME_GROUP_COLUMN = 'name';
 
     const SLUG_GROUP_COLUMN = 'slug';
+
+    const MOVEMENTS_TABLE_NAME = 'movements';
+
+    const MOVEMENTS_GROUP_ID_COLUMN = 'group_id';
+
+    const MOVEMENTS_DELETED_COLUMN = 'deleted';
+
+    const MOVEMENTS_DATE_COLUMN = 'movement_date';
+
+    const MOVEMENTS_ID_COLUMN = 'id';
 
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions_groups.id as groups_id',
@@ -279,5 +290,24 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         return DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
             ->update(['enabled' => $enabled]) > 0;
+    }
+
+    /**
+     * Get the last movement (with current balance) for a group from movements table
+     */
+    public function getGroupBalance(int $groupId): ?MovementsData
+    {
+        $lastMovement = DB::table(self::MOVEMENTS_TABLE_NAME)
+            ->where(self::MOVEMENTS_GROUP_ID_COLUMN, $groupId)
+            ->where(self::MOVEMENTS_DELETED_COLUMN, 0)
+            ->orderBy(self::MOVEMENTS_DATE_COLUMN, 'desc')
+            ->orderBy(self::MOVEMENTS_ID_COLUMN, 'desc')
+            ->first();
+
+        if ($lastMovement === null) {
+            return null;
+        }
+
+        return MovementsData::fromResponse((array) $lastMovement);
     }
 }
