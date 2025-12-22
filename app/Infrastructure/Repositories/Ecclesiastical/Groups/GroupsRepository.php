@@ -65,6 +65,12 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const MOVEMENTS_ID_COLUMN = 'id';
 
+    const ENTRIES_TABLE_NAME = 'entries';
+
+    const ENTRIES_GROUP_RECEIVED_ID_COLUMN = 'group_received_id';
+
+    const ENTRIES_GROUP_RETURNED_ID_COLUMN = 'group_returned_id';
+
     const DISPLAY_SELECT_COLUMNS = [
         'ecclesiastical_divisions_groups.id as groups_id',
         'ecclesiastical_divisions_groups.ecclesiastical_division_id as groups_division_id',
@@ -290,6 +296,16 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         return DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
             ->update(['enabled' => $enabled]) > 0;
+    }
+
+    /**
+     * Soft delete a group by setting deleted = true
+     */
+    public function softDelete(int $groupId): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $groupId)
+            ->update(['deleted' => true]) > 0;
     }
 
     /**

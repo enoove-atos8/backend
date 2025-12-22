@@ -40,7 +40,7 @@ class DeleteGroupAction
             ];
         }
 
-        $deleted = $this->groupsRepository->delete($groupId);
+        $deleted = $this->groupsRepository->softDelete($groupId);
 
         if (! $deleted) {
             throw new GeneralExceptions(ReturnMessages::ERROR_DELETE_GROUP, 500);

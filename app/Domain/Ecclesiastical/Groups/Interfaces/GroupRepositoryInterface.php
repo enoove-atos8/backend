@@ -33,5 +33,7 @@ interface GroupRepositoryInterface
 
     public function delete($id): bool;
 
+    public function softDelete(int $groupId): bool;
+
     public function getGroupBalance(int $groupId): ?MovementsData;
 }
