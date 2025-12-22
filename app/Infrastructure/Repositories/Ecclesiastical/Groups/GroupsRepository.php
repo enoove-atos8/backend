@@ -33,6 +33,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const ENABLED_TABLE_COLUMN = 'enabled';
 
+    const DELETED_COLUMN = 'ecclesiastical_divisions_groups.deleted';
+
     const FINANCIAL_GROUP_COLUMN = 'financial_group';
 
     const RETURN_RECEIVING_TABLE_COLUMN = 'return_receiving';
@@ -167,7 +169,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
                 BaseRepository::OPERATORS['EQUALS'],
                 self::MEMBER_ID_COLUMN
             )
-            ->select($displayColumnsFromRelationship);
+            ->select($displayColumnsFromRelationship)
+            ->where(self::DELETED_COLUMN, false);
 
         if ($divisionData != null) {
             $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionData->id);
