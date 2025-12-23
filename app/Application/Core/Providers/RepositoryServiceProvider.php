@@ -47,6 +47,7 @@ use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\PaymentGateway\Interfaces\StripeRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
+use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountIndicatorsRepositoryInterface;
@@ -71,6 +72,7 @@ use Infrastructure\Repositories\CentralDomain\PaymentGateway\StripeRepository;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\CentralDomain\SubscriptionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
+use Infrastructure\Repositories\Ecclesiastical\Groups\AmountRequests\AmountRequestRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountFilesRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountIndicatorsRepository;
@@ -141,6 +143,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(LlmVisionServiceInterface::class, GeminiVisionService::class);
         $this->app->bind(ReceiptDataExtractorInterface::class, ReceiptDataExtractorWithFallback::class);
         $this->app->bind(OnboardingRepositoryInterface::class, OnboardingRepository::class);
+        $this->app->bind(AmountRequestRepositoryInterface::class, AmountRequestRepository::class);
     }
 
     /**
