@@ -9,37 +9,43 @@ use App\Domain\Financial\Entries\Entries\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Models\Entry;
-use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\Movements\Actions\CreateMovementAction;
-use Domain\Financial\Movements\Actions\GetCurrentBalanceAction;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\Movements\MovementRepository;
 use Throwable;
 
 class CreateEntryAction
 {
     private EntryRepositoryInterface $entryRepository;
+
     private ConsolidatedEntriesRepositoryInterface $consolidatedEntriesRepository;
+
     private CreateConsolidatedEntryAction $createConsolidatedEntryAction;
+
     private CreateMovementAction $createMovementAction;
+
     private MovementsData $movementsData;
+
     private MovementRepositoryInterface $movementRepository;
+
     private GroupRepositoryInterface $groupRepository;
 
+    private AmountRequestRepositoryInterface $amountRequestRepository;
+
     public function __construct(
-        EntryRepositoryInterface               $entryRepositoryInterface,
+        EntryRepositoryInterface $entryRepositoryInterface,
         ConsolidatedEntriesRepositoryInterface $consolidatedEntriesRepositoryInterface,
-        CreateConsolidatedEntryAction          $createConsolidatedEntryAction,
-        CreateMovementAction                   $createMovementAction,
-        MovementsData                          $movementsData,
-        MovementRepositoryInterface            $movementRepositoryInterface,
-        GroupRepositoryInterface               $groupRepositoryInterface
-    )
-    {
+        CreateConsolidatedEntryAction $createConsolidatedEntryAction,
+        CreateMovementAction $createMovementAction,
+        MovementsData $movementsData,
+        MovementRepositoryInterface $movementRepositoryInterface,
+        GroupRepositoryInterface $groupRepositoryInterface,
+        AmountRequestRepositoryInterface $amountRequestRepositoryInterface
+    ) {
         $this->entryRepository = $entryRepositoryInterface;
         $this->consolidatedEntriesRepository = $consolidatedEntriesRepositoryInterface;
         $this->createConsolidatedEntryAction = $createConsolidatedEntryAction;
@@ -47,6 +53,7 @@ class CreateEntryAction
         $this->movementsData = $movementsData;
         $this->movementRepository = $movementRepositoryInterface;
         $this->groupRepository = $groupRepositoryInterface;
+        $this->amountRequestRepository = $amountRequestRepositoryInterface;
     }
 
     /**
@@ -57,36 +64,65 @@ class CreateEntryAction
         $dateEntryRegister = $entryData->dateEntryRegister;
         $dateTransactionCompensation = $entryData->dateTransactionCompensation;
 
-        if($dateTransactionCompensation !== null)
-        {
-            if(substr($dateEntryRegister, 0, 7) !== substr($dateTransactionCompensation, 0, 7))
-                $entryData->dateEntryRegister = substr($dateTransactionCompensation, 0, 7) . '-01';
+        if ($dateTransactionCompensation !== null) {
+            if (substr($dateEntryRegister, 0, 7) !== substr($dateTransactionCompensation, 0, 7)) {
+                $entryData->dateEntryRegister = substr($dateTransactionCompensation, 0, 7).'-01';
+            }
         }
 
-        if(!is_null($consolidationEntriesData))
+        if (! is_null($consolidationEntriesData)) {
             $this->createConsolidatedEntryAction->execute($consolidationEntriesData);
+        }
 
         $entry = $this->entryRepository->newEntry($entryData);
         $entryData->id = $entry->id;
 
-        if(!is_null($entryData->id))
-        {
-            if($entryData->entryType == EntryRepository::DESIGNATED_VALUE)
-            {
+        if (! is_null($entryData->id)) {
+            if ($entryData->entryType == EntryRepository::DESIGNATED_VALUE) {
                 $group = $this->groupRepository->getGroupById($entryData->groupReceivedId);
 
-                if($group && $group->financialMovement)
-                {
+                if ($group && $group->financialMovement) {
                     $movementData = $this->movementsData::fromObjectData($entryData);
                     $this->createMovementAction->execute($movementData);
                 }
             }
 
+            // Auto-link devolution entry to open amount request
+            $this->linkDevolutionToAmountRequest($entryData);
+
             return $entry;
-        }
-        else
-        {
+        } else {
             throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_ENTRY, 500);
         }
+    }
+
+    /**
+     * Link devolution entry to open amount request if applicable
+     */
+    private function linkDevolutionToAmountRequest(EntryData $entryData): void
+    {
+        // Only process if this is a devolution entry
+        if ($entryData->devolution !== 1) {
+            return;
+        }
+
+        // groupReturnedId is the group that is returning money
+        if ($entryData->groupReturnedId === null) {
+            return;
+        }
+
+        // Find open amount request for this group
+        $openRequest = $this->amountRequestRepository->getOpenByGroupId($entryData->groupReturnedId);
+
+        if ($openRequest === null) {
+            return;
+        }
+
+        // Link the devolution entry to the amount request
+        $this->amountRequestRepository->linkDevolution(
+            $openRequest->id,
+            $entryData->id,
+            $entryData->amount
+        );
     }
 }

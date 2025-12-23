@@ -1,0 +1,66 @@
+<?php
+
+namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
+
+use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
+use Infrastructure\Exceptions\GeneralExceptions;
+
+class LinkExitToAmountRequestAction
+{
+    private AmountRequestRepositoryInterface $repository;
+
+    public function __construct(AmountRequestRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
+    /**
+     * Link, update or unlink an exit to an amount request
+     *
+     * @param  int  $id  Amount request ID
+     * @param  int|null  $exitId  Exit ID to link/update, or null to unlink
+     *
+     * @throws GeneralExceptions
+     */
+    public function execute(int $id, ?int $exitId): bool
+    {
+        // Check if amount request exists
+        $existing = $this->repository->getById($id);
+        if ($existing === null) {
+            throw new GeneralExceptions(ReturnMessages::AMOUNT_REQUEST_NOT_FOUND, 404);
+        }
+
+        // Linking or updating exit (exitId provided)
+        if ($exitId !== null) {
+            // Approved requests can be linked to an exit
+            // Transferred requests can have their exit updated (changed to another)
+            $validStatuses = [ReturnMessages::STATUS_APPROVED, ReturnMessages::STATUS_TRANSFERRED];
+            if (! in_array($existing->status, $validStatuses)) {
+                throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_LINK, 400);
+            }
+
+            $updated = $this->repository->linkExit($id, $exitId);
+
+            if (! $updated) {
+                throw new GeneralExceptions(ReturnMessages::ERROR_LINK_EXIT, 500);
+            }
+
+            return true;
+        }
+
+        // Unlinking (exitId is null)
+        // Only transferred requests can be unlinked
+        if ($existing->status !== ReturnMessages::STATUS_TRANSFERRED) {
+            throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_UNLINK, 400);
+        }
+
+        $updated = $this->repository->unlinkExit($id);
+
+        if (! $updated) {
+            throw new GeneralExceptions(ReturnMessages::ERROR_UNLINK_EXIT, 500);
+        }
+
+        return true;
+    }
+}

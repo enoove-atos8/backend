@@ -57,6 +57,7 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const REVIEWER_ID_COLUMN_JOINED = 'exits.reviewer_id';
 
     const ACCOUNT_ID_COLUMN_JOINED = 'exits.account_id';
+
     const ACCOUNT_ID_COLUMN = 'account_id';
 
     const ACCOUNT_ID = 'accountId';
@@ -81,7 +82,12 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
 
     const EXIT_TYPE_COLUMN = 'exit_type';
 
+    const EXIT_TYPE_COLUMN_JOINED = 'exits.exit_type';
+
     const EXIT_TYPE_COLUMN_JOINED_WITH_UNDERLINE = 'exits_exit_type';
+
+    // Filters
+    const EXIT_TYPE_FILTER = 'exitType';
 
     const PAYMENT_VALUE = 'payment';
 
@@ -278,8 +284,9 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
                 $this->queryConditions[] = $this->whereLike(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, $arrDates, 'andWithOrInside');
             }
 
-            // if(count($filters) > 0)
-            //    $this->applyFilters($filters,true);
+            if (count($filters) > 0) {
+                $this->applyFilters($filters, true);
+            }
 
         } elseif ($transactionCompensation == self::TO_COMPENSATE_VALUE) {
             if ($dates !== 'all') {
@@ -316,6 +323,27 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         }
 
         return $this->getItemsWithRelationshipsAndWheres($this->queryConditions);
+    }
+
+    /**
+     * Apply filters to query conditions
+     */
+    public function applyFilters(array $filters, bool $joinQuery = false): void
+    {
+        $this->queryConditions = count($this->queryConditions) > 0 ? $this->queryConditions : [];
+
+        foreach ($filters as $key => $filter) {
+            if ($key == self::EXIT_TYPE_FILTER) {
+                $exitTypes = explode(',', $filter);
+                $column = $joinQuery ? self::EXIT_TYPE_COLUMN_JOINED : self::EXIT_TYPE_COLUMN;
+
+                if (count($exitTypes) > 1) {
+                    $this->queryConditions[] = $this->whereEqual($column, $exitTypes, 'andWithOrInside');
+                } else {
+                    $this->queryConditions[] = $this->whereEqual($column, $filter, 'and');
+                }
+            }
+        }
     }
 
     /**

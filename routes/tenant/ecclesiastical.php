@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Controllers\AmountRequestController;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers\GroupController;
 use Application\Api\v1\Ecclesiastical\Divisions\Controllers\DivisionsController;
 use Application\Api\v1\Secretary\Membership\Membership\Controllers\MemberController;
@@ -63,6 +64,41 @@ Route::prefix('ecclesiastical')->group(function () {
                 Route::get('/getMembersByGroupId', [MemberController::class, 'getMembersByGroupId']);
                 Route::post('/addMembersToGroup', [GroupController::class, 'addMembersToGroup']);
             });
+        });
+
+        /*
+        |--------------------------------------------------------------------------
+        | Amount Requests Routes (Solicitação de Verbas)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('amount-requests')->group(function () {
+
+            Route::get('/', [AmountRequestController::class, 'getAmountRequests']);
+            Route::post('/', [AmountRequestController::class, 'createAmountRequest']);
+            Route::get('/indicators', [AmountRequestController::class, 'getAmountRequestIndicators']);
+            Route::get('/{id}', [AmountRequestController::class, 'getAmountRequestById'])->whereNumber('id');
+            Route::put('/{id}', [AmountRequestController::class, 'updateAmountRequest'])->whereNumber('id');
+            Route::delete('/{id}', [AmountRequestController::class, 'deleteAmountRequest'])->whereNumber('id');
+
+            Route::post('/{id}/approve', [AmountRequestController::class, 'approveAmountRequest'])->whereNumber('id');
+            Route::post('/{id}/reject', [AmountRequestController::class, 'rejectAmountRequest'])->whereNumber('id');
+            Route::put('/{id}/link-exit', [AmountRequestController::class, 'linkExitToAmountRequest'])->whereNumber('id');
+            Route::post('/{id}/close', [AmountRequestController::class, 'closeAmountRequest'])->whereNumber('id');
+
+            Route::get('/{id}/receipts', [AmountRequestController::class, 'getAmountRequestReceipts'])->whereNumber('id');
+            Route::post('/{id}/receipts', [AmountRequestController::class, 'createAmountRequestReceipt'])->whereNumber('id');
+            Route::put('/{id}/receipts/{receiptId}', [AmountRequestController::class, 'updateAmountRequestReceipt'])
+                ->whereNumber('id')
+                ->whereNumber('receiptId');
+            Route::delete('/{id}/receipts/{receiptId}', [AmountRequestController::class, 'deleteAmountRequestReceipt'])
+                ->whereNumber('id')
+                ->whereNumber('receiptId');
+
+            Route::get('/{id}/reminders', [AmountRequestController::class, 'getAmountRequestReminders'])->whereNumber('id');
+            Route::post('/{id}/reminders', [AmountRequestController::class, 'createAmountRequestReminder'])->whereNumber('id');
+
+            Route::get('/{id}/history', [AmountRequestController::class, 'getAmountRequestHistory'])->whereNumber('id');
         });
     });
 });
