@@ -11,8 +11,6 @@ use Infrastructure\Services\External\minIO\MinioStorageService;
 
 class CreateAmountRequestReceiptAction
 {
-    const UPLOAD_PATH = 'amount_requests/receipts';
-
     private AmountRequestRepositoryInterface $repository;
 
     private MinioStorageService $minioStorageService;
@@ -30,7 +28,7 @@ class CreateAmountRequestReceiptAction
      *
      * @throws GeneralExceptions
      */
-    public function execute(AmountRequestReceiptData $data, UploadedFile $file): int
+    public function execute(AmountRequestReceiptData $data, UploadedFile $file, string $path): int
     {
         // Check if amount request exists
         $existing = $this->repository->getById($data->amountRequestId);
@@ -46,7 +44,7 @@ class CreateAmountRequestReceiptAction
 
         // Upload file to MinIO
         $tenant = tenant('id');
-        $uploadedUrl = $this->minioStorageService->upload($file, self::UPLOAD_PATH, $tenant);
+        $uploadedUrl = $this->minioStorageService->upload($file, $path, $tenant);
 
         if (empty($uploadedUrl)) {
             throw new GeneralExceptions(ReturnMessages::ERROR_UPLOAD_FILE, 500);
