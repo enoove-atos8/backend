@@ -38,8 +38,9 @@ class CreateAmountRequestReceiptAction
 
         // Only transferred, partially_proven or overdue requests can receive receipts
         $validStatuses = [ReturnMessages::STATUS_TRANSFERRED, ReturnMessages::STATUS_PARTIALLY_PROVEN, ReturnMessages::STATUS_OVERDUE];
+        \Log::info('DEBUG Receipt - Status: [' . $existing->status . '] | Type: ' . gettype($existing->status) . ' | Valid: ' . json_encode($validStatuses));
         if (! in_array($existing->status, $validStatuses)) {
-            throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_RECEIPT, 400);
+            throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_RECEIPT . ' Status atual: ' . $existing->status, 400);
         }
 
         // Upload file to MinIO
