@@ -24,7 +24,7 @@ class AmountRequestReceiptRequest extends FormRequest
         return [
             'amount' => 'required|numeric|min:0.01',
             'description' => 'required|string|min:3',
-            'imageUrl' => 'required|string|url',
+            'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
             'receiptDate' => 'required|date|before_or_equal:today',
         ];
     }
@@ -40,8 +40,10 @@ class AmountRequestReceiptRequest extends FormRequest
             'amount.min' => 'O valor do comprovante deve ser maior que zero!',
             'description.required' => 'A descrição do comprovante é obrigatória!',
             'description.min' => 'A descrição deve ter pelo menos 3 caracteres!',
-            'imageUrl.required' => 'A imagem do comprovante é obrigatória!',
-            'imageUrl.url' => 'A URL da imagem deve ser válida!',
+            'file.required' => 'O arquivo do comprovante é obrigatório!',
+            'file.file' => 'O arquivo enviado é inválido!',
+            'file.mimes' => 'O arquivo deve ser PDF, JPG, JPEG ou PNG!',
+            'file.max' => 'O arquivo não pode exceder 10MB!',
             'receiptDate.required' => 'A data do comprovante é obrigatória!',
             'receiptDate.date' => 'A data do comprovante deve ser uma data válida!',
             'receiptDate.before_or_equal' => 'A data do comprovante não pode ser futura!',
@@ -59,7 +61,7 @@ class AmountRequestReceiptRequest extends FormRequest
             amountRequestId: $amountRequestId,
             amount: $this->input('amount'),
             description: $this->input('description'),
-            imageUrl: $this->input('imageUrl'),
+            imageUrl: null,
             receiptDate: $this->input('receiptDate'),
             createdBy: $this->user()->id,
         );
