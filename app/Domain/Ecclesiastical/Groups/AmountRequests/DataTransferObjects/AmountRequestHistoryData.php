@@ -38,7 +38,7 @@ class AmountRequestHistoryData extends DataTransferObject
             event: $data['amount_request_history_event'] ?? null,
             description: $data['amount_request_history_description'] ?? null,
             userId: $data['amount_request_history_user_id'] ?? null,
-            userName: $data['users_full_name'] ?? null,
+            userName: $data['user_details_full_name'] ?? null,
             metadata: isset($data['amount_request_history_metadata']) ? json_decode($data['amount_request_history_metadata'], true) : null,
             createdAt: $data['amount_request_history_created_at'] ?? null,
             updatedAt: $data['amount_request_history_updated_at'] ?? null,

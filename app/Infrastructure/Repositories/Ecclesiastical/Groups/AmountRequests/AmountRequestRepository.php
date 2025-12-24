@@ -26,6 +26,8 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
 
     const USERS_TABLE_NAME = 'users';
 
+    const USER_DETAILS_TABLE_NAME = 'user_details';
+
     const MEMBERS_TABLE_NAME = 'members';
 
     const GROUPS_TABLE_NAME = 'ecclesiastical_divisions_groups';
@@ -217,9 +219,11 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
         'amount_request_history.updated_at as amount_request_history_updated_at',
     ];
 
-    const USERS_SELECT_COLUMNS = [
-        'users.full_name as users_full_name',
+    const USER_DETAILS_SELECT_COLUMNS = [
+        'user_details.full_name as user_details_full_name',
     ];
+
+    const USER_DETAILS_USER_ID_JOINED = 'user_details.user_id';
 
     const EXITS_SELECT_COLUMNS = [
         'exits.id as exits_id',
@@ -782,16 +786,16 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
     {
         $selectColumns = array_merge(
             self::HISTORY_SELECT_COLUMNS,
-            self::USERS_SELECT_COLUMNS
+            self::USER_DETAILS_SELECT_COLUMNS
         );
 
         $results = DB::table(self::HISTORY_TABLE_NAME)
             ->select($selectColumns)
             ->leftJoin(
-                self::USERS_TABLE_NAME,
+                self::USER_DETAILS_TABLE_NAME,
                 self::HISTORY_USER_ID_JOINED,
                 '=',
-                self::USERS_ID_JOINED
+                self::USER_DETAILS_USER_ID_JOINED
             )
             ->where(self::HISTORY_AMOUNT_REQUEST_ID_JOINED, $amountRequestId)
             ->orderBy(self::HISTORY_CREATED_AT_JOINED, 'asc')
