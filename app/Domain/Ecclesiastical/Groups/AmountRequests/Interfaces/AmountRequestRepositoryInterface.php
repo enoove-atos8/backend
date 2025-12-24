@@ -163,4 +163,9 @@ interface AmountRequestRepositoryInterface
      * Link a devolution entry to an amount request
      */
     public function linkDevolution(int $id, int $entryId, ?string $devolutionAmount = null): bool;
+
+    /**
+     * Update receipt image URL
+     */
+    public function updateReceiptImageUrl(int $receiptId, string $imageUrl): bool;
 }

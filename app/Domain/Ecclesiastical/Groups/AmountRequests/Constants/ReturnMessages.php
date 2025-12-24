@@ -56,6 +56,8 @@ class ReturnMessages
 
     public const ERROR_CREATE_REMINDER = 'Erro ao criar lembrete!';
 
+    public const ERROR_UPLOAD_FILE = 'Erro ao fazer upload do arquivo!';
+
     public const RECEIPT_NOT_FOUND = 'Comprovante não encontrado!';
 
     // Validation messages

@@ -276,7 +276,8 @@ class AmountRequestController extends Controller
         CreateAmountRequestReceiptAction $action
     ): Response {
         try {
-            $action->execute($request->receiptData($id));
+            $file = $request->file('file');
+            $action->execute($request->receiptData($id), $file);
 
             return response([
                 'message' => ReturnMessages::RECEIPT_CREATED,

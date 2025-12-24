@@ -5,15 +5,24 @@ namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestReceiptData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
+use Illuminate\Http\UploadedFile;
 use Infrastructure\Exceptions\GeneralExceptions;
+use Infrastructure\Services\External\minIO\MinioStorageService;
 
 class CreateAmountRequestReceiptAction
 {
+    const UPLOAD_PATH = 'amount_requests/receipts';
+
     private AmountRequestRepositoryInterface $repository;
 
-    public function __construct(AmountRequestRepositoryInterface $repository)
-    {
+    private MinioStorageService $minioStorageService;
+
+    public function __construct(
+        AmountRequestRepositoryInterface $repository,
+        MinioStorageService $minioStorageService
+    ) {
         $this->repository = $repository;
+        $this->minioStorageService = $minioStorageService;
     }
 
     /**
@@ -21,7 +30,7 @@ class CreateAmountRequestReceiptAction
      *
      * @throws GeneralExceptions
      */
-    public function execute(AmountRequestReceiptData $data): int
+    public function execute(AmountRequestReceiptData $data, UploadedFile $file): int
     {
         // Check if amount request exists
         $existing = $this->repository->getById($data->amountRequestId);
@@ -34,6 +43,17 @@ class CreateAmountRequestReceiptAction
         if (! in_array($existing->status, $validStatuses)) {
             throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_RECEIPT, 400);
         }
+
+        // Upload file to MinIO
+        $tenant = tenant('id');
+        $uploadedUrl = $this->minioStorageService->upload($file, self::UPLOAD_PATH, $tenant);
+
+        if (empty($uploadedUrl)) {
+            throw new GeneralExceptions(ReturnMessages::ERROR_UPLOAD_FILE, 500);
+        }
+
+        // Set the uploaded URL in the data
+        $data->imageUrl = $uploadedUrl;
 
         // Create receipt
         $receiptId = $this->repository->createReceipt($data);

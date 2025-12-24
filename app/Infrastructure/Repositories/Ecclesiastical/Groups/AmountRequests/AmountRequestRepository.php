@@ -924,4 +924,18 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
             ->where(self::DELETED_COLUMN, false)
             ->update($updateData) > 0;
     }
+
+    /**
+     * Update receipt image URL
+     */
+    public function updateReceiptImageUrl(int $receiptId, string $imageUrl): bool
+    {
+        return DB::table(self::RECEIPTS_TABLE_NAME)
+            ->where(self::ID_COLUMN, $receiptId)
+            ->where(self::DELETED_COLUMN, false)
+            ->update([
+                self::IMAGE_URL_COLUMN => $imageUrl,
+                self::UPDATED_AT_COLUMN => now(),
+            ]) > 0;
+    }
 }
