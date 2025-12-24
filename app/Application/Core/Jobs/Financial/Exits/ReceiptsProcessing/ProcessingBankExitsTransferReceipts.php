@@ -8,12 +8,11 @@ use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCa
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
+use App\Infrastructure\Repositories\CentralDomain\Church\ChurchRepository;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Services\Financial\Interfaces\ReceiptDataExtractorInterface;
 use DateTime;
-use Domain\CentralDomain\Churches\Church\Actions\GetChurchesByPlanIdAction;
-use Domain\CentralDomain\Plans\Actions\GetPlanByNameAction;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
 use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
@@ -32,8 +31,8 @@ use Domain\SyncStorage\Actions\UpdateStatusAction;
 use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInvoiceRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
@@ -45,15 +44,11 @@ class ProcessingBankExitsTransferReceipts
 {
     // Properties
 
-    private GetPlanByNameAction $getPlanByNameAction;
-
     protected Collection $syncStorageCollection;
 
     private GetSyncStorageDataAction $getSyncStorageDataAction;
 
     private MinioStorageService $minioStorageService;
-
-    private GetChurchesByPlanIdAction $getChurchesByPlanIdAction;
 
     private ReceiptDataExtractorInterface $receiptDataExtractor;
 
@@ -110,10 +105,8 @@ class ProcessingBankExitsTransferReceipts
     const SYNC_STORAGE_EXITS_ERROR_RECEIPTS = 'sync_storage/financial/error_receipts/exits';
 
     public function __construct(
-        GetPlanByNameAction $getPlanByNameAction,
         GetSyncStorageDataAction $getSyncStorageDataAction,
         MinioStorageService $minioStorageService,
-        GetChurchesByPlanIdAction $getChurchesByPlanIdAction,
         ReceiptDataExtractorInterface $receiptDataExtractor,
         GetExitByTimestampAction $getExitByTimestampAction,
         UpdateStatusAction $updateStatusAction,
@@ -136,10 +129,8 @@ class ProcessingBankExitsTransferReceipts
         UpdateStatusInstallmentAction $updateStatusInstallmentAction,
         GetInvoiceByIdAction $getInvoiceByIdAction
     ) {
-        $this->getPlanByNameAction = $getPlanByNameAction;
         $this->getSyncStorageDataAction = $getSyncStorageDataAction;
         $this->minioStorageService = $minioStorageService;
-        $this->getChurchesByPlanIdAction = $getChurchesByPlanIdAction;
         $this->receiptDataExtractor = $receiptDataExtractor;
         $this->getExitByTimestampAction = $getExitByTimestampAction;
         $this->updateStatusAction = $updateStatusAction;
@@ -173,7 +164,7 @@ class ProcessingBankExitsTransferReceipts
     public function handle(): void
     {
         try {
-            $tenants = $this->getTenantsByPlan(PlanRepository::PLAN_GOLD_NAME);
+            $tenants = $this->getAllTenants();
 
             foreach ($tenants as $tenant) {
                 tenancy()->initialize($tenant);
@@ -290,26 +281,16 @@ class ProcessingBankExitsTransferReceipts
     }
 
     /**
-     * @throws GeneralExceptions
-     * @throws BindingResolutionException
-     * @throws Throwable
+     * Get all active tenants regardless of plan
      */
-    public function getTenantsByPlan(string $planName): array
+    public function getAllTenants(): array
     {
-        $arrTenants = [];
-        $plan = $this->getPlanByNameAction->execute($planName);
-
-        if (! is_null($plan)) {
-            $tenants = $this->getChurchesByPlanIdAction->execute($plan->id);
-
-            if (count($tenants) > 0) {
-                foreach ($tenants as $tenant) {
-                    $arrTenants[] = $tenant->tenant_id;
-                }
-            }
-        }
-
-        return $arrTenants;
+        return tenancy()->central(function () {
+            return DB::table(ChurchRepository::TABLE_NAME)
+                ->where(ChurchRepository::ACTIVATED_COLUMN, true)
+                ->pluck(ChurchRepository::TENANT_ID_COLUMN)
+                ->toArray();
+        });
     }
 
     /**

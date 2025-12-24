@@ -5,16 +5,15 @@ namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
+use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class CreateAmountRequestAction
 {
-    private AmountRequestRepositoryInterface $repository;
-
-    public function __construct(AmountRequestRepositoryInterface $repository)
-    {
-        $this->repository = $repository;
-    }
+    public function __construct(
+        private AmountRequestRepositoryInterface $repository,
+        private GroupRepositoryInterface $groupRepository
+    ) {}
 
     /**
      * Create a new amount request
@@ -23,12 +22,26 @@ class CreateAmountRequestAction
      */
     public function execute(AmountRequestData $data): int
     {
-        // Validate that no open request exists for this group
         if ($data->groupId !== null) {
+            // Validate that no open request exists for this group
             $existingOpenRequest = $this->repository->getOpenByGroupId($data->groupId);
 
             if ($existingOpenRequest !== null) {
                 throw new GeneralExceptions(ReturnMessages::GROUP_HAS_OPEN_REQUEST, 400);
+            }
+
+            // Validate that the group has sufficient balance for the requested amount
+            $groupBalance = $this->groupRepository->getGroupBalance($data->groupId);
+            $currentBalance = $groupBalance?->balance ?? 0.0;
+            $requestedAmount = (float) ($data->requestedAmount ?? 0.0);
+
+            if ($currentBalance < $requestedAmount) {
+                throw new GeneralExceptions(
+                    ReturnMessages::GROUP_INSUFFICIENT_BALANCE,
+                    400,
+                    null,
+                    ['balance' => $currentBalance]
+                );
             }
         }
 

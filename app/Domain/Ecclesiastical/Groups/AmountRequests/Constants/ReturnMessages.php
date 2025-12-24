@@ -83,6 +83,8 @@ class ReturnMessages
 
     public const GROUP_HAS_OPEN_REQUEST = 'Este grupo já possui uma solicitação de verba em andamento!';
 
+    public const GROUP_INSUFFICIENT_BALANCE = 'O grupo não possui saldo suficiente para esta solicitação!';
+
     // Status constants
     public const STATUS_PENDING = 'pending';
 
