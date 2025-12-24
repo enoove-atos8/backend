@@ -26,6 +26,7 @@ class AmountRequestReceiptRequest extends FormRequest
             'description' => 'required|string|min:3',
             'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:10240',
             'receiptDate' => 'required|date|before_or_equal:today',
+            'path' => 'required|string|min:1',
         ];
     }
 
@@ -47,6 +48,8 @@ class AmountRequestReceiptRequest extends FormRequest
             'receiptDate.required' => 'A data do comprovante é obrigatória!',
             'receiptDate.date' => 'A data do comprovante deve ser uma data válida!',
             'receiptDate.before_or_equal' => 'A data do comprovante não pode ser futura!',
+            'path.required' => 'O caminho do arquivo é obrigatório!',
+            'path.string' => 'O caminho do arquivo deve ser uma string!',
         ];
     }
 
