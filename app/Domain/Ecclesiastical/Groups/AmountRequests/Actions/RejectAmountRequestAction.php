@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
@@ -43,6 +44,17 @@ class RejectAmountRequestAction
         if (! $rejected) {
             throw new GeneralExceptions(ReturnMessages::ERROR_REJECT_AMOUNT_REQUEST, 500);
         }
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $id,
+            event: ReturnMessages::HISTORY_EVENT_REJECTED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_REJECTED],
+            userId: $rejectedBy,
+            metadata: [
+                'rejection_reason' => $rejectionReason,
+            ]
+        ));
 
         return true;
     }

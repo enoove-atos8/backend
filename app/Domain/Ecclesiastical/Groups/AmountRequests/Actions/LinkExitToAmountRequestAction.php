@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
@@ -20,10 +21,11 @@ class LinkExitToAmountRequestAction
      *
      * @param  int  $id  Amount request ID
      * @param  int|null  $exitId  Exit ID to link/update, or null to unlink
+     * @param  int  $userId  User performing the action
      *
      * @throws GeneralExceptions
      */
-    public function execute(int $id, ?int $exitId): bool
+    public function execute(int $id, ?int $exitId, int $userId): bool
     {
         // Check if amount request exists
         $existing = $this->repository->getById($id);
@@ -46,6 +48,18 @@ class LinkExitToAmountRequestAction
                 throw new GeneralExceptions(ReturnMessages::ERROR_LINK_EXIT, 500);
             }
 
+            // Register history event
+            $this->repository->createHistory(new AmountRequestHistoryData(
+                amountRequestId: $id,
+                event: ReturnMessages::HISTORY_EVENT_TRANSFERRED,
+                description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_TRANSFERRED],
+                userId: $userId,
+                metadata: [
+                    'exit_id' => $exitId,
+                    'requested_amount' => $existing->requestedAmount,
+                ]
+            ));
+
             return true;
         }
 
@@ -60,6 +74,17 @@ class LinkExitToAmountRequestAction
         if (! $updated) {
             throw new GeneralExceptions(ReturnMessages::ERROR_UNLINK_EXIT, 500);
         }
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $id,
+            event: ReturnMessages::HISTORY_EVENT_EXIT_UNLINKED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_EXIT_UNLINKED],
+            userId: $userId,
+            metadata: [
+                'previous_exit_id' => $existing->transferExitId,
+            ]
+        ));
 
         return true;
     }

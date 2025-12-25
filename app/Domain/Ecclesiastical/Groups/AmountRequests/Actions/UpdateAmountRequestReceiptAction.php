@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestReceiptData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -21,7 +22,7 @@ class UpdateAmountRequestReceiptAction
      *
      * @throws GeneralExceptions
      */
-    public function execute(int $amountRequestId, int $receiptId, AmountRequestReceiptData $data): bool
+    public function execute(int $amountRequestId, int $receiptId, AmountRequestReceiptData $data, int $userId): bool
     {
         // Check if amount request exists
         $amountRequest = $this->repository->getById($amountRequestId);
@@ -44,6 +45,19 @@ class UpdateAmountRequestReceiptAction
 
         // Recalculate proven amount
         $this->recalculateProvenAmount($amountRequestId, $amountRequest->requestedAmount);
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $amountRequestId,
+            event: ReturnMessages::HISTORY_EVENT_RECEIPT_UPDATED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_RECEIPT_UPDATED],
+            userId: $userId,
+            metadata: [
+                'receipt_id' => $receiptId,
+                'previous_amount' => $receipt->amount,
+                'new_amount' => $data->amount,
+            ]
+        ));
 
         return true;
     }

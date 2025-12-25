@@ -78,7 +78,7 @@ interface AmountRequestRepositoryInterface
     /**
      * Close an amount request
      */
-    public function close(int $id, int $closedBy, ?int $devolutionEntryId, string $devolutionAmount): bool;
+    public function close(int $id, int $closedBy): bool;
 
     /**
      * Update status

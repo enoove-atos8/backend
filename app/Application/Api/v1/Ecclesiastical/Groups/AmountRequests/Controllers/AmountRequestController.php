@@ -4,7 +4,6 @@ namespace App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Controller
 
 use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Requests\AmountRequestReceiptRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Requests\AmountRequestRequest;
-use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Requests\CloseAmountRequestRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Requests\CreateAmountRequestReminderRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Requests\LinkExitRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\AmountRequests\Requests\RejectAmountRequestRequest;
@@ -207,7 +206,7 @@ class AmountRequestController extends Controller
     ): Response {
         try {
             $exitId = $request->input('transferExitId');
-            $action->execute($id, $exitId);
+            $action->execute($id, $exitId, $request->user()->id);
 
             $message = $exitId !== null
                 ? ReturnMessages::EXIT_LINKED
@@ -228,16 +227,11 @@ class AmountRequestController extends Controller
      */
     public function closeAmountRequest(
         int $id,
-        CloseAmountRequestRequest $request,
+        Request $request,
         CloseAmountRequestAction $action
     ): Response {
         try {
-            $action->execute(
-                $id,
-                $request->user()->id,
-                $request->input('reviewerId'),
-                $request->entryData()
-            );
+            $action->execute($id, $request->user()->id);
 
             return response([
                 'message' => ReturnMessages::AMOUNT_REQUEST_CLOSED,
@@ -296,10 +290,11 @@ class AmountRequestController extends Controller
     public function deleteAmountRequestReceipt(
         int $id,
         int $receiptId,
+        Request $request,
         DeleteAmountRequestReceiptAction $action
     ): Response {
         try {
-            $action->execute($id, $receiptId);
+            $action->execute($id, $receiptId, $request->user()->id);
 
             return response([
                 'message' => ReturnMessages::RECEIPT_DELETED,
@@ -321,7 +316,7 @@ class AmountRequestController extends Controller
         UpdateAmountRequestReceiptAction $action
     ): Response {
         try {
-            $action->execute($id, $receiptId, $request->receiptData($id));
+            $action->execute($id, $receiptId, $request->receiptData($id), $request->user()->id);
 
             return response([
                 'message' => ReturnMessages::RECEIPT_UPDATED,

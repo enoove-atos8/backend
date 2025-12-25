@@ -553,7 +553,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
     /**
      * Close an amount request
      */
-    public function close(int $id, int $closedBy, ?int $devolutionEntryId, string $devolutionAmount): bool
+    public function close(int $id, int $closedBy): bool
     {
         return DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $id)
@@ -562,8 +562,6 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
                 self::STATUS_COLUMN => ReturnMessages::STATUS_CLOSED,
                 self::CLOSED_BY_COLUMN => $closedBy,
                 self::CLOSED_AT_COLUMN => now(),
-                self::DEVOLUTION_ENTRY_ID_COLUMN => $devolutionEntryId,
-                self::DEVOLUTION_AMOUNT_COLUMN => $devolutionAmount,
                 self::UPDATED_AT_COLUMN => now(),
             ]) > 0;
     }
