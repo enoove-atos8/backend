@@ -10,6 +10,8 @@ use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Models\Entry;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
+use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages as AmountRequestReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\Movements\Actions\CreateMovementAction;
@@ -119,10 +121,24 @@ class CreateEntryAction
         }
 
         // Link the devolution entry to the amount request
-        $this->amountRequestRepository->linkDevolution(
+        $linked = $this->amountRequestRepository->linkDevolution(
             $openRequest->id,
             $entryData->id,
             $entryData->amount
         );
+
+        // Register history event if link was successful
+        if ($linked) {
+            $this->amountRequestRepository->createHistory(new AmountRequestHistoryData(
+                amountRequestId: $openRequest->id,
+                event: AmountRequestReturnMessages::HISTORY_EVENT_DEVOLUTION_LINKED,
+                description: AmountRequestReturnMessages::HISTORY_DESCRIPTIONS[AmountRequestReturnMessages::HISTORY_EVENT_DEVOLUTION_LINKED],
+                userId: $entryData->reviewerId,
+                metadata: [
+                    'entry_id' => $entryData->id,
+                    'devolution_amount' => $entryData->amount,
+                ]
+            ));
+        }
     }
 }

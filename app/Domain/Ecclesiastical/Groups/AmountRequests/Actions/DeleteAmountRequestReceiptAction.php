@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
@@ -20,7 +21,7 @@ class DeleteAmountRequestReceiptAction
      *
      * @throws GeneralExceptions
      */
-    public function execute(int $amountRequestId, int $receiptId): bool
+    public function execute(int $amountRequestId, int $receiptId, int $userId): bool
     {
         // Check if amount request exists
         $existing = $this->repository->getById($amountRequestId);
@@ -34,6 +35,9 @@ class DeleteAmountRequestReceiptAction
             throw new GeneralExceptions('Não é possível remover comprovantes neste status!', 400);
         }
 
+        // Get receipt data before deletion for history
+        $receipt = $this->repository->getReceiptById($amountRequestId, $receiptId);
+
         // Delete receipt
         $deleted = $this->repository->deleteReceipt($amountRequestId, $receiptId);
 
@@ -43,6 +47,18 @@ class DeleteAmountRequestReceiptAction
 
         // Recalculate proven amount
         $this->recalculateProvenAmount($amountRequestId, $existing->requestedAmount);
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $amountRequestId,
+            event: ReturnMessages::HISTORY_EVENT_RECEIPT_DELETED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_RECEIPT_DELETED],
+            userId: $userId,
+            metadata: [
+                'receipt_id' => $receiptId,
+                'amount' => $receipt?->amount,
+            ]
+        ));
 
         return true;
     }

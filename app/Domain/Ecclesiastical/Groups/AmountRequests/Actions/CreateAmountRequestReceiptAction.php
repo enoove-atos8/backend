@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestReceiptData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Illuminate\Http\UploadedFile;
@@ -63,6 +64,18 @@ class CreateAmountRequestReceiptAction
 
         // Recalculate proven amount
         $this->recalculateProvenAmount($data->amountRequestId, $existing->requestedAmount);
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $data->amountRequestId,
+            event: ReturnMessages::HISTORY_EVENT_RECEIPT_ADDED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_RECEIPT_ADDED],
+            userId: $data->createdBy,
+            metadata: [
+                'receipt_id' => $receiptId,
+                'amount' => $data->amount,
+            ]
+        ));
 
         return $receiptId;
     }

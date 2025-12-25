@@ -4,6 +4,7 @@ namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestData;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
@@ -50,6 +51,18 @@ class CreateAmountRequestAction
         if ($id === 0) {
             throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_AMOUNT_REQUEST, 500);
         }
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $id,
+            event: ReturnMessages::HISTORY_EVENT_CREATED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_CREATED],
+            userId: $data->requestedBy,
+            metadata: [
+                'requested_amount' => $data->requestedAmount,
+                'group_id' => $data->groupId,
+            ]
+        ));
 
         return $id;
     }

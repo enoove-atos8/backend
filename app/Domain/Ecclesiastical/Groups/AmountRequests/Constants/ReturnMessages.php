@@ -143,4 +143,39 @@ class ReturnMessages
         'delivered' => 'Entregue',
         'read' => 'Lido',
     ];
+
+    // History event constants
+    public const HISTORY_EVENT_CREATED = 'created';
+
+    public const HISTORY_EVENT_APPROVED = 'approved';
+
+    public const HISTORY_EVENT_REJECTED = 'rejected';
+
+    public const HISTORY_EVENT_TRANSFERRED = 'transferred';
+
+    public const HISTORY_EVENT_EXIT_UNLINKED = 'exit_unlinked';
+
+    public const HISTORY_EVENT_RECEIPT_ADDED = 'receipt_added';
+
+    public const HISTORY_EVENT_RECEIPT_UPDATED = 'receipt_updated';
+
+    public const HISTORY_EVENT_RECEIPT_DELETED = 'receipt_deleted';
+
+    public const HISTORY_EVENT_CLOSED = 'closed';
+
+    public const HISTORY_EVENT_DEVOLUTION_LINKED = 'devolution_linked';
+
+    // History event descriptions
+    public const HISTORY_DESCRIPTIONS = [
+        self::HISTORY_EVENT_CREATED => 'Solicitação de verba criada',
+        self::HISTORY_EVENT_APPROVED => 'Solicitação aprovada',
+        self::HISTORY_EVENT_REJECTED => 'Solicitação rejeitada',
+        self::HISTORY_EVENT_TRANSFERRED => 'Valor transferido',
+        self::HISTORY_EVENT_EXIT_UNLINKED => 'Saída desvinculada',
+        self::HISTORY_EVENT_RECEIPT_ADDED => 'Comprovante adicionado',
+        self::HISTORY_EVENT_RECEIPT_UPDATED => 'Comprovante atualizado',
+        self::HISTORY_EVENT_RECEIPT_DELETED => 'Comprovante removido',
+        self::HISTORY_EVENT_CLOSED => 'Solicitação fechada',
+        self::HISTORY_EVENT_DEVOLUTION_LINKED => 'Devolução registrada',
+    ];
 }

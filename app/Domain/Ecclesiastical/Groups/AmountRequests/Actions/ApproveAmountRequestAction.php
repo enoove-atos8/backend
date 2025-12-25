@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
+use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
@@ -38,6 +39,17 @@ class ApproveAmountRequestAction
         if (! $approved) {
             throw new GeneralExceptions(ReturnMessages::ERROR_APPROVE_AMOUNT_REQUEST, 500);
         }
+
+        // Register history event
+        $this->repository->createHistory(new AmountRequestHistoryData(
+            amountRequestId: $id,
+            event: ReturnMessages::HISTORY_EVENT_APPROVED,
+            description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_APPROVED],
+            userId: $approvedBy,
+            metadata: [
+                'requested_amount' => $existing->requestedAmount,
+            ]
+        ));
 
         return true;
     }
