@@ -24,6 +24,11 @@ class AmountRequestResource extends JsonResource
     {
         $result = $this->resource;
 
+        $requestedAmount = (float) ($result->requestedAmount ?? 0);
+        $provenAmount = (float) ($result->provenAmount ?? 0);
+        $devolutionAmount = (float) ($result->devolutionAmount ?? 0);
+        $remainingToProve = max(0, $requestedAmount - $provenAmount - $devolutionAmount);
+
         return [
             'id' => $result->id,
             'memberId' => $result->memberId,
@@ -41,6 +46,7 @@ class AmountRequestResource extends JsonResource
             'provenAmount' => $result->provenAmount,
             'devolutionEntryId' => $result->devolutionEntryId,
             'devolutionAmount' => $result->devolutionAmount,
+            'remainingToProve' => number_format($remainingToProve, 2, '.', ''),
             'closedBy' => $result->closedBy,
             'closedAt' => $result->closedAt,
             'requestedBy' => $result->requestedBy,
