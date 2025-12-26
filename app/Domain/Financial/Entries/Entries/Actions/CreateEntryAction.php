@@ -129,6 +129,8 @@ class CreateEntryAction
 
         // Register history event if link was successful
         if ($linked) {
+            $devolutionAmount = (float) $entryData->amount;
+
             $this->amountRequestRepository->createHistory(new AmountRequestHistoryData(
                 amountRequestId: $openRequest->id,
                 event: AmountRequestReturnMessages::HISTORY_EVENT_DEVOLUTION_LINKED,
@@ -136,9 +138,50 @@ class CreateEntryAction
                 userId: $entryData->reviewerId,
                 metadata: [
                     'entry_id' => $entryData->id,
-                    'devolution_amount' => $entryData->amount,
+                    'devolution_amount' => $devolutionAmount,
                 ]
             ));
+
+            // Auto-close if provenAmount + devolutionAmount >= requestedAmount
+            $this->autoCloseIfComplete($openRequest->id, $entryData->reviewerId);
+        }
+    }
+
+    /**
+     * Auto-close amount request if proven + devolution >= requested
+     */
+    private function autoCloseIfComplete(int $amountRequestId, int $closedBy): void
+    {
+        // Reload the request to get updated values
+        $request = $this->amountRequestRepository->getById($amountRequestId);
+
+        if ($request === null) {
+            return;
+        }
+
+        $requestedAmount = (float) $request->requestedAmount;
+        $provenAmount = (float) ($request->provenAmount ?? 0);
+        $devolutionAmount = (float) ($request->devolutionAmount ?? 0);
+
+        // Check if proven + devolution covers the requested amount
+        if (($provenAmount + $devolutionAmount) >= $requestedAmount) {
+            // Close the request automatically
+            $closed = $this->amountRequestRepository->close($amountRequestId, $closedBy);
+
+            if ($closed) {
+                $this->amountRequestRepository->createHistory(new AmountRequestHistoryData(
+                    amountRequestId: $amountRequestId,
+                    event: AmountRequestReturnMessages::HISTORY_EVENT_CLOSED,
+                    description: 'Solicitação fechada automaticamente (comprovado + devolvido = solicitado)',
+                    userId: $closedBy,
+                    metadata: [
+                        'requested_amount' => $requestedAmount,
+                        'proven_amount' => $provenAmount,
+                        'devolution_amount' => $devolutionAmount,
+                        'auto_closed' => true,
+                    ]
+                ));
+            }
         }
     }
 }
