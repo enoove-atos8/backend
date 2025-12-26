@@ -36,6 +36,11 @@ class AmountRequestResourceCollection extends ResourceCollection
      */
     private function formatItem($item): array
     {
+        $requestedAmount = (float) ($item->requestedAmount ?? 0);
+        $provenAmount = (float) ($item->provenAmount ?? 0);
+        $devolutionAmount = (float) ($item->devolutionAmount ?? 0);
+        $remainingToProve = max(0, $requestedAmount - $provenAmount - $devolutionAmount);
+
         return [
             'id' => $item->id ?? null,
             'memberId' => $item->memberId ?? null,
@@ -47,6 +52,7 @@ class AmountRequestResourceCollection extends ResourceCollection
             'statusLabel' => isset($item->status) ? (ReturnMessages::STATUS_LABELS[$item->status] ?? $item->status) : null,
             'provenAmount' => $item->provenAmount ?? null,
             'devolutionAmount' => $item->devolutionAmount ?? null,
+            'remainingToProve' => number_format($remainingToProve, 2, '.', ''),
             'createdAt' => $item->createdAt ?? null,
             'member' => $this->getMemberData($item),
             'group' => $this->getGroupData($item),
