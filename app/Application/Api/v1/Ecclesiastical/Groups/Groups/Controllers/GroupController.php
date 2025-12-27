@@ -64,8 +64,11 @@ class GroupController extends Controller
     {
         try {
             $divisionParam = $request->input('division');
+            $activeParam = $request->input('active');
+            $active = $activeParam !== null ? filter_var($activeParam, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : null;
+
             $division = $getDivisionByName->execute($divisionParam);
-            $response = $getGroupsByDivisionAction->execute($divisionParam);
+            $response = $getGroupsByDivisionAction->execute($divisionParam, $active);
 
             return new GroupResourceCollection($response, $division);
 

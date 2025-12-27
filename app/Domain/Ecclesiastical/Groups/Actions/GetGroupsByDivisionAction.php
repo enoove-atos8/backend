@@ -35,7 +35,7 @@ class GetGroupsByDivisionAction
     /**
      * @throws Throwable
      */
-    public function execute(string $division): Collection|Paginator|array
+    public function execute(string $division, ?bool $active = null): Collection|Paginator|array
     {
         $division = $this->getDivisionByNameAction->execute($division);
 
@@ -43,7 +43,7 @@ class GetGroupsByDivisionAction
             return [];
         }
 
-        $groups = $this->groupsRepository->getGroupsByDivision($division);
+        $groups = $this->groupsRepository->getGroupsByDivision($division, $active);
 
         if ($groups->count() === 0) {
             return [];
