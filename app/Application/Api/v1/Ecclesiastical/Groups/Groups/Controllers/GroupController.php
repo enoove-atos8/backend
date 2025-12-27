@@ -151,7 +151,10 @@ class GroupController extends Controller
     {
         try {
             $division = $request->input('division');
-            $response = $getGroupsByDivisionAction->execute($division);
+            $activeParam = $request->input('active');
+            $active = $activeParam !== null ? filter_var($activeParam, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) : null;
+
+            $response = $getGroupsByDivisionAction->execute($division, $active);
 
             if (count($response) == 0) {
                 return response(['message' => 'NADA'], 404);
