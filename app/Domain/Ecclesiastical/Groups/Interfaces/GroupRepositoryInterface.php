@@ -11,11 +11,11 @@ use Illuminate\Support\Collection;
 
 interface GroupRepositoryInterface
 {
-    public function getGroupsByDivision(DivisionData $division): Collection;
+    public function getGroupsByDivision(DivisionData $division, ?bool $active = null): Collection;
 
     public function getFinancialGroup(): ?Model;
 
-    public function getGroups(?DivisionData $divisionData = null): Collection;
+    public function getGroups(?DivisionData $divisionData = null, ?bool $active = null): Collection;
 
     public function getGroupsById(int $id): ?Model;
 

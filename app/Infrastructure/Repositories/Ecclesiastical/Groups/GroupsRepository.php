@@ -132,9 +132,9 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
      */
     private array $queryConditions = [];
 
-    public function getGroupsByDivision(DivisionData $division): Collection
+    public function getGroupsByDivision(DivisionData $division, ?bool $active = null): Collection
     {
-        $groups = $this->getGroups($division);
+        $groups = $this->getGroups($division, $active);
 
         return $groups->map(fn ($item) => GroupData::fromResponse((array) $item));
     }
@@ -154,7 +154,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     /**
      * Get Groups and leaders members data
      */
-    public function getGroups(?DivisionData $divisionData = null): Collection
+    public function getGroups(?DivisionData $divisionData = null, ?bool $active = null): Collection
     {
         $displayColumnsFromRelationship = array_merge(
             self::DISPLAY_SELECT_COLUMNS,
@@ -174,6 +174,10 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
         if ($divisionData != null) {
             $q->where(self::ECCLESIASTICAL_DIVISION_ID_TABLE_COLUMN, $divisionData->id);
+        }
+
+        if ($active !== null) {
+            $q->where(self::ENABLED_TABLE_COLUMN, $active);
         }
 
         return $q->orderBy(self::NAME_GROUP_COLUMN, BaseRepository::ORDERS['ASC'])
