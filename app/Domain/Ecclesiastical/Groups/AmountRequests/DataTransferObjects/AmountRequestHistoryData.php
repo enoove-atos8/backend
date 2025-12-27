@@ -21,6 +21,8 @@ class AmountRequestHistoryData extends DataTransferObject
 
     public ?array $metadata;
 
+    public ?string $status;
+
     public ?string $createdAt;
 
     public ?string $updatedAt;
@@ -40,6 +42,7 @@ class AmountRequestHistoryData extends DataTransferObject
             userId: $data['amount_request_history_user_id'] ?? null,
             userName: $data['user_details_full_name'] ?? null,
             metadata: isset($data['amount_request_history_metadata']) ? json_decode($data['amount_request_history_metadata'], true) : null,
+            status: $data['amount_requests_status'] ?? null,
             createdAt: $data['amount_request_history_created_at'] ?? null,
             updatedAt: $data['amount_request_history_updated_at'] ?? null,
         );

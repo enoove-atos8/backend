@@ -790,7 +790,8 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
     {
         $selectColumns = array_merge(
             self::HISTORY_SELECT_COLUMNS,
-            self::USER_DETAILS_SELECT_COLUMNS
+            self::USER_DETAILS_SELECT_COLUMNS,
+            ['amount_requests.status as amount_requests_status']
         );
 
         $results = DB::table(self::HISTORY_TABLE_NAME)
@@ -800,6 +801,12 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
                 self::HISTORY_USER_ID_JOINED,
                 '=',
                 self::USER_DETAILS_USER_ID_JOINED
+            )
+            ->leftJoin(
+                self::TABLE_NAME,
+                self::HISTORY_AMOUNT_REQUEST_ID_JOINED,
+                '=',
+                self::TABLE_ID_JOINED
             )
             ->where(self::HISTORY_AMOUNT_REQUEST_ID_JOINED, $amountRequestId)
             ->orderBy(self::HISTORY_CREATED_AT_JOINED, 'asc')
