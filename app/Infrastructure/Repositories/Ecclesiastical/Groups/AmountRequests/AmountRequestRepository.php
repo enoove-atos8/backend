@@ -271,7 +271,13 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
 
         // Apply filters
         if (! empty($filters[self::STATUS_COLUMN])) {
-            $query->where(self::TABLE_STATUS_JOINED, $filters[self::STATUS_COLUMN]);
+            $statusFilter = $filters[self::STATUS_COLUMN];
+            if (str_contains($statusFilter, ',')) {
+                $statuses = explode(',', $statusFilter);
+                $query->whereIn(self::TABLE_STATUS_JOINED, $statuses);
+            } else {
+                $query->where(self::TABLE_STATUS_JOINED, $statusFilter);
+            }
         }
 
         if (! empty($filters[self::GROUP_ID_COLUMN])) {
