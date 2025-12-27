@@ -2,14 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Models;
 
-use App\Domain\Financial\Entries\Entries\Models\Entry;
-use App\Domain\Financial\Exits\Exits\Models\Exits;
-use App\Models\User;
-use Domain\Ecclesiastical\Groups\Models\Group;
-use Domain\Secretary\Membership\Models\Member;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class AmountRequest extends Model
 {
@@ -58,50 +51,5 @@ class AmountRequest extends Model
             'closed_at' => 'datetime',
             'deleted' => 'boolean',
         ];
-    }
-
-    public function member(): BelongsTo
-    {
-        return $this->belongsTo(Member::class);
-    }
-
-    public function group(): BelongsTo
-    {
-        return $this->belongsTo(Group::class);
-    }
-
-    public function approvedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
-    public function closedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'closed_by');
-    }
-
-    public function requestedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'requested_by');
-    }
-
-    public function transferExit(): BelongsTo
-    {
-        return $this->belongsTo(Exits::class, 'transfer_exit_id');
-    }
-
-    public function devolutionEntry(): BelongsTo
-    {
-        return $this->belongsTo(Entry::class, 'devolution_entry_id');
-    }
-
-    public function receipts(): HasMany
-    {
-        return $this->hasMany(AmountRequestReceipt::class);
-    }
-
-    public function reminders(): HasMany
-    {
-        return $this->hasMany(AmountRequestReminder::class);
     }
 }
