@@ -101,5 +101,13 @@ Route::prefix('api/v1')->middleware(['api', InitializeTenancyByDomain::class, Pr
         */
 
         require __DIR__.'/tenant/billing.php';
+
+        /*
+        |--------------------------------------------------------------------------
+        | Dashboard Routes
+        |--------------------------------------------------------------------------
+        */
+
+        require __DIR__.'/tenant/dashboard.php';
     });
 });
