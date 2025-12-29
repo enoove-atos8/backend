@@ -8,11 +8,11 @@ interface DashboardRepositoryInterface
 {
     public function getActiveMembersCount(): int;
 
-    public function getTotalEntries(string $month): float;
+    public function getTotalTithes(string $month): float;
 
-    public function getTotalPurchases(string $month): float;
+    public function getTotalOpenInvoices(): float;
 
-    public function getTotalExits(string $month): float;
+    public function getTotalRealExits(string $month): float;
 
     public function getConsolidatedMonths(int $months): Collection;
 

@@ -17,12 +17,16 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     private const CONSOLIDATION_TABLE = 'consolidation_entries';
 
-    private const CARDS_PURCHASES_TABLE = 'cards_purchases';
+    private const CARDS_INVOICES_TABLE = 'cards_invoices';
 
     // Members columns
     private const ACTIVATED_COLUMN = 'activated';
 
     private const DELETED_COLUMN = 'deleted';
+
+    private const MEMBER_TYPE_COLUMN = 'member_type';
+
+    private const MEMBER_TYPE_MEMBER = 'member';
 
     // Entries/Exits columns
     private const DATE_TRANSACTION_COMPENSATION_COLUMN = 'date_transaction_compensation';
@@ -44,19 +48,26 @@ class DashboardRepository implements DashboardRepositoryInterface
     // Exit types
     private const EXIT_TYPE_COLUMN = 'exit_type';
 
-    private const REAL_EXIT_TYPES = ['payment', 'ministerial_transfer', 'contributions'];
+    private const REAL_EXIT_TYPES = ['payments', 'ministerial_transfer', 'contributions'];
+
+    // Invoice columns
+    private const STATUS_COLUMN = 'status';
+
+    private const INVOICE_STATUS_OPEN = 'open';
 
     public function getActiveMembersCount(): int
     {
         return DB::table(self::MEMBERS_TABLE)
+            ->where(self::MEMBER_TYPE_COLUMN, self::MEMBER_TYPE_MEMBER)
             ->where(self::ACTIVATED_COLUMN, 1)
             ->where(self::DELETED_COLUMN, 0)
             ->count();
     }
 
-    public function getTotalEntries(string $month): float
+    public function getTotalTithes(string $month): float
     {
         $result = DB::table(self::ENTRIES_TABLE)
+            ->where(self::ENTRY_TYPE_COLUMN, self::ENTRY_TYPE_TITHE)
             ->where(self::DATE_TRANSACTION_COMPENSATION_COLUMN, 'LIKE', $month.'%')
             ->where(self::DELETED_COLUMN, 0)
             ->sum(self::AMOUNT_COLUMN);
@@ -64,19 +75,20 @@ class DashboardRepository implements DashboardRepositoryInterface
         return (float) ($result ?? 0);
     }
 
-    public function getTotalPurchases(string $month): float
+    public function getTotalOpenInvoices(): float
     {
-        $result = DB::table(self::CARDS_PURCHASES_TABLE)
-            ->where(self::DATE_COLUMN, 'LIKE', $month.'%')
+        $result = DB::table(self::CARDS_INVOICES_TABLE)
+            ->where(self::STATUS_COLUMN, self::INVOICE_STATUS_OPEN)
             ->where(self::DELETED_COLUMN, 0)
             ->sum(self::AMOUNT_COLUMN);
 
         return (float) ($result ?? 0);
     }
 
-    public function getTotalExits(string $month): float
+    public function getTotalRealExits(string $month): float
     {
         $result = DB::table(self::EXITS_TABLE)
+            ->whereIn(self::EXIT_TYPE_COLUMN, self::REAL_EXIT_TYPES)
             ->where(self::DATE_TRANSACTION_COMPENSATION_COLUMN, 'LIKE', $month.'%')
             ->where(self::DELETED_COLUMN, 0)
             ->sum(self::AMOUNT_COLUMN);

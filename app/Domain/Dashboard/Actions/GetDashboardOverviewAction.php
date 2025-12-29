@@ -44,19 +44,18 @@ class GetDashboardOverviewAction
         // Para members, não temos histórico mensal, então trend será 0
         $membersTrend = TrendData::calculate($currentMembers, $currentMembers, false);
 
-        // Tithes (Entradas)
-        $currentTithes = $this->repository->getTotalEntries($currentMonth);
-        $previousTithes = $this->repository->getTotalEntries($previousMonth);
+        // Tithes (Dízimos)
+        $currentTithes = $this->repository->getTotalTithes($currentMonth);
+        $previousTithes = $this->repository->getTotalTithes($previousMonth);
         $tithesTrend = TrendData::calculate($currentTithes, $previousTithes, true);
 
-        // Purchases (Pagamentos, Repasses, Contribuições)
-        $currentPurchases = $this->repository->getTotalPurchases($currentMonth);
-        $previousPurchases = $this->repository->getTotalPurchases($previousMonth);
-        $purchasesTrend = TrendData::calculate($currentPurchases, $previousPurchases, true);
+        // Purchases (Faturas em aberto - não tem trend, é valor atual)
+        $currentPurchases = $this->repository->getTotalOpenInvoices();
+        $purchasesTrend = TrendData::noTrend();
 
-        // Exits (Total Saídas)
-        $currentExits = $this->repository->getTotalExits($currentMonth);
-        $previousExits = $this->repository->getTotalExits($previousMonth);
+        // Exits (Pagamentos, Repasses Ministeriais, Contribuições)
+        $currentExits = $this->repository->getTotalRealExits($currentMonth);
+        $previousExits = $this->repository->getTotalRealExits($previousMonth);
         $exitsTrend = TrendData::calculate($currentExits, $previousExits, true);
 
         return new DashboardOverviewData(
