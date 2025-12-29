@@ -19,6 +19,10 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     private const CARDS_INVOICES_TABLE = 'cards_invoices';
 
+    private const CARDS_TABLE = 'cards';
+
+    private const ACTIVE_COLUMN = 'active';
+
     // Members columns
     private const ACTIVATED_COLUMN = 'activated';
 
@@ -55,12 +59,13 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     private const INVOICE_STATUS_OPEN = 'open';
 
+    private const INVOICE_STATUS_PAID = 'paid';
+
     public function getActiveMembersCount(): int
     {
         return DB::table(self::MEMBERS_TABLE)
             ->where(self::MEMBER_TYPE_COLUMN, self::MEMBER_TYPE_MEMBER)
             ->where(self::ACTIVATED_COLUMN, 1)
-            ->where(self::DELETED_COLUMN, 0)
             ->count();
     }
 
@@ -77,10 +82,13 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     public function getTotalOpenInvoices(): float
     {
-        $result = DB::table(self::CARDS_INVOICES_TABLE)
-            ->where(self::STATUS_COLUMN, self::INVOICE_STATUS_OPEN)
-            ->where(self::DELETED_COLUMN, 0)
-            ->sum(self::AMOUNT_COLUMN);
+        $result = DB::table(self::CARDS_INVOICES_TABLE.' as ci')
+            ->join(self::CARDS_TABLE.' as c', 'c.id', '=', 'ci.card_id')
+            ->where('c.'.self::ACTIVE_COLUMN, 1)
+            ->where('c.'.self::DELETED_COLUMN, 0)
+            ->where('ci.'.self::STATUS_COLUMN, '!=', self::INVOICE_STATUS_PAID)
+            ->where('ci.'.self::DELETED_COLUMN, 0)
+            ->sum('ci.'.self::AMOUNT_COLUMN);
 
         return (float) ($result ?? 0);
     }
