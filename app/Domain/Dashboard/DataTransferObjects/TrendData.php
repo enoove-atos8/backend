@@ -11,6 +11,16 @@ class TrendData
         public string $label
     ) {}
 
+    public static function noTrend(): self
+    {
+        return new self(
+            value: null,
+            percentage: null,
+            direction: 'none',
+            label: '-'
+        );
+    }
+
     public static function calculate(float $current, float $previous, bool $usePercentage = true): self
     {
         $difference = $current - $previous;
