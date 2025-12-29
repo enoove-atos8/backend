@@ -7,6 +7,7 @@ use App\Domain\Accounts\Users\Interfaces\UserRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
 use App\Domain\AI\Search\Services\LlmServiceWithFallback;
+use App\Domain\Dashboard\Interfaces\DashboardRepositoryInterface;
 use App\Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountsBalancesRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
@@ -23,6 +24,7 @@ use App\Domain\Financial\Settings\Interfaces\FinancialSettingsRepositoryInterfac
 use App\Domain\Onboarding\Interfaces\OnboardingRepositoryInterface;
 use App\Domain\SyncStorage\Interfaces\SyncStorageRepositoryInterface;
 use App\Infrastructure\Repositories\CentralDomain\Church\ChurchRepository;
+use App\Infrastructure\Repositories\Dashboard\DashboardRepository;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountsBalancesRepository;
 use App\Infrastructure\Repositories\Financial\AccountsAndCards\Card\CardInstallmentsRepository;
 use App\Infrastructure\Repositories\Financial\Entries\Consolidation\ConsolidationRepository;
@@ -144,6 +146,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReceiptDataExtractorInterface::class, ReceiptDataExtractorWithFallback::class);
         $this->app->bind(OnboardingRepositoryInterface::class, OnboardingRepository::class);
         $this->app->bind(AmountRequestRepositoryInterface::class, AmountRequestRepository::class);
+        $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
     }
 
     /**
