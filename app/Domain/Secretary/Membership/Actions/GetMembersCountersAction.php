@@ -18,19 +18,20 @@ class GetMembersCountersAction
 
     public function execute(): array
     {
-        $data = $this->memberRepository->getMembers([], null, false)['results'];
+        // Busca membros ativos
+        $activeData = $this->memberRepository->getMembers([], null, false)['results'];
 
-        $members = $data->where(MemberData::MEMBER_TYPE,
+        $members = $activeData->where(MemberData::MEMBER_TYPE,
             BaseRepository::OPERATORS['EQUALS'],
             MemberRepository::MEMBER_VALUE)->count();
 
-        $congregates = $data->where(MemberData::MEMBER_TYPE,
+        $congregates = $activeData->where(MemberData::MEMBER_TYPE,
             BaseRepository::OPERATORS['EQUALS'],
             MemberRepository::CONGREGATE_VALUE)->count();
 
-        $inactives = $data->where(MemberRepository::ACTIVATED_COLUMN,
-            BaseRepository::OPERATORS['EQUALS'],
-            false)->count();
+        // Busca membros inativos separadamente
+        $inactiveData = $this->memberRepository->getMembers(['memberTypes' => 'inactive'], null, false)['results'];
+        $inactives = $inactiveData->count();
 
         return [
             'indicators' => [
