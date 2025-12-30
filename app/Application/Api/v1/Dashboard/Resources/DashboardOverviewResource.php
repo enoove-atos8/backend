@@ -22,7 +22,7 @@ class DashboardOverviewResource extends JsonResource
                     'year' => $data->year,
                     'label' => $data->label,
                 ],
-                'members' => $this->formatIndicator($data->members),
+                'members' => $this->formatIndicator($data->members, false),
                 'tithes' => $this->formatIndicator($data->tithes),
                 'purchases' => $this->formatIndicator($data->purchases),
                 'exits' => $this->formatIndicator($data->exits),
@@ -30,10 +30,10 @@ class DashboardOverviewResource extends JsonResource
         ];
     }
 
-    private function formatIndicator($indicator): array
+    private function formatIndicator($indicator, bool $isMoney = true): array
     {
         return [
-            'total' => $indicator->total,
+            'total' => $isMoney ? round($indicator->total, 2) : $indicator->total,
             'trend' => [
                 'value' => $indicator->trend->value,
                 'percentage' => $indicator->trend->percentage,
