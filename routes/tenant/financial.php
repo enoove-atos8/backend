@@ -132,6 +132,7 @@ Route::prefix('financial')->group(function () {
         Route::prefix('purchases')->group(function () {
 
             Route::delete('/{id}', [PurchaseController::class, 'deletePurchase'])->whereNumber('id');
+            Route::post('/{id}/postpone', [PurchaseController::class, 'postponePurchase'])->whereNumber('id');
 
             Route::prefix('cards')->group(function () {
                 Route::get('/', [CardController::class, 'getCards']);

@@ -108,4 +108,20 @@ class CardPurchaseRepository extends BaseRepository implements CardPurchaseRepos
             'deleted' => 1,
         ]);
     }
+
+    /**
+     * @throws UnknownProperties
+     */
+    public function getPurchaseById(int $purchaseId): ?CardPurchaseData
+    {
+        $result = DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $purchaseId)
+            ->first();
+
+        if (! $result) {
+            return null;
+        }
+
+        return CardPurchaseData::fromResponse((array) $result);
+    }
 }
