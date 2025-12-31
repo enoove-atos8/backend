@@ -182,4 +182,51 @@ class CardInstallmentsRepository extends BaseRepository implements CardInstallme
             'deleted' => 1,
         ]);
     }
+
+    /**
+     * Check if purchase has any paid installments
+     */
+    public function hasPaidInstallments(int $purchaseId): bool
+    {
+        $count = DB::table(self::TABLE_NAME)
+            ->where(self::PURCHASE_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $purchaseId)
+            ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+            ->where('status', BaseRepository::OPERATORS['EQUALS'], self::PAID_VALUE)
+            ->count();
+
+        return $count > 0;
+    }
+
+    /**
+     * Update installment date and invoice
+     *
+     * @throws BindingResolutionException
+     */
+    public function updateInstallmentDateAndInvoice(int $installmentId, string $date, int $invoiceId): bool
+    {
+        $conditions = [
+            'field' => self::ID_COLUMN,
+            'operator' => BaseRepository::OPERATORS['EQUALS'],
+            'value' => $installmentId,
+        ];
+
+        return $this->update($conditions, [
+            'date' => $date,
+            'invoice_id' => $invoiceId,
+        ]);
+    }
+
+    /**
+     * Get first installment date by purchase id
+     */
+    public function getFirstInstallmentDate(int $purchaseId): ?string
+    {
+        $result = DB::table(self::TABLE_NAME)
+            ->where(self::PURCHASE_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], $purchaseId)
+            ->where(self::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0)
+            ->where('installment', BaseRepository::OPERATORS['EQUALS'], 1)
+            ->first();
+
+        return $result?->date;
+    }
 }

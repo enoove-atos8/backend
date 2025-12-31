@@ -36,5 +36,13 @@ class ReturnMessages
 
     public const PURCHASE_HAS_PAID_INSTALLMENTS = 'Não é possível excluir esta compra pois existem parcelas já pagas!';
 
+    public const INSTALLMENT_NOT_FOUND = 'Nenhuma parcela encontrada para esta compra!';
+
+    public const PURCHASE_POSTPONED = 'Compra empurrada para a próxima fatura com sucesso!';
+
+    public const PURCHASE_POSTPONE_ERROR = 'Houve um erro ao empurrar a compra para a próxima fatura!';
+
+    public const PURCHASE_ALREADY_POSTPONED = 'Esta compra já foi empurrada para a próxima fatura anteriormente!';
+
     // Info messages
 }

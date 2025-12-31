@@ -6,6 +6,7 @@ use App\Domain\Financial\Exits\Purchases\Actions\DeletePurchaseAction;
 use Application\Api\v1\Financial\Exits\Purchases\Resources\PurchaseResourceCollection;
 use Application\Core\Http\Controllers\Controller;
 use Domain\Financial\Exits\Purchases\Actions\GetPurchasesAction;
+use Domain\Financial\Exits\Purchases\Actions\PostponePurchaseAction;
 use Domain\Financial\Exits\Purchases\Constants\ReturnMessages;
 use Exception;
 use Illuminate\Foundation\Application;
@@ -49,6 +50,31 @@ class PurchaseController extends Controller
                     'message' => ReturnMessages::PURCHASE_DELETED,
                 ], 200);
             }
+
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * Postpone a purchase to the next invoice
+     *
+     * @throws GeneralExceptions
+     */
+    public function postponePurchase(int $id, PostponePurchaseAction $postponePurchaseAction): Application|ResponseFactory|Response
+    {
+        try {
+            $postponed = $postponePurchaseAction->execute($id);
+
+            if ($postponed) {
+                return response([
+                    'message' => ReturnMessages::PURCHASE_POSTPONED,
+                ], 200);
+            }
+
+            return response([
+                'message' => ReturnMessages::PURCHASE_POSTPONE_ERROR,
+            ], 500);
 
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), $e->getCode(), $e);

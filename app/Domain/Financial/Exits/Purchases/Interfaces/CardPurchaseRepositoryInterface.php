@@ -15,6 +15,11 @@ interface CardPurchaseRepositoryInterface
     public function getPurchases(int $cardId, string $date): ?Collection;
 
     /**
+     * Returns a purchase by id
+     */
+    public function getPurchaseById(int $purchaseId): ?CardPurchaseData;
+
+    /**
      * Create a new purchase
      */
     public function createPurchase(CardPurchaseData $cardPurchaseData): CardPurchaseData;

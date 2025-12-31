@@ -36,4 +36,19 @@ interface CardInstallmentsRepositoryInterface
      * Delete all installments by purchase id (soft delete)
      */
     public function deleteInstallmentsByPurchaseId(int $purchaseId): bool;
+
+    /**
+     * Check if purchase has any paid installments
+     */
+    public function hasPaidInstallments(int $purchaseId): bool;
+
+    /**
+     * Update installment date and invoice
+     */
+    public function updateInstallmentDateAndInvoice(int $installmentId, string $date, int $invoiceId): bool;
+
+    /**
+     * Get first installment date by purchase id
+     */
+    public function getFirstInstallmentDate(int $purchaseId): ?string;
 }

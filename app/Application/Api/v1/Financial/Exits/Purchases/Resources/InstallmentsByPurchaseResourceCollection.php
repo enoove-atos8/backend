@@ -4,41 +4,47 @@ namespace Application\Api\v1\Financial\Exits\Purchases\Resources;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
-use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Http\Resources\Json\JsonResource;
 use JsonSerializable;
 
-class InstallmentsByPurchaseResourceCollection extends ResourceCollection
+class InstallmentsByPurchaseResourceCollection extends JsonResource
 {
     /**
-     * Replace the 'data' key in the JSON response
-     * with the one declared in the 'wrap' variable
-     * @var string
+     * Disable wrapping
      */
-    public static $wrap = 'installments';
-
+    public static $wrap = null;
 
     /**
-     * Transform the resource collection into an array.
+     * Transform the resource into an array.
      *
-     * @param Request $request
-     * @return array|JsonSerializable|Arrayable
+     * @param  Request  $request
      */
     public function toArray($request): array|JsonSerializable|Arrayable
     {
-        $result = [];
-        $installments = $this->collection;
+        $purchase = $this->resource['purchase'];
+        $installments = [];
 
-        foreach ($installments as $installment)
-        {
-            $result[] = [
-               'status' => $installment->status,
-               'amount' => $installment->amount,
-               'installment' => $installment->installment,
-               'installmentAmount'  => $installment->installmentAmount,
-               'date'   =>  $installment->date,
+        foreach ($this->resource['installments'] ?? [] as $installment) {
+            $installments[] = [
+                'status' => $installment->status,
+                'amount' => $installment->amount,
+                'installment' => $installment->installment,
+                'installmentAmount' => $installment->installmentAmount,
+                'date' => $installment->date,
             ];
         }
 
-        return $result;
+        return [
+            'purchase' => [
+                'id' => $purchase?->id,
+                'establishmentName' => $purchase?->establishmentName,
+                'purchaseDescription' => $purchase?->purchaseDescription,
+                'amount' => $purchase?->amount,
+                'installments' => $purchase?->installments,
+                'date' => $purchase?->date,
+                'canPostpone' => $purchase?->canPostpone,
+            ],
+            'installments' => $installments,
+        ];
     }
 }
