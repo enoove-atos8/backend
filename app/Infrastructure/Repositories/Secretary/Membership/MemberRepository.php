@@ -445,16 +445,19 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
             return ! str_contains($col, self::GROUP_LEADER_COLUMN_JOINED);
         });
 
-        $isLeaderCase = 'CASE WHEN '.GroupsRepository::ID_COLUMN_JOINED.' IS NOT NULL THEN 1 ELSE 0 END as '.self::GROUP_LEADER_COLUMN_ALIAS;
+        // Subquery para verificar se o membro é líder de algum grupo
+        $isLeaderSubquery = '(EXISTS (SELECT 1 FROM '.GroupsRepository::TABLE_NAME.
+            ' WHERE '.GroupsRepository::LEADER_ID_COLUMN.' = '.self::ID_COLUMN_JOINED.
+            ' AND '.GroupsRepository::DELETED_COLUMN.' = 0)) as '.self::GROUP_LEADER_COLUMN_ALIAS;
 
         $selectColumns = array_merge(
             $displayColumns,
             EntryRepository::DISPLAY_SUM_AMOUNT_COLUMN,
-            [$isLeaderCase],
+            [$isLeaderSubquery],
         );
 
         $selectColumns = array_map(function ($col) {
-            return str_contains($col, 'SUM(') || str_contains($col, 'CASE WHEN')
+            return str_contains($col, 'SUM(') || str_contains($col, 'EXISTS')
                 ? DB::raw($col)
                 : $col;
         }, $selectColumns);
@@ -468,10 +471,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     BaseRepository::OPERATORS['EQUALS'],
                     self::TABLE_NAME.'.'.self::ID_COLUMN
                 )
-                ->leftJoin(GroupsRepository::TABLE_NAME, function ($join) {
-                    $join->on(GroupsRepository::LEADER_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], self::ID_COLUMN_JOINED)
-                        ->where(GroupsRepository::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0);
-                })
                 ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED, EntryRepository::TITHE_VALUE)
                 ->where(EntryRepository::DELETED_COLUMN_JOINED, false)
                 ->where(function ($q) use ($month) {
@@ -491,7 +490,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                 }
             );
 
-            $groupByColumns[] = GroupsRepository::ID_COLUMN_JOINED;
             $q->groupBy(...$groupByColumns);
             $q = $q->orderBy(self::FULL_NAME_COLUMN);
 
