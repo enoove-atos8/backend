@@ -6,6 +6,7 @@ use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Domain\Secretary\Membership\Interfaces\MemberRepositoryInterface;
 use Domain\Secretary\Membership\Models\Member;
+use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\Paginator;
@@ -58,6 +59,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const ECCLESIASTICAL_DIVISIONS_GROUP_ID_COLUMN = 'ecclesiastical_divisions_group_id';
 
     const GROUP_LEADER_COLUMN = 'group_leader';
+
+    const GROUP_LEADER_COLUMN_JOINED = 'members.group_leader';
+
+    const GROUP_LEADER_COLUMN_ALIAS = 'members_group_leader';
 
     const CHILDREN_VALUE = 'children';
 
@@ -435,13 +440,21 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
      */
     public function getTithersByMonth(string $month, bool $paginate = false): Collection|Paginator
     {
+        // Remove o campo group_leader original do DISPLAY_SELECT_COLUMNS
+        $displayColumns = array_filter(self::DISPLAY_SELECT_COLUMNS, function ($col) {
+            return ! str_contains($col, self::GROUP_LEADER_COLUMN_JOINED);
+        });
+
+        $isLeaderCase = 'CASE WHEN '.GroupsRepository::ID_COLUMN_JOINED.' IS NOT NULL THEN 1 ELSE 0 END as '.self::GROUP_LEADER_COLUMN_ALIAS;
+
         $selectColumns = array_merge(
-            self::DISPLAY_SELECT_COLUMNS,
+            $displayColumns,
             EntryRepository::DISPLAY_SUM_AMOUNT_COLUMN,
+            [$isLeaderCase],
         );
 
         $selectColumns = array_map(function ($col) {
-            return str_contains($col, 'SUM(')
+            return str_contains($col, 'SUM(') || str_contains($col, 'CASE WHEN')
                 ? DB::raw($col)
                 : $col;
         }, $selectColumns);
@@ -455,6 +468,10 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     BaseRepository::OPERATORS['EQUALS'],
                     self::TABLE_NAME.'.'.self::ID_COLUMN
                 )
+                ->leftJoin(GroupsRepository::TABLE_NAME, function ($join) {
+                    $join->on(GroupsRepository::LEADER_ID_COLUMN, BaseRepository::OPERATORS['EQUALS'], self::ID_COLUMN_JOINED)
+                        ->where(GroupsRepository::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], 0);
+                })
                 ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED, EntryRepository::TITHE_VALUE)
                 ->where(EntryRepository::DELETED_COLUMN_JOINED, false)
                 ->where(function ($q) use ($month) {
@@ -465,10 +482,16 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
                     );
                 });
 
-            $groupByColumns = array_map(function ($column) {
-                return trim(explode(' as ', $column)[0]);
-            }, self::DISPLAY_SELECT_COLUMNS);
+            $groupByColumns = array_filter(
+                array_map(function ($column) {
+                    return trim(explode(' as ', $column)[0]);
+                }, self::DISPLAY_SELECT_COLUMNS),
+                function ($col) {
+                    return $col !== self::GROUP_LEADER_COLUMN_JOINED;
+                }
+            );
 
+            $groupByColumns[] = GroupsRepository::ID_COLUMN_JOINED;
             $q->groupBy(...$groupByColumns);
             $q = $q->orderBy(self::FULL_NAME_COLUMN);
 
