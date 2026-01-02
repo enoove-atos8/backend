@@ -72,13 +72,13 @@ class GenerateMonthlyPurchasesReport
 
         if (count($dates) > 0 && $report->cardId) {
             $timestamp = date('YmdHis');
-            $directoryPath = self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR;
+            $directoryPath = self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_TEMP_DIR;
 
-            if (!file_exists($directoryPath)) {
+            if (! file_exists($directoryPath)) {
                 mkdir($directoryPath, 0777, true);
             }
 
-            $pdfPath = $directoryPath . '/' . $timestamp . '_' . self::MONTHLY_PURCHASES_REPORT_NAME;
+            $pdfPath = $directoryPath.'/'.$timestamp.'_'.self::MONTHLY_PURCHASES_REPORT_NAME;
 
             try {
                 $churchData = $this->getChurchAction->execute($tenant);
@@ -104,6 +104,7 @@ class GenerateMonthlyPurchasesReport
                         $report->id,
                         MonthlyPurchasesReportsRepository::NO_DATA_STATUS_VALUE
                     );
+
                     return;
                 }
 
@@ -140,7 +141,7 @@ class GenerateMonthlyPurchasesReport
 
                 $this->updateAmountsPurchasesReportRequestsAction->execute($report->id, $totalAmount);
 
-                $this->cleanReportTempDir(self::STORAGE_BASE_PATH . self::TENANTS_DIR . '/' . $tenant . self::REPORTS_TEMP_DIR);
+                $this->cleanReportTempDir(self::STORAGE_BASE_PATH.self::TENANTS_DIR.'/'.$tenant.self::REPORTS_TEMP_DIR);
 
                 $this->updateStatusPurchasesReportRequestsAction->execute(
                     $report->id,
@@ -149,7 +150,7 @@ class GenerateMonthlyPurchasesReport
 
             } catch (Exception $e) {
                 throw new GeneralExceptions(
-                    'Houve um erro ao gerar o relatório: ' . $e->getMessage(),
+                    'Houve um erro ao gerar o relatório: '.$e->getMessage(),
                     500
                 );
             }
@@ -173,7 +174,7 @@ class GenerateMonthlyPurchasesReport
             $groupId = $installment->groupData->id ?? 0;
             $groupName = $installment->groupData->name ?? 'Sem Grupo';
 
-            if (!isset($grouped[$groupId])) {
+            if (! isset($grouped[$groupId])) {
                 $grouped[$groupId] = [
                     'groupId' => $groupId,
                     'groupName' => $groupName,
@@ -186,7 +187,7 @@ class GenerateMonthlyPurchasesReport
             // Monta objeto com dados da compra + parcela atual
             $purchaseWithInstallment = (object) [
                 'id' => $installment->cardPurchaseData->id,
-                'date' => $installment->date,
+                'date' => $installment->cardPurchaseData->date,
                 'establishmentName' => $installment->cardPurchaseData->establishmentName,
                 'purchaseDescription' => $installment->cardPurchaseData->purchaseDescription,
                 'amount' => $installment->cardPurchaseData->amount,
@@ -215,7 +216,7 @@ class GenerateMonthlyPurchasesReport
     private function formatPeriod(array $dates): string
     {
         $formattedDates = array_map(function ($date) {
-            return Carbon::parse($date . '-01')->locale('pt_BR')->isoFormat('MMMM/YYYY');
+            return Carbon::parse($date.'-01')->locale('pt_BR')->isoFormat('MMMM/YYYY');
         }, $dates);
 
         // Capitalizar primeira letra de cada mês
@@ -233,7 +234,7 @@ class GenerateMonthlyPurchasesReport
 
             foreach ($files as $file) {
                 if ($file !== '.' && $file !== '..') {
-                    $filePath = $directory . DIRECTORY_SEPARATOR . $file;
+                    $filePath = $directory.DIRECTORY_SEPARATOR.$file;
 
                     if (is_file($filePath)) {
                         unlink($filePath);
@@ -247,13 +248,13 @@ class GenerateMonthlyPurchasesReport
 
     public function deleteDirectory($dir): void
     {
-        if (!is_dir($dir)) {
+        if (! is_dir($dir)) {
             return;
         }
 
         foreach (scandir($dir) as $file) {
             if ($file !== '.' && $file !== '..') {
-                $filePath = $dir . DIRECTORY_SEPARATOR . $file;
+                $filePath = $dir.DIRECTORY_SEPARATOR.$file;
                 if (is_dir($filePath)) {
                     $this->deleteDirectory($filePath);
                 } else {
