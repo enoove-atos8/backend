@@ -2,7 +2,9 @@
 
 namespace Infrastructure\Repositories\Financial\Exits\Exits;
 
+use App\Domain\Financial\Exits\DuplicitiesAnalisys\DataTransferObjects\DuplicityAnalisysExitsData;
 use App\Infrastructure\Repositories\Financial\Reviewer\FinancialReviewerRepository;
+use Domain\Financial\Exits\DuplicitiesAnalisys\DataTransferObjects\ReceiptsByIdsData;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Exits\Exits\Models\Exits;
@@ -104,6 +106,61 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
     const ANONYMOUS_EXITS_VALUE = 'anonymous_exits';
 
     const PAGINATE_NUMBER = 30;
+
+    const TRANSACTION_TYPE_COLUMN = 'transaction_type';
+
+    const TRANSACTION_TYPE_COLUMN_JOINED = 'exits.transaction_type';
+
+    const PIX_TRANSACTION_TYPE = 'pix';
+
+    const ID_COLUMN = 'id';
+
+    const DIVISION_ID_COLUMN = 'division_id';
+
+    const GROUP_ID_COLUMN = 'group_id';
+
+    const PAYMENT_CATEGORY_ID_COLUMN = 'payment_category_id';
+
+    const PAYMENT_ITEM_ID_COLUMN = 'payment_item_id';
+
+    const DUPLICITY_VERIFIED_COLUMN = 'duplicity_verified';
+
+    const DUPLICITY_VERIFIED_COLUMN_JOINED = 'exits.duplicity_verified';
+
+    const EXCLUDED_EXITS_DUPLICATE_KEY = 'excluded';
+
+    const KEPT_EXITS_DUPLICATE_KEY = 'kept';
+
+    const DUP_EXIT_TYPE_COLUMN = 'dup.exit_type';
+
+    const DUP_AMOUNT_COLUMN = 'dup.amount';
+
+    const DUP_TRANSACTION_TYPE_COLUMN = 'dup.transaction_type';
+
+    const DUP_DATE_TRANSACTION_COLUMN = 'dup.date_transaction_compensation';
+
+    const DUP_DIVISION_ID_COLUMN = 'dup.division_id';
+
+    const DUP_GROUP_ID_COLUMN = 'dup.group_id';
+
+    const DUP_PAYMENT_CATEGORY_ID_COLUMN = 'dup.payment_category_id';
+
+    const DUP_PAYMENT_ITEM_ID_COLUMN = 'dup.payment_item_id';
+
+    const DUP_REPETITION_COUNT_COLUMN = 'dup.repetition_count';
+
+    const REPETITION_COUNT_COLUMN = 'repetition_count';
+
+    const DIVISION_NAME_COLUMN = 'd.name';
+
+    const GROUP_NAME_COLUMN = 'g.name';
+
+    // Aliases usados na query
+    const DIVISION_NAME_ALIAS = 'division_name';
+
+    const GROUP_NAME_ALIAS = 'group_name';
+
+    const DUPLICATE_IDS_ALIAS = 'duplicate_ids';
 
     const DISPLAY_SELECT_COLUMNS = [
         'exits.id as exits_id',
@@ -567,5 +624,102 @@ class ExitRepository extends BaseRepository implements ExitRepositoryInterface
         };
 
         return $this->doQuery($query);
+    }
+
+    public function getDuplicitiesExits(string $date): Collection
+    {
+        $query = function () use ($date) {
+            $dupSub = DB::table(self::TABLE_NAME)
+                ->select([
+                    self::AMOUNT_COLUMN,
+                    self::TRANSACTION_TYPE_COLUMN,
+                    self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                    DB::raw('COUNT(*) AS '.self::REPETITION_COUNT_COLUMN),
+                ])
+                ->where(self::DELETED_COLUMN, 0)
+                ->where(self::TRANSACTIONS_COMPENSATION_COLUMN, self::COMPENSATED_VALUE)
+                ->where(self::DUPLICITY_VERIFIED_COLUMN, 0)
+                ->where(self::TRANSACTION_TYPE_COLUMN, self::PIX_TRANSACTION_TYPE)
+                ->where(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
+                ->groupBy([
+                    self::AMOUNT_COLUMN,
+                    self::TRANSACTION_TYPE_COLUMN,
+                    self::DATE_TRANSACTIONS_COMPENSATION_COLUMN,
+                ])
+                ->havingRaw('COUNT(*) > 1');
+
+            $q = DB::table(self::TABLE_NAME.' AS e')
+                ->select([
+                    DB::raw('JSON_ARRAYAGG(e.'.self::EXIT_TYPE_COLUMN.') AS '.self::EXIT_TYPE_COLUMN),
+                    self::DUP_AMOUNT_COLUMN,
+                    self::DUP_TRANSACTION_TYPE_COLUMN,
+                    self::DUP_DATE_TRANSACTION_COLUMN,
+                    DB::raw('JSON_ARRAYAGG(e.'.self::DIVISION_ID_COLUMN.') AS '.self::DIVISION_ID_COLUMN),
+                    DB::raw('MIN('.self::DIVISION_NAME_COLUMN.') AS '.self::DIVISION_NAME_ALIAS),
+                    DB::raw('JSON_ARRAYAGG(e.'.self::GROUP_ID_COLUMN.') AS '.self::GROUP_ID_COLUMN),
+                    DB::raw('MIN('.self::GROUP_NAME_COLUMN.') AS '.self::GROUP_NAME_ALIAS),
+                    DB::raw('JSON_ARRAYAGG(e.'.self::PAYMENT_CATEGORY_ID_COLUMN.') AS '.self::PAYMENT_CATEGORY_ID_COLUMN),
+                    DB::raw('JSON_ARRAYAGG(e.'.self::PAYMENT_ITEM_ID_COLUMN.') AS '.self::PAYMENT_ITEM_ID_COLUMN),
+                    'dup.'.self::REPETITION_COUNT_COLUMN,
+                    DB::raw('MIN(e.'.self::DUPLICITY_VERIFIED_COLUMN.') AS '.self::DUPLICITY_VERIFIED_COLUMN),
+                    DB::raw('JSON_ARRAYAGG(e.id) AS '.self::DUPLICATE_IDS_ALIAS),
+                ])
+                ->leftJoin(DivisionRepository::TABLE_NAME.' AS d', 'e.division_id', '=', 'd.id')
+                ->leftJoin(GroupsRepository::TABLE_NAME.' AS g', 'e.group_id', '=', 'g.id')
+                ->joinSub($dupSub, 'dup', function ($join) {
+                    $join->on(self::DUP_AMOUNT_COLUMN, '=', 'e.'.self::AMOUNT_COLUMN)
+                        ->on(self::DUP_TRANSACTION_TYPE_COLUMN, '=', 'e.'.self::TRANSACTION_TYPE_COLUMN)
+                        ->on(self::DUP_DATE_TRANSACTION_COLUMN, '=', 'e.'.self::DATE_TRANSACTIONS_COMPENSATION_COLUMN);
+                })
+                ->where('e.'.self::DELETED_COLUMN, 0)
+                ->where('e.'.self::TRANSACTIONS_COMPENSATION_COLUMN, self::COMPENSATED_VALUE)
+                ->where('e.'.self::DUPLICITY_VERIFIED_COLUMN, 0)
+                ->where('e.'.self::TRANSACTION_TYPE_COLUMN, self::PIX_TRANSACTION_TYPE)
+                ->where('e.'.self::DATE_TRANSACTIONS_COMPENSATION_COLUMN, BaseRepository::OPERATORS['LIKE'], "%{$date}%")
+                ->groupBy([
+                    self::DUP_AMOUNT_COLUMN,
+                    self::DUP_TRANSACTION_TYPE_COLUMN,
+                    self::DUP_DATE_TRANSACTION_COLUMN,
+                    'dup.'.self::REPETITION_COUNT_COLUMN,
+                ])
+                ->orderByDesc(self::DUP_DATE_TRANSACTION_COLUMN);
+
+            $result = $q->get();
+
+            return collect($result)->map(fn ($item) => DuplicityAnalisysExitsData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+    public function getReceiptsExitsByIds(array $ids): ?Collection
+    {
+
+        $query = function () use (
+            $ids) {
+
+            $q = DB::table(ExitRepository::TABLE_NAME)
+                ->whereIn(self::ID_COLUMN_JOINED, $ids);
+
+            $result = $q->get();
+
+            return collect($result)->map(fn ($item) => ReceiptsByIdsData::fromResponse((array) $item));
+        };
+
+        return $this->doQuery($query);
+    }
+
+    public function setDuplicityAnalysis(int $exitId): void
+    {
+        $conditions =
+            [
+                'field' => self::ID_COLUMN,
+                'operator' => BaseRepository::OPERATORS['EQUALS'],
+                'value' => $exitId,
+            ];
+
+        $this->update($conditions, [
+            'duplicity_verified' => true,
+        ]);
     }
 }
