@@ -218,15 +218,17 @@ class ProcessingBankExitsTransferReceipts
             $timestamp = $extractedData['data']['timestamp_value_cpf'];
 
             if ($timestamp != '') {
-                if ($this->isDuplicateExit($timestamp)) {
+                // Verifica se o timestamp contém 000000 (sem hora real do comprovante)
+                // Se contém 000000, significa que não há hora/minuto/segundo no comprovante
+                // Nesse caso, permite o cadastro e deixa para análise manual de duplicidades
+                $hasNoRealTime = str_contains($timestamp, '000000_');
+
+                if (!$hasNoRealTime && $this->isDuplicateExit($timestamp)) {
                     $this->updateStatusAction->execute($syncStorageData->id, SyncStorageRepository::DUPLICATED_RECEIPT_VALUE);
                     $this->minioStorageService->delete($syncStorageData->path, $tenant);
 
                     return;
                 }
-            } else {
-                // Quando não houver timestamp (sem hora/minuto/segundo), processar normalmente
-                // A análise de duplicidade será feita manualmente pelo usuário
             }
 
             $this->setExitData($extractedData, $syncStorageData);
