@@ -29,4 +29,10 @@ interface ExitRepositoryInterface
     public function updateReceiptLink(int $exitId, string $link): mixed;
 
     public function deleteAnonymousExitsByAccountAndDate(int $accountId, string $referenceDate): bool;
+
+    public function getDuplicitiesExits(string $date): Collection;
+
+    public function getReceiptsExitsByIds(array $ids): ?Collection;
+
+    public function setDuplicityAnalysis(int $exitId): void;
 }

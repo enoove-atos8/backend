@@ -19,6 +19,7 @@ use Application\Api\v1\Financial\Entries\Entries\Controllers\Consolidated\Entrie
 use Application\Api\v1\Financial\Entries\Entries\Controllers\DuplicityAnalisys\DuplicityAnalisysController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\General\EntriesController;
 use Application\Api\v1\Financial\Entries\Entries\Controllers\Indicators\EntryIndicatorsController;
+use Application\Api\v1\Financial\Exits\Exits\Controllers\DuplicityAnalisys\DuplicityAnalisysController as ExitsDuplicityAnalisysController;
 use Application\Api\v1\Financial\Exits\Exits\Controllers\ExitsController;
 use Application\Api\v1\Financial\Exits\Payments\Controllers\PaymentsController;
 use Application\Api\v1\Financial\Exits\Purchases\Controllers\InstallmentsController;
@@ -147,6 +148,16 @@ Route::prefix('financial')->group(function () {
                 Route::get('/getInstallments', [InstallmentsController::class, 'getInstalments']);
                 Route::get('/getInstallmentsByPurchase', [InstallmentsController::class, 'getInstallmentsByPurchase']);
             });
+        });
+
+        Route::prefix('receipts')->group(function () {
+
+            Route::prefix('duplicities-analysis')->group(function () {
+                Route::get('/getDuplicitiesExits', [ExitsDuplicityAnalisysController::class, 'getDuplicitiesExits']);
+                Route::get('/getReceiptsByExitsIds', [ExitsDuplicityAnalisysController::class, 'getReceiptsByExitsIds']);
+                Route::post('/saveDuplicityAnalysis', [ExitsDuplicityAnalisysController::class, 'saveDuplicityAnalysis']);
+            });
+
         });
     });
 

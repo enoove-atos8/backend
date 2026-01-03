@@ -224,6 +224,9 @@ class ProcessingBankExitsTransferReceipts
 
                     return;
                 }
+            } else {
+                // Quando não houver timestamp (sem hora/minuto/segundo), processar normalmente
+                // A análise de duplicidade será feita manualmente pelo usuário
             }
 
             $this->setExitData($extractedData, $syncStorageData);

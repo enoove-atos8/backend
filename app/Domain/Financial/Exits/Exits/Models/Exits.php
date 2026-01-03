@@ -28,6 +28,7 @@ class Exits extends Model
         'date_transaction_compensation',
         'date_exit_register',
         'timestamp_exit_transaction',
+        'duplicity_verified',
         'amount',
         'comments',
         'receipt_link',
