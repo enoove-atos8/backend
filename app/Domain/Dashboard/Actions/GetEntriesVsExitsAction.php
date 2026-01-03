@@ -32,9 +32,30 @@ class GetEntriesVsExitsAction
         // Buscar meses consolidados como base
         $consolidatedMonths = $this->repository->getConsolidatedMonths($months);
 
-        // Buscar dízimos e saídas reais
-        $entriesData = $this->repository->getEntriesByMonth($months);
-        $exitsData = $this->repository->getExitsByMonth($months);
+        // Se não houver meses consolidados, retornar dados vazios
+        if ($consolidatedMonths->isEmpty()) {
+            return new EntriesVsExitsData(
+                months: 0,
+                startDate: '',
+                endDate: '',
+                categories: [],
+                entries: [],
+                exits: [],
+                totalEntries: 0,
+                totalExits: 0,
+                balance: 0,
+                averageMonthlyBalance: 0
+            );
+        }
+
+        // Ordenar meses consolidados para obter o período correto
+        $sortedConsolidatedMonths = $consolidatedMonths->sort()->values();
+        $startMonth = $sortedConsolidatedMonths->first();
+        $endMonth = $sortedConsolidatedMonths->last();
+
+        // Buscar dízimos e saídas reais filtrados pelo período dos meses consolidados
+        $entriesData = $this->repository->getEntriesByMonth($startMonth, $endMonth);
+        $exitsData = $this->repository->getExitsByMonth($startMonth, $endMonth);
 
         // Mapear entradas (dízimos) por mês
         $entriesMap = [];
@@ -48,8 +69,8 @@ class GetEntriesVsExitsAction
             $exitsMap[$exit->month] = (float) $exit->total;
         }
 
-        // Usar os meses consolidados como base (do mais antigo ao mais recente)
-        $sortedMonths = $consolidatedMonths->sort()->values();
+        // Usar os meses consolidados como base (já ordenados do mais antigo ao mais recente)
+        $sortedMonths = $sortedConsolidatedMonths;
 
         $categories = [];
         $entries = [];

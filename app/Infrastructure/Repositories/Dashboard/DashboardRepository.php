@@ -32,10 +32,16 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     private const MEMBER_TYPE_MEMBER = 'member';
 
+    private const MEMBER_TYPE_CONGREGATE = 'congregate';
+
+    private const ACTIVE_MEMBER_TYPES = [self::MEMBER_TYPE_MEMBER, self::MEMBER_TYPE_CONGREGATE];
+
     // Entries/Exits columns
     private const DATE_TRANSACTION_COMPENSATION_COLUMN = 'date_transaction_compensation';
 
     private const AMOUNT_COLUMN = 'amount';
+
+    private const MEMBER_ID_COLUMN = 'member_id';
 
     // Consolidation columns
     private const DATE_COLUMN = 'date';
@@ -64,7 +70,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     public function getActiveMembersCount(): int
     {
         return DB::table(self::MEMBERS_TABLE)
-            ->where(self::MEMBER_TYPE_COLUMN, self::MEMBER_TYPE_MEMBER)
+            ->whereIn(self::MEMBER_TYPE_COLUMN, self::ACTIVE_MEMBER_TYPES)
             ->where(self::ACTIVATED_COLUMN, 1)
             ->count();
     }
@@ -114,29 +120,64 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->pluck('month');
     }
 
-    public function getEntriesByMonth(int $months): Collection
+    public function getEntriesByMonth(string $startMonth, string $endMonth): Collection
     {
-        // Buscar apenas dízimos (entry_type = 'tithe') agrupados por mês
+        // Buscar apenas dízimos (entry_type = 'tithe') agrupados por mês no período especificado
         return DB::table(self::ENTRIES_TABLE)
             ->selectRaw('DATE_FORMAT('.self::DATE_TRANSACTION_COMPENSATION_COLUMN.", '%Y-%m') as month, SUM(".self::AMOUNT_COLUMN.') as total')
             ->where(self::ENTRY_TYPE_COLUMN, self::ENTRY_TYPE_TITHE)
             ->where(self::DELETED_COLUMN, 0)
+            ->where(self::DATE_TRANSACTION_COMPENSATION_COLUMN, '>=', $startMonth.'-01')
+            ->where(self::DATE_TRANSACTION_COMPENSATION_COLUMN, '<=', $endMonth.'-31')
             ->groupBy('month')
             ->orderBy('month', 'desc')
-            ->limit($months)
             ->get();
     }
 
-    public function getExitsByMonth(int $months): Collection
+    public function getExitsByMonth(string $startMonth, string $endMonth): Collection
     {
-        // Buscar apenas saídas reais (payment, ministerial_transfer, contributions)
+        // Buscar apenas saídas reais (payment, ministerial_transfer, contributions) no período especificado
         return DB::table(self::EXITS_TABLE)
             ->selectRaw('DATE_FORMAT('.self::DATE_TRANSACTION_COMPENSATION_COLUMN.", '%Y-%m') as month, SUM(".self::AMOUNT_COLUMN.') as total')
             ->whereIn(self::EXIT_TYPE_COLUMN, self::REAL_EXIT_TYPES)
             ->where(self::DELETED_COLUMN, 0)
+            ->where(self::DATE_TRANSACTION_COMPENSATION_COLUMN, '>=', $startMonth.'-01')
+            ->where(self::DATE_TRANSACTION_COMPENSATION_COLUMN, '<=', $endMonth.'-31')
             ->groupBy('month')
             ->orderBy('month', 'desc')
-            ->limit($months)
             ->get();
+    }
+
+    public function getTotalActiveMembersByMonth(string $month): int
+    {
+        return DB::table(self::MEMBERS_TABLE)
+            ->whereIn(self::MEMBER_TYPE_COLUMN, self::ACTIVE_MEMBER_TYPES)
+            ->where(self::ACTIVATED_COLUMN, 1)
+            ->count();
+    }
+
+    public function getActiveTithersByMonth(string $month): int
+    {
+        return DB::table(self::ENTRIES_TABLE.' as e')
+            ->join(self::MEMBERS_TABLE.' as m', 'e.'.self::MEMBER_ID_COLUMN, '=', 'm.id')
+            ->where('e.'.self::ENTRY_TYPE_COLUMN, self::ENTRY_TYPE_TITHE)
+            ->where('e.'.self::DELETED_COLUMN, 0)
+            ->where('e.'.self::DATE_TRANSACTION_COMPENSATION_COLUMN, 'LIKE', $month.'%')
+            ->whereIn('m.'.self::MEMBER_TYPE_COLUMN, self::ACTIVE_MEMBER_TYPES)
+            ->where('m.'.self::ACTIVATED_COLUMN, 1)
+            ->distinct()
+            ->count('e.'.self::MEMBER_ID_COLUMN);
+    }
+
+    public function getTotalContributionsByMonth(string $month): int
+    {
+        return DB::table(self::ENTRIES_TABLE.' as e')
+            ->join(self::MEMBERS_TABLE.' as m', 'e.'.self::MEMBER_ID_COLUMN, '=', 'm.id')
+            ->where('e.'.self::ENTRY_TYPE_COLUMN, self::ENTRY_TYPE_TITHE)
+            ->where('e.'.self::DELETED_COLUMN, 0)
+            ->where('e.'.self::DATE_TRANSACTION_COMPENSATION_COLUMN, 'LIKE', $month.'%')
+            ->whereIn('m.'.self::MEMBER_TYPE_COLUMN, self::ACTIVE_MEMBER_TYPES)
+            ->where('m.'.self::ACTIVATED_COLUMN, 1)
+            ->count();
     }
 }

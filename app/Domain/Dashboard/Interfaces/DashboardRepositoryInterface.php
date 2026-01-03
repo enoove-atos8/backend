@@ -16,7 +16,13 @@ interface DashboardRepositoryInterface
 
     public function getConsolidatedMonths(int $months): Collection;
 
-    public function getEntriesByMonth(int $months): Collection;
+    public function getEntriesByMonth(string $startMonth, string $endMonth): Collection;
 
-    public function getExitsByMonth(int $months): Collection;
+    public function getExitsByMonth(string $startMonth, string $endMonth): Collection;
+
+    public function getTotalActiveMembersByMonth(string $month): int;
+
+    public function getActiveTithersByMonth(string $month): int;
+
+    public function getTotalContributionsByMonth(string $month): int;
 }
