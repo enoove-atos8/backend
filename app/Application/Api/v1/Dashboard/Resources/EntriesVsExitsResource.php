@@ -34,6 +34,8 @@ class EntriesVsExitsResource extends JsonResource
                     'totalExits' => round($data->totalExits, 2),
                     'balance' => round($data->balance, 2),
                     'averageMonthlyBalance' => round($data->averageMonthlyBalance, 2),
+                    'averageMonthlyEntries' => round($data->averageMonthlyEntries, 2),
+                    'averageMonthlyExits' => round($data->averageMonthlyExits, 2),
                 ],
             ],
         ];

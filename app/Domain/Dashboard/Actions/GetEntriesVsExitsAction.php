@@ -44,7 +44,9 @@ class GetEntriesVsExitsAction
                 totalEntries: 0,
                 totalExits: 0,
                 balance: 0,
-                averageMonthlyBalance: 0
+                averageMonthlyBalance: 0,
+                averageMonthlyEntries: 0,
+                averageMonthlyExits: 0
             );
         }
 
@@ -89,6 +91,8 @@ class GetEntriesVsExitsAction
         $balance = $totalEntries - $totalExits;
         $actualMonths = count($sortedMonths);
         $averageMonthlyBalance = $actualMonths > 0 ? round($balance / $actualMonths, 2) : 0;
+        $averageMonthlyEntries = $actualMonths > 0 ? round($totalEntries / $actualMonths, 2) : 0;
+        $averageMonthlyExits = $actualMonths > 0 ? round($totalExits / $actualMonths, 2) : 0;
 
         $startDate = $sortedMonths->isNotEmpty()
             ? Carbon::parse($sortedMonths->first().'-01')->startOfMonth()->format('Y-m-d')
@@ -107,7 +111,9 @@ class GetEntriesVsExitsAction
             totalEntries: $totalEntries,
             totalExits: $totalExits,
             balance: $balance,
-            averageMonthlyBalance: $averageMonthlyBalance
+            averageMonthlyBalance: $averageMonthlyBalance,
+            averageMonthlyEntries: $averageMonthlyEntries,
+            averageMonthlyExits: $averageMonthlyExits
         );
     }
 }

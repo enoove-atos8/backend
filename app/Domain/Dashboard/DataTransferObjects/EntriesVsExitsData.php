@@ -14,6 +14,8 @@ class EntriesVsExitsData
         public float $totalEntries,
         public float $totalExits,
         public float $balance,
-        public float $averageMonthlyBalance
+        public float $averageMonthlyBalance,
+        public float $averageMonthlyEntries,
+        public float $averageMonthlyExits
     ) {}
 }
