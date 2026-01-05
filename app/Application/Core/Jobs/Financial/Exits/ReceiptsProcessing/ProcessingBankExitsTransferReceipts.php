@@ -335,6 +335,35 @@ class ProcessingBankExitsTransferReceipts
     }
 
     /**
+     * Converte mês abreviado em português para número
+     */
+    private function convertMonthNameToNumber(string $date): string
+    {
+        $monthsMap = [
+            'jan' => '01',
+            'fev' => '02',
+            'mar' => '03',
+            'abr' => '04',
+            'mai' => '05',
+            'jun' => '06',
+            'jul' => '07',
+            'ago' => '08',
+            'set' => '09',
+            'out' => '10',
+            'nov' => '11',
+            'dez' => '12',
+        ];
+
+        foreach ($monthsMap as $monthName => $monthNumber) {
+            if (str_contains(strtolower($date), $monthName)) {
+                return preg_replace("/{$monthName}/i", $monthNumber, $date);
+            }
+        }
+
+        return $date;
+    }
+
+    /**
      * @throws Exception
      */
     public function getNextBusinessDay($date): string
@@ -350,7 +379,24 @@ class ProcessingBankExitsTransferReceipts
             '12-25', // Natal
         ];
 
-        $currentDate = DateTime::createFromFormat('d/m/Y', $date);
+        // Converte meses abreviados em português para números (fallback para LLM)
+        $date = $this->convertMonthNameToNumber($date);
+
+        // Tenta múltiplos formatos de data
+        $formats = ['d/m/Y', 'd-m-Y', 'Y-m-d', 'd/m/y', 'd-m-y', 'Y/m/d'];
+        $currentDate = false;
+
+        foreach ($formats as $format) {
+            $currentDate = DateTime::createFromFormat($format, $date);
+            if ($currentDate !== false) {
+                break;
+            }
+        }
+
+        if ($currentDate === false) {
+            throw new Exception("Data inválida recebida: '{$date}'. Formatos tentados: ".implode(', ', $formats));
+        }
+
         $dayOfWeek = $currentDate->format('N');
         $monthDay = $currentDate->format('m-d');
 

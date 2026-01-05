@@ -365,6 +365,35 @@ class ProcessingBankEntriesTransferReceipts
     }
 
     /**
+     * Converte mês abreviado em português para número
+     */
+    private function convertMonthNameToNumber(string $date): string
+    {
+        $monthsMap = [
+            'jan' => '01',
+            'fev' => '02',
+            'mar' => '03',
+            'abr' => '04',
+            'mai' => '05',
+            'jun' => '06',
+            'jul' => '07',
+            'ago' => '08',
+            'set' => '09',
+            'out' => '10',
+            'nov' => '11',
+            'dez' => '12',
+        ];
+
+        foreach ($monthsMap as $monthName => $monthNumber) {
+            if (str_contains(strtolower($date), $monthName)) {
+                return preg_replace("/{$monthName}/i", $monthNumber, $date);
+            }
+        }
+
+        return $date;
+    }
+
+    /**
      * @throws \Exception
      */
     public function getNextBusinessDay($date): string
@@ -379,6 +408,9 @@ class ProcessingBankEntriesTransferReceipts
             '11-15', // Proclamação da República
             '12-25', // Natal
         ];
+
+        // Converte meses abreviados em português para números (fallback para LLM)
+        $date = $this->convertMonthNameToNumber($date);
 
         // Tentar múltiplos formatos de data (OCR pode retornar em formatos diferentes)
         $dateFormats = [

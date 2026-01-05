@@ -11,7 +11,11 @@ Analise a imagem do comprovante bancário e extraia as seguintes informações:
 
 REGRAS IMPORTANTES:
 - O valor deve ser extraído em centavos (inteiro). Exemplo: R$ 150,00 = 15000
-- A data deve estar EXATAMENTE como aparece no comprovante, no formato brasileiro DD/MM/YYYY (dia/mês/ano). ATENÇÃO: Não confunda com o formato americano MM/DD/YYYY. Exemplo: "02/01/2026" = 2 de JANEIRO de 2026 (não 2 de fevereiro). Sempre considere o primeiro número como DIA e o segundo como MÊS.
+- A data deve ser retornada SEMPRE no formato numérico DD/MM/YYYY (dia/mês/ano), mesmo que o comprovante mostre o mês abreviado em português (jan, fev, mar, abr, mai, jun, jul, ago, set, out, nov, dez). ATENÇÃO: Não confunda com o formato americano MM/DD/YYYY. Exemplos:
+  - Se o comprovante mostrar "02/01/2026", retorne "02/01/2026" (2 de JANEIRO de 2026)
+  - Se o comprovante mostrar "03/jan/2025", retorne "03/01/2025" (3 de JANEIRO de 2025)
+  - Se o comprovante mostrar "15/dez/2024", retorne "15/12/2024" (15 de DEZEMBRO de 2024)
+  - SEMPRE retorne o mês no formato numérico de 01 a 12. Sempre considere o primeiro número como DIA e o segundo como MÊS.
 - Para o CPF, extraia apenas os 6 dígitos do meio (exemplo: ***.123.456-** → retorne "123456")
 - Se o CPF não estiver visível ou não existir, retorne string vazia ""
 - O horário deve estar no formato HH:MM:SS (se não tiver segundos, use 00). Se não houver horário, retorne "00:00:00"
