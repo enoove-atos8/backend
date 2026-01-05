@@ -165,6 +165,11 @@ interface AmountRequestRepositoryInterface
     public function linkDevolution(int $id, int $entryId, ?string $devolutionAmount = null): bool;
 
     /**
+     * Check if an entry is already linked to another amount request
+     */
+    public function checkIfEntryIsLinked(int $entryId, ?int $excludeRequestId = null): bool;
+
+    /**
      * Update receipt image URL
      */
     public function updateReceiptImageUrl(int $receiptId, string $imageUrl): bool;

@@ -35,6 +35,7 @@ class Entry extends Model
         'duplicity_verified',
         'timestamp_value_cpf',
         'devolution',
+        'group_devolution',
         'residual_value',
         'deleted',
         'comments',

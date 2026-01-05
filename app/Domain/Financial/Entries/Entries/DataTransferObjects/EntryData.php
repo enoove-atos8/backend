@@ -66,6 +66,9 @@ class EntryData extends DataTransferObject
     public ?int $devolution;
 
     /** @var integer | null  */
+    public ?int $groupDevolution;
+
+    /** @var integer | null  */
     public ?int $residualValue;
 
     /** @var integer | null  */
@@ -119,6 +122,7 @@ class EntryData extends DataTransferObject
             'accountId' => $data?->accountId,
             'receipt' => null,
             'devolution' => 0,
+            'groupDevolution' => 0,
             'residualValue' => 0,
             'identificationPending' => 0,
             'cultId' => null,
@@ -133,8 +137,20 @@ class EntryData extends DataTransferObject
         if ($data->docSubType == EntryRepository::DESIGNATED_VALUE) {
             $instance->groupReceivedId = $data->groupId;
 
-            if ($data->isDevolution == 1) {
+            // Converte string "true"/"false" para boolean
+            $isGroupDevolution = filter_var($data->isGroupDevolution, FILTER_VALIDATE_BOOLEAN);
+            $isDevolution = filter_var($data->isDevolution, FILTER_VALIDATE_BOOLEAN);
+
+            if ($isGroupDevolution) {
+                // Devolução para o próprio grupo
                 $instance->devolution = 1;
+                $instance->groupDevolution = 1;
+                $instance->groupReceivedId = $data->groupId;
+                $instance->groupReturnedId = $data->groupId;
+            } elseif ($isDevolution) {
+                // Devolução para ministério de finanças
+                $instance->devolution = 1;
+                $instance->groupDevolution = 0;
                 $instance->groupReceivedId = $returnReceivingGroupId;
                 $instance->groupReturnedId = $data->groupId;
             }

@@ -20,6 +20,7 @@ class CloseAmountRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'linkedGroupDevolutionEntryId' => 'nullable|integer|exists:entries,id',
             'reviewerId' => 'required|integer',
             'transactionType' => 'nullable|string|in:pix,transfer,deposit,cash',
             'transactionCompensation' => 'nullable|string',
@@ -33,6 +34,8 @@ class CloseAmountRequestRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'linkedGroupDevolutionEntryId.integer' => 'O ID da entrada deve ser um número válido!',
+            'linkedGroupDevolutionEntryId.exists' => 'A entrada vinculada não existe!',
             'reviewerId.required' => 'O revisor financeiro é obrigatório!',
             'reviewerId.integer' => 'O revisor financeiro deve ser um número válido!',
             'transactionType.in' => 'O tipo de transação deve ser: pix, transfer, deposit ou cash!',

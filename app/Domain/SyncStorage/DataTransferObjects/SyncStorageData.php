@@ -53,6 +53,9 @@ class SyncStorageData extends DataTransferObject
     public ?bool $isDevolution;
 
     /** @var ?bool */
+    public ?bool $isGroupDevolution;
+
+    /** @var ?bool */
     public ?bool $isCreditCardPurchase;
 
     /** @var ?string | null */
@@ -116,6 +119,7 @@ class SyncStorageData extends DataTransferObject
             'destinationAccountId' => $data['destination_account_id'] ?? null,
             'isPayment' => $data['is_payment'] ?? null,
             'isDevolution' => $data['is_devolution'] ?? null,
+            'isGroupDevolution' => $data['is_group_devolution'] ?? null,
             'isCreditCardPurchase' => $data['is_credit_card_purchase'] ?? null,
             'closingDay' => $data['invoice_closing_day'] ?? null,
             'numberInstallments' => $data['number_installments'] ?? null,

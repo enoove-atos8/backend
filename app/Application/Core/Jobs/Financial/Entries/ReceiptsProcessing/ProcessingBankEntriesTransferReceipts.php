@@ -31,6 +31,7 @@ use Exception;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Mobile\SyncStorage\SyncStorageRepository;
 use Infrastructure\Services\External\minIO\MinioStorageService;
@@ -200,7 +201,34 @@ class ProcessingBankEntriesTransferReceipts
                 $this->syncStorageData = $this->getSyncStorageDataAction->execute(SyncStorageRepository::ENTRIES_VALUE_DOC_TYPE);
 
                 foreach ($this->syncStorageData as $data) {
-                    $this->process($data, $church->tenantId);
+                    try {
+                        $this->process($data, $church->tenantId);
+                    } catch (\Exception $e) {
+                        // Loga o erro mas continua processando os próximos comprovantes
+                        Log::error('Erro ao processar comprovante de entrada', [
+                            'sync_storage_id' => $data->id,
+                            'tenant_id' => $church->tenantId,
+                            'doc_type' => $data->docType,
+                            'doc_sub_type' => $data->docSubType,
+                            'error_message' => $e->getMessage(),
+                            'error_file' => $e->getFile(),
+                            'error_line' => $e->getLine(),
+                            'stack_trace' => $e->getTraceAsString(),
+                        ]);
+
+                        // Atualiza status para ERROR
+                        try {
+                            $this->updateStatusAction->execute($data->id, SyncStorageRepository::ERROR_VALUE);
+                        } catch (\Exception $statusUpdateError) {
+                            Log::error('Falha ao atualizar status do comprovante para ERROR', [
+                                'sync_storage_id' => $data->id,
+                                'error' => $statusUpdateError->getMessage(),
+                            ]);
+                        }
+
+                        // Continua para o próximo comprovante
+                        continue;
+                    }
                 }
             }
         } catch (GeneralExceptions $e) {

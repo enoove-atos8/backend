@@ -231,7 +231,8 @@ class AmountRequestController extends Controller
         CloseAmountRequestAction $action
     ): Response {
         try {
-            $action->execute($id, $request->user()->id);
+            $linkedEntryId = $request->input('linkedGroupDevolutionEntryId');
+            $action->execute($id, $request->user()->id, $linkedEntryId);
 
             return response([
                 'message' => ReturnMessages::AMOUNT_REQUEST_CLOSED,

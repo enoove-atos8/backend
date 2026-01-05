@@ -103,8 +103,9 @@ class CreateEntryAction
      */
     private function linkDevolutionToAmountRequest(EntryData $entryData): void
     {
-        // Only process if this is a devolution entry
-        if ($entryData->devolution !== 1) {
+        // Only process if this is a GROUP devolution entry (devolução para o próprio grupo)
+        // NÃO vincula se for devolução para ministério de finanças (groupDevolution = 0)
+        if ($entryData->groupDevolution !== 1) {
             return;
         }
 

@@ -941,6 +941,22 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
     }
 
     /**
+     * Check if an entry is already linked to another amount request
+     */
+    public function checkIfEntryIsLinked(int $entryId, ?int $excludeRequestId = null): bool
+    {
+        $query = DB::table(self::TABLE_NAME)
+            ->where(self::DEVOLUTION_ENTRY_ID_COLUMN, $entryId)
+            ->where(self::DELETED_COLUMN, false);
+
+        if ($excludeRequestId !== null) {
+            $query->where(self::ID_COLUMN, '!=', $excludeRequestId);
+        }
+
+        return $query->exists();
+    }
+
+    /**
      * Update receipt image URL
      */
     public function updateReceiptImageUrl(int $receiptId, string $imageUrl): bool

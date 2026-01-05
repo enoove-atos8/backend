@@ -24,7 +24,27 @@ class EntryRequest extends FormRequest
         return true;
     }
 
+    /**
+     * Configure the validator instance.
+     *
+     * @param  \Illuminate\Validation\Validator  $validator
+     * @return void
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            $devolution = $this->input('devolution');
+            $groupDevolution = $this->input('groupDevolution');
 
+            // Não permite que ambos sejam 1 ao mesmo tempo
+            if ($devolution == 1 && $groupDevolution == 1) {
+                $validator->errors()->add(
+                    'devolution',
+                    'Uma entrada não pode ser devolução para ministério de finanças e devolução para grupo ao mesmo tempo!'
+                );
+            }
+        });
+    }
 
     /**
      * Get the validation rules that apply to the request.
@@ -49,6 +69,7 @@ class EntryRequest extends FormRequest
             'amount'                        =>  'required',
             'timestampValueCpf'             =>  '',
             'devolution'                    =>  '',
+            'groupDevolution'               =>  '',
             'residualValue'                 =>  '',
             'deleted'                       =>  '',
             'comments'                      =>  '',
@@ -168,6 +189,7 @@ class EntryRequest extends FormRequest
             amount:                         $this->input('amount'),
             timestampValueCpf:              $this->input('timestampValueCpf'),
             devolution:                     $this->input('devolution'),
+            groupDevolution:                $this->input('groupDevolution'),
             residualValue:                  $this->input('residualValue'),
             deleted:                        $this->input('deleted'),
             comments:                       $this->input('comments'),
