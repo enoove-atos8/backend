@@ -245,6 +245,7 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
             'duplicity_verified' => $entryData->duplicityVerified,
             'timestamp_value_cpf' => $entryData->timestampValueCpf,
             'devolution' => $entryData->devolution,
+            'group_devolution' => $entryData->groupDevolution,
             'residual_value' => $entryData->residualValue,
             'deleted' => $entryData->deleted,
             'comments' => $entryData->comments,

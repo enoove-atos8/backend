@@ -143,10 +143,10 @@ class EntryData extends DataTransferObject
 
             if ($isGroupDevolution) {
                 // Devolução para o próprio grupo
-                $instance->devolution = 1;
+                $instance->devolution = 0;
                 $instance->groupDevolution = 1;
                 $instance->groupReceivedId = $data->groupId;
-                $instance->groupReturnedId = $data->groupId;
+                $instance->groupReturnedId = null;
             } elseif ($isDevolution) {
                 // Devolução para ministério de finanças
                 $instance->devolution = 1;
