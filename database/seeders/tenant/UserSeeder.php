@@ -14,24 +14,17 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('users')->insert([
+        // Cria apenas o usuário de sistema se não existir
+        DB::table('users')->updateOrInsert(
+            ['id' => 1], // Busca por ID
             [
-                'id' => 1,
                 'email' => 'system@atos8.com',
                 'password' => bcrypt('system@'.uniqid()),
                 'activated' => 1,
                 'type' => 'system',
-                'created_at' => now(),
+                'created_at' => DB::raw('COALESCE(created_at, NOW())'),
                 'updated_at' => now(),
-            ],
-            [
-                'email' => 'admin@atos8.com',
-                'password' => bcrypt('123456'),
-                'activated' => 1,
-                'type' => 'admin',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+            ]
+        );
     }
 }
