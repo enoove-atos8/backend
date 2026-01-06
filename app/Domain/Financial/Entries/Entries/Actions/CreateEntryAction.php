@@ -138,8 +138,8 @@ class CreateEntryAction
                 description: AmountRequestReturnMessages::HISTORY_DESCRIPTIONS[AmountRequestReturnMessages::HISTORY_EVENT_DEVOLUTION_LINKED],
                 userId: $entryData->reviewerId,
                 metadata: [
-                    'entry_id' => $entryData->id,
-                    'devolution_amount' => $devolutionAmount,
+                    AmountRequestReturnMessages::METADATA_KEY_ENTRY_ID => $entryData->id,
+                    AmountRequestReturnMessages::METADATA_KEY_DEVOLUTION_AMOUNT => $devolutionAmount,
                 ]
             ));
 
@@ -173,13 +173,13 @@ class CreateEntryAction
                 $this->amountRequestRepository->createHistory(new AmountRequestHistoryData(
                     amountRequestId: $amountRequestId,
                     event: AmountRequestReturnMessages::HISTORY_EVENT_CLOSED,
-                    description: 'Solicitação fechada automaticamente (comprovado + devolvido = solicitado)',
+                    description: AmountRequestReturnMessages::AUTO_CLOSE_DESCRIPTION,
                     userId: $closedBy,
                     metadata: [
-                        'requested_amount' => $requestedAmount,
-                        'proven_amount' => $provenAmount,
-                        'devolution_amount' => $devolutionAmount,
-                        'auto_closed' => true,
+                        AmountRequestReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $requestedAmount,
+                        AmountRequestReturnMessages::METADATA_KEY_PROVEN_AMOUNT => $provenAmount,
+                        AmountRequestReturnMessages::METADATA_KEY_DEVOLUTION_AMOUNT => $devolutionAmount,
+                        AmountRequestReturnMessages::METADATA_KEY_AUTO_CLOSED => true,
                     ]
                 ));
             }

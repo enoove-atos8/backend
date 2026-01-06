@@ -52,7 +52,7 @@ class RejectAmountRequestAction
             description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_REJECTED],
             userId: $rejectedBy,
             metadata: [
-                'rejection_reason' => $rejectionReason,
+                ReturnMessages::METADATA_KEY_REJECTION_REASON => $rejectionReason,
             ]
         ));
 

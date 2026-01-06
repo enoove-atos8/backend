@@ -59,8 +59,8 @@ class CreateAmountRequestAction
             description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_CREATED],
             userId: $data->requestedBy,
             metadata: [
-                'requested_amount' => $data->requestedAmount,
-                'group_id' => $data->groupId,
+                ReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $data->requestedAmount,
+                ReturnMessages::METADATA_KEY_GROUP_ID => $data->groupId,
             ]
         ));
 

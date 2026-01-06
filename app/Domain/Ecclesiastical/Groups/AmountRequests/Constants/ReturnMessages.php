@@ -165,6 +165,28 @@ class ReturnMessages
 
     public const HISTORY_EVENT_DEVOLUTION_LINKED = 'devolution_linked';
 
+    // Auto-close description
+    public const AUTO_CLOSE_DESCRIPTION = 'Solicitação fechada automaticamente (comprovado + devolvido = solicitado)';
+
+    // Metadata keys
+    public const METADATA_KEY_REQUESTED_AMOUNT = 'requested_amount';
+
+    public const METADATA_KEY_PROVEN_AMOUNT = 'proven_amount';
+
+    public const METADATA_KEY_DEVOLUTION_AMOUNT = 'devolution_amount';
+
+    public const METADATA_KEY_AUTO_CLOSED = 'auto_closed';
+
+    public const METADATA_KEY_ENTRY_ID = 'entry_id';
+
+    public const METADATA_KEY_LINKED_ENTRY_ID = 'linked_entry_id';
+
+    public const METADATA_KEY_GROUP_ID = 'group_id';
+
+    public const METADATA_KEY_EXIT_ID = 'exit_id';
+
+    public const METADATA_KEY_REJECTION_REASON = 'rejection_reason';
+
     // History event descriptions
     public const HISTORY_DESCRIPTIONS = [
         self::HISTORY_EVENT_CREATED => 'Solicitação de verba criada',

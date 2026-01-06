@@ -47,7 +47,7 @@ class ApproveAmountRequestAction
             description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_APPROVED],
             userId: $approvedBy,
             metadata: [
-                'requested_amount' => $existing->requestedAmount,
+                ReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $existing->requestedAmount,
             ]
         ));
 

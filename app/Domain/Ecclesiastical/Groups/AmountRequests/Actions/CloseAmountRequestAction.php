@@ -103,10 +103,10 @@ class CloseAmountRequestAction
             description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_CLOSED],
             userId: $closedBy,
             metadata: [
-                'requested_amount' => $requestedAmount,
-                'proven_amount' => $provenAmount,
-                'devolution_amount' => $devolutionAmount,
-                'linked_entry_id' => $linkedGroupDevolutionEntryId,
+                ReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $requestedAmount,
+                ReturnMessages::METADATA_KEY_PROVEN_AMOUNT => $provenAmount,
+                ReturnMessages::METADATA_KEY_DEVOLUTION_AMOUNT => $devolutionAmount,
+                ReturnMessages::METADATA_KEY_LINKED_ENTRY_ID => $linkedGroupDevolutionEntryId,
             ]
         ));
 

@@ -55,8 +55,8 @@ class LinkExitToAmountRequestAction
                 description: ReturnMessages::HISTORY_DESCRIPTIONS[ReturnMessages::HISTORY_EVENT_TRANSFERRED],
                 userId: $userId,
                 metadata: [
-                    'exit_id' => $exitId,
-                    'requested_amount' => $existing->requestedAmount,
+                    ReturnMessages::METADATA_KEY_EXIT_ID => $exitId,
+                    ReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $existing->requestedAmount,
                 ]
             ));
 
