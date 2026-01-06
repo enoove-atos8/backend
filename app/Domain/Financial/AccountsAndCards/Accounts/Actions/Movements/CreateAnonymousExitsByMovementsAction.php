@@ -5,8 +5,11 @@ namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Movements;
 use App\Domain\Financial\AccountsAndCards\Accounts\Actions\Movements\GetMovementsAction;
 use Carbon\Carbon;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
+use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
+use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
+use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountMovementsRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Throwable;
@@ -14,6 +17,8 @@ use Throwable;
 class CreateAnonymousExitsByMovementsAction
 {
     private GetMovementsAction $getMovementsAction;
+
+    private GetExitsAction $getExitsAction;
 
     private CreateExitAction $createExitAction;
 
@@ -23,11 +28,13 @@ class CreateAnonymousExitsByMovementsAction
 
     public function __construct(
         GetMovementsAction $getMovementsAction,
+        GetExitsAction $getExitsAction,
         CreateExitAction $createExitAction,
         GetReviewerAction $getReviewerAction,
         ExitRepositoryInterface $exitRepository
     ) {
         $this->getMovementsAction = $getMovementsAction;
+        $this->getExitsAction = $getExitsAction;
         $this->createExitAction = $createExitAction;
         $this->getReviewerAction = $getReviewerAction;
         $this->exitRepository = $exitRepository;
