@@ -54,9 +54,9 @@ class CreateBulkMovementsAction
             // Realizar conciliação bancária após inserção dos movimentos
             $this->reconcileAccountMovementsAction->execute($accountId, $fileId);
 
-            // Validar e corrigir status de conciliação de débitos sem exits correspondentes
+            // Validar e corrigir status de conciliação APENAS de débitos sem exits correspondentes
             if ($referenceDate) {
-                $this->validateAndFixConciliationStatus($accountId, $referenceDate);
+                $this->validateAndFixDebitsConciliationStatus($accountId, $referenceDate);
             }
 
             // Criar ofertas e saídas anônimas se necessário
@@ -70,22 +70,21 @@ class CreateBulkMovementsAction
     }
 
     /**
-     * Valida e corrige o status de conciliação dos débitos.
+     * Valida e corrige o status de conciliação APENAS dos débitos (saídas).
+     * NÃO mexe em créditos (dinheiro/cultos funcionam perfeitamente).
      *
      * Identifica débitos marcados como "conciliated" mas que não têm exits correspondentes
      * e os marca como "not_found".
      *
-     * @param  int  $accountId
      * @param  string  $referenceDate  Formato: Y-m
      *
      * @throws Throwable
      */
-    private function validateAndFixConciliationStatus(int $accountId, string $referenceDate): void
+    private function validateAndFixDebitsConciliationStatus(int $accountId, string $referenceDate): void
     {
-        // 1. Buscar movimentações do mês
+        // 1. Buscar APENAS débitos conciliados
         $movements = $this->accountMovementsRepository->getMovements($accountId, $referenceDate, false);
 
-        // Filtrar apenas débitos conciliados
         $conciliatedDebits = $movements->filter(function ($movement) {
             return $movement->movementType === AccountMovementsRepository::MOVEMENT_TYPE_DEBIT
                 && $movement->conciliatedStatus === AccountMovementsRepository::STATUS_CONCILIATED;
@@ -95,10 +94,9 @@ class CreateBulkMovementsAction
             return;
         }
 
-        // 2. Buscar exits do mês
+        // 2. Buscar exits do mês (excluindo anonymous_exits)
         $exits = $this->getExitsAction->execute($referenceDate, [AccountMovementsRepository::ACCOUNT_ID_COLUMN => $accountId], false);
 
-        // Filtrar exits excluindo anonymous_exits
         $validExits = $exits->filter(function ($exit) {
             return $exit->exitType !== ExitRepository::ANONYMOUS_EXITS_VALUE;
         });
@@ -127,9 +125,6 @@ class CreateBulkMovementsAction
 
     /**
      * Busca um exit correspondente ao débito.
-     *
-     * @param  object  $debit
-     * @return bool
      */
     private function findMatchingExit(object $debit, Collection $validExits): bool
     {
