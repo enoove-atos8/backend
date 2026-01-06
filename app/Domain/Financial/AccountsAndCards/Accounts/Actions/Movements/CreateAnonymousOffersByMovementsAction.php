@@ -2,11 +2,11 @@
 
 namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Movements;
 
+use App\Domain\Financial\AccountsAndCards\Accounts\Actions\Movements\GetMovementsAction;
 use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
-use App\Domain\Financial\AccountsAndCards\Accounts\Actions\Movements\GetMovementsAction;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Carbon\Carbon;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
@@ -16,9 +16,13 @@ use Throwable;
 class CreateAnonymousOffersByMovementsAction
 {
     private GetMovementsAction $getMovementsAction;
+
     private GetEntriesAction $getEntriesAction;
+
     private CreateEntryAction $createEntryAction;
+
     private GetReviewerAction $getReviewerAction;
+
     private EntryRepositoryInterface $entryRepository;
 
     public function __construct(
@@ -27,8 +31,7 @@ class CreateAnonymousOffersByMovementsAction
         CreateEntryAction $createEntryAction,
         GetReviewerAction $getReviewerAction,
         EntryRepositoryInterface $entryRepository
-    )
-    {
+    ) {
         $this->getMovementsAction = $getMovementsAction;
         $this->getEntriesAction = $getEntriesAction;
         $this->createEntryAction = $createEntryAction;
@@ -39,9 +42,9 @@ class CreateAnonymousOffersByMovementsAction
     /**
      * Creates or updates an anonymous offers entry based on movements and registered entries.
      *
-     * @param int $accountId
-     * @param string $referenceDate Date in format YYYY-MM
+     * @param  string  $referenceDate  Date in format YYYY-MM
      * @return float|null Returns the amount created/updated, or null if no entry was created
+     *
      * @throws Throwable
      */
     public function execute(int $accountId, string $referenceDate): ?float
@@ -66,7 +69,6 @@ class CreateAnonymousOffersByMovementsAction
             ->where(EntryRepository::ENTRY_TYPE_COLUMN_JOINED_WITH_UNDERLINE, BaseRepository::OPERATORS['EQUALS'], EntryRepository::ACCOUNTS_TRANSFER_VALUE)
             ->sum(EntryRepository::AMOUNT_COLUMN_WITH_ENTRIES_ALIAS);
 
-
         $anonymousOffersAmount = ($totalEntriesInBankExtract - $totalTransfersBetweenAccounts) - $totalEntries;
         $existingAnonymousOffer = $this->getExistingAnonymousOffer($accountId, $referenceDate);
 
@@ -84,9 +86,8 @@ class CreateAnonymousOffersByMovementsAction
     /**
      * Gets existing anonymous offers entry for account and period.
      *
-     * @param int $accountId
-     * @param string $referenceDate Date in format YYYY-MM
-     * @return object|null
+     * @param  string  $referenceDate  Date in format YYYY-MM
+     *
      * @throws Throwable
      */
     private function getExistingAnonymousOffer(int $accountId, string $referenceDate): ?object
@@ -102,9 +103,6 @@ class CreateAnonymousOffersByMovementsAction
     /**
      * Updates an existing anonymous offers entry.
      *
-     * @param int $entryId
-     * @param float $amount
-     * @return float
      * @throws Throwable
      */
     private function updateAnonymousOffersEntry(int $entryId, float $amount): float
@@ -124,6 +122,7 @@ class CreateAnonymousOffersByMovementsAction
             'accountId' => $existingEntry->account_id,
             'receipt' => null,
             'devolution' => 0,
+            'groupDevolution' => 0,
             'residualValue' => 0,
             'identificationPending' => 0,
             'cultId' => null,
@@ -137,7 +136,6 @@ class CreateAnonymousOffersByMovementsAction
             'duplicityVerified' => false,
         ]);
 
-
         $this->entryRepository->updateEntry($entryId, $entryData);
 
         return $amount;
@@ -146,10 +144,6 @@ class CreateAnonymousOffersByMovementsAction
     /**
      * Creates an anonymous offers entry.
      *
-     * @param int $accountId
-     * @param string $referenceDate
-     * @param float $amount
-     * @return float
      * @throws Throwable
      */
     private function createAnonymousOffersEntry(int $accountId, string $referenceDate, float $amount): float
@@ -159,19 +153,19 @@ class CreateAnonymousOffersByMovementsAction
         [$year, $month] = explode('-', $referenceDate);
         $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth()->format('Y-m-d');
 
-
         $entryData = new EntryData([
             'id' => null,
             'amount' => $amount,
             'comments' => 'Ofertas anônimas geradas automaticamente após importação de movimentações',
             'dateEntryRegister' => $lastDayOfMonth,
-            'dateTransactionCompensation' => $lastDayOfMonth . 'T03:00:00.000Z',
+            'dateTransactionCompensation' => $lastDayOfMonth.'T03:00:00.000Z',
             'deleted' => 0,
             'entryType' => EntryRepository::ANONYMOUS_OFFERS_VALUE,
             'memberId' => null,
             'accountId' => $accountId,
             'receipt' => null,
             'devolution' => 0,
+            'groupDevolution' => 0,
             'residualValue' => 0,
             'identificationPending' => 0,
             'cultId' => null,
