@@ -172,14 +172,14 @@ class CreateEntryAction
         // Check if proven + devolution covers the requested amount
         if (($provenAmount + $devolutionAmount) >= $requestedAmount) {
             // Close the request automatically
-            $closed = $this->amountRequestRepository->close($amountRequestId, $closedBy);
+            $closed = $this->amountRequestRepository->close($amountRequestId, self::SYSTEM_USER_ID);
 
             if ($closed) {
                 $this->amountRequestRepository->createHistory(new AmountRequestHistoryData(
                     amountRequestId: $amountRequestId,
                     event: AmountRequestReturnMessages::HISTORY_EVENT_CLOSED,
                     description: AmountRequestReturnMessages::AUTO_CLOSE_DESCRIPTION,
-                    userId: $closedBy,
+                    userId: self::SYSTEM_USER_ID,
                     metadata: [
                         AmountRequestReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $requestedAmount,
                         AmountRequestReturnMessages::METADATA_KEY_PROVEN_AMOUNT => $provenAmount,
