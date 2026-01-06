@@ -38,7 +38,7 @@ class AccountMovementsRepository extends BaseRepository implements AccountMoveme
 
     const STATUS_CONCILIATED = 'conciliated';
 
-    const STATUS_MOVEMENT_NOT_FOUND = 'movement_not_found';
+    const STATUS_MOVEMENT_NOT_FOUND = 'not_found';
 
     const ENTRIES_TABLE = 'entries';
 
