@@ -22,6 +22,11 @@ use Throwable;
 
 class CreateEntryAction
 {
+    /**
+     * System user ID for automated processes
+     */
+    private const SYSTEM_USER_ID = 1;
+
     private EntryRepositoryInterface $entryRepository;
 
     private ConsolidatedEntriesRepositoryInterface $consolidatedEntriesRepository;
@@ -136,7 +141,7 @@ class CreateEntryAction
                 amountRequestId: $openRequest->id,
                 event: AmountRequestReturnMessages::HISTORY_EVENT_DEVOLUTION_LINKED,
                 description: AmountRequestReturnMessages::HISTORY_DESCRIPTIONS[AmountRequestReturnMessages::HISTORY_EVENT_DEVOLUTION_LINKED],
-                userId: $entryData->reviewerId,
+                userId: self::SYSTEM_USER_ID,
                 metadata: [
                     AmountRequestReturnMessages::METADATA_KEY_ENTRY_ID => $entryData->id,
                     AmountRequestReturnMessages::METADATA_KEY_DEVOLUTION_AMOUNT => $devolutionAmount,
@@ -144,7 +149,7 @@ class CreateEntryAction
             ));
 
             // Auto-close if provenAmount + devolutionAmount >= requestedAmount
-            $this->autoCloseIfComplete($openRequest->id, $entryData->reviewerId);
+            $this->autoCloseIfComplete($openRequest->id, $entryData->reviewerId ?? self::SYSTEM_USER_ID);
         }
     }
 
