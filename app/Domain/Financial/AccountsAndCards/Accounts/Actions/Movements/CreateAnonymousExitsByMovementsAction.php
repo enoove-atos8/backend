@@ -64,9 +64,9 @@ class CreateAnonymousExitsByMovementsAction
         // Estes representam saídas que estão no extrato mas não foram encontradas no sistema
         // (tarifas bancárias, IOF, taxas, etc)
         $anonymousExitsAmount = $movements
-            ->where(AccountMovementsRepository::MOVEMENT_TYPE_COLUMN, AccountMovementsRepository::MOVEMENT_TYPE_DEBIT)
-            ->where(AccountMovementsRepository::CONCILIATED_STATUS_COLUMN, AccountMovementsRepository::STATUS_MOVEMENT_NOT_FOUND)
-            ->sum(AccountMovementsRepository::AMOUNT_COLUMN);
+            ->where('movementType', AccountMovementsRepository::MOVEMENT_TYPE_DEBIT)
+            ->where('conciliatedStatus', AccountMovementsRepository::STATUS_MOVEMENT_NOT_FOUND)
+            ->sum('amount');
 
         \Log::info('CreateAnonymousExitsByMovementsAction - Anonymous exits amount', [
             'accountId' => $accountId,
