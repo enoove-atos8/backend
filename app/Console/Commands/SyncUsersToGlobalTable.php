@@ -61,9 +61,11 @@ class SyncUsersToGlobalTable extends Command
                 if ($usersCount > 0) {
                     foreach ($users as $user) {
                         DB::connection('mysql')->table('users')->updateOrInsert(
-                            ['email' => $user->email],
                             [
+                                'email' => $user->email,
                                 'tenant_id' => $tenant->id,
+                            ],
+                            [
                                 'updated_at' => now(),
                                 'created_at' => now(),
                             ]

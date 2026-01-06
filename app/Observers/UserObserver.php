@@ -19,9 +19,11 @@ class UserObserver
 
             if ($tenantId) {
                 DB::connection('mysql')->table('users')->updateOrInsert(
-                    ['email' => $user->email],
                     [
+                        'email' => $user->email,
                         'tenant_id' => $tenantId,
+                    ],
+                    [
                         'updated_at' => now(),
                         'created_at' => now(),
                     ]
@@ -30,6 +32,7 @@ class UserObserver
         } catch (\Exception $e) {
             Log::error('Failed to sync user to global table on create', [
                 'email' => $user->email,
+                'tenant_id' => $tenantId ?? null,
                 'error' => $e->getMessage(),
             ]);
         }
@@ -45,18 +48,20 @@ class UserObserver
             $tenantId = tenant('id');
 
             if ($tenantId && $user->isDirty('email')) {
-                // Remove old email
+                // Remove old email for this tenant
                 $original = $user->getOriginal('email');
                 DB::connection('mysql')->table('users')
                     ->where('email', $original)
                     ->where('tenant_id', $tenantId)
                     ->delete();
 
-                // Insert new email
+                // Insert new email for this tenant
                 DB::connection('mysql')->table('users')->updateOrInsert(
-                    ['email' => $user->email],
                     [
+                        'email' => $user->email,
                         'tenant_id' => $tenantId,
+                    ],
+                    [
                         'updated_at' => now(),
                         'created_at' => now(),
                     ]
@@ -65,6 +70,7 @@ class UserObserver
         } catch (\Exception $e) {
             Log::error('Failed to sync user to global table on update', [
                 'email' => $user->email,
+                'tenant_id' => $tenantId ?? null,
                 'error' => $e->getMessage(),
             ]);
         }

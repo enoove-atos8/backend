@@ -33,13 +33,16 @@ class LoginFromAppAction
      */
     public function execute(AuthData $authData): array|Authenticatable|null
     {
-        // Step 1: Try to find tenant from global users table (fast path)
-        $tenantId = $this->findTenantFromGlobalTable($authData->email);
+        // Step 1: Try to find tenant(s) from global users table (fast path)
+        $tenantIds = $this->findTenantsFromGlobalTable($authData->email);
 
-        if ($tenantId) {
-            $result = $this->attemptLoginForTenant($tenantId, $authData);
-            if ($result !== null) {
-                return $result;
+        if (! empty($tenantIds)) {
+            // Try login in all tenants found for this email
+            foreach ($tenantIds as $tenantId) {
+                $result = $this->attemptLoginForTenant($tenantId, $authData);
+                if ($result !== null) {
+                    return $result;
+                }
             }
         }
 
@@ -90,23 +93,24 @@ class LoginFromAppAction
     }
 
     /**
-     * Find tenant ID from global users table
+     * Find tenant IDs from global users table (supports multiple tenants per email)
      */
-    private function findTenantFromGlobalTable(string $email): ?string
+    private function findTenantsFromGlobalTable(string $email): array
     {
         try {
-            $user = DB::connection('mysql')->table('users')
+            $users = DB::connection('mysql')->table('users')
                 ->where('email', $email)
-                ->first();
+                ->pluck('tenant_id')
+                ->toArray();
 
-            return $user?->tenant_id;
+            return $users;
         } catch (\Exception $e) {
             Log::error('Failed to query global users table', [
                 'email' => $email,
                 'error' => $e->getMessage(),
             ]);
 
-            return null;
+            return [];
         }
     }
 
@@ -162,9 +166,11 @@ class LoginFromAppAction
     {
         try {
             DB::connection('mysql')->table('users')->updateOrInsert(
-                ['email' => $email],
                 [
+                    'email' => $email,
                     'tenant_id' => $tenantId,
+                ],
+                [
                     'updated_at' => now(),
                     'created_at' => now(),
                 ]
