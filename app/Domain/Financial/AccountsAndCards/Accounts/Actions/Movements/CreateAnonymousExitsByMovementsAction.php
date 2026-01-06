@@ -5,11 +5,8 @@ namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Movements;
 use App\Domain\Financial\AccountsAndCards\Accounts\Actions\Movements\GetMovementsAction;
 use Carbon\Carbon;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
-use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
-use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Domain\Financial\Reviewers\Actions\GetReviewerAction;
-use Infrastructure\Repositories\BaseRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\MovementsRepository;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Throwable;
@@ -17,8 +14,6 @@ use Throwable;
 class CreateAnonymousExitsByMovementsAction
 {
     private GetMovementsAction $getMovementsAction;
-
-    private GetExitsAction $getExitsAction;
 
     private CreateExitAction $createExitAction;
 
@@ -28,13 +23,11 @@ class CreateAnonymousExitsByMovementsAction
 
     public function __construct(
         GetMovementsAction $getMovementsAction,
-        GetExitsAction $getExitsAction,
         CreateExitAction $createExitAction,
         GetReviewerAction $getReviewerAction,
         ExitRepositoryInterface $exitRepository
     ) {
         $this->getMovementsAction = $getMovementsAction;
-        $this->getExitsAction = $getExitsAction;
         $this->createExitAction = $createExitAction;
         $this->getReviewerAction = $getReviewerAction;
         $this->exitRepository = $exitRepository;
@@ -54,30 +47,13 @@ class CreateAnonymousExitsByMovementsAction
     {
         $movements = $this->getMovementsAction->execute($accountId, $referenceDate, false);
 
-        // Total de débitos no extrato bancário
-        $totalExitsInBankExtract = $movements
+        // Buscar apenas débitos NÃO conciliados (not_found)
+        // Estes representam saídas que estão no extrato mas não foram encontradas no sistema
+        // (tarifas bancárias, IOF, taxas, etc)
+        $anonymousExitsAmount = $movements
             ->where(MovementsRepository::MOVEMENT_TYPE_COLUMN, MovementsRepository::DEBIT_VALUE)
+            ->where(MovementsRepository::CONCILIATED_STATUS_COLUMN, MovementsRepository::STATUS_MOVEMENT_NOT_FOUND)
             ->sum(MovementsRepository::AMOUNT_COLUMN);
-
-        $exits = $this->getExitsAction->execute($referenceDate, [], false)
-            ->where(ExitData::ACCOUNT_ID_PROPERTY, BaseRepository::OPERATORS['EQUALS'], $accountId);
-
-        // Total de saídas registradas (excluindo accounts_transfer e saídas anônimas)
-        $totalExits = $exits
-            ->where(ExitRepository::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false)
-            ->where(ExitData::EXIT_TYPE_PROPERTY, BaseRepository::OPERATORS['NOT_EQUALS'], ExitRepository::ACCOUNTS_TRANSFER_VALUE)
-            ->where(ExitData::EXIT_TYPE_PROPERTY, BaseRepository::OPERATORS['NOT_EQUALS'], ExitRepository::ANONYMOUS_EXITS_VALUE)
-            ->sum(ExitData::AMOUNT_PROPERTY);
-
-        // Total de transferências entre contas ENVIADAS desta conta
-        // Buscar nas SAÍDAS (exits) as transferências onde account_id = esta conta
-        $totalTransfersBetweenAccountsSent = $exits
-            ->where(ExitRepository::DELETED_COLUMN, BaseRepository::OPERATORS['EQUALS'], false)
-            ->where(ExitData::EXIT_TYPE_PROPERTY, BaseRepository::OPERATORS['EQUALS'], ExitRepository::ACCOUNTS_TRANSFER_VALUE)
-            ->sum(ExitData::AMOUNT_PROPERTY);
-
-        // Cálculo: (Débitos no extrato - Transferências enviadas) - Saídas registradas
-        $anonymousExitsAmount = ($totalExitsInBankExtract - $totalTransfersBetweenAccountsSent) - $totalExits;
 
         $existingAnonymousExit = $this->getExistingAnonymousExit($accountId, $referenceDate);
 

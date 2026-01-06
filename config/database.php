@@ -83,6 +83,25 @@ return [
             ]) : [],
         ],
 
+        'production' => [
+            'driver' => 'mysql',
+            'host' => env('DB_PROD_HOST', 'db.stg.atos8.com'),
+            'port' => env('DB_PROD_PORT', '3306'),
+            'database' => env('DB_PROD_DATABASE', 'atos8'),
+            'username' => env('DB_PROD_USERNAME', 'rhms'),
+            'password' => env('DB_PROD_PASSWORD', 'Souza.9559'),
+            'unix_socket' => '',
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
         'pgsql' => [
             'driver' => 'pgsql',
             'url' => env('DATABASE_URL'),
