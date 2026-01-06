@@ -55,12 +55,6 @@ class CreateAnonymousExitsByMovementsAction
     {
         $movements = $this->getMovementsAction->execute($accountId, $referenceDate, false);
 
-        \Log::info('CreateAnonymousExitsByMovementsAction - Total movements', [
-            'accountId' => $accountId,
-            'referenceDate' => $referenceDate,
-            'total_movements' => $movements->count(),
-        ]);
-
         // Buscar apenas débitos NÃO conciliados (not_found)
         // Estes representam saídas que estão no extrato mas não foram encontradas no sistema
         // (tarifas bancárias, IOF, taxas, etc)
@@ -71,38 +65,15 @@ class CreateAnonymousExitsByMovementsAction
             ->where(MovementsData::PROPERTY_CONCILIATED_STATUS, AccountMovementsRepository::STATUS_MOVEMENT_NOT_FOUND)
             ->sum(MovementsData::PROPERTY_AMOUNT);
 
-        \Log::info('CreateAnonymousExitsByMovementsAction - Anonymous exits amount', [
-            'accountId' => $accountId,
-            'referenceDate' => $referenceDate,
-            'anonymousExitsAmount' => $anonymousExitsAmount,
-            'MOVEMENT_TYPE_COLUMN' => AccountMovementsRepository::MOVEMENT_TYPE_COLUMN,
-            'MOVEMENT_TYPE_DEBIT' => AccountMovementsRepository::MOVEMENT_TYPE_DEBIT,
-            'CONCILIATED_STATUS_COLUMN' => AccountMovementsRepository::CONCILIATED_STATUS_COLUMN,
-            'STATUS_MOVEMENT_NOT_FOUND' => AccountMovementsRepository::STATUS_MOVEMENT_NOT_FOUND,
-        ]);
-
         $existingAnonymousExit = $this->getExistingAnonymousExit($accountId, $referenceDate);
 
         if ($anonymousExitsAmount > 0) {
-            \Log::info('CreateAnonymousExitsByMovementsAction - Creating/Updating anonymous exit', [
-                'accountId' => $accountId,
-                'referenceDate' => $referenceDate,
-                'amount' => $anonymousExitsAmount,
-                'existingExit' => $existingAnonymousExit ? true : false,
-            ]);
-
             if ($existingAnonymousExit) {
                 return $this->updateAnonymousExit($existingAnonymousExit->exits_id, $anonymousExitsAmount);
             } else {
                 return $this->createAnonymousExit($accountId, $referenceDate, $anonymousExitsAmount);
             }
         }
-
-        \Log::info('CreateAnonymousExitsByMovementsAction - No anonymous exit created', [
-            'accountId' => $accountId,
-            'referenceDate' => $referenceDate,
-            'anonymousExitsAmount' => $anonymousExitsAmount,
-        ]);
 
         return null;
     }
