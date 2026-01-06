@@ -28,7 +28,7 @@ class Kernel extends ConsoleKernel
             } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankEntriesTransferReceipts', 500, $e);
             }
-        })->everyFifteenMinutes();
+        })->everyFiveMinutes();
 
         // Exits
         $schedule->call(function () {
@@ -37,7 +37,7 @@ class Kernel extends ConsoleKernel
             } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingBankExitsTransferReceipts', 500, $e);
             }
-        })->everyFifteenMinutes();
+        })->everyFiveMinutes();
 
         // Purchases
         $schedule->call(function () {
@@ -46,7 +46,7 @@ class Kernel extends ConsoleKernel
             } catch (\Throwable $e) {
                 throw new GeneralExceptions('Erro na execução do agendamento ProcessingPurchaseCards', 500, $e);
             }
-        })->everyFifteenMinutes();
+        })->everyFiveMinutes();
 
         // Update invoice status
         $schedule->call(function () {

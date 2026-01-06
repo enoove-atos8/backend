@@ -109,13 +109,13 @@ class CreateEntryAction
             return;
         }
 
-        // groupReturnedId is the group that is returning money
-        if ($entryData->groupReturnedId === null) {
+        // groupReceivedId is the group that is returning money
+        if ($entryData->groupReceivedId === null) {
             return;
         }
 
         // Find open amount request for this group
-        $openRequest = $this->amountRequestRepository->getOpenByGroupId($entryData->groupReturnedId);
+        $openRequest = $this->amountRequestRepository->getOpenByGroupId($entryData->groupReceivedId);
 
         if ($openRequest === null) {
             return;
