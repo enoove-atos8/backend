@@ -4,6 +4,7 @@ namespace Domain\Financial\AccountsAndCards\Accounts\Actions\Movements;
 
 use App\Domain\Financial\AccountsAndCards\Accounts\Actions\Movements\GetMovementsAction;
 use Carbon\Carbon;
+use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\MovementsData;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
@@ -63,10 +64,12 @@ class CreateAnonymousExitsByMovementsAction
         // Buscar apenas débitos NÃO conciliados (not_found)
         // Estes representam saídas que estão no extrato mas não foram encontradas no sistema
         // (tarifas bancárias, IOF, taxas, etc)
+        // IMPORTANTE: $movements é uma Collection de objetos MovementsData, não uma query SQL
+        // Por isso usamos nomes de PROPRIEDADES (camelCase), não nomes de COLUNAS do banco
         $anonymousExitsAmount = $movements
-            ->where('movementType', AccountMovementsRepository::MOVEMENT_TYPE_DEBIT)
-            ->where('conciliatedStatus', AccountMovementsRepository::STATUS_MOVEMENT_NOT_FOUND)
-            ->sum('amount');
+            ->where(MovementsData::PROPERTY_MOVEMENT_TYPE, AccountMovementsRepository::MOVEMENT_TYPE_DEBIT)
+            ->where(MovementsData::PROPERTY_CONCILIATED_STATUS, AccountMovementsRepository::STATUS_MOVEMENT_NOT_FOUND)
+            ->sum(MovementsData::PROPERTY_AMOUNT);
 
         \Log::info('CreateAnonymousExitsByMovementsAction - Anonymous exits amount', [
             'accountId' => $accountId,

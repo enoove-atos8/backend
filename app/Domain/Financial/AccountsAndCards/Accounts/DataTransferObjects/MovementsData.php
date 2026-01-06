@@ -7,48 +7,40 @@ use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class MovementsData extends DataTransferObject
 {
-    /** @var int */
+    // Property names for Collection filtering
+    const PROPERTY_MOVEMENT_TYPE = 'movementType';
+
+    const PROPERTY_CONCILIATED_STATUS = 'conciliatedStatus';
+
+    const PROPERTY_AMOUNT = 'amount';
+
     public int $id;
 
-    /** @var int */
     public int $accountId;
 
-    /** @var int|null */
     public ?int $fileId;
 
-    /** @var string */
     public string $movementDate;
 
-    /** @var string */
     public string $transactionType;
 
-    /** @var string */
     public string $description;
 
-    /** @var float */
     public float $amount;
 
-    /** @var string */
     public string $movementType;
 
-    /** @var bool */
     public bool $anonymous;
 
-    /** @var string */
     public string $conciliatedStatus;
 
-    /** @var string */
     public string $createdAt;
 
-    /** @var string */
     public string $updatedAt;
-
 
     /**
      * Create a MovementsData instance from an array response.
      *
-     * @param array $data
-     * @return self
      * @throws UnknownProperties
      */
     public static function fromResponse(array $data): self
