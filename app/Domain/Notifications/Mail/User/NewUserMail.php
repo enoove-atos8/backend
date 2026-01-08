@@ -40,7 +40,7 @@ class NewUserMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        $fromEmail = env('MAIL_USERNAME', 'MS_Sg3moI@atos8.com');
+        $fromEmail = config('mail.from.address', 'noreply@atos8.com');
         $fromName =  strtoupper($this->tenant) . ' - CentralDomain';
 
         return new Envelope(
