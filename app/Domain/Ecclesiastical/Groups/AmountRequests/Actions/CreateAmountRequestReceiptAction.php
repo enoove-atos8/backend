@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
+use Application\Core\Events\Ecclesiastical\Groups\AmountRequests\AmountRequestStatusChanged;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestReceiptData;
@@ -39,9 +40,9 @@ class CreateAmountRequestReceiptAction
 
         // Only transferred, partially_proven or overdue requests can receive receipts
         $validStatuses = [ReturnMessages::STATUS_TRANSFERRED, ReturnMessages::STATUS_PARTIALLY_PROVEN, ReturnMessages::STATUS_OVERDUE];
-        \Log::info('DEBUG Receipt - Status: [' . $existing->status . '] | Type: ' . gettype($existing->status) . ' | Valid: ' . json_encode($validStatuses));
+        \Log::info('DEBUG Receipt - Status: ['.$existing->status.'] | Type: '.gettype($existing->status).' | Valid: '.json_encode($validStatuses));
         if (! in_array($existing->status, $validStatuses)) {
-            throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_RECEIPT . ' Status atual: ' . $existing->status, 400);
+            throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_RECEIPT.' Status atual: '.$existing->status, 400);
         }
 
         // Upload file to MinIO
@@ -62,8 +63,9 @@ class CreateAmountRequestReceiptAction
             throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_RECEIPT, 500);
         }
 
-        // Recalculate proven amount
-        $this->recalculateProvenAmount($data->amountRequestId, $existing->requestedAmount);
+        // Recalculate proven amount and get new status
+        $oldStatus = $existing->status;
+        $newStatus = $this->recalculateProvenAmount($data->amountRequestId, $existing->requestedAmount);
 
         // Register history event
         $this->repository->createHistory(new AmountRequestHistoryData(
@@ -77,13 +79,34 @@ class CreateAmountRequestReceiptAction
             ]
         ));
 
+        // Dispatch event if status changed
+        if ($oldStatus !== $newStatus) {
+            $provenAmount = $this->repository->calculateProvenAmount($data->amountRequestId);
+
+            event(new AmountRequestStatusChanged(
+                amountRequestId: $data->amountRequestId,
+                oldStatus: $oldStatus,
+                newStatus: $newStatus,
+                userId: $data->createdBy,
+                additionalData: [
+                    'requested_amount' => $existing->requestedAmount,
+                    'proven_amount' => $provenAmount,
+                    'proof_deadline' => $existing->proofDeadline,
+                    'group_id' => $existing->groupId,
+                    'member_id' => $existing->memberId,
+                ]
+            ));
+        }
+
         return $receiptId;
     }
 
     /**
      * Recalculate proven amount and update status
+     *
+     * @return string The new status
      */
-    private function recalculateProvenAmount(int $amountRequestId, string $requestedAmount): void
+    private function recalculateProvenAmount(int $amountRequestId, string $requestedAmount): string
     {
         $provenAmount = $this->repository->calculateProvenAmount($amountRequestId);
         $requested = (float) $requestedAmount;
@@ -99,5 +122,7 @@ class CreateAmountRequestReceiptAction
         }
 
         $this->repository->updateProvenAmount($amountRequestId, $provenAmount, $status);
+
+        return $status;
     }
 }

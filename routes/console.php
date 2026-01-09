@@ -21,3 +21,9 @@ Artisan::command('inspire', function () {
 
 // Limpa registros do Telescope com mais de 24 horas
 Schedule::command('telescope:prune --hours=24')->daily();
+
+// Marca solicitações de verba como vencidas (executa à meia-noite)
+Schedule::command('amount-requests:mark-overdue')->dailyAt('00:00');
+
+// Envia lembretes de comprovação via WhatsApp (executa às 9h)
+Schedule::command('whatsapp:send-proof-reminders')->dailyAt('09:00');

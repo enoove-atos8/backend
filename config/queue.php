@@ -36,8 +36,18 @@ return [
 
         'database' => [
             'driver' => 'database',
+            'connection' => 'central',
             'table' => 'jobs',
             'queue' => 'default',
+            'retry_after' => 90,
+            'after_commit' => false,
+        ],
+
+        'whatsapp' => [
+            'driver' => 'database',
+            'connection' => 'central',
+            'table' => 'jobs',
+            'queue' => 'whatsapp',
             'retry_after' => 90,
             'after_commit' => false,
         ],
