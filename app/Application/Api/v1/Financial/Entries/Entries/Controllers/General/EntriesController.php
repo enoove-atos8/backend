@@ -2,10 +2,7 @@
 
 namespace Application\Api\v1\Financial\Entries\Entries\Controllers\General;
 
-use App\Domain\Financial\Entries\Consolidation\Actions\GetConsolidatedEntriesByStatusAction;
-use App\Domain\Financial\Entries\Consolidation\Actions\GetQtdEntriesNoCompensateByMonthAction;
-use App\Domain\Financial\Entries\Consolidation\Actions\UpdateStatusConsolidatedEntriesAction;
-use App\Domain\Financial\Entries\Consolidation\Constants\ReturnMessages as ConsolidationEntriesReturnMessages;
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetAllGroupsAction;
 use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\Entries\Actions\DeleteEntryAction;
 use App\Domain\Financial\Entries\Entries\Actions\GetAmountByEntryTypeAction;
@@ -18,13 +15,11 @@ use App\Domain\Financial\Entries\Entries\Constants\ReturnMessages;
 use Application\Api\v1\Financial\Entries\Entries\Requests\EntryRequest;
 use Application\Api\v1\Financial\Entries\Entries\Requests\ReceiptEntryRequest;
 use Application\Api\v1\Financial\Entries\Entries\Resources\AmountByEntryTypeResource;
-use Application\Api\v1\Financial\Entries\Entries\Resources\EntryConsolidatedResourceCollection;
 use Application\Api\v1\Financial\Entries\Entries\Resources\DevolutionEntriesResourceCollection;
 use Application\Api\v1\Financial\Entries\Entries\Resources\EntriesToCompensateResourceCollection;
 use Application\Api\v1\Financial\Entries\Entries\Resources\EntryResource;
 use Application\Api\v1\Financial\Entries\Entries\Resources\EntryResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\Routing\ResponseFactory;

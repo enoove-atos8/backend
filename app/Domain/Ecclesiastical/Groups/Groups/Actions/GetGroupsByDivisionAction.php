@@ -5,12 +5,10 @@ namespace App\Domain\Ecclesiastical\Groups\Groups\Actions;
 use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Actions\GetHistoryTitheByMemberIdAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionByNameAction;
-use Exception;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Throwable;
-use function Domain\Ecclesiastical\Groups\Actions\is_null;
 
 class GetGroupsByDivisionAction
 {

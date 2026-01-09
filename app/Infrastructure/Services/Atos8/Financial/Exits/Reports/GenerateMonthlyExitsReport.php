@@ -2,6 +2,8 @@
 
 namespace App\Infrastructure\Services\Atos8\Financial\Exits\Reports;
 
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetAllGroupsAction;
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reports\Exits\Actions\UpdateAmountsExitsReportRequestsAction;
@@ -13,8 +15,6 @@ use Carbon\Carbon;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
 use Domain\Ecclesiastical\Divisions\Actions\GetDivisionsDataAction;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\AccountsAndCards\Accounts\Actions\GetAccountByIdAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitsAction;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;

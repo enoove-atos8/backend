@@ -2,7 +2,7 @@
 
 namespace Domain\Secretary\Membership\Models;
 
-use Domain\Ecclesiastical\Groups\Models\Group;
+use App\Domain\Ecclesiastical\Groups\Groups\Models\Group;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 

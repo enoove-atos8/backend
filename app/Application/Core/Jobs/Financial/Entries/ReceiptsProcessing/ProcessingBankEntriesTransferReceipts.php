@@ -2,8 +2,8 @@
 
 namespace App\Application\Core\Jobs\Financial\Entries\ReceiptsProcessing;
 
-use App\Domain\CentralDomain\Plans\Actions\GetPlansAction;
-use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetFinancialGroupAction;
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetReturnReceivingGroupAction;
 use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntryByTimestampValueCpfAction;
@@ -15,8 +15,7 @@ use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Services\Financial\Interfaces\ReceiptDataExtractorInterface;
 use DateTime;
-use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
-use Domain\Ecclesiastical\Groups\Actions\GetReturnReceivingGroupAction;
+use Domain\CentralDomain\Churches\Church\Actions\GetChurchesAction;
 use Domain\Financial\Entries\Consolidation\Actions\CheckConsolidationStatusAction;
 use Domain\Financial\ReceiptProcessing\Actions\CreateReceiptProcessing;
 use Domain\Financial\ReceiptProcessing\DataTransferObjects\ReceiptProcessingData;

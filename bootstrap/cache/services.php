@@ -50,6 +50,7 @@
     46 => 'Application\\Core\\Providers\\EventServiceProvider',
     47 => 'Application\\Core\\Providers\\RouteServiceProvider',
     48 => 'Application\\Core\\Providers\\TenancyServiceProvider',
+    49 => 'Application\\Core\\Providers\\WhatsAppServiceProvider',
   ),
   'eager' => 
   array (
@@ -88,6 +89,7 @@
     32 => 'Application\\Core\\Providers\\EventServiceProvider',
     33 => 'Application\\Core\\Providers\\RouteServiceProvider',
     34 => 'Application\\Core\\Providers\\TenancyServiceProvider',
+    35 => 'Application\\Core\\Providers\\WhatsAppServiceProvider',
   ),
   'deferred' => 
   array (

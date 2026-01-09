@@ -120,6 +120,8 @@ class ReturnMessages
         'request_approved' => 'Solicitação Aprovada',
         'request_rejected' => 'Solicitação Rejeitada',
         'transfer_completed' => 'Transferência Realizada',
+        'proof_in_progress' => 'Comprovação em Andamento',
+        'proof_completed' => 'Comprovação Completa',
         'proof_reminder' => 'Lembrete de Comprovação',
         'proof_urgent' => 'Comprovação Urgente',
         'proof_overdue' => 'Comprovação Vencida',

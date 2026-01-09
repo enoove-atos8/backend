@@ -16,17 +16,23 @@ use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Util\Storage\S3\CreateDirectory;
 use Throwable;
-use function Domain\Ecclesiastical\Groups\Actions\is_null;
 
 class CreateNewGroupAction
 {
     private GroupsRepository $groupsRepository;
+
     private GetDivisionByIdAction $getDivisionByIdAction;
+
     private CreateDirectory $createDirectory;
+
     private DeleteMovementsOfGroupAction $deleteMovementsOfGroupAction;
+
     private GetTotalAmountOfDeletedMovementsByGroupAction $getTotalAmountOfDeletedMovementsByGroupAction;
+
     private MovementsData $movementsData;
+
     private CreateMovementAction $createMovementAction;
+
     private MovementRepositoryInterface $movementRepository;
 
     const BASE_PATH_DESIGNATED_ENTRIES_SHARED_RECEIPTS = 'sync_storage/financial/entries/shared_receipts/designated';
@@ -40,8 +46,7 @@ class CreateNewGroupAction
         MovementsData $movementsData,
         CreateMovementAction $createMovementAction,
         MovementRepositoryInterface $movementRepository
-    )
-    {
+    ) {
         $this->groupsRepository = $groupRepository;
         $this->getDivisionByIdAction = $getDivisionByIdAction;
         $this->createDirectory = $createDirectory;
@@ -52,8 +57,6 @@ class CreateNewGroupAction
         $this->movementRepository = $movementRepository;
     }
 
-
-
     /**
      * @throws Throwable
      */
@@ -61,21 +64,15 @@ class CreateNewGroupAction
     {
         $existGroup = $this->groupsRepository->getGroupsByName($groupData->slug);
 
-        if(is_null($existGroup))
-        {
+        if (is_null($existGroup)) {
             $group = $this->groupsRepository->save($groupData);
 
-            if(!is_null($group->id))
-            {
+            if (! is_null($group->id)) {
                 return $group;
-            }
-            else
-            {
+            } else {
                 throw new GeneralExceptions(ReturnMessages::ERROR_CREATE_GROUP, 500);
             }
-        }
-        else
-        {
+        } else {
             throw new GeneralExceptions(ReturnMessages::GROUP_ALREADY, 500);
         }
     }

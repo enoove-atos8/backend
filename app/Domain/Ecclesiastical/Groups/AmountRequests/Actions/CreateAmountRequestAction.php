@@ -2,11 +2,12 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
+use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
+use Application\Core\Events\Ecclesiastical\Groups\AmountRequests\AmountRequestStatusChanged;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestData;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
-use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Infrastructure\Exceptions\GeneralExceptions;
 
 class CreateAmountRequestAction
@@ -61,6 +62,20 @@ class CreateAmountRequestAction
             metadata: [
                 ReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $data->requestedAmount,
                 ReturnMessages::METADATA_KEY_GROUP_ID => $data->groupId,
+            ]
+        ));
+
+        // Dispatch event for WhatsApp notification
+        event(new AmountRequestStatusChanged(
+            amountRequestId: $id,
+            oldStatus: '',
+            newStatus: ReturnMessages::STATUS_PENDING,
+            userId: $data->requestedBy ?? 0,
+            additionalData: [
+                'requested_amount' => $data->requestedAmount,
+                'group_id' => $data->groupId,
+                'description' => $data->description,
+                'proof_deadline' => $data->proofDeadline,
             ]
         ));
 

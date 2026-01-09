@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
+use Application\Core\Events\Ecclesiastical\Groups\AmountRequests\AmountRequestStatusChanged;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
@@ -39,6 +40,8 @@ class RejectAmountRequestAction
             throw new GeneralExceptions(ReturnMessages::REJECTION_REASON_REQUIRED, 400);
         }
 
+        $oldStatus = $existing->status;
+
         $rejected = $this->repository->reject($id, $rejectedBy, $rejectionReason);
 
         if (! $rejected) {
@@ -53,6 +56,18 @@ class RejectAmountRequestAction
             userId: $rejectedBy,
             metadata: [
                 ReturnMessages::METADATA_KEY_REJECTION_REASON => $rejectionReason,
+            ]
+        ));
+
+        // Dispatch Event para notificação WhatsApp
+        event(new AmountRequestStatusChanged(
+            amountRequestId: $id,
+            oldStatus: $oldStatus,
+            newStatus: ReturnMessages::STATUS_REJECTED,
+            userId: $rejectedBy,
+            additionalData: [
+                'rejection_reason' => $rejectionReason,
+                'requested_amount' => $existing->requestedAmount,
             ]
         ));
 

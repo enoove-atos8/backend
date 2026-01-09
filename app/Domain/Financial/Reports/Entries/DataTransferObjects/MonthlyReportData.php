@@ -3,7 +3,7 @@
 namespace App\Domain\Financial\Reports\Entries\DataTransferObjects;
 
 use App\Domain\Accounts\Users\DataTransferObjects\UserDetailData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

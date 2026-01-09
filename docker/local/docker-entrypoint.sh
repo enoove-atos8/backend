@@ -13,10 +13,17 @@ chmod -R 777 /var/www/backend/html/storage/tenants
 # Start cron em background
 cron &
 
-# Start Queue Worker em background com auto-restart
+# Start Queue Worker (database) em background com auto-restart
 while true; do
     php artisan queue:work database --tries=3 --timeout=120 --sleep=3 --max-jobs=1000 --max-time=3600
-    echo "Queue worker stopped. Restarting in 5 seconds..." >&2
+    echo "Queue worker (database) stopped. Restarting in 5 seconds..." >&2
+    sleep 5
+done &
+
+# Start Queue Worker (whatsapp) em background com auto-restart
+while true; do
+    php artisan queue:work whatsapp --tries=3 --timeout=120 --sleep=3 --max-jobs=1000 --max-time=3600
+    echo "Queue worker (whatsapp) stopped. Restarting in 5 seconds..." >&2
     sleep 5
 done &
 

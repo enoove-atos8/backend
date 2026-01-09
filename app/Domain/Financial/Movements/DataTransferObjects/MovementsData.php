@@ -3,11 +3,8 @@
 namespace Domain\Financial\Movements\DataTransferObjects;
 
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
-use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
-use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
 use Exception;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;

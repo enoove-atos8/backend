@@ -2,14 +2,12 @@
 
 namespace Application\Api\v1\Financial\Exits\Exits\Controllers;
 
-use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetAllGroupsAction;
 use App\Domain\Financial\Exits\Indicators\Actions\HandleExitsIndicatorsAction;
-use Application\Api\v1\Financial\Entries\Entries\Resources\EntryResourceCollection;
 use Application\Api\v1\Financial\Exits\Exits\Requests\ExitRequest;
 use Application\Api\v1\Financial\Exits\Exits\Resources\AmountByExitTypeResource;
 use Application\Api\v1\Financial\Exits\Exits\Resources\ExitsResourceCollection;
 use Application\Core\Http\Controllers\Controller;
-use Domain\Ecclesiastical\Groups\Actions\GetAllGroupsAction;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
 use Domain\Financial\Exits\Exits\Actions\DeleteExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetAmountByExitTypeAction;

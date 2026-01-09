@@ -2,6 +2,7 @@
 
 namespace App\Application\Core\Jobs\Financial\Exits\ReceiptsProcessing;
 
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use App\Domain\Financial\Entries\Entries\Actions\CreateEntryAction;
 use App\Domain\Financial\Entries\Entries\DataTransferObjects\EntryData;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
@@ -14,7 +15,6 @@ use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Services\Financial\Interfaces\ReceiptDataExtractorInterface;
 use DateTime;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\Exits\Exits\Actions\CreateExitAction;
 use Domain\Financial\Exits\Exits\Actions\GetExitByTimestampAction;
 use Domain\Financial\Exits\Exits\Actions\UpdateReceiptLinkAction;

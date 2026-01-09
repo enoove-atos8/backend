@@ -2,11 +2,8 @@
 
 namespace Domain\Financial\Movements\Actions;
 
-use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 
 class CreateInitialMovementAction

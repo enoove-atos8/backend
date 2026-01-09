@@ -2,7 +2,6 @@
 
 namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources;
 
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

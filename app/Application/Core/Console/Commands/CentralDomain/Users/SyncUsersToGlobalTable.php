@@ -1,10 +1,14 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Application\Core\Console\Commands\CentralDomain\Users;
 
 use App\Domain\Accounts\Users\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use function App\Console\Commands\count;
+use function App\Console\Commands\is_array;
+use function App\Console\Commands\now;
+use function App\Console\Commands\tenancy;
 
 class SyncUsersToGlobalTable extends Command
 {

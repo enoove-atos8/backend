@@ -2,7 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects;
 
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use Domain\Secretary\Membership\DataTransferObjects\MemberData;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

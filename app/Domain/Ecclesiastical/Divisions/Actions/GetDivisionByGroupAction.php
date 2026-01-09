@@ -2,11 +2,9 @@
 
 namespace Domain\Ecclesiastical\Divisions\Actions;
 
-use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
+use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
-use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Illuminate\Database\Eloquent\Model;
-use Infrastructure\Exceptions\GeneralExceptions;
 use Throwable;
 
 class GetDivisionByGroupAction

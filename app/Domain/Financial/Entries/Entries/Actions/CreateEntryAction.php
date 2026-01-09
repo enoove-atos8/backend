@@ -2,6 +2,7 @@
 
 namespace App\Domain\Financial\Entries\Entries\Actions;
 
+use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Actions\CreateConsolidatedEntryAction;
 use App\Domain\Financial\Entries\Consolidation\DataTransferObjects\ConsolidationEntriesData;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
@@ -13,7 +14,6 @@ use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages as AmountRequestReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
-use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\Movements\Actions\CreateMovementAction;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Domain\Financial\Movements\Interfaces\MovementRepositoryInterface;

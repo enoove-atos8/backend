@@ -2,11 +2,6 @@
 
 namespace Application\Api\v1\Financial\ReceiptProcessing\Resources;
 
-use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
-use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
-use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use Domain\Financial\ReceiptProcessing\DataTransferObjects\ReceiptProcessingData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;

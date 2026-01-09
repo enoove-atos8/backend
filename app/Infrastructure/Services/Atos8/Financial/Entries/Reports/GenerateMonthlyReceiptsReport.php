@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Services\Atos8\Financial\Entries\Reports;
 
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetGroupsByIdAction;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntriesAction;
 use App\Domain\Financial\Reports\Entries\Actions\UpdateAmountsReportRequestsAction;
 use App\Domain\Financial\Reports\Entries\Actions\UpdateLinkReportRequestsAction;
@@ -11,7 +12,6 @@ use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use App\Infrastructure\Repositories\Financial\Reports\Entries\MonthlyReportsRepository;
 use App\Infrastructure\Services\PDFGenerator\PDFGenerator;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
-use Domain\Ecclesiastical\Groups\Actions\GetGroupsByIdAction;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Infrastructure\Exceptions\GeneralExceptions;

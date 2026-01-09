@@ -5,11 +5,9 @@ namespace Domain\Financial\Entries\Entries\Actions;
 use App\Domain\Financial\Entries\Entries\Constants\ReturnMessages;
 use App\Domain\Financial\Entries\Entries\Interfaces\EntryRepositoryInterface;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
-use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
-use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Throwable;
 
 class GetTotalAmountEntriesAction

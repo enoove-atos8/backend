@@ -2,11 +2,11 @@
 
 namespace Infrastructure\Repositories\Ecclesiastical\Groups;
 
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
+use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
+use App\Domain\Ecclesiastical\Groups\Groups\Models\Group;
 use App\Infrastructure\Repositories\Secretary\Membership\MemberRepository;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
-use Domain\Ecclesiastical\Groups\Models\Group;
 use Domain\Financial\Movements\DataTransferObjects\MovementsData;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Database\Eloquent\Model;

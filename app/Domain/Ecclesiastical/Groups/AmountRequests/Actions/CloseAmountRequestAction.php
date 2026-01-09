@@ -3,6 +3,7 @@
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
 use App\Domain\Financial\Entries\Entries\Actions\GetEntryByIdAction;
+use Application\Core\Events\Ecclesiastical\Groups\AmountRequests\AmountRequestStatusChanged;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
@@ -11,6 +12,7 @@ use Infrastructure\Exceptions\GeneralExceptions;
 class CloseAmountRequestAction
 {
     private AmountRequestRepositoryInterface $repository;
+
     private GetEntryByIdAction $getEntryByIdAction;
 
     public function __construct(
@@ -64,9 +66,9 @@ class CloseAmountRequestAction
             // Valida que proven_amount + devolution_amount >= requested_amount
             if (($provenAmount + $devolutionAmount) < $requestedAmount) {
                 throw new GeneralExceptions(
-                    'O valor comprovado (' . number_format($provenAmount, 2, ',', '.') .
-                    ') + valor da entrada (' . number_format($devolutionAmount, 2, ',', '.') .
-                    ') não totaliza o valor solicitado (' . number_format($requestedAmount, 2, ',', '.') . ')!',
+                    'O valor comprovado ('.number_format($provenAmount, 2, ',', '.').
+                    ') + valor da entrada ('.number_format($devolutionAmount, 2, ',', '.').
+                    ') não totaliza o valor solicitado ('.number_format($requestedAmount, 2, ',', '.').')!',
                     400
                 );
             }
@@ -89,6 +91,8 @@ class CloseAmountRequestAction
             throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_CLOSE, 400);
         }
 
+        $oldStatus = $existing->status;
+
         // Close the request
         $closed = $this->repository->close($id, $closedBy);
 
@@ -107,6 +111,19 @@ class CloseAmountRequestAction
                 ReturnMessages::METADATA_KEY_PROVEN_AMOUNT => $provenAmount,
                 ReturnMessages::METADATA_KEY_DEVOLUTION_AMOUNT => $devolutionAmount,
                 ReturnMessages::METADATA_KEY_LINKED_ENTRY_ID => $linkedGroupDevolutionEntryId,
+            ]
+        ));
+
+        // Dispatch Event para notificação WhatsApp
+        event(new AmountRequestStatusChanged(
+            amountRequestId: $id,
+            oldStatus: $oldStatus,
+            newStatus: ReturnMessages::STATUS_CLOSED,
+            userId: $closedBy,
+            additionalData: [
+                'requested_amount' => $requestedAmount,
+                'proven_amount' => $provenAmount,
+                'devolution_amount' => $devolutionAmount,
             ]
         ));
 

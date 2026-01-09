@@ -3,7 +3,7 @@
 namespace Application\Core\Providers;
 
 use App\Domain\Accounts\Users\Models\User;
-use App\Observers\UserObserver;
+use Application\Core\Observers\UserObserver;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;

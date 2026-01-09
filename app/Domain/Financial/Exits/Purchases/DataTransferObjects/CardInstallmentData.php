@@ -2,7 +2,7 @@
 
 namespace App\Domain\Financial\Exits\Purchases\DataTransferObjects;
 
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use Illuminate\Support\Carbon;
 use Spatie\DataTransferObject\DataTransferObject;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;

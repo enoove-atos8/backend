@@ -2,15 +2,13 @@
 
 namespace Domain\Financial\ReceiptProcessing\DataTransferObjects;
 
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use App\Domain\SyncStorage\DataTransferObjects\SyncStorageData;
 use App\Infrastructure\Repositories\Financial\Entries\Entries\EntryRepository;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\Actions\GetFinancialGroupAction;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
-use Domain\Financial\Reviewers\Actions\GetReviewerAction;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Infrastructure\Repositories\Financial\Exits\Exits\ExitRepository;
 use Spatie\DataTransferObject\DataTransferObject;

@@ -6,10 +6,17 @@ php artisan config:cache
 # Start cron in background
 cron &
 
-# Start Queue Worker in background with auto-restart on failure
+# Start Queue Worker (database) in background with auto-restart on failure
 while true; do
     php artisan queue:work database --tries=3 --timeout=120 --sleep=3 --max-jobs=1000 --max-time=3600
-    echo "Queue worker stopped. Restarting in 5 seconds..." >&2
+    echo "Queue worker (database) stopped. Restarting in 5 seconds..." >&2
+    sleep 5
+done &
+
+# Start Queue Worker (whatsapp) in background with auto-restart on failure
+while true; do
+    php artisan queue:work whatsapp --tries=3 --timeout=120 --sleep=3 --max-jobs=1000 --max-time=3600
+    echo "Queue worker (whatsapp) stopped. Restarting in 5 seconds..." >&2
     sleep 5
 done &
 

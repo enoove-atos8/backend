@@ -182,6 +182,7 @@ return [
         Application\Core\Providers\EventServiceProvider::class,
         Application\Core\Providers\RouteServiceProvider::class,
         Application\Core\Providers\TenancyServiceProvider::class,
+        Application\Core\Providers\WhatsAppServiceProvider::class,
 
     ],
 

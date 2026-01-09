@@ -8,6 +8,7 @@ use App\Domain\AI\Search\Interfaces\AiSearchHistoryRepositoryInterface;
 use App\Domain\AI\Search\Interfaces\LlmServiceInterface;
 use App\Domain\AI\Search\Services\LlmServiceWithFallback;
 use App\Domain\Dashboard\Interfaces\DashboardRepositoryInterface;
+use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
 use App\Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountsBalancesRepositoryInterface;
 use App\Domain\Financial\Entries\Consolidation\Interfaces\ConsolidatedEntriesRepositoryInterface;
 use App\Domain\Financial\Entries\Cults\Interfaces\CultRepositoryInterface;
@@ -49,8 +50,8 @@ use Domain\CentralDomain\Churches\Church\Interfaces\ChurchRepositoryInterface;
 use Domain\CentralDomain\PaymentGateway\Interfaces\StripeRepositoryInterface;
 use Domain\CentralDomain\Plans\Interfaces\PlanRepositoryInterface;
 use Domain\Ecclesiastical\Divisions\Interfaces\DivisionRepositoryInterface;
+use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestReminderRepositoryInterface;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
-use Domain\Ecclesiastical\Groups\Interfaces\GroupRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountFileRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountIndicatorsRepositoryInterface;
 use Domain\Financial\AccountsAndCards\Accounts\Interfaces\AccountMovementsRepositoryInterface;
@@ -74,6 +75,7 @@ use Infrastructure\Repositories\CentralDomain\PaymentGateway\StripeRepository;
 use Infrastructure\Repositories\CentralDomain\PlanRepository;
 use Infrastructure\Repositories\CentralDomain\SubscriptionRepository;
 use Infrastructure\Repositories\Ecclesiastical\Divisions\DivisionRepository;
+use Infrastructure\Repositories\Ecclesiastical\Groups\AmountRequests\AmountRequestReminderRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\AmountRequests\AmountRequestRepository;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Infrastructure\Repositories\Financial\AccountsAndCards\Accounts\AccountFilesRepository;
@@ -146,6 +148,7 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(ReceiptDataExtractorInterface::class, ReceiptDataExtractorWithFallback::class);
         $this->app->bind(OnboardingRepositoryInterface::class, OnboardingRepository::class);
         $this->app->bind(AmountRequestRepositoryInterface::class, AmountRequestRepository::class);
+        $this->app->bind(AmountRequestReminderRepositoryInterface::class, AmountRequestReminderRepository::class);
         $this->app->bind(DashboardRepositoryInterface::class, DashboardRepository::class);
     }
 

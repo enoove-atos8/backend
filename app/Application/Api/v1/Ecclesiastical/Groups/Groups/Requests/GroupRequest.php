@@ -2,7 +2,7 @@
 
 namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests;
 
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use Illuminate\Foundation\Http\FormRequest;
 use Spatie\DataTransferObject\Exceptions\UnknownProperties;
 

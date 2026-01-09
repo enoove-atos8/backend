@@ -2,11 +2,11 @@
 
 namespace Application\Api\v1\Financial\Exits\Exits\Resources;
 
+use App\Domain\Ecclesiastical\Groups\Groups\DataTransferObjects\GroupData;
 use App\Domain\Financial\Exits\Payments\Categories\DataTransferObjects\PaymentCategoryData;
 use App\Domain\Financial\Exits\Payments\Items\DataTransferObjects\PaymentItemData;
 use App\Domain\Financial\Reviewers\DataTransferObjects\FinancialReviewerData;
 use Domain\Ecclesiastical\Divisions\DataTransferObjects\DivisionData;
-use Domain\Ecclesiastical\Groups\DataTransferObjects\GroupData;
 use Domain\Financial\AccountsAndCards\Accounts\DataTransferObjects\AccountData;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;

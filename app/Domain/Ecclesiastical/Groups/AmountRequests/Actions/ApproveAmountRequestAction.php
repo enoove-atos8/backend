@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
+use Application\Core\Events\Ecclesiastical\Groups\AmountRequests\AmountRequestStatusChanged;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
 use Domain\Ecclesiastical\Groups\AmountRequests\DataTransferObjects\AmountRequestHistoryData;
 use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
@@ -34,6 +35,8 @@ class ApproveAmountRequestAction
             throw new GeneralExceptions(ReturnMessages::INVALID_STATUS_FOR_APPROVAL, 400);
         }
 
+        $oldStatus = $existing->status;
+
         $approved = $this->repository->approve($id, $approvedBy);
 
         if (! $approved) {
@@ -48,6 +51,18 @@ class ApproveAmountRequestAction
             userId: $approvedBy,
             metadata: [
                 ReturnMessages::METADATA_KEY_REQUESTED_AMOUNT => $existing->requestedAmount,
+            ]
+        ));
+
+        // Dispatch Event para notificação WhatsApp
+        event(new AmountRequestStatusChanged(
+            amountRequestId: $id,
+            oldStatus: $oldStatus,
+            newStatus: ReturnMessages::STATUS_APPROVED,
+            userId: $approvedBy,
+            additionalData: [
+                'requested_amount' => $existing->requestedAmount,
+                'proof_deadline' => $existing->proofDeadline,
             ]
         ));
 
