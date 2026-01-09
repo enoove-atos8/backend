@@ -10,8 +10,6 @@ use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestReposito
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
-use function App\Console\Commands\Ecclesiastical\Groups\AmountRequests\now;
-
 class SendProofRemindersCommand extends Command
 {
     // Table and column constants

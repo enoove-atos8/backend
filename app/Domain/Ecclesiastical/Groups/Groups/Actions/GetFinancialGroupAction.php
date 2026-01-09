@@ -9,7 +9,6 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Collection;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Throwable;
-use function Domain\Ecclesiastical\Groups\Actions\is_object;
 
 class GetFinancialGroupAction
 {

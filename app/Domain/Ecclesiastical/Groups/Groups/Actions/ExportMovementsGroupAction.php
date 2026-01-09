@@ -9,17 +9,6 @@ use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Services\ExportData\Financial\Movements\MovementsGroupExportData;
 use Infrastructure\Services\External\minIO\MinioStorageService;
 use Throwable;
-use function Domain\Ecclesiastical\Groups\Actions\collect;
-use function Domain\Ecclesiastical\Groups\Actions\end;
-use function Domain\Ecclesiastical\Groups\Actions\explode;
-use function Domain\Ecclesiastical\Groups\Actions\file_exists;
-use function Domain\Ecclesiastical\Groups\Actions\file_put_contents;
-use function Domain\Ecclesiastical\Groups\Actions\mkdir;
-use function Domain\Ecclesiastical\Groups\Actions\storage_path;
-use function Domain\Ecclesiastical\Groups\Actions\str_contains;
-use function Domain\Ecclesiastical\Groups\Actions\strtolower;
-use function Domain\Ecclesiastical\Groups\Actions\time;
-use function Domain\Ecclesiastical\Groups\Actions\unlink;
 
 class ExportMovementsGroupAction
 {

@@ -7,7 +7,6 @@ use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use JsonSerializable;
-use function Webmozart\Assert\Tests\StaticAnalysis\nullOrCount;
 
 class UserResourceCollection extends ResourceCollection
 {

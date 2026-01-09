@@ -7,7 +7,6 @@ use Illuminate\Support\Collection;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Repositories\Ecclesiastical\Groups\GroupsRepository;
 use Throwable;
-use function Domain\Ecclesiastical\Groups\Actions\count;
 
 class GetAllGroupsAction
 {
