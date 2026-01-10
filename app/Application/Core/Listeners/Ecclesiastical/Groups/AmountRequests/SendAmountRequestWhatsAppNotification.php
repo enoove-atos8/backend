@@ -25,10 +25,9 @@ class SendAmountRequestWhatsAppNotification implements ShouldQueue
     public function handle(AmountRequestStatusChanged $event): void
     {
         // Mapeamento: Status da Solicitação → Tipo de Notificação
+        // Apenas envia WhatsApp na aprovação, transferência, comprovação e encerramento
         $statusToReminderType = [
-            ReturnMessages::STATUS_PENDING => 'request_created',
             ReturnMessages::STATUS_APPROVED => 'request_approved',
-            ReturnMessages::STATUS_REJECTED => 'request_rejected',
             ReturnMessages::STATUS_TRANSFERRED => 'transfer_completed',
             ReturnMessages::STATUS_PARTIALLY_PROVEN => 'proof_in_progress',
             ReturnMessages::STATUS_PROVEN => 'proof_completed',

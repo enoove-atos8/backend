@@ -10,7 +10,7 @@ class WhatsAppMessageTemplateService
     private const TEMPLATES = [
         'request_created' => "🔔 *Solicitação de Verba Criada*\n\nOlá {member_name}!\n\nSua solicitação de verba para *{group_name}* no valor de *R$ {amount}* foi criada com sucesso.\n\n📝 Descrição: {description}\n📅 Prazo para comprovação: {deadline}\n\nAguarde a aprovação.",
 
-        'request_approved' => "✅ *Solicitação Aprovada*\n\nOlá {member_name}!\n\nSua solicitação de verba para *{group_name}* no valor de *R$ {amount}* foi aprovada!\n\n📅 Prazo para comprovação: {deadline}\n\nAguarde a transferência do valor.",
+        'request_approved' => "✅ *Solicitação de Verba Criada e Aprovada*\n\nOlá {member_name}!\n\nSua solicitação de verba para *{group_name}* no valor de *R$ {amount}* foi criada e aprovada!\n\n📝 Descrição: {description}\n📅 Prazo para comprovação: {deadline}\n\nAguarde a transferência do valor.",
 
         'request_rejected' => "❌ *Solicitação Rejeitada*\n\nOlá {member_name}!\n\nInfelizmente sua solicitação de verba para *{group_name}* no valor de *R$ {amount}* foi rejeitada.\n\n📋 Motivo: {rejection_reason}\n\nEm caso de dúvidas, entre em contato com a administração.",
 
