@@ -326,7 +326,6 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         $lastMovement = DB::table(self::MOVEMENTS_TABLE_NAME)
             ->where(self::MOVEMENTS_GROUP_ID_COLUMN, $groupId)
             ->where(self::MOVEMENTS_DELETED_COLUMN, 0)
-            ->orderBy(self::MOVEMENTS_DATE_COLUMN, 'desc')
             ->orderBy(self::MOVEMENTS_ID_COLUMN, 'desc')
             ->first();
 

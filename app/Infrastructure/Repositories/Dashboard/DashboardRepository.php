@@ -150,6 +150,7 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     public function getTotalActiveMembersByMonth(string $month): int
     {
+        // Conta todos os membros ativos (titulares + dependentes já estão incluídos)
         return DB::table(self::MEMBERS_TABLE)
             ->whereIn(self::MEMBER_TYPE_COLUMN, self::ACTIVE_MEMBER_TYPES)
             ->where(self::ACTIVATED_COLUMN, 1)
@@ -158,7 +159,8 @@ class DashboardRepository implements DashboardRepositoryInterface
 
     public function getActiveTithersByMonth(string $month): int
     {
-        return DB::table(self::ENTRIES_TABLE.' as e')
+        // Busca membros únicos que contribuíram com dízimo no mês
+        $membersWhoTithed = DB::table(self::ENTRIES_TABLE.' as e')
             ->join(self::MEMBERS_TABLE.' as m', 'e.'.self::MEMBER_ID_COLUMN, '=', 'm.id')
             ->where('e.'.self::ENTRY_TYPE_COLUMN, self::ENTRY_TYPE_TITHE)
             ->where('e.'.self::DELETED_COLUMN, 0)
@@ -166,7 +168,28 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->whereIn('m.'.self::MEMBER_TYPE_COLUMN, self::ACTIVE_MEMBER_TYPES)
             ->where('m.'.self::ACTIVATED_COLUMN, 1)
             ->distinct()
-            ->count('e.'.self::MEMBER_ID_COLUMN);
+            ->select('e.'.self::MEMBER_ID_COLUMN, 'm.dependents_members_ids')
+            ->get();
+
+        // Usa array associativo como Set para evitar duplicatas
+        $engagedMemberIds = [];
+
+        foreach ($membersWhoTithed as $member) {
+            // Adiciona o próprio membro que contribuiu
+            $engagedMemberIds[$member->member_id] = true;
+
+            // Se tem dependentes, adiciona eles também (estão cobertos pelo dízimo do titular)
+            if ($member->dependents_members_ids) {
+                $dependents = json_decode($member->dependents_members_ids, true);
+                if (is_array($dependents)) {
+                    foreach ($dependents as $dependentId) {
+                        $engagedMemberIds[$dependentId] = true;
+                    }
+                }
+            }
+        }
+
+        return count($engagedMemberIds);
     }
 
     public function getTotalContributionsByMonth(string $month): int
