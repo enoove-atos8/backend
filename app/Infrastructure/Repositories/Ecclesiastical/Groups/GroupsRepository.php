@@ -67,6 +67,34 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const MOVEMENTS_ID_COLUMN = 'id';
 
+    const DELETED_COLUMN_NAME = 'deleted';
+
+    const ENABLED_COLUMN_NAME = 'enabled';
+
+    const LEADER_ID_COLUMN_NAME = 'leader_id';
+
+    const ECCLESIASTICAL_DIVISION_ID_COLUMN = 'ecclesiastical_division_id';
+
+    const PARENT_GROUP_ID_COLUMN = 'parent_group_id';
+
+    const NAME_COLUMN = 'name';
+
+    const DESCRIPTION_COLUMN = 'description';
+
+    const SLUG_COLUMN = 'slug';
+
+    const FINANCIAL_TRANSACTIONS_EXISTS_COLUMN = 'financial_transactions_exists';
+
+    const TEMPORARY_EVENT_COLUMN = 'temporary_event';
+
+    const RETURN_VALUES_COLUMN = 'return_values';
+
+    const FINANCIAL_GROUP_COLUMN_NAME = 'financial_group';
+
+    const START_DATE_COLUMN = 'start_date';
+
+    const END_DATE_COLUMN = 'end_date';
+
     const ENTRIES_TABLE_NAME = 'entries';
 
     const ENTRIES_GROUP_RECEIVED_ID_COLUMN = 'group_received_id';
@@ -259,19 +287,19 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     public function save(GroupData $groupData): Group
     {
         return $this->create([
-            'ecclesiastical_division_id' => $groupData->divisionId,
-            'parent_group_id' => $groupData->parentGroupId,
-            'leader_id' => $groupData->leaderId,
-            'name' => $groupData->name,
-            'description' => $groupData->description,
-            'slug' => $groupData->slug,
-            'financial_transactions_exists' => $groupData->financialMovement,
-            'enabled' => $groupData->enabled,
-            'temporary_event' => $groupData->temporaryEvent,
-            'return_values' => $groupData->returnValues,
-            'financial_group' => $groupData->financialGroup,
-            'start_date' => $groupData->startDate,
-            'end_date' => $groupData->endDate,
+            self::ECCLESIASTICAL_DIVISION_ID_COLUMN => $groupData->divisionId,
+            self::PARENT_GROUP_ID_COLUMN => $groupData->parentGroupId,
+            self::LEADER_ID_COLUMN_NAME => $groupData->leaderId,
+            self::NAME_COLUMN => $groupData->name,
+            self::DESCRIPTION_COLUMN => $groupData->description,
+            self::SLUG_COLUMN => $groupData->slug,
+            self::FINANCIAL_TRANSACTIONS_EXISTS_COLUMN => $groupData->financialMovement,
+            self::ENABLED_COLUMN_NAME => $groupData->enabled,
+            self::TEMPORARY_EVENT_COLUMN => $groupData->temporaryEvent,
+            self::RETURN_VALUES_COLUMN => $groupData->returnValues,
+            self::FINANCIAL_GROUP_COLUMN_NAME => $groupData->financialGroup,
+            self::START_DATE_COLUMN => $groupData->startDate,
+            self::END_DATE_COLUMN => $groupData->endDate,
         ]);
     }
 
@@ -295,14 +323,14 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     {
         return DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
-            ->update(['leader_id' => $leaderId]) > 0;
+            ->update([self::LEADER_ID_COLUMN_NAME => $leaderId]) > 0;
     }
 
     public function updateStatus(int $groupId, bool $enabled): bool
     {
         return DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
-            ->update(['enabled' => $enabled]) > 0;
+            ->update([self::ENABLED_COLUMN_NAME => $enabled]) > 0;
     }
 
     /**
@@ -312,8 +340,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
     {
         $affectedRows = DB::table(self::TABLE_NAME)
             ->where(self::ID_COLUMN, $groupId)
-            ->where('deleted', false)
-            ->update(['deleted' => true]);
+            ->where(self::DELETED_COLUMN_NAME, false)
+            ->update([self::DELETED_COLUMN_NAME => true]);
 
         return $affectedRows >= 0;
     }
