@@ -16,6 +16,7 @@ class AmountRequest extends Model
     protected $fillable = [
         'member_id',
         'group_id',
+        'type',
         'requested_amount',
         'description',
         'proof_deadline',
@@ -42,6 +43,7 @@ class AmountRequest extends Model
     protected function casts(): array
     {
         return [
+            'type' => 'string',
             'requested_amount' => 'decimal:2',
             'proven_amount' => 'decimal:2',
             'devolution_amount' => 'decimal:2',

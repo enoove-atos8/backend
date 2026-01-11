@@ -91,6 +91,8 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
 
     const FINANCIAL_GROUP_COLUMN_NAME = 'financial_group';
 
+    const MINISTERIAL_INVESTMENT_LIMIT_COLUMN = 'ministerial_investment_limit';
+
     const START_DATE_COLUMN = 'start_date';
 
     const END_DATE_COLUMN = 'end_date';
@@ -362,5 +364,19 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         }
 
         return MovementsData::fromResponse((array) $lastMovement);
+    }
+
+    /**
+     * Get ministerial investment limit for a group
+     */
+    public function getMinisterialInvestmentLimit(int $groupId): ?string
+    {
+        $result = DB::table(self::TABLE_NAME)
+            ->select(self::MINISTERIAL_INVESTMENT_LIMIT_COLUMN)
+            ->where(self::ID_COLUMN, $groupId)
+            ->where(self::DELETED_COLUMN_NAME, false)
+            ->first();
+
+        return $result?->ministerial_investment_limit;
     }
 }

@@ -21,6 +21,8 @@ class AmountRequestData extends DataTransferObject
 
     public ?string $proofDeadline;
 
+    public ?string $type;
+
     public ?string $status;
 
     public ?int $approvedBy;
@@ -75,6 +77,7 @@ class AmountRequestData extends DataTransferObject
             requestedAmount: $data['amount_requests_requested_amount'] ?? null,
             description: $data['amount_requests_description'] ?? null,
             proofDeadline: $data['amount_requests_proof_deadline'] ?? null,
+            type: $data['amount_requests_type'] ?? 'group_fund',
             status: $data['amount_requests_status'] ?? null,
             approvedBy: $data['amount_requests_approved_by'] ?? null,
             approvedAt: $data['amount_requests_approved_at'] ?? null,
@@ -118,6 +121,7 @@ class AmountRequestData extends DataTransferObject
             'requestedAmount' => $data['requested_amount'] ?? null,
             'description' => $data['description'] ?? null,
             'proofDeadline' => $data['proof_deadline'] ?? null,
+            'type' => $data['type'] ?? 'group_fund',
             'status' => $data['status'] ?? null,
             'approvedBy' => $data['approved_by'] ?? null,
             'approvedAt' => $data['approved_at'] ?? null,

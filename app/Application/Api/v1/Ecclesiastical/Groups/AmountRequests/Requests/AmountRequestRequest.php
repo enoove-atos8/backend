@@ -24,6 +24,7 @@ class AmountRequestRequest extends FormRequest
         return [
             'memberId' => 'required|integer',
             'groupId' => 'required|integer',
+            'type' => 'nullable|string|in:group_fund,ministerial_investment',
             'requestedAmount' => 'required|numeric|min:0.01',
             'description' => 'required|string|min:10',
             'proofDeadline' => 'required|date|after:today',
@@ -40,6 +41,7 @@ class AmountRequestRequest extends FormRequest
             'memberId.integer' => 'O membro solicitante deve ser um número válido!',
             'groupId.required' => 'O grupo é obrigatório!',
             'groupId.integer' => 'O grupo deve ser um número válido!',
+            'type.in' => 'Tipo de solicitação inválido! Valores aceitos: Verba de Grupo ou Investimento Ministerial.',
             'requestedAmount.required' => 'O valor solicitado é obrigatório!',
             'requestedAmount.numeric' => 'O valor solicitado deve ser numérico!',
             'requestedAmount.min' => 'O valor solicitado deve ser maior que zero!',
@@ -61,6 +63,7 @@ class AmountRequestRequest extends FormRequest
         return new AmountRequestData(
             memberId: $this->input('memberId'),
             groupId: $this->input('groupId'),
+            type: $this->input('type', 'group_fund'),
             requestedAmount: $this->input('requestedAmount'),
             description: $this->input('description'),
             proofDeadline: $this->input('proofDeadline'),

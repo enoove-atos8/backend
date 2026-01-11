@@ -32,18 +32,44 @@ class CreateAmountRequestAction
                 throw new GeneralExceptions(ReturnMessages::GROUP_HAS_OPEN_REQUEST, 400);
             }
 
-            // Validate that the group has sufficient balance for the requested amount
-            $groupBalance = $this->groupRepository->getGroupBalance($data->groupId);
-            $currentBalance = $groupBalance?->balance ?? 0.0;
-            $requestedAmount = (float) ($data->requestedAmount ?? 0.0);
+            // CONDITIONAL VALIDATION based on request type
+            $requestType = $data->type ?? ReturnMessages::TYPE_GROUP_FUND;
 
-            if ($currentBalance < $requestedAmount) {
-                throw new GeneralExceptions(
-                    ReturnMessages::GROUP_INSUFFICIENT_BALANCE,
-                    400,
-                    null,
-                    ['balance' => $currentBalance]
-                );
+            if ($requestType === ReturnMessages::TYPE_GROUP_FUND) {
+                // Validate that the group has sufficient balance for the requested amount
+                $groupBalance = $this->groupRepository->getGroupBalance($data->groupId);
+                $currentBalance = $groupBalance?->balance ?? 0.0;
+                $requestedAmount = (float) ($data->requestedAmount ?? 0.0);
+
+                if ($currentBalance < $requestedAmount) {
+                    throw new GeneralExceptions(
+                        ReturnMessages::GROUP_INSUFFICIENT_BALANCE,
+                        400,
+                        null,
+                        ['balance' => $currentBalance]
+                    );
+                }
+            } elseif ($requestType === ReturnMessages::TYPE_MINISTERIAL_INVESTMENT) {
+                // Validate ministerial investment limit
+                $ministerialLimit = $this->groupRepository->getMinisterialInvestmentLimit($data->groupId);
+
+                if ($ministerialLimit === null) {
+                    throw new GeneralExceptions(ReturnMessages::GROUP_NO_MINISTERIAL_LIMIT, 400);
+                }
+
+                $requestedAmount = (float) ($data->requestedAmount ?? 0.0);
+                $limit = (float) $ministerialLimit;
+
+                if ($requestedAmount > $limit) {
+                    throw new GeneralExceptions(
+                        ReturnMessages::GROUP_LIMIT_EXCEEDED,
+                        400,
+                        null,
+                        ['limit' => $limit]
+                    );
+                }
+            } else {
+                throw new GeneralExceptions(ReturnMessages::INVALID_REQUEST_TYPE, 400);
             }
         }
 

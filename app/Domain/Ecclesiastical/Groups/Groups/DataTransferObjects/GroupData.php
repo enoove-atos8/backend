@@ -40,6 +40,8 @@ class GroupData extends DataTransferObject
 
     public ?bool $financialGroup;
 
+    public ?string $ministerialInvestmentLimit;
+
     public ?string $startDate;
 
     public ?string $endDate;
@@ -69,6 +71,7 @@ class GroupData extends DataTransferObject
             'temporaryEvent' => isset($data['groups_temporary_event']) ? (bool) $data['groups_temporary_event'] : null,
             'returnValues' => isset($data['groups_return_values']) ? (bool) $data['groups_return_values'] : null,
             'financialGroup' => isset($data['groups_financial_group']) ? (bool) $data['groups_financial_group'] : null,
+            'ministerialInvestmentLimit' => $data['groups_ministerial_investment_limit'] ?? null,
             'startDate' => $data['groups_start_date'] ?? null,
             'endDate' => $data['groups_end_date'] ?? null,
         ];

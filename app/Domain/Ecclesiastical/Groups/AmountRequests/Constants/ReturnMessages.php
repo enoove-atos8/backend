@@ -85,6 +85,17 @@ class ReturnMessages
 
     public const GROUP_INSUFFICIENT_BALANCE = 'O grupo não possui saldo suficiente para esta solicitação!';
 
+    public const GROUP_LIMIT_EXCEEDED = 'O valor solicitado excede o limite de Investimento Ministerial configurado para este grupo!';
+
+    public const GROUP_NO_MINISTERIAL_LIMIT = 'Este grupo não possui limite configurado para Investimento Ministerial!';
+
+    public const INVALID_REQUEST_TYPE = 'Tipo de solicitação inválido!';
+
+    // Type constants
+    public const TYPE_GROUP_FUND = 'group_fund';
+
+    public const TYPE_MINISTERIAL_INVESTMENT = 'ministerial_investment';
+
     // Status constants
     public const STATUS_PENDING = 'pending';
 
@@ -101,6 +112,12 @@ class ReturnMessages
     public const STATUS_CLOSED = 'closed';
 
     public const STATUS_OVERDUE = 'overdue';
+
+    // Type labels
+    public const TYPE_LABELS = [
+        self::TYPE_GROUP_FUND => 'Verba de Grupo',
+        self::TYPE_MINISTERIAL_INVESTMENT => 'Investimento Ministerial',
+    ];
 
     // Status labels
     public const STATUS_LABELS = [

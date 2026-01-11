@@ -10,7 +10,6 @@ class Group extends Model
 {
     protected $table = 'ecclesiastical_divisions_groups';
 
-
     /**
      * The attributes that are mass assignable.
      *
@@ -29,10 +28,10 @@ class Group extends Model
         'return_values',
         'return_receiving',
         'financial_group',
+        'ministerial_investment_limit',
         'start_date',
         'end_date',
     ];
-
 
     public function members(): HasMany
     {

@@ -145,6 +145,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
         'amount_requests.id as amount_requests_id',
         'amount_requests.member_id as amount_requests_member_id',
         'amount_requests.group_id as amount_requests_group_id',
+        'amount_requests.type as amount_requests_type',
         'amount_requests.requested_amount as amount_requests_requested_amount',
         'amount_requests.description as amount_requests_description',
         'amount_requests.proof_deadline as amount_requests_proof_deadline',
@@ -362,6 +363,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
         return DB::table(self::TABLE_NAME)->insertGetId([
             self::MEMBER_ID_COLUMN => $data->memberId,
             self::GROUP_ID_COLUMN => $data->groupId,
+            self::TYPE_COLUMN => $data->type ?? ReturnMessages::TYPE_GROUP_FUND,
             self::REQUESTED_AMOUNT_COLUMN => $data->requestedAmount,
             self::DESCRIPTION_COLUMN => $data->description,
             self::PROOF_DEADLINE_COLUMN => $data->proofDeadline,

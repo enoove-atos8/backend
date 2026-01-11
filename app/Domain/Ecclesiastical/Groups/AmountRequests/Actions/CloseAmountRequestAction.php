@@ -2,6 +2,7 @@
 
 namespace Domain\Ecclesiastical\Groups\AmountRequests\Actions;
 
+use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
 use App\Domain\Financial\Entries\Entries\Actions\GetEntryByIdAction;
 use Application\Core\Events\Ecclesiastical\Groups\AmountRequests\AmountRequestStatusChanged;
 use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages;
@@ -15,12 +16,16 @@ class CloseAmountRequestAction
 
     private GetEntryByIdAction $getEntryByIdAction;
 
+    private GroupRepositoryInterface $groupRepository;
+
     public function __construct(
         AmountRequestRepositoryInterface $repository,
-        GetEntryByIdAction $getEntryByIdAction
+        GetEntryByIdAction $getEntryByIdAction,
+        GroupRepositoryInterface $groupRepository
     ) {
         $this->repository = $repository;
         $this->getEntryByIdAction = $getEntryByIdAction;
+        $this->groupRepository = $groupRepository;
     }
 
     /**
@@ -50,9 +55,25 @@ class CloseAmountRequestAction
                 throw new GeneralExceptions('A entrada vinculada não é uma devolução para o grupo!', 400);
             }
 
-            // Valida que a entrada pertence ao mesmo grupo da solicitação
-            if ($entry->group_received_id != $existing->groupId) {
-                throw new GeneralExceptions('A entrada vinculada não pertence ao mesmo grupo da solicitação!', 400);
+            // CONDITIONAL VALIDATION based on request type
+            $requestType = $existing->type ?? ReturnMessages::TYPE_GROUP_FUND;
+
+            if ($requestType === ReturnMessages::TYPE_GROUP_FUND) {
+                // Devolution goes to the same group (original logic)
+                if ($entry->group_received_id != $existing->groupId) {
+                    throw new GeneralExceptions('A entrada vinculada não pertence ao mesmo grupo da solicitação!', 400);
+                }
+            } elseif ($requestType === ReturnMessages::TYPE_MINISTERIAL_INVESTMENT) {
+                // Devolution goes to Financial Ministry
+                $financialGroup = $this->groupRepository->getFinancialGroup();
+
+                if ($financialGroup === null) {
+                    throw new GeneralExceptions('Grupo Ministério de Finanças não encontrado!', 500);
+                }
+
+                if ($entry->group_received_id != $financialGroup->id) {
+                    throw new GeneralExceptions('A entrada de devolução deve ser para o Ministério de Finanças!', 400);
+                }
             }
 
             // Valida que a entrada ainda não foi vinculada a outra solicitação

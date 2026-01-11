@@ -36,4 +36,6 @@ interface GroupRepositoryInterface
     public function softDelete(int $groupId): bool;
 
     public function getGroupBalance(int $groupId): ?MovementsData;
+
+    public function getMinisterialInvestmentLimit(int $groupId): ?string;
 }
