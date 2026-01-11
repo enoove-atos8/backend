@@ -181,6 +181,7 @@ class SaveCultAction
         $this->entryData->receipt = $cultData->receipt;
         $this->entryData->accountId = $cultData->accountId;
         $this->entryData->devolution = 0;
+        $this->entryData->groupDevolution = 0;
     }
 
 
