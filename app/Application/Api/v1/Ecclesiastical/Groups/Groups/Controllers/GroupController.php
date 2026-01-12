@@ -5,6 +5,7 @@ namespace App\Application\Api\v1\Ecclesiastical\Groups\Groups\Controllers;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\GroupRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\UpdateGroupLeaderRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\UpdateGroupStatusRequest;
+use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Requests\UpdateMinisterialInvestmentLimitRequest;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\AllGroupsByDivisionResourceCollection;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResource;
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupResourceCollection;
@@ -20,6 +21,7 @@ use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetGroupByIdAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetGroupsByDivisionAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\UpdateGroupLeaderAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\UpdateGroupStatusAction;
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\UpdateMinisterialInvestmentLimitAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Constants\ReturnMessages;
 use App\Domain\Secretary\Membership\Actions\AddMembersToGroupAction;
 use Application\Api\v1\Secretary\Membership\Membership\Requests\AddMembersToGroupRequest;
@@ -250,6 +252,27 @@ class GroupController extends Controller
 
             return response([
                 'message' => ReturnMessages::GROUP_STATUS_UPDATED,
+            ], 200);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function updateMinisterialInvestmentLimit(
+        int $id,
+        UpdateMinisterialInvestmentLimitRequest $request,
+        UpdateMinisterialInvestmentLimitAction $action
+    ): Response {
+        try {
+            $limit = $request->input('ministerial_investment_limit');
+
+            $action->execute($id, $limit !== null ? (float) $limit : null);
+
+            return response([
+                'message' => ReturnMessages::MINISTERIAL_LIMIT_UPDATED,
             ], 200);
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);

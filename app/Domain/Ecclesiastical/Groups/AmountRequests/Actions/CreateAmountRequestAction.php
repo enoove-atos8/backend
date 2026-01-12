@@ -57,16 +57,21 @@ class CreateAmountRequestAction
                     throw new GeneralExceptions(ReturnMessages::GROUP_NO_MINISTERIAL_LIMIT, 400);
                 }
 
-                $requestedAmount = (float) ($data->requestedAmount ?? 0.0);
-                $limit = (float) $ministerialLimit;
+                // If aboveLimit flag is true, skip limit validation
+                $aboveLimit = $data->aboveLimit ?? false;
 
-                if ($requestedAmount > $limit) {
-                    throw new GeneralExceptions(
-                        ReturnMessages::GROUP_LIMIT_EXCEEDED,
-                        400,
-                        null,
-                        ['limit' => $limit]
-                    );
+                if (! $aboveLimit) {
+                    $requestedAmount = (float) ($data->requestedAmount ?? 0.0);
+                    $limit = (float) $ministerialLimit;
+
+                    if ($requestedAmount > $limit) {
+                        throw new GeneralExceptions(
+                            ReturnMessages::GROUP_LIMIT_EXCEEDED,
+                            400,
+                            null,
+                            ['limit' => $limit]
+                        );
+                    }
                 }
             } else {
                 throw new GeneralExceptions(ReturnMessages::INVALID_REQUEST_TYPE, 400);

@@ -116,6 +116,7 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
         'ecclesiastical_divisions_groups.temporary_event as groups_temporary_event',
         'ecclesiastical_divisions_groups.return_values as groups_return_values',
         'ecclesiastical_divisions_groups.financial_group as groups_financial_group',
+        'ecclesiastical_divisions_groups.ministerial_investment_limit as groups_ministerial_investment_limit',
         'ecclesiastical_divisions_groups.start_date as groups_start_date',
         'ecclesiastical_divisions_groups.end_date as groups_end_date',
         'ecclesiastical_divisions_groups.updated_at as groups_updated_at',
@@ -378,5 +379,15 @@ class GroupsRepository extends BaseRepository implements GroupRepositoryInterfac
             ->first();
 
         return $result?->ministerial_investment_limit;
+    }
+
+    /**
+     * Update ministerial investment limit for a group
+     */
+    public function updateMinisterialInvestmentLimit(int $groupId, ?float $limit): bool
+    {
+        return DB::table(self::TABLE_NAME)
+            ->where(self::ID_COLUMN, $groupId)
+            ->update([self::MINISTERIAL_INVESTMENT_LIMIT_COLUMN => $limit]) >= 0;
     }
 }

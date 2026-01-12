@@ -13,10 +13,14 @@ class ReturnMessages
 
     public const GROUP_DELETED = 'Grupo excluído com sucesso!';
 
+    public const MINISTERIAL_LIMIT_UPDATED = 'Limite de Investimento Ministerial atualizado com sucesso!';
+
     // ERROR MESSAGES
     public const ERROR_UPDATE_GROUP_LEADER = 'Erro ao atualizar o líder do grupo!';
 
     public const ERROR_UPDATE_GROUP_STATUS = 'Erro ao atualizar o status do grupo!';
+
+    public const ERROR_UPDATE_MINISTERIAL_LIMIT = 'Erro ao atualizar o limite de Investimento Ministerial!';
 
     public const ERROR_DELETE_GROUP = 'Erro ao excluir o grupo!';
 

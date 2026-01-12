@@ -54,6 +54,16 @@ Route::prefix('ecclesiastical')->group(function () {
         Route::put('/{id}/status', [GroupController::class, 'updateStatus']);
         Route::delete('/{id}', [GroupController::class, 'destroy']);
 
+        /*
+        |--------------------------------------------------------------------------
+        | Group Settings Routes (Configurações do Grupo)
+        |--------------------------------------------------------------------------
+        */
+
+        Route::prefix('{id}/settings')->whereNumber('id')->group(function () {
+            Route::put('/ministerial-investment-limit', [GroupController::class, 'updateMinisterialInvestmentLimit']);
+        });
+
         Route::prefix('details')->group(function () {
 
             Route::prefix('movements')->group(function () {

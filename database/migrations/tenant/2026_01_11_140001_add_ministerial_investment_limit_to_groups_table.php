@@ -10,7 +10,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE ecclesiastical_divisions_groups ADD COLUMN ministerial_investment_limit DECIMAL(10,2) NULL DEFAULT NULL COMMENT 'Limite disponível para Investimento Ministerial (NULL = sem permissão)' AFTER financial_group");
+        DB::statement("ALTER TABLE ecclesiastical_divisions_groups ADD COLUMN ministerial_investment_limit DECIMAL(10,2) NULL DEFAULT NULL COMMENT 'Limite disponível para Investimento Ministerial (NULL = sem permissão)' AFTER return_receiving");
     }
 
     /**

@@ -81,6 +81,8 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
 
     const REQUESTED_BY_COLUMN = 'requested_by';
 
+    const ABOVE_LIMIT_COLUMN = 'above_limit';
+
     // Receipts columns
     const AMOUNT_REQUEST_ID_COLUMN = 'amount_request_id';
 
@@ -146,6 +148,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
         'amount_requests.member_id as amount_requests_member_id',
         'amount_requests.group_id as amount_requests_group_id',
         'amount_requests.type as amount_requests_type',
+        'amount_requests.above_limit as amount_requests_above_limit',
         'amount_requests.requested_amount as amount_requests_requested_amount',
         'amount_requests.description as amount_requests_description',
         'amount_requests.proof_deadline as amount_requests_proof_deadline',
@@ -364,6 +367,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
             self::MEMBER_ID_COLUMN => $data->memberId,
             self::GROUP_ID_COLUMN => $data->groupId,
             self::TYPE_COLUMN => $data->type ?? ReturnMessages::TYPE_GROUP_FUND,
+            self::ABOVE_LIMIT_COLUMN => $data->aboveLimit ?? false,
             self::REQUESTED_AMOUNT_COLUMN => $data->requestedAmount,
             self::DESCRIPTION_COLUMN => $data->description,
             self::PROOF_DEADLINE_COLUMN => $data->proofDeadline,

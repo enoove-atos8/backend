@@ -17,6 +17,7 @@ class AmountRequest extends Model
         'member_id',
         'group_id',
         'type',
+        'above_limit',
         'requested_amount',
         'description',
         'proof_deadline',
@@ -44,6 +45,7 @@ class AmountRequest extends Model
     {
         return [
             'type' => 'string',
+            'above_limit' => 'boolean',
             'requested_amount' => 'decimal:2',
             'proven_amount' => 'decimal:2',
             'devolution_amount' => 'decimal:2',

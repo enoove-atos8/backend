@@ -31,6 +31,7 @@ class GroupResource extends JsonResource
             'slug' => $result->slug,
             'enabled' => $result->enabled,
             'transactionsExists' => $result->financialMovement,
+            'ministerialInvestmentLimit' => $result->ministerialInvestmentLimit,
             'leader' => $this->getLeaderData($result),
         ];
     }

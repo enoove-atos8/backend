@@ -38,4 +38,6 @@ interface GroupRepositoryInterface
     public function getGroupBalance(int $groupId): ?MovementsData;
 
     public function getMinisterialInvestmentLimit(int $groupId): ?string;
+
+    public function updateMinisterialInvestmentLimit(int $groupId, ?float $limit): bool;
 }
