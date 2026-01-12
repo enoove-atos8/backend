@@ -45,6 +45,8 @@ class AmountRequestResourceCollection extends ResourceCollection
             'id' => $item->id ?? null,
             'memberId' => $item->memberId ?? null,
             'groupId' => $item->groupId ?? null,
+            'type' => $item->type ?? null,
+            'typeLabel' => isset($item->type) ? (ReturnMessages::TYPE_LABELS[$item->type] ?? $item->type) : null,
             'requestedAmount' => $item->requestedAmount ?? null,
             'description' => $item->description ?? null,
             'proofDeadline' => $item->proofDeadline ?? null,

@@ -33,6 +33,8 @@ class AmountRequestResource extends JsonResource
             'id' => $result->id,
             'memberId' => $result->memberId,
             'groupId' => $result->groupId,
+            'type' => $result->type ?? null,
+            'typeLabel' => isset($result->type) ? (ReturnMessages::TYPE_LABELS[$result->type] ?? $result->type) : null,
             'requestedAmount' => $result->requestedAmount,
             'description' => $result->description,
             'proofDeadline' => $result->proofDeadline,
