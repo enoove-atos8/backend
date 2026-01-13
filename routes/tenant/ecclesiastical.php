@@ -73,6 +73,7 @@ Route::prefix('ecclesiastical')->group(function () {
             Route::prefix('teams')->group(function () {
                 Route::get('/getMembersByGroupId', [MemberController::class, 'getMembersByGroupId']);
                 Route::post('/addMembersToGroup', [GroupController::class, 'addMembersToGroup']);
+                Route::get('/exportGroupTithersData', [GroupController::class, 'exportGroupTithersData']);
             });
         });
 

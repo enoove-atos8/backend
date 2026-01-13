@@ -13,6 +13,7 @@ use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsToMobile
 use App\Application\Api\v1\Ecclesiastical\Groups\Groups\Resources\GroupsWithDivisionsResourceCollection;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\CreateNewGroupAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\DeleteGroupAction;
+use App\Domain\Ecclesiastical\Groups\Groups\Actions\ExportGroupTithersAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\ExportMovementsGroupAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetAllGroupsAction;
 use App\Domain\Ecclesiastical\Groups\Groups\Actions\GetAllGroupsByAllDivisionsAction;
@@ -274,6 +275,23 @@ class GroupController extends Controller
             return response([
                 'message' => ReturnMessages::MINISTERIAL_LIMIT_UPDATED,
             ], 200);
+        } catch (GeneralExceptions $e) {
+            throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
+        }
+    }
+
+    /**
+     * @throws GeneralExceptions|Throwable
+     */
+    public function exportGroupTithersData(Request $request, ExportGroupTithersAction $exportGroupTithersAction): JsonResponse
+    {
+        try {
+            $groupId = (int) $request->input('groupId');
+            $type = $request->input('type', 'PDF');
+
+            $result = $exportGroupTithersAction->execute($groupId, $type);
+
+            return response()->json($result);
         } catch (GeneralExceptions $e) {
             throw new GeneralExceptions($e->getMessage(), (int) $e->getCode(), $e);
         }
