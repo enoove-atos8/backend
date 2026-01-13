@@ -134,7 +134,7 @@
             <div class="px-6 py-4">
                 <div class="space-y-1">
                     @foreach($data as $index => $member)
-                        <div class="grid gap-x-2 items-center {{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} rounded-lg px-3" style="grid-template-columns: 2fr repeat(6, 1fr); height: 48px;">
+                        <div class="grid gap-x-2 items-center {{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} rounded-lg px-3" style="grid-template-columns: 2fr repeat(6, 1fr); height: 60px;">
                             <div class="text-sm font-medium text-gray-800">
                                 {{ $member['fullName'] ?? 'Nome não informado' }}
                                 @if(isset($member['titheHistory']['isDependent']) && $member['titheHistory']['isDependent'])
