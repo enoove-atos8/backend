@@ -26,7 +26,11 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     const CONGREGATE_VALUE = 'congregate';
 
+    const ID_COLUMN = 'id';
+
     const ID_COLUMN_JOINED = 'members.id';
+
+    const PRINCIPAL_MEMBER_ID_COLUMN = 'principal_member_id';
 
     const MEMBER_TYPE_COLUMN_JOINED = 'members.member_type';
 
@@ -790,5 +794,32 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
         ];
 
         return (bool) $this->update($conditions, [self::DEACTIVATION_REASON_COLUMN => $reason]);
+    }
+
+    /**
+     * Retorna um array com os IDs dos membros que são dependentes
+     * [memberId => principalMemberId, ...]
+     */
+    public function getDependentMembersFromList(array $memberIds): array
+    {
+        if (empty($memberIds)) {
+            return [];
+        }
+
+        $query = function () use ($memberIds) {
+            $dependents = [];
+
+            // Para cada membro, verifica se ele é dependente de alguém
+            foreach ($memberIds as $memberId) {
+                $principalId = $this->getPrincipalMemberId($memberId);
+                if ($principalId !== null) {
+                    $dependents[$memberId] = $principalId;
+                }
+            }
+
+            return $dependents;
+        };
+
+        return $this->doQuery($query);
     }
 }

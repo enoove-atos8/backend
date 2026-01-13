@@ -955,4 +955,27 @@ class EntryRepository extends BaseRepository implements EntryRepositoryInterface
 
         return $this->doQuery($query);
     }
+
+    /**
+     * Busca todas as entries de dízimos para uma lista de membros
+     * Retorna apenas member_id e date_transaction_compensation
+     */
+    public function getTithesByMemberIds(array $memberIds): Collection
+    {
+        if (empty($memberIds)) {
+            return collect([]);
+        }
+
+        $query = function () use ($memberIds) {
+            return $this->model::query()
+                ->whereIn(self::MEMBER_ID_COLUMN, $memberIds)
+                ->where(self::ENTRY_TYPE_COLUMN, self::TITHE_VALUE)
+                ->where(self::DELETED_COLUMN, false)
+                ->whereNotNull(self::DATE_TRANSACTIONS_COMPENSATION_COLUMN)
+                ->select([self::MEMBER_ID_COLUMN, self::DATE_TRANSACTIONS_COMPENSATION_COLUMN])
+                ->get();
+        };
+
+        return $this->doQuery($query);
+    }
 }

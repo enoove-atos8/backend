@@ -48,5 +48,7 @@ interface EntryRepositoryInterface
 
     public function getHistoryTitheByMemberId(int $memberId, int $months = 6): array;
 
+    public function getTithesByMemberIds(array $memberIds): Collection;
+
     public function applyFilters(array $filters, bool $joinQuery, bool $returnConditions);
 }

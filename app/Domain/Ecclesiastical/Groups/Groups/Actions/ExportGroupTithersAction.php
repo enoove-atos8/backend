@@ -3,7 +3,7 @@
 namespace App\Domain\Ecclesiastical\Groups\Groups\Actions;
 
 use App\Domain\Ecclesiastical\Groups\Groups\Interfaces\GroupRepositoryInterface;
-use App\Domain\Secretary\Membership\Actions\GetMembersByGroupIdAction;
+use App\Domain\Secretary\Membership\Actions\GetMembersByGroupIdOptimizedAction;
 use Domain\CentralDomain\Churches\Church\Actions\GetChurchAction;
 use Infrastructure\Exceptions\GeneralExceptions;
 use Infrastructure\Services\ExportData\Ecclesiastical\Groups\GroupTithersExportData;
@@ -15,7 +15,7 @@ class ExportGroupTithersAction
     private const S3_PATH = 'reports/ecclesiastical/groups/tithers';
 
     public function __construct(
-        private GetMembersByGroupIdAction $getMembersByGroupIdAction,
+        private GetMembersByGroupIdOptimizedAction $getMembersByGroupIdOptimizedAction,
         private GroupRepositoryInterface $groupRepository,
         private MinioStorageService $minioStorageService,
         private GetChurchAction $getChurchAction
@@ -31,7 +31,7 @@ class ExportGroupTithersAction
      */
     public function execute(int $groupId, string $type): mixed
     {
-        $members = $this->getMembersByGroupIdAction->execute($groupId);
+        $members = $this->getMembersByGroupIdOptimizedAction->execute($groupId);
 
         if ($members && $members->count() > 0) {
             $group = $this->groupRepository->getGroupsById($groupId);
