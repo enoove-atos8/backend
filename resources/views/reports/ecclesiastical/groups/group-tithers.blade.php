@@ -147,12 +147,12 @@
                                     $isDependent = $member['titheHistory']['isDependent'] ?? false;
                                 @endphp
                                 <div class="text-center flex items-center justify-center">
-                                    @if($isDependent)
-                                        <span class="text-blue-600 text-xs font-semibold">DEP</span>
-                                    @elseif($hasDevolution)
+                                    @if($hasDevolution)
                                         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
                                         </svg>
+                                    @elseif($isDependent)
+                                        <span class="text-blue-600 text-xs font-semibold">DEP</span>
                                     @else
                                         <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
