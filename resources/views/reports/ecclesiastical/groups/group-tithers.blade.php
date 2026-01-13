@@ -128,10 +128,10 @@
         </div>
 
         @php
-            // Dividir dados em páginas: primeira página 9 membros, demais 14
+            // Dividir dados em páginas: primeira página 9 membros, demais 15
             $firstPageMembers = array_slice($data, 0, 9);
             $remainingMembers = array_slice($data, 9);
-            $otherPagesMembers = array_chunk($remainingMembers, 14);
+            $otherPagesMembers = array_chunk($remainingMembers, 15);
             $allPages = array_merge([$firstPageMembers], $otherPagesMembers);
         @endphp
 
@@ -184,30 +184,6 @@
                 </div>
             </div>
         @endforeach
-
-        <div class="bg-gray-100 rounded-xl p-6 mt-6">
-            <div class="text-center text-sm text-gray-700">
-                <p class="font-semibold mb-2">Legenda:</p>
-                <div class="flex justify-center gap-6">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span>Devolveu</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
-                        </svg>
-                        <span>Não devolveu</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-blue-600 font-semibold text-xs">DEP</span>
-                        <span>Dependente</span>
-                    </div>
-                </div>
-            </div>
-        </div>
 
     </div>
 </div>
