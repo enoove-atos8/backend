@@ -12,8 +12,6 @@ class GroupTithersExportData
     private string $type;
 
     private const ALLOWED_TYPES = ['PDF', 'XLSX'];
-    private const STORAGE_BASE_PATH = '/var/www/backend/html/storage';
-    private const TEMP_DIR = '/temp';
 
     /**
      * @throws GeneralExceptions
@@ -62,7 +60,10 @@ class GroupTithersExportData
         ])->render();
 
         $timestamp = date('YmdHis');
-        $directoryPath = self::STORAGE_BASE_PATH . self::TEMP_DIR;
+
+        // Extrai o tenant da request para construir o path correto
+        $tenant = explode('.', request()->getHost())[0];
+        $directoryPath = storage_path('tenant') . '/' . $tenant . '/app/temp';
 
         if (!file_exists($directoryPath)) {
             mkdir($directoryPath, 0775, true);

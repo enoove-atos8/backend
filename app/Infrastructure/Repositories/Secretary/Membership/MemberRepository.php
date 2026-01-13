@@ -26,8 +26,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
 
     const CONGREGATE_VALUE = 'congregate';
 
-    const ID_COLUMN = 'id';
-
     const ID_COLUMN_JOINED = 'members.id';
 
     const PRINCIPAL_MEMBER_ID_COLUMN = 'principal_member_id';
@@ -43,8 +41,6 @@ class MemberRepository extends BaseRepository implements MemberRepositoryInterfa
     const MEMBER_GENDER_COLUMN_JOINED = 'members.gender';
 
     const MEMBER_GENDER_COLUMN = 'gender';
-
-    const ID_COLUMN = 'id';
 
     const ACTIVATED_COLUMN = 'activated';
 
