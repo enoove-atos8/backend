@@ -19,13 +19,9 @@ class ExportGroupTithersAction
         private GroupRepositoryInterface $groupRepository,
         private MinioStorageService $minioStorageService,
         private GetChurchAction $getChurchAction
-    ) {
-    }
+    ) {}
 
     /**
-     * @param int $groupId
-     * @param string $type
-     * @return mixed
      * @throws Throwable
      * @throws GeneralExceptions
      */
@@ -36,6 +32,13 @@ class ExportGroupTithersAction
         if ($members && $members->count() > 0) {
             $group = $this->groupRepository->getGroupsById($groupId);
             $groupName = $group?->name ?? 'Grupo não encontrado';
+
+            // Buscar o líder do grupo
+            $leaderName = null;
+            if ($group && $group->leader_id) {
+                $leader = $members->firstWhere('id', $group->leader_id);
+                $leaderName = $leader?->fullName ?? 'Não informado';
+            }
 
             // Buscar dados da igreja
             $tenant = explode('.', request()->getHost())[0];
@@ -51,7 +54,7 @@ class ExportGroupTithersAction
                 return $member->toArray();
             })->toArray();
 
-            $fileContent = $exportData->export($membersArray, $groupName, $church);
+            $fileContent = $exportData->export($membersArray, $groupName, $church, $leaderName);
 
             $extension = strtolower($type);
             if (str_contains($type, '/')) {
@@ -76,15 +79,15 @@ class ExportGroupTithersAction
      */
     private function uploadReport(int $groupId, string $extension, string $fileContent): array
     {
-        $fileName = 'group_tithers_' . $groupId . '_' . time() . '.' . $extension;
+        $fileName = 'group_tithers_'.$groupId.'_'.time().'.'.$extension;
         $s3Path = self::S3_PATH;
 
         $tempPath = storage_path('app/temp');
-        if (!file_exists($tempPath)) {
+        if (! file_exists($tempPath)) {
             mkdir($tempPath, 0777, true);
         }
 
-        $filePath = $tempPath . '/' . $fileName;
+        $filePath = $tempPath.'/'.$fileName;
         file_put_contents($filePath, $fileContent);
 
         $tenant = explode('.', request()->getHost())[0];

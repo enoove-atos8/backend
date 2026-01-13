@@ -83,6 +83,12 @@
                             <div class="text-lg font-bold text-gray-800">Histórico de Devolução de Dízimos</div>
                         </div>
                         <div class="space-y-2 text-sm">
+                            @if(isset($leaderName))
+                            <div class="flex items-center gap-2">
+                                <span class="text-gray-700 font-semibold">Líder:</span>
+                                <span class="text-gray-800">{{ $leaderName }}</span>
+                            </div>
+                            @endif
                             <div class="flex items-center gap-2">
                                 <span class="text-gray-700 font-semibold">Grupo:</span>
                                 <span class="bg-gray-400 text-white px-3 py-1 rounded-full text-xs font-semibold">
@@ -101,7 +107,7 @@
                 <div class="grid grid-cols-3 gap-6">
                     <div>
                         <div class="text-secondary text-[14px] font-medium tracking-tight mb-2">DATA DE EMISSÃO</div>
-                        <div class="font-semibold text-gray-800 text-lg">{{ date('d/m/Y H:i:s') }}</div>
+                        <div class="font-semibold text-gray-800 text-lg">{{ date('d/m/Y') }}</div>
                     </div>
                     <div>
                         <div class="text-secondary text-[14px] font-medium tracking-tight mb-2">PERÍODO</div>
@@ -126,11 +132,11 @@
                 </div>
             </div>
             <div class="px-6 py-4">
-                <div class="space-y-3">
+                <div class="space-y-1">
                     @foreach($data as $index => $member)
-                        <div class="grid gap-x-2 items-center py-2 {{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} rounded-lg px-3" style="grid-template-columns: 2fr repeat(6, 1fr);">
+                        <div class="grid gap-x-2 items-center py-1.5 {{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} rounded-lg px-3" style="grid-template-columns: 2fr repeat(6, 1fr);">
                             <div class="text-sm font-medium text-gray-800">
-                                {{ $member['personDataAndIdentification']['fullName'] ?? 'Nome não informado' }}
+                                {{ $member['fullName'] ?? 'Nome não informado' }}
                                 @if(isset($member['titheHistory']['isDependent']) && $member['titheHistory']['isDependent'])
                                     <span class="text-blue-600 text-xs ml-1">(DEP)</span>
                                 @endif
@@ -140,20 +146,21 @@
                                     $hasDevolution = $member['titheHistory']['history'][$month['key']] ?? false;
                                     $isDependent = $member['titheHistory']['isDependent'] ?? false;
                                 @endphp
-                                <div class="text-center text-lg font-bold">
+                                <div class="text-center flex items-center justify-center">
                                     @if($isDependent)
-                                        <span class="text-blue-600 text-xs">DEP</span>
+                                        <span class="text-blue-600 text-xs font-semibold">DEP</span>
                                     @elseif($hasDevolution)
-                                        <span class="text-green-600">✓</span>
+                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                        </svg>
                                     @else
-                                        <span class="text-red-500">✗</span>
+                                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
                                     @endif
                                 </div>
                             @endforeach
                         </div>
-                        @if($index < count($data) - 1)
-                            <div class="border-b border-gray-300"></div>
-                        @endif
                     @endforeach
                 </div>
             </div>
@@ -164,11 +171,15 @@
                 <p class="font-semibold mb-2">Legenda:</p>
                 <div class="flex justify-center gap-6">
                     <div class="flex items-center gap-2">
-                        <span class="text-green-600 font-bold text-lg">✓</span>
+                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                        </svg>
                         <span>Devolveu</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-red-500 font-bold text-lg">✗</span>
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                         <span>Não devolveu</span>
                     </div>
                     <div class="flex items-center gap-2">
