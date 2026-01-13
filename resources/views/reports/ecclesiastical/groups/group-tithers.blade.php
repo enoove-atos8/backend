@@ -127,46 +127,63 @@
 
         </div>
 
-        <div class="mt-8 mb-8 bg-gray-100 rounded-xl overflow-hidden">
-            <div class="bg-gray-200 rounded-t-xl px-6 py-4">
-                <div class="grid gap-x-2" style="grid-template-columns: 2fr repeat(6, 1fr);">
-                    <div class="text-secondary text-sm font-medium">DIZIMISTA</div>
-                    @foreach($months as $month)
-                        <div class="text-secondary text-center text-sm font-medium">{{ $month['label'] }}</div>
-                    @endforeach
+        @php
+            // Dividir dados em páginas: primeira página 9 membros, demais 14
+            $firstPageMembers = array_slice($data, 0, 9);
+            $remainingMembers = array_slice($data, 9);
+            $otherPagesMembers = array_chunk($remainingMembers, 14);
+            $allPages = array_merge([$firstPageMembers], $otherPagesMembers);
+        @endphp
+
+        @foreach($allPages as $pageIndex => $pageMembers)
+            @if($pageIndex > 0)
+                <div class="page-break"></div>
+            @endif
+
+            <div class="mt-8 mb-8 bg-gray-100 rounded-xl overflow-hidden">
+                <div class="bg-gray-200 rounded-t-xl px-6 py-4">
+                    <div class="grid gap-x-2" style="grid-template-columns: 2fr repeat(6, 1fr);">
+                        <div class="text-secondary text-sm font-medium">DIZIMISTA</div>
+                        @foreach($months as $month)
+                            <div class="text-secondary text-center text-sm font-medium">{{ $month['label'] }}</div>
+                        @endforeach
+                    </div>
                 </div>
-            </div>
-            <div class="px-6 py-4">
-                <div class="space-y-1">
-                    @foreach($data as $index => $member)
-                        <div class="member-row grid gap-x-2 items-center {{ $index % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} rounded-lg px-3" style="grid-template-columns: 2fr repeat(6, 1fr); height: 60px;">
-                            <div class="text-sm font-medium text-gray-800">
-                                {{ $member['fullName'] ?? 'Nome não informado' }}
-                            </div>
-                            @foreach($months as $month)
-                                @php
-                                    $hasDevolution = $member['titheHistory']['history'][$month['key']] ?? false;
-                                    $isDependent = $member['titheHistory']['isDependent'] ?? false;
-                                @endphp
-                                <div class="text-center flex items-center justify-center">
-                                    @if($hasDevolution)
-                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                                        </svg>
-                                    @elseif($isDependent)
-                                        <span class="text-blue-600 text-xs font-semibold">DEP</span>
-                                    @else
-                                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    @endif
+                <div class="px-6 py-4">
+                    <div class="space-y-1">
+                        @foreach($pageMembers as $index => $member)
+                            @php
+                                $globalIndex = ($pageIndex === 0) ? $index : (9 + array_sum(array_map('count', array_slice($otherPagesMembers, 0, $pageIndex - 1))) + $index);
+                            @endphp
+                            <div class="member-row grid gap-x-2 items-center {{ $globalIndex % 2 === 0 ? 'bg-white' : 'bg-gray-50' }} rounded-lg px-3" style="grid-template-columns: 2fr repeat(6, 1fr); height: 60px;">
+                                <div class="text-sm font-medium text-gray-800">
+                                    {{ $member['fullName'] ?? 'Nome não informado' }}
                                 </div>
-                            @endforeach
-                        </div>
-                    @endforeach
+                                @foreach($months as $month)
+                                    @php
+                                        $hasDevolution = $member['titheHistory']['history'][$month['key']] ?? false;
+                                        $isDependent = $member['titheHistory']['isDependent'] ?? false;
+                                    @endphp
+                                    <div class="text-center flex items-center justify-center">
+                                        @if($hasDevolution)
+                                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        @elseif($isDependent)
+                                            <span class="text-blue-600 text-xs font-semibold">DEP</span>
+                                        @else
+                                            <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        @endif
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
+                    </div>
                 </div>
             </div>
-        </div>
+        @endforeach
 
         <div class="bg-gray-100 rounded-xl p-6 mt-6">
             <div class="text-center text-sm text-gray-700">
