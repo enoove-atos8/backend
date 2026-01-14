@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use Infrastructure\Services\External\WhatsApp\EvolutionApiService;
 use Infrastructure\Services\External\WhatsApp\Interfaces\WhatsAppServiceInterface;
 use Infrastructure\Services\External\WhatsApp\MetaCloudApiService;
+use Infrastructure\Services\External\WhatsApp\TwilioService;
 use Infrastructure\Services\External\WhatsApp\ZApi\ZApiService;
 
 class WhatsAppServiceProvider extends ServiceProvider
@@ -22,6 +23,7 @@ class WhatsAppServiceProvider extends ServiceProvider
                 'meta' => new MetaCloudApiService,
                 'evolution' => new EvolutionApiService,
                 'zapi' => new ZApiService,
+                'twilio' => new TwilioService,
                 default => throw new \InvalidArgumentException("WhatsApp driver [{$driver}] não suportado."),
             };
         });

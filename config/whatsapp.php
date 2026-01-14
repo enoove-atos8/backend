@@ -7,11 +7,12 @@ return [
     | WhatsApp Driver
     |--------------------------------------------------------------------------
     |
-    | Supported drivers: "evolution", "meta", "zapi"
+    | Supported drivers: "evolution", "meta", "zapi", "twilio"
     |
     | - evolution: Evolution API (self-hosted ou cloud)
     | - meta: WhatsApp Cloud API (oficial da Meta)
     | - zapi: Z-API (https://www.z-api.io/)
+    | - twilio: Twilio WhatsApp API (https://www.twilio.com/whatsapp)
     |
     */
 
@@ -62,6 +63,28 @@ return [
         'instance_id' => env('WHATSAPP_ZAPI_INSTANCE_ID', ''),
         'token' => env('WHATSAPP_ZAPI_TOKEN', ''),
         'client_token' => env('WHATSAPP_ZAPI_CLIENT_TOKEN', ''),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Twilio Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configurações para Twilio WhatsApp API
+    | Documentação: https://www.twilio.com/docs/whatsapp/api
+    |
+    | Account SID: Identificador da sua conta Twilio (ex: ACxxxxxxxxxxxx)
+    | Auth Token: Token de autenticação da sua conta
+    | Phone Number: Número WhatsApp remetente no formato whatsapp:+5581999999999
+    |               - Para Sandbox (testes): use o número fornecido pelo Twilio
+    |               - Para Produção: use seu número registrado no WhatsApp Business
+    |
+    */
+
+    'twilio' => [
+        'account_sid' => env('WHATSAPP_TWILIO_ACCOUNT_SID', ''),
+        'auth_token' => env('WHATSAPP_TWILIO_AUTH_TOKEN', ''),
+        'phone_number' => env('WHATSAPP_TWILIO_PHONE_NUMBER', ''),
     ],
 
 ];
