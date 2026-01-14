@@ -66,9 +66,9 @@ interface AmountRequestRepositoryInterface
     public function unlinkExit(int $id): bool;
 
     /**
-     * Get approved amount request by group ID (for auto-linking)
+     * Get approved amount request by group ID and type (for auto-linking)
      */
-    public function getApprovedByGroupId(int $groupId): ?AmountRequestData;
+    public function getApprovedByGroupId(int $groupId, string $type): ?AmountRequestData;
 
     /**
      * Update proven amount and status

@@ -127,6 +127,8 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
 
     const TABLE_PROOF_DEADLINE_JOINED = 'amount_requests.proof_deadline';
 
+    const TABLE_TYPE_JOINED = 'amount_requests.type';
+
     const MEMBERS_ID_JOINED = 'members.id';
 
     const GROUPS_ID_JOINED = 'ecclesiastical_divisions_groups.id';
@@ -293,7 +295,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
         }
 
         if (! empty($filters[self::TYPE_COLUMN])) {
-            $query->where('amount_requests.type', $filters[self::TYPE_COLUMN]);
+            $query->where(self::TABLE_TYPE_JOINED, $filters[self::TYPE_COLUMN]);
         }
 
         if (! empty($filters['date_from'])) {
@@ -515,9 +517,9 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
     }
 
     /**
-     * Get approved amount request by group ID (for auto-linking)
+     * Get approved amount request by group ID and type (for auto-linking)
      */
-    public function getApprovedByGroupId(int $groupId): ?AmountRequestData
+    public function getApprovedByGroupId(int $groupId, string $type): ?AmountRequestData
     {
         $selectColumns = array_merge(
             self::DISPLAY_SELECT_COLUMNS,
@@ -540,6 +542,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
                 self::GROUPS_ID_JOINED
             )
             ->where(self::TABLE_GROUP_ID_JOINED, $groupId)
+            ->where(self::TABLE_TYPE_JOINED, $type)
             ->where(self::TABLE_STATUS_JOINED, ReturnMessages::STATUS_APPROVED)
             ->where(self::TABLE_DELETED_JOINED, false)
             ->first();

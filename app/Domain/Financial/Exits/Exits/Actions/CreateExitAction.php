@@ -2,7 +2,9 @@
 
 namespace Domain\Financial\Exits\Exits\Actions;
 
-use Domain\Ecclesiastical\Groups\AmountRequests\Interfaces\AmountRequestRepositoryInterface;
+use Domain\Ecclesiastical\Groups\AmountRequests\Actions\GetApprovedAmountRequestByGroupAction;
+use Domain\Ecclesiastical\Groups\AmountRequests\Actions\LinkExitToApprovedAmountRequestAction;
+use Domain\Ecclesiastical\Groups\AmountRequests\Constants\ReturnMessages as AmountRequestMessages;
 use Domain\Financial\Exits\Exits\Constants\ReturnMessages;
 use Domain\Financial\Exits\Exits\DataTransferObjects\ExitData;
 use Domain\Financial\Exits\Exits\Interfaces\ExitRepositoryInterface;
@@ -24,20 +26,24 @@ class CreateExitAction
 
     private CreateMovementAction $createMovementAction;
 
-    private AmountRequestRepositoryInterface $amountRequestRepository;
+    private GetApprovedAmountRequestByGroupAction $getApprovedAmountRequestByGroupAction;
+
+    private LinkExitToApprovedAmountRequestAction $linkExitToApprovedAmountRequestAction;
 
     public function __construct(
         ExitRepositoryInterface $exitRepositoryInterface,
         MovementRepositoryInterface $movementRepositoryInterface,
         MovementsData $movementsData,
         CreateMovementAction $createMovementAction,
-        AmountRequestRepositoryInterface $amountRequestRepository
+        GetApprovedAmountRequestByGroupAction $getApprovedAmountRequestByGroupAction,
+        LinkExitToApprovedAmountRequestAction $linkExitToApprovedAmountRequestAction
     ) {
         $this->exitRepository = $exitRepositoryInterface;
         $this->movementRepository = $movementRepositoryInterface;
         $this->movementsData = $movementsData;
         $this->createMovementAction = $createMovementAction;
-        $this->amountRequestRepository = $amountRequestRepository;
+        $this->getApprovedAmountRequestByGroupAction = $getApprovedAmountRequestByGroupAction;
+        $this->linkExitToApprovedAmountRequestAction = $linkExitToApprovedAmountRequestAction;
     }
 
     /**
@@ -59,7 +65,10 @@ class CreateExitAction
         $exitData->id = $exit->id;
 
         if (! is_null($exitData->id)) {
-            if ($exitData->exitType == ExitRepository::TRANSFER_VALUE) {
+            $isTransferType = $exitData->exitType == ExitRepository::TRANSFER_VALUE
+                || $exitData->exitType == ExitRepository::MINISTERIAL_TRANSFER_VALUE;
+
+            if ($isTransferType) {
                 $movementData = $this->movementsData::fromObjectData(null, $exitData);
                 $this->createMovementAction->execute($movementData);
 
@@ -85,14 +94,33 @@ class CreateExitAction
             return;
         }
 
-        // Check if there's an approved amount request for this group
-        $amountRequest = $this->amountRequestRepository->getApprovedByGroupId($groupId);
+        // Map exit type to amount request type
+        $requestType = $this->mapExitTypeToRequestType($exitData->exitType);
+
+        if ($requestType === null) {
+            return;
+        }
+
+        // Check if there's an approved amount request for this group and type
+        $amountRequest = $this->getApprovedAmountRequestByGroupAction->execute($groupId, $requestType);
 
         if ($amountRequest === null) {
             return;
         }
 
         // Link the exit to the amount request
-        $this->amountRequestRepository->linkExit($amountRequest->id, $exitId);
+        $this->linkExitToApprovedAmountRequestAction->execute($amountRequest->id, $exitId);
+    }
+
+    /**
+     * Map exit type to amount request type
+     */
+    private function mapExitTypeToRequestType(?string $exitType): ?string
+    {
+        return match ($exitType) {
+            ExitRepository::TRANSFER_VALUE => AmountRequestMessages::TYPE_GROUP_FUND,
+            ExitRepository::MINISTERIAL_TRANSFER_VALUE => AmountRequestMessages::TYPE_MINISTERIAL_INVESTMENT,
+            default => null,
+        };
     }
 }
