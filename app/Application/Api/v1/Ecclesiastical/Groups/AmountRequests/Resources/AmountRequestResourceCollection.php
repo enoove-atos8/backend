@@ -56,6 +56,8 @@ class AmountRequestResourceCollection extends ResourceCollection
             'devolutionAmount' => $item->devolutionAmount ?? null,
             'remainingToProve' => number_format($remainingToProve, 2, '.', ''),
             'createdAt' => $item->createdAt ?? null,
+            'approvedAt' => $item->approvedAt ?? null,
+            'transferredAt' => $item->transferredAt ?? null,
             'member' => $this->getMemberData($item),
             'group' => $this->getGroupData($item),
             'transferExit' => $this->getTransferExitData($item),
