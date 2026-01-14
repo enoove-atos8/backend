@@ -94,6 +94,13 @@ class CreateExitAction
             return;
         }
 
+        // Get user ID from financial reviewer
+        $userId = $exitData->financialReviewer->id ?? null;
+
+        if ($userId === null) {
+            return;
+        }
+
         // Map exit type to amount request type
         $requestType = $this->mapExitTypeToRequestType($exitData->exitType);
 
@@ -108,8 +115,13 @@ class CreateExitAction
             return;
         }
 
-        // Link the exit to the amount request
-        $this->linkExitToApprovedAmountRequestAction->execute($amountRequest->id, $exitId);
+        // Link the exit to the amount request with history
+        $this->linkExitToApprovedAmountRequestAction->execute(
+            $amountRequest->id,
+            $exitId,
+            $userId,
+            $amountRequest->requestedAmount
+        );
     }
 
     /**
