@@ -56,6 +56,7 @@ class AmountRequestController extends Controller
                 'member_id' => $request->input('memberId'),
                 'date_from' => $request->input('dateFrom'),
                 'date_to' => $request->input('dateTo'),
+                'type' => $request->input('type'),
             ];
 
             // Remove null values

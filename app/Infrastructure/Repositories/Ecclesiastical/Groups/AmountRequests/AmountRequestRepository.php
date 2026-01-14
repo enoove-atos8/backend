@@ -292,6 +292,10 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
             $query->where(self::TABLE_MEMBER_ID_JOINED, $filters[self::MEMBER_ID_COLUMN]);
         }
 
+        if (! empty($filters[self::TYPE_COLUMN])) {
+            $query->where('amount_requests.type', $filters[self::TYPE_COLUMN]);
+        }
+
         if (! empty($filters['date_from'])) {
             $query->whereDate(self::TABLE_CREATED_AT_JOINED, '>=', $filters['date_from']);
         }
