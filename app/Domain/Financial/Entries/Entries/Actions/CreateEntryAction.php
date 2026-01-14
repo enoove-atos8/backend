@@ -119,8 +119,12 @@ class CreateEntryAction
             return;
         }
 
-        // Find open amount request for this group
-        $openRequest = $this->amountRequestRepository->getOpenByGroupId($entryData->groupReceivedId);
+        // Find open GROUP FUND amount request for this group
+        // Devolutions only apply to group_fund type (not ministerial_investment)
+        $openRequest = $this->amountRequestRepository->getOpenByGroupId(
+            $entryData->groupReceivedId,
+            AmountRequestReturnMessages::TYPE_GROUP_FUND
+        );
 
         if ($openRequest === null) {
             return;

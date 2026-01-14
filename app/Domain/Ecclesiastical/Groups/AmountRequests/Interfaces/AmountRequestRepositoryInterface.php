@@ -155,9 +155,9 @@ interface AmountRequestRepositoryInterface
     public function getReceiptById(int $amountRequestId, int $receiptId): ?AmountRequestReceiptData;
 
     /**
-     * Get open amount request by group ID (status != closed)
+     * Get open amount request by group ID and type (status != closed and != rejected)
      */
-    public function getOpenByGroupId(int $groupId): ?AmountRequestData;
+    public function getOpenByGroupId(int $groupId, string $type): ?AmountRequestData;
 
     /**
      * Link a devolution entry to an amount request

@@ -25,15 +25,17 @@ class CreateAmountRequestAction
     public function execute(AmountRequestData $data): int
     {
         if ($data->groupId !== null) {
-            // Validate that no open request exists for this group
-            $existingOpenRequest = $this->repository->getOpenByGroupId($data->groupId);
+            // Determine request type
+            $requestType = $data->type ?? ReturnMessages::TYPE_GROUP_FUND;
+
+            // Validate that no open request exists for this group AND type
+            $existingOpenRequest = $this->repository->getOpenByGroupId($data->groupId, $requestType);
 
             if ($existingOpenRequest !== null) {
                 throw new GeneralExceptions(ReturnMessages::GROUP_HAS_OPEN_REQUEST, 400);
             }
 
             // CONDITIONAL VALIDATION based on request type
-            $requestType = $data->type ?? ReturnMessages::TYPE_GROUP_FUND;
 
             if ($requestType === ReturnMessages::TYPE_GROUP_FUND) {
                 // Validate that the group has sufficient balance for the requested amount

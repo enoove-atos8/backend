@@ -896,9 +896,9 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
     }
 
     /**
-     * Get open amount request by group ID (status != closed)
+     * Get open amount request by group ID and type (status != closed and != rejected)
      */
-    public function getOpenByGroupId(int $groupId): ?AmountRequestData
+    public function getOpenByGroupId(int $groupId, string $type): ?AmountRequestData
     {
         $selectColumns = array_merge(
             self::DISPLAY_SELECT_COLUMNS,
@@ -921,6 +921,7 @@ class AmountRequestRepository implements AmountRequestRepositoryInterface
                 self::GROUPS_ID_JOINED
             )
             ->where(self::TABLE_GROUP_ID_JOINED, $groupId)
+            ->where(self::TABLE_TYPE_JOINED, $type)
             ->where(self::TABLE_STATUS_JOINED, '!=', ReturnMessages::STATUS_CLOSED)
             ->where(self::TABLE_STATUS_JOINED, '!=', ReturnMessages::STATUS_REJECTED)
             ->where(self::TABLE_DELETED_JOINED, false)
