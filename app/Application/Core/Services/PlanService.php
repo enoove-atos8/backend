@@ -8,13 +8,10 @@ use Application\Core\Enums\PlanType;
 use Domain\CentralDomain\Churches\Church\Models\Church;
 use Domain\CentralDomain\Plans\Models\Plan;
 use Domain\Secretary\Membership\Actions\CountActiveMembersAction;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class PlanService
 {
-    private const CACHE_TTL = 3600; // 1 hora
-
     public function __construct(
         private CountActiveMembersAction $countActiveMembersAction
     ) {}
@@ -30,17 +27,13 @@ class PlanService
             return null;
         }
 
-        $cacheKey = "tenant_{$tenantId}_plan";
+        $church = $this->getChurchByTenantId($tenantId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($tenantId) {
-            $church = $this->getChurchByTenantId($tenantId);
+        if (! $church) {
+            return null;
+        }
 
-            if (! $church) {
-                return null;
-            }
-
-            return PlanType::fromId($church->plan_id);
-        });
+        return PlanType::fromId($church->plan_id);
     }
 
     /**
@@ -54,34 +47,25 @@ class PlanService
             return null;
         }
 
-        $cacheKey = "tenant_{$tenantId}_plan_data";
+        $church = $this->getChurchByTenantId($tenantId);
 
-        // Cache apenas dos dados do plano (não da contagem de membros)
-        $planData = Cache::remember($cacheKey, self::CACHE_TTL, function () use ($tenantId) {
-            $church = $this->getChurchByTenantId($tenantId);
-
-            if (! $church) {
-                return null;
-            }
-
-            $plan = $this->getPlanById($church->plan_id);
-
-            if (! $plan) {
-                return null;
-            }
-
-            return [
-                'plan_id' => $plan->id,
-                'plan_name' => $plan->name,
-                'plan_type' => PlanType::fromId($plan->id),
-                'features' => $plan->features,
-                'members_limit' => $plan->features['members_limit'] ?? null,
-            ];
-        });
-
-        if (! $planData) {
+        if (! $church) {
             return null;
         }
+
+        $plan = $this->getPlanById($church->plan_id);
+
+        if (! $plan) {
+            return null;
+        }
+
+        $planData = [
+            'plan_id' => $plan->id,
+            'plan_name' => $plan->name,
+            'plan_type' => PlanType::fromId($plan->id),
+            'features' => $plan->features,
+            'members_limit' => $plan->features['members_limit'] ?? null,
+        ];
 
         // Contagem de membros sempre em tempo real (sem cache)
         $planData['member_count'] = $this->countCurrentMembers();
@@ -202,37 +186,28 @@ class PlanService
             return false;
         }
 
-        $cacheKey = "tenant_{$tenantId}_cloud_receipts";
+        $church = $this->getChurchByTenantId($tenantId);
 
-        return Cache::remember($cacheKey, self::CACHE_TTL, function () use ($tenantId) {
-            $church = $this->getChurchByTenantId($tenantId);
+        if (! $church) {
+            return false;
+        }
 
-            if (! $church) {
-                return false;
-            }
-
-            // Verifica na tabela functionalities se a feature está disponível para o plano
-            return DB::connection('mysql')
-                ->table('functionalities')
-                ->where('plan_id', '<=', $church->plan_id)
-                ->where('name', 'cloud_repository_receipts')
-                ->where('activated', true)
-                ->exists();
-        });
+        // Verifica na tabela functionalities se a feature está disponível para o plano
+        return DB::connection('mysql')
+            ->table('functionalities')
+            ->where('plan_id', '<=', $church->plan_id)
+            ->where('name', 'cloud_repository_receipts')
+            ->where('activated', true)
+            ->exists();
     }
 
     /**
      * Limpa o cache do plano do tenant atual.
+     * Nota: Cache foi removido pois não faz sentido para o padrão de uso (cadastro em massa único + esporádico)
      */
     public function clearCache(): void
     {
-        $tenantId = tenant('id');
-
-        if ($tenantId) {
-            Cache::forget("tenant_{$tenantId}_plan");
-            Cache::forget("tenant_{$tenantId}_plan_data");
-            Cache::forget("tenant_{$tenantId}_cloud_receipts");
-        }
+        // Método mantido apenas para compatibilidade com código existente
     }
 
     /**
